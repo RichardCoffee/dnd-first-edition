@@ -1,6 +1,6 @@
 <?php
 
-define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/dnd' );
+define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 
 require( DND_FIRST_EDITION_DIR . '/functions.php' );
 
@@ -12,10 +12,15 @@ $args = array(
 		'Staff,Quarter' => 'PF',
 		'Hammer,Lucern' => 'NP',
 		'Bow,Long'      => 'SP'
+	),
+	'stats' => array(
+		'str' => 19
 	)
-);;
+);
 
 $test = new DND_Character_Cleric( $args );
+
+echo "strength: " . $test->stats['str'] . "\n";
 
 echo $test->get_to_hit_number( 10, 10 ) . "\n";
 echo $test->get_to_hit_number( -4,  1 ) . "\n";

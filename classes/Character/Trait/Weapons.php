@@ -1,6 +1,6 @@
 <?php
 
-trait DND_Trait_Weapons {
+trait DND_Character_Trait_Weapons {
 
 
 	static protected $weapons_table;
@@ -22,24 +22,27 @@ trait DND_Trait_Weapons {
 	private function get_weapons_adjustments_table() {
 		return array(
 			'Bow,Long' => array(
-				'ACType'  => array( -2, -1, -1, 0, 0, 1, 2, 3, 3, 3, 3 ),
-				'Damage'  => array( '1d6', '1d6', 'No' ),
-				'Attacks' => 'bow'
+				'type'   => array( -2, -1, -1, 0, 0, 1, 2, 3, 3, 3, 3 ),
+				'damage' => array( '1d6', '1d6', 'No' ),
+				'range'  => array( 7, 14, 21 ),
+				'attack' => 'bow'
 			),
 			'Hammer,Lucern' => array(
-				'ACType'  => array( 0, 1, 1, 1, 2, 2, 2, 1, 1, 0, 0 ),
-				'Damage'  => array( '2d4', '1d6', 'Yes' ),
-				'Attacks' => 'hand'
+				'type'   => array( 0, 1, 1, 1, 2, 2, 2, 1, 1, 0, 0 ),
+				'speed'  => 9,
+				'damage' => array( '2d4', '1d6', 'Yes' ),
+				'attack' => 'hand'
 			),
 			'Spell' => array(
-				'ACType'  => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-				'Damage'  => array( 'spec', 'spec', 'No' ),
-				'Attacks' => 'spell'
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'damage' => array( 'spec', 'spec', 'No' ),
+				'attack' => 'spell'
 			),
 			'Staff,Quarter' => array(
-				'ACType'  => array( -9, -8, -7, -5, -3, -1, 0, 0, 1, 1, 1 ),
-				'Damage'  => array( '1d6', '1d6', 'Yes' ),
-				'Attacks' => 'hand'
+				'type'   => array( -9, -8, -7, -5, -3, -1, 0, 0, 1, 1, 1 ),
+				'speed'  => 4,
+				'damage' => array( '1d6', '1d6', 'Yes' ),
+				'attack' => 'hand'
 			),
 		);
 	}

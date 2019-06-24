@@ -12,7 +12,7 @@
  * Plugin Name:       DnD First Edition Combat Helper
  * Plugin URI:        pluginhome.com
  * Description:       Description for the plugin.
- * Version:           2.3.1
+ * Version:           0.1.0
  * Requires at least: 4.7.0
  * Requires WP:       4.7.0
  * Tested up to:      4.7.4

@@ -1,6 +1,8 @@
 <?php
 
 /*
+ *  WARNING:  use of this trait will prevent PHP from returning an error if a called method does not exist.
+ *
  *  https://secure.php.net/manual/en/language.oop5.magic.php
  *  http://php.net/manual/en/language.oop5.overloading.php
  *  http://www.garfieldtech.com/blog/magical-php-call

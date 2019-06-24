@@ -1,0 +1,26 @@
+Open combat session
+Assign users/characters
+Assign opponents
+Determine movement
+Determine initiative
+Rounds
+	Segments
+		Resolve initiative
+			Initiative
+			Dexterity
+			Weapon speed
+		Resolve attacks
+			Resolve movement
+			Determine opponent
+			Resolve attack
+				Resolve weapon type vs armor type
+				Resolve attack result
+					Resolve damage
+			Resolve spell effects
+			Determine next attack segment
+		Resolve movement
+		if an opponent died
+			Morale check
+	End segment
+	Resolve extraneous events
+End round
