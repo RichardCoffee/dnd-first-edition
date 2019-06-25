@@ -7,7 +7,7 @@
  * Main plugin class
  *
  */
-class DND_Plugin_FirstEdition extends DND_Plugin_FirstEdition {
+class DND_Plugin_FirstEdition extends DND_Plugin_Plugin {
 
 #	use DND_Trait_Singleton;
 

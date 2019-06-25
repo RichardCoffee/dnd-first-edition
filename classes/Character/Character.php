@@ -2,6 +2,7 @@
 
 abstract class DND_Character_Character {
 
+	protected $armor      = 'none';
 	protected $armorclass = 10;
 	protected $armortype  = 10;
 	protected $attacks    = '1/1';
@@ -21,6 +22,7 @@ abstract class DND_Character_Character {
 	protected $weapon     = array();
 	protected $weapons    = array();
 
+#	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Magic;
@@ -29,7 +31,7 @@ abstract class DND_Character_Character {
 	abstract protected function to_hit_ac_row();
 
 	public function __construct( $args = array() ) {
-		$this->parse_args( $args );
+		$this->parse_args_merge( $args );
 		if ( ( $this->level === 1 ) && ( $this->experience > 0 ) ) {
 			$this->level = $this->get_level( $this->experience );
 		}
