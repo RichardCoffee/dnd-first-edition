@@ -9,7 +9,7 @@
  */
 class DND_Plugin_FirstEdition extends DND_Plugin_Plugin {
 
-#	use DND_Trait_Singleton;
+	use DND_Trait_Singleton;
 
 	public function initialize() {
 		if ( ( ! DND_Register_Register::php_version_check() ) || ( ! DND_Register_Register::wp_version_check() ) ) {
