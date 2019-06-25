@@ -2,6 +2,8 @@
 
 abstract class DND_Character_Character {
 
+	protected $armorclass = 10;
+	protected $armortype  = 10;
 	protected $attacks    = '1/1';
 	protected $current    = '';
 	protected $experience = 0;
@@ -121,8 +123,12 @@ abstract class DND_Character_Character {
 		$target_at = max( $target_ac, $target_at, 0 );
 		$to_hit  = $this->get_to_hit_base( $target_ac );
 		$to_hit -= $this->get_weapon_adjustment( $target_at );
-		$percent = $this->parse_strength_percentage( $this->stats['str'] );
-		$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'], $percent );
+		if ( $this->weapon['attack'] === 'hand' ) {
+			$percent = $this->parse_strength_percentage( $this->stats['str'] );
+			$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'], $percent );
+		} else if ( $this->weapon['attack'] === 'bow' ) {
+			$to_hit -= $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
+		}
 		return $to_hit;
 	}
 

@@ -5,7 +5,7 @@ define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 require( DND_FIRST_EDITION_DIR . '/functions.php' );
 
 $args = array(
-	'current' => 'Staff,Quarter',
+	'current' => 'Bow,Long',
 	'level'   => 4,
 	'weapons' => array(
 		'Spell'         => 'PF',
@@ -14,7 +14,8 @@ $args = array(
 		'Bow,Long'      => 'SP'
 	),
 	'stats' => array(
-		'str' => 19
+		'str' => 12,
+		'dex' => 12
 	)
 );
 

@@ -59,7 +59,6 @@ trait DND_Character_Trait_Attributes {
 				break;
 			default:
 		}
-echo $perc . " : " . $str . " : " . $bonus . " : ";
 		return $bonus;
 	}
 
@@ -113,7 +112,85 @@ echo $perc . " : " . $str . " : " . $bonus . " : ";
 		return $bonus;
 	}
 
+	protected function get_missile_to_hit_adjustment( $dex ) {
+		$bonus = 0;
+		switch( $dex ) {
+			case 3:
+				$bonus = -3;
+				break;
+			case 4:
+				$bonus = -2;
+				break;
+			case 5:
+				$bonus = -1;
+				break;
+			case 16:
+				$bonus = 1;
+				break;
+			case 17:
+				$bonus = 2;
+				break;
+			case 18:
+			case 19:
+			case 20:
+				$bonus = 3;
+				break;
+			case 21:
+			case 22:
+			case 23:
+				$bonus = 4;
+				break;
+			case 24:
+			case 25:
+				$bonus = 5;
+				break;
+			default:
+		}
+		return $bonus;
+	}
 
+	protected function get_armor_class_dexterity_adjustment( $dex ) {
+		$bonus = 0;
+		switch( $dex ) {
+			case 3:
+				$bonus = 4;
+				break;
+			case 4:
+				$bonus = 3;
+				break;
+			case 5:
+				$bonus = 2;
+				break;
+			case 6:
+				$bonus = 1;
+				break;
+			case 15:
+				$bonus = -1;
+				break;
+			case 16:
+				$bonus = -2;
+				break;
+			case 17:
+				$bonus = -3;
+				break;
+			case 18:
+			case 19:
+			case 20:
+				$bonus = -4;
+				break;
+			case 21:
+			case 22:
+			case 23:
+				$bonus = -5;
+				break;
+			case 24:
+			case 25:
+				$bonus = -6;
+				break;
+			default:
+		}
+		return $bonus;
+	}
 
 
 }
