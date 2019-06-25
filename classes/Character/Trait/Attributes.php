@@ -192,5 +192,46 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
+	protected function get_constitution_hit_point_adjustment( $con ) {
+		$bonus = 0;
+		switch( $dex ) {
+			case 3:
+				$bonus = -2;
+				break;
+			case 4:
+			case 5:
+			case 6:
+				$bonus = -1;
+				break;
+			case 15:
+				$bonus = 1;
+				break;
+			case 16:
+				$bonus = 2;
+				break;
+			case 17:
+				$bonus = 3;
+				break;
+			case 18:
+				$bonus = 4;
+				break;
+			case 19:
+			case 20:
+				$bonus = 5;
+				break;
+			case 21:
+			case 22:
+			case 23:
+				$bonus = 6;
+				break;
+			case 24:
+			case 25:
+				$bonus = 7;
+				break;
+			default:
+		}
+		return $bonus;
+	}
+
 
 }
