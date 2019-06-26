@@ -11,7 +11,7 @@
  * @wordpress-plugin
  * Plugin Name:       DnD First Edition Combat Helper
  * Plugin URI:        pluginhome.com
- * Description:       Description for the plugin.
+ * Description:       Something I wrote to help with my DnD campaigns.
  * Version:           0.1.0
  * Requires at least: 4.7.0
  * Requires WP:       4.7.0
@@ -41,4 +41,4 @@ require_once( 'functions.php' );
 
 $plugin = DND_Plugin_FirstEdition::get_instance( array( 'file' => __FILE__ ) );
 
-register_activation_hook( __FILE__, array( 'DND_Register_Plugin', 'activate' ) );
+register_activation_hook( __FILE__, array( 'DND_Register_Register', 'activate' ) );
