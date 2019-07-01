@@ -3,23 +3,26 @@
 trait DND_Character_Trait_Attributes {
 
 
-	protected function parse_strength_percentage( $str ) {
+	private function parse_strength_percentage( $str ) {
 		$perc = -1;
 		if ( is_string( $str ) ) {
-			$arr = explode( '/', $str );
+			$sep = substr( $str, 2, 1 );
+			$arr = explode( $sep, $str );
 			if ( isset( $arr[1] ) ) {
 				$perc = (int)$arr[1];
 				if ( $arr[1] === '00' ) {
 					$perc = 100;
 				}
 			}
+		} else if ( ( $str > 18 ) && ( $str < 19 ) ) {
+			$perc = (int) ( ( $str - 18 ) * 100 );
 		}
 		return $perc;
 	}
 
-	protected function get_strength_to_hit_bonus( $str, $perc = -1 ) {
+	private function get_strength_to_hit_bonus( $str, $perc = -1 ) {
 		$bonus = 0;
-		switch( $str ) {
+		switch( (int)$str ) {
 			case 3:
 				$bonus = -3;
 				break;
@@ -62,7 +65,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function get_strength_damage_bonus( $str, $perc = -1 ) {
+	private function get_strength_damage_bonus( $str, $perc = -1 ) {
 		$bonus = 0;
 		switch( $str ) {
 			case 3:
@@ -112,7 +115,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function get_missile_to_hit_adjustment( $dex ) {
+	private function get_missile_to_hit_adjustment( $dex ) {
 		$bonus = 0;
 		switch( $dex ) {
 			case 3:
@@ -194,7 +197,7 @@ trait DND_Character_Trait_Attributes {
 
 	protected function get_constitution_hit_point_adjustment( $con ) {
 		$bonus = 0;
-		switch( $dex ) {
+		switch( $con ) {
 			case 3:
 				$bonus = -2;
 				break;
