@@ -4,34 +4,38 @@ define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 define( 'CSV_PATH', '/home/oem/DnD/csv/' );
 
 require( DND_FIRST_EDITION_DIR . '/functions.php' );
+#require( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
+/*
+$tank = new DND_Character_Fighter;
+$tank->import_kregen_csv( CSV_PATH . 'Tank.csv' ); /*/
+$strider = new DND_Character_Ranger;
+#echo "import task: {$strider->import_task}\n";
+$strider->import_kregen_csv( CSV_PATH . 'Strider.csv' ); /*
+$ivan = new DND_Character_Paladin;
+$ivan->import_kregen_csv( CSV_PATH . 'Ivan.csv' ); /*
+$saerwen = new DND_Character_FighterMagicUser;
+$saerwen->import_kregen_csv( CSV_PATH . 'Saerwen.csv' ); /*
+$david = new DND_Character_Ranger;
+$david->import_kregen_csv( CSV_PATH . 'David.csv' ); /*
+$susan = new DND_Character_Cleric;
+$susan->import_kregen_csv( CSV_PATH . 'Susan.csv' );
+*/
+/*
+$players = array(
+	'Tank'    => array( 'class' => 'Fighter' ),
+#	'Strider' => array( 'class' => 'Ranger' ),
+#	'Ivan'    => array( 'class' => 'Paladin' ),
+#	'Saerwen' => array( 'class' => 'FighterMagicUser' ),
+#	'David'   => array( 'class' => 'Ranger' ),
+#	'Susan'   => array( 'class' => 'Cleric' )
+);
 
-#$test = new DND_Character_Barbarian;
-#$test->import_kregen_csv( CSV_PATH . 'Krieg.csv' );
-#$test = new DND_Character_Cleric;
-#$test->import_kregen_csv( CSV_PATH . 'Derryl.csv' );
-#$test->import_kregen_csv( CSV_PATH . 'Susan.csv' );
-$test = new DND_Character_Druid;
-$test->import_kregen_csv( CSV_PATH . 'Gaius.csv' );
-#$test = new DND_Character_Fighter;
-#$test->import_kregen_csv( CSV_PATH . 'Tank.csv' );
-#$test = new DND_Character_FighterMagicUser;
-#$test->import_kregen_csv( CSV_PATH . 'Saerwen.csv' );
-#$test = new DND_Character_Paladin;
-#$test->import_kregen_csv( CSV_PATH . 'Ivan.csv' );
-#$test = new DND_Character_Ranger;
-#$test->import_kregen_csv( CSV_PATH . 'Strider.csv' );
-#$test->import_kregen_csv( CSV_PATH . 'David.csv' );
+$characters = dnd1e_load_characters( $players );
 
-print_r( $test );
-#echo "M:{$test->name} F:{$test->fight->name} MU:{$test->magic->name}\n";
-#echo "M:{$test->race} F:{$test->fight->race} MU:{$test->magic->race}\n";
-#echo "F:{$test->fight->level}:{$test->fight->experience} MU:{$test->magic->level}:{$test->magic->experience}\n";
-#print_r( $test->armor );
-#print_r( $test->hit_points );
-#print_r( $test->stats );
-#print_r( $test->weapon );
-#print_r( $test->weapons );
-#print_r( $test->fight->weap_profs );
-#print_r( $test->magic->weap_profs );
-#print_r( $test->weap_profs );
-#print_r( $test->magic->spells );
+foreach( $characters as $name => $body ) {
+	echo "$name: {$body->level}\n";
+}
+*/
+#print_r($tank);
+$strider->set_current_weapon('Bow,Long');
+print_r($strider);

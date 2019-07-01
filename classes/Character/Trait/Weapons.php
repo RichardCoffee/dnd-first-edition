@@ -62,7 +62,7 @@ trait DND_Character_Trait_Weapons {
 				'type'   => array( 0, 1, 1, 1, 2, 2, 2, 1, 1, 0, 0 ),
 				'speed'  => 9,
 				'damage' => array( '2d4', '1d6', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'two-hand'
 			),
 			'Javelin' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, 0, 1, 0, 1 ),
@@ -97,7 +97,7 @@ trait DND_Character_Trait_Weapons {
 				'type'   => array( -9, -8, -7, -5, -3, -1, 0, 0, 1, 1, 1 ),
 				'speed'  => 4,
 				'damage' => array( '1d6', '1d6', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'two-hand'
 			),
 			'Sword,Bastard' => array(
 				'type'   => array( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 ),
@@ -121,9 +121,17 @@ trait DND_Character_Trait_Weapons {
 				'type'   => array( 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 1 ),
 				'speed'  => 10,
 				'damage' => array( '1d10', '3d6', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'tow-hand'
 			),
 		);
+	}
+
+	private function get_weapons_using_strength_bonuses() {
+		return array( 'hand', 'pole', 'two-hand' );
+	}
+
+	private function get_weapons_not_allowed_shield() {
+		return array( 'bow', 'lgtXbow', 'pole', 'two-hand' );
 	}
 
 	private function get_weapon_attacks_array( $type ) {
@@ -134,6 +142,8 @@ trait DND_Character_Trait_Weapons {
 				break;
 			case 'hand':
 			case 'lgtXbow':
+			case 'pole':
+			case 'two-hand':
 				$table = array( [ 1, 1 ], [ 3, 2 ], [ 2, 1 ], [ 5, 2 ], [ 3, 1 ] );
 				break;
 			default:

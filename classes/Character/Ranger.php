@@ -8,7 +8,6 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	private   $magic     = null;
 	protected $non_prof  = -2;
 	protected $stats     = array( 'str' => 13, 'int' => 13, 'wis' => 14, 'dex' => 3, 'con' => 14, 'chr' => 3 );
-	private   $user      = null;
 	protected $weap_init = array( 'initial' => 3, 'step' => 3 );
 	protected $weap_reqs = array( 'Bow/Crossbow,Light', 'Dagger/Knife', 'Spear/Axe', 'Sword' );
 	protected $xp_bonus  = array( 'str' => 16, 'int' => 16, 'wis' => 16 );
@@ -17,18 +16,30 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 
 	public function __construct( $args = array() ) {
-		$this->specials = array(
-			'integer_giant' => 'Damage vs giant class',
-			'integer_track' => 'Tracking',
-			'string_surprise' => 'Surprise',
-		);
+		$this->define_specials();
 		parent::__construct( $args );
+	}
+
+	private function define_specials() {
+		$this->specials = array(
+			'integer_giant' => "Damage vs 'giant' class opponent: +" . $this->special_integer_giant( 'giant', 'int' ),
+			'integer_track' => 'Tracking: ' . $this->special_integer_track() . '%',
+			'string_surprise' => 'Surprise: ' . $this->special_string_surprise(),
+		);
 	}
 
 	public function initialize_character() {
 		parent::initialize_character();
 		$this->druid = new DND_Character_Druid( [ 'level' => max( 1, $this->level - 7 ) ] );
 		$this->magic = new DND_Character_MagicUser( [ 'level' => max( 1, $this->level - 8 ) ] );
+		$this->define_specials();
+	}
+
+	protected function calculate_level( $xp ) {
+		$level = parent::calculate_level( $xp );
+		$this->druid->set_level( $level );
+		$this->magic->set_level( $level );
+		return $level;
 	}
 
 	protected function determine_hit_points() {
@@ -37,11 +48,11 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			$this->hit_points['base'] += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 		}
 	}
-/*
+
 	public function special_integer_giant() {
 		return $this->level;
 	} //*/
-/*
+
 	public function special_array_giant() {
 		return array( 'bugbear', 'cyclopskin', 'dune stalker', 'ettin', 'flind', 'giant', 'gibberling', 'gnoll',
 			'goblin', 'grimlock', 'hobgoblin', 'kobold', 'meazel', 'norker', 'ogre',
@@ -50,7 +61,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			'fog giant', 'mountain giant', 'fomorian giant', 'firbolg giant', 'verbeeg giant',
 		);
 	} //*/
-/*
+
 	public function special_attack_giant( $race, $type = 'bool' ) {
 		$race   = strtolower( $race );
 		$result = in_array( $race, $this->special_array_giant() );
@@ -59,13 +70,13 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 		return $result;
 	} //*/
-/*
+
 	public function special_integer_track() {
 		return min( 100, $this->level * 10 ) + 10;
 	} //*/
-/*
+
 	public function special_string_surprise() {
-		return 'Surprise: opponents 50% (3 in 6), self 16% (1 in 6)';
+		return 'opponents 50% (3 in 6), self 16% (1 in 6)';
 	} //*/
 
 	public function get_spell_info( $spell ) {

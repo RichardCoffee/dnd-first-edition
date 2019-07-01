@@ -31,6 +31,18 @@ trait DND_Character_Trait_Magic {
 		}
 	}
 
+	protected function reload_spells() {
+		$this->spell_table = $this->get_spell_table();
+		foreach( $this->spells as $level => $spells ) {
+			foreach( $spells as $name => $data ) {
+				$info = $this->get_spell_info( $name );
+				if ( $info ) {
+					$this->spells[ $level ][ $name ] = $info['data'];
+				}
+			}
+		}
+	}
+
 	protected function set_kregen_weapon_skill( $weapon, $line, $bonus ) {
 		if ( $weapon === 'Spell' ) {
 			$this->weapons[ $weapon ] = array( 'bonus' => 0, 'skill' => 'PF' );
