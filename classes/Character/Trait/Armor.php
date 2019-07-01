@@ -68,5 +68,48 @@ trait DND_Character_Trait_Armor {
 		return $move;
 	}
 
+	protected function get_movement_segments( $move = 12 ) {
+		$segs = array( 1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 10 );
+		switch( $move ) {
+			case 1:
+				$segs = array( 10 );
+				break;
+			case 2:
+				$segs = array( 5, 10 );
+				break;
+			case 3:
+				$segs = array( 3, 6, 9 );
+				break;
+			case 4:
+				$segs = array( 2, 4, 6, 8 );
+				break;
+			case 5:
+				$segs = array( 2, 4, 6, 8, 10 );
+				break;
+			case 6:
+				$segs = array( 2, 4, 5, 6, 8, 10 );
+				break;
+			case 7:
+				$segs = array( 1, 2, 4, 6, 7, 8, 10 );
+				break;
+			case 8:
+				$segs = array( 1, 2, 4, 5, 6, 8, 9, 10 );
+				break;
+			case 9:
+				$segs = array( 1, 2, 3, 4, 6, 7, 8, 9, 10 );
+				break;
+			case 10:
+				$segs = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
+				break;
+			case 11:
+				$segs = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10 );
+				break;
+			case 12:
+			default:
+				$segs = array( 1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 10 );
+		}
+		return $segs;
+	}
+
 
 }

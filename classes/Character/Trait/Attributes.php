@@ -115,6 +115,46 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
+	protected function get_wisdom_saving_throw_bonus( $wis ) {
+		$bonus = 0;
+		switch( $wis ) {
+			case 3:
+				$bonus = -3;
+				break;
+			case 4:
+				$bonus = -2;
+				break;
+			case 5:
+				$bonus = -1;
+				break;
+			case 6:
+			case 7:
+			case 15:
+				$bonus = 1;
+				break;
+			case 16:
+				$bonus = 2;
+				break;
+			case 17:
+				$bonus = 3;
+				break;
+			case 18:
+				$bonus = 4;
+				break;
+			case 19:
+			case 20:
+			case 21:
+			case 22:
+			case 23:
+			case 24:
+			case 25:
+				$bonus = 5;
+				break;
+			default:
+		}
+		return $bonus;
+	}
+
 	private function get_missile_to_hit_adjustment( $dex ) {
 		$bonus = 0;
 		switch( $dex ) {

@@ -49,7 +49,7 @@ abstract class DND_Character_Character {
 				$this->armor['type']--;
 			}
 			$this->armor['class'] = $this->armor['type'];
-			$this->movement = $this->get_armor_base_movement( $this->armor['armor'] );
+			$this->movement = min( 12, $this->get_armor_base_movement( $this->armor['armor'] ) + $this->armor['bonus'] );
 		}
 		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 		$this->armor['class'] -= $this->armor['bonus'];
@@ -206,6 +206,7 @@ abstract class DND_Character_Character {
 	protected function get_weapon_proficiencies_total() {
 		$profs = 0;
 		foreach( $this->weapons as $weapon => $data ) {
+			if ( $weapon === 'Spell' ) continue;
 			switch( $data['skill'] ) {
 				case 'NP':
 					break;

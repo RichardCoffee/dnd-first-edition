@@ -37,11 +37,11 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			$this->hit_points['base'] += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 		}
 	}
-
+/*
 	public function special_integer_giant() {
 		return $this->level;
-	}
-
+	} //*/
+/*
 	public function special_array_giant() {
 		return array( 'bugbear', 'cyclopskin', 'dune stalker', 'ettin', 'flind', 'giant', 'gibberling', 'gnoll',
 			'goblin', 'grimlock', 'hobgoblin', 'kobold', 'meazel', 'norker', 'ogre',
@@ -49,8 +49,8 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			'cloud giant', 'fire giant', 'frost giant', 'hill giant', 'stone giant', 'storm giant',
 			'fog giant', 'mountain giant', 'fomorian giant', 'firbolg giant', 'verbeeg giant',
 		);
-	}
-
+	} //*/
+/*
 	public function special_attack_giant( $race, $type = 'bool' ) {
 		$race   = strtolower( $race );
 		$result = in_array( $race, $this->special_array_giant() );
@@ -58,15 +58,15 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			$result = ( $result ) ? $this->special_integer_giant() : 0;
 		}
 		return $result;
-	}
-
+	} //*/
+/*
 	public function special_integer_track() {
 		return min( 100, $this->level * 10 ) + 10;
-	}
-
+	} //*/
+/*
 	public function special_string_surprise() {
 		return 'Surprise: opponents 50% (3 in 6), self 16% (1 in 6)';
-	}
+	} //*/
 
 	public function get_spell_info( $spell ) {
 		$info = $this->druid->get_spell_info( $spell );
