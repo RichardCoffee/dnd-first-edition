@@ -1,22 +1,28 @@
 <?php
 
-abstract class DND_Character_Character {
+abstract class DND_Character_Character implements JsonSerializable {
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10 );
+	protected $armr_allow = array();
 	protected $experience = 0;
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = array( 'base' => 0, 'current' => -100 );
-	private   $import_task = 'import';
+	protected $initiative = array( 'roll' => 0, 'actual' => 0, 'segment' => 0 );
 	protected $level      = 0;
-	protected $movement   = '12';
+	protected $max_move   = 12;
+	protected $movement   = 12;
 	protected $name       = 'Character Name';
 	protected $non_prof   = -100;
+	public    $opponent   = array( 'type' => '', 'ac' => 10, 'at' => 10, 'range' => 5 );
 	protected $race       = 'Human';
 	protected $shield     = array( 'type' => 'none', 'bonus' => 0 );
+	protected $shld_allow = array();
 	protected $specials   = array();
 	protected $spells     = array();
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 3, 'chr' => 3 );
+	protected $weap_allow = array();
+	protected $weap_dual  = array();
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
 	protected $weap_reqs  = array();
 	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attack' => 'hand', 'bonus' => 0 );
@@ -28,11 +34,19 @@ abstract class DND_Character_Character {
 	use DND_Character_Import_Kregen;
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
+	use DND_Character_Trait_JsonSerial;
 	use DND_Character_Trait_Weapons;
+#	use DND_Trait_Logging;
 	use DND_Trait_Magic;
 	use DND_Trait_ParseArgs;
 
+	abstract protected function define_specials();
+
 	public function __construct( $args = array() ) {
+		if ( isset( $args['ac_rows'] ) ) {
+			$this->ac_rows = $args['ac_rows'];
+			unset( $args['ac_rows'] );
+		}
 		$this->parse_args_merge( $args );
 		$this->initialize_character();
 	}
@@ -44,11 +58,13 @@ abstract class DND_Character_Character {
 		if ( $this->hit_points['base'] === 0 ) {
 			$this->determine_hit_points();
 		}
-		if ( ! ( $this->weapon['current'] === 'none' ) ) {
-			$this->set_current_weapon( $this->weapon['current'] );
+		if ( $this->weapon['current'] === 'none' ) {
+			$this->determine_armor_class(); // this gets called in set_current_weapon()
 		} else {
-			$this->determine_armor_class(); // this is called in set_current_weapon()
+			$this->set_current_weapon( $this->weapon['current'] );
 		}
+		$this->define_specials();
+		$this->determine_initiative();
 	}
 
 	protected function calculate_level( $xp ) {
@@ -59,11 +75,12 @@ abstract class DND_Character_Character {
 				break;
 			}
 		}
+		$xp -= $this->xp_step;
 		while ( $xp > 0 ) {
 			$xp -= $this->xp_step;
 			$level++;
 		}
-		return --$level;
+		return $level;
 	}
 
 	public function set_level( $level ) {
@@ -73,7 +90,6 @@ abstract class DND_Character_Character {
 		if ( $this->hit_points['current'] < $this->hit_points['base'] ) {
 			$this->hit_points['current'] += $this->hit_points['base'] - $old_hp;
 		}
-		$this->weapon['to_hit'] = $this->to_hit_ac_row();
 		if ( method_exists( $this, 'reload_spells' ) ) {
 			$this->reload_spells();
 		}
@@ -90,7 +106,6 @@ abstract class DND_Character_Character {
 		$level = calculate_level( $this->experience );
 		if ( $level > $this->level ) {
 			$this->set_level( $level );
-#			$this->export_character();
 		}
 	}
 
@@ -107,21 +122,61 @@ abstract class DND_Character_Character {
 
 	protected function determine_armor_class() {
 		$no_shld = in_array( $this->weapon['attack'], $this->get_weapons_not_allowed_shield() );
-		if ( ! ( $this->armor === 'none' ) ) {
+		if ( ! ( $this->armor['armor'] === 'none' ) ) {
 			$this->armor['type'] = $this->get_armor_ac_value( $this->armor['armor'] );
 			if ( ! ( ( $this->shield['type'] === 'none' ) || $no_shld ) ) {
 				$this->armor['type']--;
 			}
 			$this->armor['class'] = $this->armor['type'];
-			$this->movement = min( 12, $this->get_armor_base_movement( $this->armor['armor'] ) + $this->armor['bonus'] );
+			$this->movement = min( $this->max_move, $this->get_armor_base_movement( $this->armor['armor'], $this->movement ) + $this->armor['bonus'] );
 		}
 		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 		$this->armor['class'] -= $this->armor['bonus'];
 		$this->armor['class'] -= ( $no_shld ) ? 0 : $this->shield['bonus'];
 	}
 
+	protected function determine_initiative() {
+		if ( $this->initiative['roll'] > 0 ) {
+			$this->initiative['actual']  = $this->initiative['roll'] + $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
+			$this->initiative['segment'] = 11 - $this->initiative['actual'];
+		}
+	}
+
+	public function set_segment( $new ) {
+#		$new = min( 10, max( 1, $new ) );
+		$this->initiative['segment'] = $new;
+	}
+
+	public function set_alternative_movement() {
+		if ( $this->movement === 6 ) {
+			$this->movement = '6a';
+		} else if ( $this->movement === '6a' ) {
+			$this->movement = 6;
+		}
+	}
+
+	public function is_off_hand_weapon() {
+		$off = false;
+		if ( isset( $this->weap_dual[1] ) && ( $this->weapon['current'] === $this->weap_dual[1] ) ) {
+			$off = true;
+		}
+		return $off;
+	}
+
+	public function set_primary_weapon() {
+		if ( isset( $this->weap_dual[0] ) ) {
+			$this->set_current_weapon( $this->weap_dual[0] );
+		}
+	}
+
+	public function set_dual_weapon() {
+		if ( isset( $this->weap_dual[1] ) ) {
+			$this->set_current_weapon( $this->weap_dual[1] );
+		}
+	}
+
 	public function set_current_weapon( $new = '' ) {
-		if ( ! empty ( $new ) ) {
+		if ( ! empty ( $new ) && ( empty( $this->weap_allow ) || ( ( ! empty( $this->weap_allow ) ) && in_array( $new, $this->weap_allow ) ) ) ) {
 			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
 			if ( ( ! empty( $this->weapons ) ) && isset( $this->weapons[ $new ] ) ) {
 				$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
@@ -129,92 +184,90 @@ abstract class DND_Character_Character {
 			$data = $this->get_weapon_info( $this->weapon['current'] );
 			$this->weapon = array_merge( $this->weapon, $data );
 			$atts  = $this->get_weapon_attacks_array( $data['attack'] );
-			$index = $this->get_weapon_attacks_per_round_index( $this->skill );
+			$index = $this->get_weapon_attacks_per_round_index( $this->weapon['skill'] );
 			$this->weapon['attacks'] = $atts[ $index ];
-			$this->weapon['to_hit']  = $this->to_hit_ac_row();
+			if ( stripos( $this->weapon['current'], 'off-hand' ) !== false ) {
+				$primary = $this->get_weapon_info( $this->weap_dual[0] );
+				$primatt = $this->get_weapon_attacks_array( $primary['attack'] );
+				$primidx = $this->get_weapon_attacks_per_round_index( $this->weapons[ $this->weap_dual[0] ]['skill'] );
+				$prime   = $primatt[ $primidx ];
+				if ( $prime[1] === $this->weapon['attacks'][1] ) {
+					$this->weapon['attacks'][0] += $prime[0];
+				} else {
+					$this->weapon['attacks'][0] += ( $prime[1] === 2 ) ? ( $this->weapon['attacks'][0] + $prime[0] ) : ( $prime[0] * 2 ) ;
+					$this->weapon['attacks'][1] += ( $prime[1] === 2 ) ? 1 : 0;
+				}
+			}
 		}
 		$this->determine_armor_class();
 	}
 
-	protected function get_weapon_attacks_per_round_index( $skill = 'NP' ) {
-		$index = 0;
-		switch( $skill ) {
-			case 'DS':
-				$index = 2;
-				break;
-			case 'SP':
-				$index = 1;
-				break;
-			case 'NP':
-			case 'PF':
-			default:
-				$index = 0;
+	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
+		$prin = false;
+		if ( ! empty( $this->opponent['type'] ) ) {
+			$target_ac = $this->opponent['ac'];
+			$target_at = $this->opponent['at'];
+			$range     = $this->opponent['range'];
 		}
-		return $index;
-	}
-
-	protected function to_hit_ac_row() {
-		$base = $this->to_hit_ac_table();
-		$row  = $this->ac_rows[ $this->level ];
-		return $base[ $row ];
-	}
-
-	protected function to_hit_ac_table() {
-		return array(
-			/*     10   9   8   7   6   5   4   3   2   1   0  -1  -2  -3  -4  -5  -6  -7  -8  -9 -10 */
-			array( 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23, 24, 25, 26, 27 ), //  0
-			array( 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23, 24, 25, 26 ), //  1
-			array( 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23, 24, 25 ), //  2
-			array(  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23, 24 ), //  3
-			array(  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23 ), //  4
-			array(  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22 ), //  5
-			array(  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21 ), //  6
-			array(  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20, 20 ), //  7
-			array(  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20, 20 ), //  8
-			array(  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20, 20 ), //  9
-			array(  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20, 20 ), // 10
-			array(  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20 ), // 11
-			array(  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ), // 12
-			array( -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ), // 13
-			array( -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18 ), // 14
-			array( -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17 ), // 15
-			array( -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 ), // 16
-			array( -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 ), // 17
-			array( -6, -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14 ), // 18
-			array( -7, -6, -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13 ), // 19
-			array( -8, -7, -6, -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12 ), // 20
-			array( -9, -8, -7, -6, -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11 ), // 21
-			array(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10 ), // 22
-		);
-	}
-
-	public function get_to_hit_number( $target_ac, $target_at = -1, $range = -1 ) {
+		if ( $target_ac === -11 ) return 100;
 		$target_at = max( $target_ac, $target_at, 0 );
 		$to_hit  = $this->get_to_hit_base( $target_ac );
-		$to_hit -= $this->get_weapon_adjustment( $target_at );
+		if ( $prin ) printf( 'B%2u ', $to_hit );
+		$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target_at );
+		if ( $prin ) printf( 'T%2u ', $to_hit );
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
-			$percent = $this->parse_strength_percentage( $this->stats['str'] );
-			$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'], $percent );
-			$to_hit -= $this->get_weapon_proficiency_bonus( $this->weapon['skill'], $this->non_prof );
-		} else if ( $this->weapon['attack'] === 'bow' ) {
+			$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'] );
+			if ( $prin ) printf( 'S%2u ', $to_hit );
+			$to_hit -= $this->get_weapon_proficiency_bonus( $this->weapon['skill'] );
+			if ( $prin ) printf( 'P%2u ', $to_hit );
+		} else if ( in_array( $this->weapon['attack'], $this->get_weapons_missile_adjustment() ) ) {
 			$to_hit -= $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
+			if ( $prin ) printf( 'M%2s ', $to_hit );
 			$to_hit -= $this->get_missile_range_adjustment( $this->weapon['range'], $range );
-			$to_hit -= $this->get_missile_proficiency_bonus( $this->weapon['skill'], $this->non-prof, $range );
+			if ( $prin ) printf( 'R%2u ', $to_hit );
+			$to_hit -= $this->get_missile_proficiency_bonus( $this->weapon, $range );
+			if ( $prin ) printf( 'P%2s ', $to_hit );
 		}
 		$to_hit -= $this->weapon['bonus'];
-		return $to_hit;
+		if ( $prin ) printf( 'W%2s ', $to_hit );
+		return apply_filters( 'character_to_hit_opponent', $to_hit, $this->weapon, $this->opponent );
 	}
 
 	protected function get_to_hit_base( $target_ac = 10 ) {
-		$ac_index = 10 - $target_ac;
-		if ( isset( $this->weapon['to_hit'][ $ac_index ] ) ) {
-			return $this->weapon['to_hit'][ $ac_index ];
+		$index = 10 - $target_ac;
+		$table = $this->to_hit_ac_table();
+		$row   = $this->ac_rows[ $this->level ];
+		$base  = $table[ $row ];
+		if ( isset( $base[ $index ] ) ) {
+			return $base[ $index ];
 		}
 		return 10000;
 	}
 
-	protected function get_weapon_adjustment( $target_at ) {
-		return $this->weapon['type'][ $target_at ];
+	public function get_weapon_damage( $size ) {
+		$string = "Size passed: $size, can only be 'Small', 'Medium', or 'Large'";
+		$size   = strtolower( $size );
+		if ( in_array( $size, [ 'small', 'medium', 'large' ] ) ) {
+			if ( $size === 'large' ) {
+				$string = $this->weapon['damage'][1];
+			} else {
+				$string = $this->weapon['damage'][0];
+			}
+		}
+		return $string;
+	}
+
+	public function get_weapon_damage_bonus( $range = -1 ) {
+		if ( $this->opponent['range'] > 0 ) { $range = $this->opponent['range']; }
+		$bonus = $this->get_missile_proficiency_bonus( $this->weapon, $range, 'damage' );
+#echo "prof: $bonus\n";
+		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_damage() ) ) {
+			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
+#echo " str: $bonus\n";
+		}
+		$bonus += $this->weapon['bonus'];
+#echo "weap: $bonus\n";
+		return $bonus;
 	}
 
 	protected function get_weapon_proficiencies_total() {
@@ -243,6 +296,10 @@ abstract class DND_Character_Character {
 		$total = $this->weap_init['initial'] + intval( ( $this->level - 1 ) / $this->weap_init['step'] );
 		$current = $this->get_weapon_proficiencies_total();
 		return $total - $current;
+	}
+
+	public function get_spell_list() {
+		return $this->spells;
 	}
 
 

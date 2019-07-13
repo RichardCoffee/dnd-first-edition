@@ -5,9 +5,9 @@ trait DND_Character_Trait_Attributes {
 
 	private function parse_strength_percentage( $str ) {
 		$perc = -1;
-		if ( is_string( $str ) ) {
+		if ( is_string( $str ) && ( intval( $str ) === 18 ) ) {
 			$sep = substr( $str, 2, 1 );
-			$arr = explode( $sep, $str );
+			$arr = array_map( 'intval', explode( $sep, $str ) );
 			if ( isset( $arr[1] ) ) {
 				$perc = (int)$arr[1];
 				if ( $arr[1] === '00' ) {
@@ -20,7 +20,7 @@ trait DND_Character_Trait_Attributes {
 		return $perc;
 	}
 
-	private function get_strength_to_hit_bonus( $str, $perc = -1 ) {
+	private function get_strength_to_hit_bonus( $str ) {
 		$bonus = 0;
 		switch( (int)$str ) {
 			case 3:
@@ -37,6 +37,7 @@ trait DND_Character_Trait_Attributes {
 			case 17:
 			case 18:
 				$bonus = 1;
+				$perc  = $this->parse_strength_percentage( $str );
 				if ( $perc === 100 ) {
 					$bonus = 3;
 				} else if ( $perc > 50 ) {
@@ -65,7 +66,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	private function get_strength_damage_bonus( $str, $perc = -1 ) {
+	private function get_strength_damage_bonus( $str ) {
 		$bonus = 0;
 		switch( $str ) {
 			case 3:
@@ -79,6 +80,7 @@ trait DND_Character_Trait_Attributes {
 				break;
 			case 18:
 				$bonus = 2;
+				$perc  = $this->parse_strength_percentage( $str );
 				if ( $perc === 100 ) {
 					$bonus = 6;
 				} else if ( $perc > 90 ) {

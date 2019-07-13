@@ -15,24 +15,12 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected $xp_table  = array( 0, 2250, 4500, 10000, 20000, 40000, 90000, 150000, 225000, 325000 );
 
 
-	public function __construct( $args = array() ) {
-		$this->define_specials();
-		parent::__construct( $args );
-	}
-
-	private function define_specials() {
-		$this->specials = array(
-			'integer_giant' => "Damage vs 'giant' class opponent: +" . $this->special_integer_giant( 'giant', 'int' ),
-			'integer_track' => 'Tracking: ' . $this->special_integer_track() . '%',
-			'string_surprise' => 'Surprise: ' . $this->special_string_surprise(),
-		);
-	}
-
 	public function initialize_character() {
 		parent::initialize_character();
-		$this->druid = new DND_Character_Druid( [ 'level' => max( 1, $this->level - 7 ) ] );
-		$this->magic = new DND_Character_MagicUser( [ 'level' => max( 1, $this->level - 8 ) ] );
-		$this->define_specials();
+		if ( empty( $this->druid ) ) {
+			$this->druid = new DND_Character_Druid( [ 'level' => $this->level ] );
+			$this->magic = new DND_Character_MagicUser( [ 'level' => $this->level ] );
+		}
 	}
 
 	protected function calculate_level( $xp ) {
@@ -49,6 +37,14 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 	}
 
+	protected function define_specials() {
+		$this->specials = array(
+			'integer_giant'   => "Damage vs 'giant' class opponent: +" . $this->special_integer_giant( 'giant', 'int' ),
+			'integer_track'   => 'Tracking: ' . $this->special_integer_track() . '%',
+			'string_surprise' => 'Surprise: ' . $this->special_string_surprise(),
+		);
+	}
+
 	public function special_integer_giant() {
 		return $this->level;
 	} //*/
@@ -58,7 +54,9 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			'goblin', 'grimlock', 'hobgoblin', 'kobold', 'meazel', 'norker', 'ogre',
 			'ogre mage', 'ogrillon', 'orc', 'quaggoth', 'tasloi', 'troll', 'xvart',
 			'cloud giant', 'fire giant', 'frost giant', 'hill giant', 'stone giant', 'storm giant',
+			'giant,cloud', 'giant,fire', 'giant,frost', 'giant,hill', 'giant,stone', 'giant,storm',
 			'fog giant', 'mountain giant', 'fomorian giant', 'firbolg giant', 'verbeeg giant',
+			'giant,fog', 'giant,mountain', 'giant,fomorian', 'giant,firbolg', 'giant,verbeeg',
 		);
 	} //*/
 
@@ -70,6 +68,16 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 		return $result;
 	} //*/
+
+	public function get_weapon_damage_bonus( $range = -1 ) {
+		$bonus = parent::get_weapon_damage_bonus( $range );
+		if ( ! empty( $this->opponent['type'] ) ) {
+			if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
+				$bonus += $this->special_attack_giant( $this->opponent['type'], 'int' );
+			}
+		}
+		return $bonus;
+	}
 
 	public function special_integer_track() {
 		return min( 100, $this->level * 10 ) + 10;
@@ -98,7 +106,14 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 	}
 
-
+	public function parse_csv_line( $line ) {
+#print_r($line);
+		parent::parse_csv_line( $line );
+#echo "druid task: {$this->druid->import_task}\n";
+		$this->druid->parse_csv_line( $line );
+#echo "magic task: {$this->magic->import_task}\n";
+		$this->magic->parse_csv_line( $line );
+	}
 
 
 }

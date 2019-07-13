@@ -15,7 +15,7 @@ trait DND_Trait_Magic {
 	protected static $magic__call   = array();
 	protected static $set__callable = false;
 
-
+/*
 	# do not use is_callable() within this function
 	public function __call( $string, $args ) {
 		$return = 'non-callable function';
@@ -27,7 +27,7 @@ trait DND_Trait_Magic {
 			$return = $this->$string;
 		}
 		return $return;
-	}
+	} //*/
 
 	public function __get( $name ) {
 		if ( property_exists( $this, $name ) ) {

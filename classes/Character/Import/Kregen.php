@@ -3,6 +3,9 @@
 trait DND_Character_Import_Kregen {
 
 
+	private $import_task = 'import';
+
+
 	public function import_kregen_csv( $file ) {
 		$contents = file ( $file, FILE_IGNORE_NEW_LINES );
 		if ( ! ( $contents === false ) ) {
@@ -18,8 +21,8 @@ trait DND_Character_Import_Kregen {
 		}
 	}
 
-	public function set_import_task() {
-		$this->import_task = 'import';
+	public function set_import_task( $task = 'import' ) {
+		$this->import_task = $task;
 	}
 
 	public function parse_csv_line( $line ) {
@@ -29,9 +32,8 @@ trait DND_Character_Import_Kregen {
 				$this->hit_points['current'] = $line[1];
 				break;
 			case 'AC':
-				$index = 5;
-				if ( $line[1] === 'Armor' ) { $index = 4; }
-				$this->experience = $line[ $index ];
+				$index = array_search( 'XP', $line );
+				$this->experience = $line[ ++$index ];
 				if ( ( $this->level === 0 ) && ( $this->experience > 0 ) ) {
 					$this->level = $this->calculate_level( $this->experience );
 				}
@@ -56,7 +58,8 @@ trait DND_Character_Import_Kregen {
 				break;
 			case 'Armor':
 				if ( ! ( $this->import_task === 'import' ) ) break;
-				$this->armor['armor'] = $this->parse_name( $line[1] );
+				$armor = $this->parse_name( $line[1] );
+				$this->armor['armor'] = ( $armor === '(armor)' ) ? 'none' : $armor;
 				if ( ! isset( $line[2] ) ) break;
 				$test = intval( $line[2] );
 				if ( $test > 0 ) {
@@ -97,13 +100,12 @@ trait DND_Character_Import_Kregen {
 					}
 					if ( ( strpos( $line[ $index ], '"' ) === 0 ) && ( substr( $line[ $index + 1 ], -1 ) === '"' ) ) {
 						$weapon = substr( $line[ $index ], 1 ) . ',' . substr( $line[ $index + 1 ], 0, -1 );
-						if ( $this->weapons_check( $weapon ) ) {
-							$this->set_kregen_weapon_skill( $weapon, $line, $bonus );
-							$this->check_current_weapon( $weapon );
-						}
-					} else if ( $this->weapons_check( $line[ $index ] ) ) {
-						$this->set_kregen_weapon_skill( $line[ $index ], $line, $bonus );
-						$this->check_current_weapon( $line[ $index ] );
+					} else {
+						$weapon = $line[ $index ];
+					}
+					if ( $this->weapons_check( $weapon ) ) {
+						$this->set_kregen_weapon_skill( $weapon, $line, $bonus );
+						$this->check_current_weapon( $weapon );
 					}
 				} else if ( $this->import_task === 'spells' ) {
 #print_r ( $line );
@@ -119,6 +121,7 @@ trait DND_Character_Import_Kregen {
 							if ( ( $pos = strpos( $name, ' UA' ) ) > 0 ) {
 								$name = substr( $name, 0, $pos );
 							}
+#echo __CLASS__."  spell: $name\n";
 							$check = $this->get_spell_info( $name );
 							if ( ! ( $check === false ) ) {
 								$this->add_spell( $check );
@@ -154,6 +157,8 @@ trait DND_Character_Import_Kregen {
 					break;
 				default:
 			}
+		} else if ( $weapon === 'Spell' ) {
+			$this->weapons[ $weapon ]['skill'] = 'PF';
 		}
 	}
 
