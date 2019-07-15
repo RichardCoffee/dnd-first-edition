@@ -26,11 +26,5 @@ class DND_Monster_Giant_Crane extends DND_Monster_Monster {
 		$this->hit_dice = 3;
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 
 }

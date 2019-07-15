@@ -1,8 +1,14 @@
 <?php
 
-$heading  = ' ';
-$heading .= ' Att   ';
-$heading .= 'Name      Weapon         To Hit     Dam       Atts          Movement         Seg   Attack Sequence';
+$heading = '  ';
+$heading.= 'Att     ';
+$heading.= 'Name      ';
+$heading.= 'Weapon         ';
+$heading.= 'To Hit     ';
+$heading.= 'Dam    ';
+$heading.= 'Atts          ';
+$heading.= 'Movement          ';
+$heading.= 'Seg   Attack Sequence';
 echo "$heading\n";
 
 foreach( $chars as $name => $body ) {
@@ -10,8 +16,8 @@ foreach( $chars as $name => $body ) {
 	$body->opponent['ac']    = $monster->armor_class;
 	$body->opponent['at']    = $monster->armor_type;
 	$body->opponent['range'] = $range;
-	$line  = '  ';
-	$line .= sprintf( '%2u  ',   $atts[ $att_key ][ $name ] );
+	$line  = ' ';
+	$line .= sprintf( '%5s  ',   $atts[ $name ] );
 	$line .= dnd1e_get_combat_string( $body, $monster, $range );
 	if ( $body->is_off_hand_weapon() ) {
 		$body->set_primary_weapon();

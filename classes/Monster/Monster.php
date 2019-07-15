@@ -10,7 +10,6 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	protected $armor_type   = 11;
 	protected $attacks      = array();
 	protected $att_types    = array();
-	protected $damage       = array();
 	protected $frequency    = 'Common';
 	protected $hit_dice     = 0;
 	protected $hd_minimum   = 1;
@@ -20,6 +19,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	protected $in_lair      = 0;
 	protected $initiative   = 1;
 	protected $intelligence = 'Animal';
+	protected $magic_user   = null;
 	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Monster';
@@ -42,7 +42,6 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 
 
 	abstract protected function determine_hit_dice();
-	abstract protected function determine_damage();
 
 
 	public function __construct( $args = array() ) {
@@ -137,18 +136,15 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	}
 
 	public function get_possible_damage( $type = 'Bite' ) {
-		$dam  = 'special';
-		$info = $this->get_attack_info();
-		foreach( $info as $attack ) {
-			if ( $attack['type'] === $type ) {
-				return $attack['damage'];
-			}
+		$dam = 'special';
+		if ( isset( $this->attacks[ $type ] ) ) {
+			$dam = $this->get_damage_string( $this->attacks[ $type ] );
 		}
 		return $dam;
 	}
 
 	protected function get_damage_string( $damage ) {
-		$string  = sprintf( '%ud%u', $damage[0], $damage[1], $damage[2] );
+		$string  = sprintf( '%ud%u', $damage[0], $damage[1] );
 		$string .= ( $damage[2] > 0 ) ? sprintf( '+%u', $damage[2] ) : '';
 		return $string;
 	}
@@ -164,12 +160,23 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	/**
 	 * @param array $chars An array of character objects.
 	 */
-	public function get_to_hit_characters( $chars = array() ) {
+	public function get_to_hit_characters( $chars = array(), $string = false ) {
 		$data = array();
-		foreach( $this->att_types as $key => $attack ) {
-			$data[ $key ] = array();
+		if ( $string ) { // intended for command line use only
 			foreach( $chars as $name => $obj ) {
-				$data[ $key ][ $name ] = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack['type'] );
+				$hits = array();
+				foreach( $this->att_types as $key => $attack ) {
+					$to_hit = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack['type'] );
+					if ( ! in_array( $to_hit, $hits ) ) $hits[] = $to_hit;
+				}
+				$data[ $name ] = implode( '/', $hits );
+			}
+		} else { // intended for website use
+			foreach( $this->att_types as $key => $attack ) {
+				$data[ $key ] = array();
+				foreach( $chars as $name => $obj ) {
+					$data[ $key ][ $name ] = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack['type'] );
+				}
 			}
 		}
 		return $data;
@@ -186,12 +193,28 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 		return $number;
 	}
 
+	protected function get_saving_throw_level() {
+		return $this->hit_dice;
+	}
+
+	protected function check_chance( $chance ) {
+		$result = false;
+		$perc = intval( $chance );
+		if ( $perc ) {
+			$roll = mt_rand( 1, 100 );
+			if ( ! ( $roll > $perc ) ) {
+				$result = true;
+			}
+		}
+		return $result;
+	}
+
 	public function get_treasure( $possible = '' ) {
 		$response = 'No Treasure Available.';
 		if ( empty( $possible ) ) $possible = $this->treasure;
 		if ( ! ( $possible === 'Nil' ) ) {
 			$test = $this->get_treasure_possibilities( $possible );
-			if ( ! empty( $test ) ) {
+			if ( $test ) {
 				$response = $test;
 			}
 		}
@@ -201,7 +224,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	public function command_line_display() {
 		$line = "{$this->name}: ";
 		$line.= $this->get_number_appearing();
-		$line.= " HD {$this->hit_dice}";
+		$line.= ", HD {$this->hit_dice}";
 		if ( $this->hp_extra ) {
 			$line .= "+{$this->hp_extra}";
 		}

@@ -34,11 +34,5 @@ class DND_Monster_Lycan_Wolf extends DND_Monster_Lycan_Lycan {
 		$this->specials['surprise'] = 'Surprise opponents on 1-3.';
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 
 }

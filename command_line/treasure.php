@@ -7,11 +7,9 @@ require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
 function dnd1e_show_possible_monster_treasure( &$monster, $possible = '' ) {
 	$treasure = $monster->get_treasure( $possible );
 	if ( is_array( $treasure ) ) {
-	foreach( $treasure as $item => $data ) {
-		if ( $item === 'special' ) { }
-		printf( '%10s %s', $item, $data );
-		echo "\n";
-	}
+		foreach( $treasure as $item ) {
+			echo "$item\n";
+		}
 	} else {
 		echo "$treasure\n";
 	}

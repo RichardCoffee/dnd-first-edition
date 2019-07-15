@@ -49,6 +49,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 		}
 		$this->parse_args_merge( $args );
 		$this->initialize_character();
+		$this->initialize_spell_list( $args );
 	}
 
 	public function initialize_character() {
@@ -120,6 +121,11 @@ abstract class DND_Character_Character implements JsonSerializable {
 		}
 	}
 
+	protected function get_constitution_hit_point_adjustment( $con ) {
+		$bonus = $this->attr_get_constitution_hit_point_adjustment( $con );
+		return min( $bonus, 2 );
+	}
+
 	protected function determine_armor_class() {
 		$no_shld = in_array( $this->weapon['attack'], $this->get_weapons_not_allowed_shield() );
 		if ( ! ( $this->armor['armor'] === 'none' ) ) {
@@ -139,6 +145,16 @@ abstract class DND_Character_Character implements JsonSerializable {
 		if ( $this->initiative['roll'] > 0 ) {
 			$this->initiative['actual']  = $this->initiative['roll'] + $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
 			$this->initiative['segment'] = 11 - $this->initiative['actual'];
+		}
+	}
+
+	protected function initialize_spell_list( $args ) {
+		if ( isset( $args['spell_list'] ) ) {
+			foreach( $args['spell_list'] as $level => $list ) {
+				foreach( $list as $spell ) {
+					$this->add_spell( $this->get_spell_info( $spell ) );
+				}
+			}
 		}
 	}
 
@@ -220,7 +236,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 			if ( $prin ) printf( 'S%2u ', $to_hit );
 			$to_hit -= $this->get_weapon_proficiency_bonus( $this->weapon['skill'] );
 			if ( $prin ) printf( 'P%2u ', $to_hit );
-		} else if ( in_array( $this->weapon['attack'], $this->get_weapons_missile_adjustment() ) ) {
+		} else if ( in_array( $this->weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
 			$to_hit -= $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
 			if ( $prin ) printf( 'M%2s ', $to_hit );
 			$to_hit -= $this->get_missile_range_adjustment( $this->weapon['range'], $range );
@@ -246,9 +262,9 @@ abstract class DND_Character_Character implements JsonSerializable {
 
 	public function get_weapon_damage( $size ) {
 		$string = "Size passed: $size, can only be 'Small', 'Medium', or 'Large'";
-		$size   = strtolower( $size );
-		if ( in_array( $size, [ 'small', 'medium', 'large' ] ) ) {
-			if ( $size === 'large' ) {
+		$test   = substr( $size, 0, 1 );
+		if ( in_array( $test, [ 'S', 'M', 'L' ] ) ) {
+			if ( $test === 'L' ) {
 				$string = $this->weapon['damage'][1];
 			} else {
 				$string = $this->weapon['damage'][0];
@@ -300,6 +316,11 @@ abstract class DND_Character_Character implements JsonSerializable {
 
 	public function get_spell_list() {
 		return $this->spells;
+	}
+
+	public function save_as_transient() {
+		$trans = 'dnd1e_character_' . $this->name;
+		set_transient( $trans, $this );
 	}
 
 

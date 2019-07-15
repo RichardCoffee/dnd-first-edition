@@ -93,6 +93,11 @@ trait DND_Character_Trait_Weapons {
 				'range'  => array( 50, 100, 150 ),
 				'attack' => 'bow'
 			),
+			'Breath' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'damage' => array( 'Spec', 'Spec', 'No' ),
+				'attack' => 'breath'
+			),
 			'Claw' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
@@ -124,7 +129,7 @@ trait DND_Character_Trait_Weapons {
 			),
 			'Dagger,Thrown' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, -1, 0, 0, 1 ),
-				'damage' => array( '1d4', '1d4', 'Yes' ),
+				'damage' => array( '1d4', '1d3', 'Yes' ),
 				'range'  => array( 10, 20, 30 ),
 				'attack' => 'thrown2'
 			),
@@ -237,8 +242,8 @@ trait DND_Character_Trait_Weapons {
 		return array( 'bow', 'hvyXbow', 'lgtXbow', 'monster', 'off-hand', 'pole', 'spell', 'two-hand' );
 	}
 
-	private function get_weapons_missile_adjustment() {
-		return array( 'bow', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
+	private function get_weapons_using_missile_adjustment() {
+		return array( 'bow', 'breath', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
 	}
 
 	private function get_weapon_attacks_array( $type ) {

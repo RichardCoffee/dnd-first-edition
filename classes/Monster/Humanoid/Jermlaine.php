@@ -42,12 +42,6 @@ class DND_Monster_Humanoid_Jermlaine extends DND_Monster_Humanoid_Humanoid {
 		);
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 	protected function get_fighter_data() {
 		$data = parent::get_fighter_data();
 		$data['weapons'] = array(
@@ -55,6 +49,10 @@ class DND_Monster_Humanoid_Jermlaine extends DND_Monster_Humanoid_Humanoid {
 			'Spear' => array( 'skill' => 'PF' ),
 		);
 		return $data;
+	}
+
+	protected function get_saving_throw_level() {
+		return 4;
 	}
 
 

@@ -45,11 +45,5 @@ class DND_Monster_Rat extends DND_Monster_Monster {
 		return ( mt_rand( 1, 100 ) < 6 ) ? true : false;
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 
 }

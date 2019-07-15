@@ -51,7 +51,6 @@ class DND_Monster_Hydra extends DND_Monster_Monster {
 		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
 			$key = "Bite $i";
 			$this->attacks[ $key ] = array( 1, $max, 0 );
-			$this->damage[  $key ] = array( 1, $max, 0 );
 		}
 	}
 

@@ -26,4 +26,8 @@ class DND_Character_Fighter extends DND_Character_Character {
 		return $index;
 	}
 
+	protected function get_constitution_hit_point_adjustment( $con ) {
+		return $this->attr_get_constitution_hit_point_adjustment( $con );
+	}
+
 }

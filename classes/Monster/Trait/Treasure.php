@@ -3,6 +3,33 @@
 trait DND_Monster_Trait_Treasure {
 
 
+	private function get_experience_points_index() {
+		if ( $this->hd_value < 8 ) return 0;
+#		if ( $this->hd
+	}
+
+	private function get_experience_points_table() {
+		return array(
+			[    5,  1,    2,   25 ],
+			[   10,  1,    4,   35 ],
+			[   20,  2,    8,   45 ],
+			[   35,  3,   15,   55 ],
+			[   60,  4,   25,   65 ],
+			[   90,  5,   40,   75 ],
+			[  150,  6,   75,  125 ],
+			[  225,  8,  125,  175 ],
+			[  375, 10,  175,  275 ],
+			[  600, 12,  300,  400 ],
+			[  900, 14,  450,  600 ],
+			[ 1300, 16,  700,  850 ],
+			[ 1800, 18,  950, 1200 ],
+			[ 2400, 20, 1250, 1600 ],
+			[ 3000, 25, 1550, 2000 ],
+			[ 4000, 30, 2100, 2500 ],
+			[ 5000, 35, 2600, 3000 ]
+		);
+	}
+
 	private function get_treasure_possibilities( $type ) {
 		$multiply = $this->get_treasure_multipliers();
 		$treasure = array();
@@ -34,20 +61,21 @@ trait DND_Monster_Trait_Treasure {
 					default:
 						$string .= sprintf( ' x %u', $multiply[ $kind ] );
 				}
-				$treasure[ $name ] = $string;
+				$treasure[] = sprintf( '%10s %s', $name, $string );
 			}
 		}
 		return $treasure;
 	}
 
 	private function get_treasure_multipliers() {
-		return array(
+		$mults = array(
 			'copper'   => 1000,
 			'silver'   => 1000,
 			'electrum' => 1000,
 			'gold'     => 1000,
 			'platinum' => 100,
 		);
+		return apply_filters( 'monster_treasure_multipliers', $mults, $this );
 	}
 
 	private function get_treasure_table() {

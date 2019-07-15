@@ -237,7 +237,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function get_constitution_hit_point_adjustment( $con ) {
+	protected function attr_get_constitution_hit_point_adjustment( $con ) {
 		$bonus = 0;
 		switch( $con ) {
 			case 3:

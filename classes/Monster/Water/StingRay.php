@@ -35,11 +35,5 @@ class DND_Monster_Water_StingRay extends DND_Monster_Monster {
 		);
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 
 }

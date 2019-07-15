@@ -6,15 +6,17 @@ trait DND_Character_Trait_Magic {
 	protected $spell_table = array();
 
 
-	protected function get_constitution_hit_point_adjustment( $con ) {
-		$bonus = parent::get_constitution_hit_point_adjustment( $con );
-		return min( $bonus, 2 );
+	public function get_spell_data( $level, $spell ) {
+		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
+		$data = array();
+		if ( isset( $this->spell_table[ $level ][ $spell ] ) ) {
+			$data = $this->spell_table[ $level ][ $spell ];
+		}
+		return $data;
 	}
 
 	public function get_spell_info( $spell ) {
-		if ( empty( $this->spell_table ) ) {
-			$this->spell_table = $this->get_spell_table();
-		}
+		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
 		foreach( $this->spell_table as $level => $spells ) {
 			foreach( $spells as $name => $data ) {
 				if ( $name === $spell ) {
@@ -41,6 +43,18 @@ trait DND_Character_Trait_Magic {
 				}
 			}
 		}
+	}
+
+	public function generate_random_spell( $level ) {
+		$spell = '';
+		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
+		if ( isset( $this->spell_table[ $level ] ) ) {
+			$limit = count( $this->spell_table[ $level ] );
+			$index = mt_rand( 1, $limit );
+			$keys  = array_keys( $this->spell_table[ $level ] );
+			$spell = $keys[ $index -1 ];
+		}
+		return $spell;
 	}
 
 	protected function set_kregen_weapon_skill( $weapon, $line, $bonus ) {

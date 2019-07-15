@@ -14,7 +14,7 @@ include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
 
 $range   = get_transient( 'dnd1e_range' );
 $rounds  = 2;
-$segment = get_transient( 'dnd1e_segment' );
+$segment = intval( get_transient( 'dnd1e_segment' ) );
 
 if ( ! $range ) {
 	$range = 2000;
@@ -35,6 +35,7 @@ if ( ! empty( $hold ) ) { // $hold created in getopts.php
 
 if ( ! empty( $attack ) ) { // $attack created in getopts.php
 	foreach( $attack as $aname => $aseg ) {
+		if ( isset( $hold[ $aname ] ) ) continue;
 		$chars[ $aname ]->set_segment( $aseg );
 	}
 }
@@ -53,3 +54,4 @@ include_once( DND_FIRST_EDITION_DIR . '/command_line/show_attackers.php' );
 
 set_transient( 'dnd1e_monster', $monster );
 
+#print_r($monster);

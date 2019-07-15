@@ -39,11 +39,5 @@ class DND_Monster_Giant_Lynx extends DND_Monster_Monster {
 		);
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 
 }

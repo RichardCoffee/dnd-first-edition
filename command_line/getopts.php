@@ -11,6 +11,9 @@ if ( ! $opts ) {
 			if ( $chars[ $parm ]->weapon['current'] === 'Spell' ) {
 				dnd1e_show_possible_spells( $chars[ $parm ] );
 				exit;
+			} else {
+				dnd1e_show_possible_weapons( $chars[ $parm ] );
+				exit;
 			}
 		}
 	}
@@ -26,7 +29,7 @@ if ( isset( $opts['h'] ) || isset( $opts['help'] ) ) {
 
 	-t              Show monster treasure, if any.
 
-	--hold=name     Place a character's attack on hold.
+	--hold=name     Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
 
 	--att=name      Remove character from hold list, because the character is attacking on this segment.
 	                Also used with --weapon=name

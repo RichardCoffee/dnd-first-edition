@@ -4,8 +4,8 @@ function dnd1e_get_combat_string( $char, $monster, $range ) {
 	$line  = sprintf( '%7s: ',   $char->name );
 	$line .= sprintf( '%-20s',   $char->weapon['current'] );
 	$line .= sprintf( '%2d    ', $char->get_to_hit_number() );
-	$line .= sprintf( '%5s +',   $char->get_weapon_damage( $monster->size ) );
-	$line .= sprintf( '%2u    ', $char->get_weapon_damage_bonus( $range ) );
+	$line .= sprintf( '%5s+',    $char->get_weapon_damage( $monster->size ) );
+	$line .= sprintf( '%u    ',  $char->get_weapon_damage_bonus( $range ) );
 	return $line;
 }
 
@@ -73,6 +73,7 @@ function dnd1e_show_possible_spells( $char ) {
 				$start = dnd1e_show_numbered_spell_list( $spells, $start );
 			}
 		} else {
+			dnd1e_show_numbered_spell_list( $spells );
 		}
 	}
 }
@@ -86,4 +87,12 @@ function dnd1e_show_numbered_spell_list( $spells, $start = 1 ) {
 		}
 	}
 	return $start;
+}
+
+function dnd1e_show_possible_weapons( $char ) {
+	echo "\n{$char->name} has these weapons available:\n\n";
+	foreach( $char->weapons as $weapon => $info ) {
+		echo "\t$weapon\n";
+	}
+	echo "\n";
 }

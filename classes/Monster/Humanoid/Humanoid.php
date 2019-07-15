@@ -35,12 +35,6 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		$this->hit_dice = 1;
 	}
 
-	protected function determine_damage() {
-		foreach( $this->attacks as $attack => $damage ) {
-			$this->damage[ $attack ] = $damage;
-		}
-	}
-
 	protected function load_fighter( $new = 'Fighter' ) {
 		$data = $this->get_fighter_data();
 		$create = 'DND_Character_' . $new;
