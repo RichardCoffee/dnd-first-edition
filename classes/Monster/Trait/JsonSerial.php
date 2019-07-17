@@ -7,6 +7,7 @@ trait DND_Monster_Trait_JsonSerial {
 		$table = array(
 			'monster'    => get_class( $this ),
 			'attacks'    => $this->attacks,
+			'current_hp' => $this->current_hp,
 			'hit_dice'   => $this->hit_dice,
 			'hit_points' => $this->hit_points,
 			'initiative' => $this->initiative,

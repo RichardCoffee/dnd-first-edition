@@ -1,13 +1,29 @@
 <?php
 
-function dnd1e_get_combat_string( $char, $monster, $range ) {
-	$line  = sprintf( '%7s: ',   $char->name );
-	$line .= sprintf( '%-20s',   $char->weapon['current'] );
-	$line .= sprintf( '%2d    ', $char->get_to_hit_number() );
-	$line .= sprintf( '%5s+',    $char->get_weapon_damage( $monster->size ) );
-	$line .= sprintf( '%u    ',  $char->get_weapon_damage_bonus( $range ) );
+function dnd1e_get_combat_string( DND_Character_Character $char, DND_Monster_Monster $monster, $range ) {
+	$name = $char->get_name();
+	$line = sprintf( '%12s',    sprintf( '%7s(%d)', $name, $char->current_hp ) );
+	$line.= sprintf( ': %-20s', dnd1e_get_combat_weapon( $char ) );
+	$line.= sprintf( '%2d  ',  $char->get_to_hit_number() );
+	$line.= sprintf( '%5s+',    $char->get_weapon_damage( $monster->size ) );
+	$line.= sprintf( '%-2u   ', $char->get_weapon_damage_bonus( $range ) );
 	return $line;
 }
+
+function dnd1e_get_combat_weapon( DND_Character_Character $char ) {
+	$weapon = $char->weapon['current'];
+	if ( $weapon === 'Spell' ) {
+		$cast = get_transient( 'dnd1e_cast' );
+		if ( $cast ) {
+			$name = $char->get_name();
+			if ( isset( $cast[ $name ] ) ) {
+				$weapon .= ':' . $cast[ $name ]['spell'];
+			}
+		}
+	}
+	return $weapon;
+}
+
 
 function dnd1e_show_movement_segments( $movement = 12 ) {
 	$test = array( 1,2,3,4,5,6,7,8,9,10 );
@@ -31,8 +47,7 @@ function dnd1e_show_movement_segments( $movement = 12 ) {
 	return $str;
 }
 
-function dnd1e_show_attack_sequence( $rounds, $start, $attacks = array( 1, 1 ), $seq = array() ) {
-	if ( empty( $seq ) ) $seq = dnd1e_get_attack_sequence( $rounds, $start, $attacks );
+function dnd1e_show_attack_sequence( $rounds, $seq ) {
 	$map  = '|';
 	$cur  = $cnt = 0;
 	$keys = 1;
@@ -59,7 +74,7 @@ function dnd1e_show_attack_sequence( $rounds, $start, $attacks = array( 1, 1 ), 
 	return $map;
 }
 
-function dnd1e_show_possible_spells( $char ) {
+function dnd1e_show_possible_spells( DND_Character_Character $char ) {
 	$list = $char->get_spell_list();
 	if ( empty( $list ) ) {
 		echo "\n{$char->name} has NO spells!\n\n";
@@ -89,10 +104,33 @@ function dnd1e_show_numbered_spell_list( $spells, $start = 1 ) {
 	return $start;
 }
 
+function dnd1e_get_numbered_spell( DND_Character_Character $char, $number ) {
+	$number = intval( $number );
+	if ( $number ) {
+		$list = $char->get_spell_list();
+		if ( $list ) {
+			$index = 1;
+			if ( ! isset( $list['multi'] ) ) {
+				$list = array( 'Single' => $list );
+			}
+			foreach( $list as $type => $listing ) {
+				foreach( $listing as $level => $spells ) {
+					foreach( $spells as $spell => $data ) {
+						if ( $index === $number ) {
+							return $char->get_spell_info( $spell, $type );
+						}
+						$index++;
+					}
+				}
+			}
+		}
+	}
+}
+
 function dnd1e_show_possible_weapons( $char ) {
 	echo "\n{$char->name} has these weapons available:\n\n";
 	foreach( $char->weapons as $weapon => $info ) {
-		echo "\t$weapon\n";
+		echo "\t$weapon ({$info['skill']})\n";
 	}
 	echo "\n";
 }

@@ -36,16 +36,16 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			if ( empty( $initial ) ) $initial = $key;
 			$this->$key->weap_dual = $this->weap_dual;
 			$this->$key->initialize_character();
-			$hit_points += $this->$key->hit_points['base'];
+			$hit_points += $this->$key->hit_points;
 			$level      += $this->$key->level;
 			$non_prof   += $this->$key->non_prof;
 			$weap_init  += $this->$key->weap_init['initial'];
 			$weap_step  += $this->$key->weap_init['step'];
 			$this->specials = array_merge( $this->specials, $this->$key->specials );
 		}
-		$this->hit_points['base']   = round( $hit_points / $number );
-		if ( in_array( $this->hit_points['current'], [ 0, -100 ] ) ) {
-			$this->hit_points['current'] = $this->hit_points['base'];
+		$this->hit_points = round( $hit_points / $number );
+		if ( in_array( $this->current_hp, [ 0, -100 ] ) ) {
+			$this->current_hp = $this->hit_points;
 		}
 		$this->level                = $level     / $number;
 		$this->non_prof             = $non_prof  / $number;
@@ -88,6 +88,29 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			$spells['multi'] = true;
 		}
 		return $spells;
+	}
+/*
+	public function get_spell_data( $spell, $type ) {
+		foreach( $this->classes as $key => $class ) {
+			if ( $type === $class ) {
+				$data = $this->$key->get_spell_info( $spell );
+				if ( $data ) return $data;
+			}
+		}
+		return "Unable to locate a $type spell book for {$this->name}.";
+	} //*/
+
+	public function get_spell_info( $spell, $type ) {
+		foreach( $this->classes as $key => $class ) {
+			if ( $type === $class ) {
+				$data = $this->$key->get_spell_info( $spell );
+				if ( $data ) {
+					$info = array( 'type' => $type );
+					return array_merge( $info, $data );
+				}
+			}
+		}
+		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
 
 	public function import_kregen_csv( $file ) {

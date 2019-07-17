@@ -12,6 +12,7 @@ trait DND_Character_Trait_JsonSerial {
 			'initiative' => $this->initiative,
 			'name'       => $this->name,
 			'race'       => $this->race,
+			'segment'    => $this->segment,
 			'shield'     => $this->shield,
 			'stats'      => $this->stats,
 			'weapon'     => $this->weapon,

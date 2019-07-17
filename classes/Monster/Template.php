@@ -8,6 +8,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $armor_class  = 10;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Bite' => [ 1, 8, 0 ] );
+#	protected $description  = '';
 #	protected $frequency    = 'Common';
 #	protected $hp_extra     = 0;
 #	protected $in_lair      = 0;

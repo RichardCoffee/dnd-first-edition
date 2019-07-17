@@ -120,7 +120,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Magic Mouth' => array( 'page' => 'PH72', 'type' => 'Alteration', 'cast' => '2 segments' ),
 				'Mirror Image' => array( 'page' => 'PH72', 'type' => 'Illusion/Phantasm', 'cast' => '2 segments',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
-					'special'  => sprintf( '01-%u: 1, %u-%u: 2, %u-%u: 3, %u-00: 4', 25 - $this->level, 26 - $this->level, 50 - $this->level, 51 - $this->level, 75 - $this->level, 76 - $this->level ),
+					'special'  => sprintf( '01-%u: 1, %u-%u: 2, %u-%u: 3, %u-00: 4', max( 1, 25 - $this->level ), max( 2, 26 - $this->level ), max( 2, 50 - $this->level ), max( 3, 51 - $this->level ), max( 3, 75 - $this->level ), max( 4, 76 - $this->level ) ),
 				),
 				'Preserve' => array( 'page' => 'UA54', 'type' => 'Abjuration', 'cast' => '2 rounds' ),
 				'Protection from Cantrips' => array( 'page' => 'UA54', 'type' => 'Abjuration', 'cast' => '2 segments',

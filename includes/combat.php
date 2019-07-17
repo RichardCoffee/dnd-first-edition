@@ -1,10 +1,29 @@
 <?php
 
 
-function dnd1e_load_combat_state( $data ) {} {
+function dnd1e_load_combat_state( $chars ) {
+	$combat = get_transient( 'dnd1e_combat' );
+	if ( $combat ) {
+		foreach( $chars as $name => $object ) {
+			if ( isset( $combat[ $name ] ) ) {
+				$object->segment = $combat[ $name ]['segment'];
+				$object->set_current_weapon( $combat[ $name ]['weapon'] );
+				$object->current_hp = $combat[ $name ]['hit_points'];
+			}
+		}
+	}
 }
 
-function dnd1e_save_combat_state( $data ) {
+function dnd1e_save_combat_state( $chars ) {
+	$combat = array();
+	foreach( $chars as $name => $object ) {
+		$combat[ $name ] = array(
+			'segment'    => $object->segment,
+			'weapon'     => $object->weapon['current'],
+			'hit_points' => $object->current_hp,
+		);
+	}
+	set_transient( 'dnd1e_combat', $combat );
 }
 
 function dnd1e_import_kregen_characters( $list ) {
@@ -82,14 +101,25 @@ function dnd1e_get_movement_sequence( $move = 12 ) {
 	return $segs;
 }
 
-function dnd1e_rank_attackers( &$chars ) {
+function dnd1e_rank_attackers( &$chars, $segment ) {
 	$hold = get_transient( 'dnd1e_hold' );
-	usort( $chars, function( $a, $b ) use ($hold) {
+	$cast = get_transient( 'dnd1e_cast' );
+	usort( $chars, function( $a, $b ) use ( $hold, $cast, $segment ) {
+		$aname = ( $a instanceOf DND_Character_Character ) ? $a->get_name() : $a->name;
+		$bname = ( $b instanceOf DND_Character_Character ) ? $b->get_name() : $b->name;
 		if ( ! empty( $hold ) ) {
-			if ( isset( $hold[ $a->name ] ) && isset( $hold[ $b->name ] ) ) {
-			} else if ( isset( $hold[ $a->name ] ) ) {
+			if ( isset( $hold[ $aname ] ) && isset( $hold[ $bname ] ) ) {
+			} else if ( isset( $hold[ $aname ] ) ) {
 				return -1;
-			} else if ( isset( $hold[ $b->name ] ) ) {
+			} else if ( isset( $hold[ $bname ] ) ) {
+				return 1;
+			}
+		}
+		if ( ! empty( $cast ) ) {
+			if ( isset( $cast[ $aname ] ) && isset( $cast[ $bname ] ) ) {
+			} else if ( isset( $cast[ $aname ] ) && ( $cast[ $aname ]['when'] !== $segment ) ) {
+				return -1;
+			} else if ( isset( $cast[ $bname ] ) && ( $cast[ $bname ]['when'] !== $segment )  ) {
 				return 1;
 			}
 		}

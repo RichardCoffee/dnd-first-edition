@@ -1,8 +1,12 @@
 <?php
 
+#define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 
+#require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
+#require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
+#include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
 
 function dnd1e_show_possible_monster_treasure( &$monster, $possible = '' ) {
 	$treasure = $monster->get_treasure( $possible );

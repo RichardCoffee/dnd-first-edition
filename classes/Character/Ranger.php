@@ -32,9 +32,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected function determine_hit_points() {
 		parent::determine_hit_points();
-		if ( $this->hit_points['base'] > 0 ) {
-			$this->hit_points['base'] += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
-		}
+		$this->hit_points += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 	}
 
 	protected function define_specials() {

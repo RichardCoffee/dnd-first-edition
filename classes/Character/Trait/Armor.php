@@ -3,28 +3,29 @@
 trait DND_Character_Trait_Armor {
 
 
-	private function get_armor_table() {
+	private function armor_get_armor_table() {
 		$table = array(
-			'banded'       => [ 'ac' => 4, 'bulk' => 'bulky',  'weight' => 35, 'move' => 9,  'cost' =>    90 ],
-			'bracers ac7'  => [ 'ac' => 7, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' =>  9000 ],
-			'bracers ac6'  => [ 'ac' => 6, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 12000 ],
-			'bracers ac5'  => [ 'ac' => 5, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 15000 ],
-			'bracers ac4'  => [ 'ac' => 4, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 18000 ],
-			'bracers ac3'  => [ 'ac' => 3, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 21000 ],
-			'bracers ac2'  => [ 'ac' => 2, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 24000 ],
-			'brigandine'   => [ 'ac' => 6, 'bulk' => 'fairly', 'weight' => 40, 'move' => 6,  'cost' =>    45 ],
-			'bronze plate' => [ 'ac' => 4, 'bulk' => 'bulky',  'weight' => 45, 'move' => 6,  'cost' =>   100 ],
-			'chain'        => [ 'ac' => 5, 'bulk' => 'fairly', 'weight' => 30, 'move' => 9,  'cost' =>    75 ],
-			'elfin chain'  => [ 'ac' => 5, 'bulk' => 'non-',   'weight' => 15, 'move' => 12, 'cost' => 'n/a' ],
-			'field plate'  => [ 'ac' => 2, 'bulk' => 'fairly', 'weight' => 55, 'move' => 6,  'cost' =>  2000 ],
-			'full plate'   => [ 'ac' => 1, 'bulk' => 'fairly', 'weight' => 65, 'move' => 6,  'cost' =>  4000 ],
-			'leather'      => [ 'ac' => 8, 'bulk' => 'non-',   'weight' => 15, 'move' => 12, 'cost' =>     5 ],
-			'padded'       => [ 'ac' => 8, 'bulk' => 'fairly', 'weight' => 10, 'move' => 9,  'cost' =>     4 ],
-			'plate mail'   => [ 'ac' => 3, 'bulk' => 'bulky',  'weight' => 45, 'move' => 6,  'cost' =>   400 ],
-			'ring'         => [ 'ac' => 7, 'bulk' => 'fairly', 'weight' => 25, 'move' => 9,  'cost' =>    30 ],
-			'scale'        => [ 'ac' => 6, 'bulk' => 'fairly', 'weight' => 40, 'move' => 6,  'cost' =>    45 ],
-			'splint'       => [ 'ac' => 4, 'bulk' => 'bulky',  'weight' => 40, 'move' => 6,  'cost' =>    80 ],
-			'studded'      => [ 'ac' => 7, 'bulk' => 'fairly', 'weight' => 20, 'move' => 9,  'cost' =>    15 ],
+			'banded'       => [ 'name' => 'Banded Mail',             'ac' =>  4, 'bulk' => 'bulky',  'weight' => 35, 'move' => 9,  'cost' =>    90 ],
+			'bracers ac7'  => [ 'name' => 'Bracers of Defense AC 7', 'ac' =>  7, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' =>  9000 ],
+			'bracers ac6'  => [ 'name' => 'Bracers of Defense AC 6', 'ac' =>  6, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 12000 ],
+			'bracers ac5'  => [ 'name' => 'Bracers of Defense AC 5', 'ac' =>  5, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 15000 ],
+			'bracers ac4'  => [ 'name' => 'Bracers of Defense AC 4', 'ac' =>  4, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 18000 ],
+			'bracers ac3'  => [ 'name' => 'Bracers of Defense AC 3', 'ac' =>  3, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 21000 ],
+			'bracers ac2'  => [ 'name' => 'Bracers of Defense AC 2', 'ac' =>  2, 'bulk' => 'non-',   'weight' => 5,  'move' => 12, 'cost' => 24000 ],
+			'brigandine'   => [ 'name' => 'Brigandine Mail',         'ac' =>  6, 'bulk' => 'fairly', 'weight' => 40, 'move' => 6,  'cost' =>    45 ],
+			'bronze plate' => [ 'name' => 'Bronze Plate Mail',       'ac' =>  4, 'bulk' => 'bulky',  'weight' => 45, 'move' => 6,  'cost' =>   100 ],
+			'chain'        => [ 'name' => 'Chainmail',               'ac' =>  5, 'bulk' => 'fairly', 'weight' => 30, 'move' => 9,  'cost' =>    75 ],
+			'elfin chain'  => [ 'name' => 'Elfin Chainmail',         'ac' =>  5, 'bulk' => 'non-',   'weight' => 15, 'move' => 12, 'cost' => 'n/a' ],
+			'field plate'  => [ 'name' => 'Field Plate Armor',       'ac' =>  2, 'bulk' => 'fairly', 'weight' => 55, 'move' => 6,  'cost' =>  2000 ],
+			'full plate'   => [ 'name' => 'Full Plate Armor',        'ac' =>  1, 'bulk' => 'fairly', 'weight' => 65, 'move' => 6,  'cost' =>  4000 ],
+			'leather'      => [ 'name' => 'Leather Armor',           'ac' =>  8, 'bulk' => 'non-',   'weight' => 15, 'move' => 12, 'cost' =>     5 ],
+			'none'         => [ 'name' => 'no armor',                'ac' => 10, 'bulk' => 'non-',   'weight' =>  0, 'move' => 12, 'cost' => 'n/a' ],
+			'padded'       => [ 'name' => 'Padded Armor',            'ac' =>  8, 'bulk' => 'fairly', 'weight' => 10, 'move' => 9,  'cost' =>     4 ],
+			'plate mail'   => [ 'name' => 'Plate Mail',              'ac' =>  3, 'bulk' => 'bulky',  'weight' => 45, 'move' => 6,  'cost' =>   400 ],
+			'ring'         => [ 'name' => 'Ring Mail',               'ac' =>  7, 'bulk' => 'fairly', 'weight' => 25, 'move' => 9,  'cost' =>    30 ],
+			'scale'        => [ 'name' => 'Scale Mail',              'ac' =>  6, 'bulk' => 'fairly', 'weight' => 40, 'move' => 6,  'cost' =>    45 ],
+			'splint'       => [ 'name' => 'Splint Mail',             'ac' =>  4, 'bulk' => 'bulky',  'weight' => 40, 'move' => 6,  'cost' =>    80 ],
+			'studded'      => [ 'name' => 'Studded Leather Armor',   'ac' =>  7, 'bulk' => 'fairly', 'weight' => 20, 'move' => 9,  'cost' =>    15 ],
 		);
 		return $table;
 	}
@@ -32,40 +33,47 @@ trait DND_Character_Trait_Armor {
 	protected function get_armor_info( $armor ) {
 		$armor = strtolower( $armor );
 		$info  = false;
-		$table = $this->get_armor_table();
+		$table = $this->armor_get_armor_table();
 		if ( isset( $table[ $armor ] ) ) {
 			$info = $table[ $armor ];
 		}
 		return $info;
 	}
 
-	private function get_armor_ac_value( $armor ) {
+	private function get_armor_trait_value( $armor, $trait ) {
+		static $table = null;
+		$value = "Armor $armor not found in table.";
 		$armor = strtolower( $armor );
-		$ac    = 10;
-		$table = $this->get_armor_table();
-		if ( isset( $table[ $armor ] ) ) {
-			$ac = $table[ $armor ]['ac'];
+		$trait = strtolower( $trait );
+		if ( ! $table ) $table = $this->armor_get_armor_table();
+		if ( isset( $table[ $armor ][ $trait ] ) ) {
+			$value = $table[ $armor ][ $trait ];
 		}
-		return $ac;
+		return $value;
+	}
+
+	public function get_armor_proper_name( $armor ) {
+		return $this->get_armor_trait_value( $armor, 'name' );
+	}
+
+	private function get_armor_ac_value( $armor ) {
+		return $this->get_armor_trait_value( $armor, 'ac' );
 	}
 
 	protected function get_armor_bulk( $armor ) {
-		$armor = strtolower( $armor );
-		$bulk  = 10;
-		$table = $this->get_armor_table();
-		if ( isset( $table[ $armor ] ) ) {
-			$bulk = $table[ $armor ]['bulk'];
-		}
-		return $bulk;
+		return $this->get_armor_trait_value( $armor, 'bulk' );
 	}
 
-	protected function get_armor_base_movement( $armor, $move = 12 ) {
-		$armor = strtolower( $armor );
-		$table = $this->get_armor_table();
-		if ( isset( $table[ $armor ] ) ) {
-			$move = $table[ $armor ]['move'];
-		}
-		return $move;
+	private function get_armor_weight( $armor ) {
+		return $this->get_armor_trait_value( $armor, 'weight' );
+	}
+
+	protected function get_armor_base_movement( $armor ) {
+		return $this->get_armor_trait_value( $armor, 'move' );
+	}
+
+	private function get_armor_base_cost( $armor ) {
+		return $this->get_armor_trait_value( $armor, 'cost' );
 	}
 
 	public function get_movement_segments( $move = 12 ) {

@@ -43,10 +43,12 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 /**  Character Functions  **/
 
 	public function set_current_weapon( $new = '' ) {
+#echo "weapon: $new\n";
 		$this->cleric->set_current_weapon( $new );
 		$this->thief->set_current_weapon( $new );
 		$this->armor  = $this->cleric->armor;
 		$this->weapon = $this->cleric->weapon;
+#print_r($this->weapon);
 	}
 
 	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {

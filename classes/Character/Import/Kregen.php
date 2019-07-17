@@ -29,7 +29,7 @@ trait DND_Character_Import_Kregen {
 #print_r ( $line );
 		switch( $line[0] ) {
 			case 'HP':
-				$this->hit_points['current'] = $line[1];
+				$this->current_hp = $line[1];
 				break;
 			case 'AC':
 				$index = array_search( 'XP', $line );

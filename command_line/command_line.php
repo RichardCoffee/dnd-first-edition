@@ -9,11 +9,13 @@ require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
 
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
-include_once( DND_FIRST_EDITION_DIR . '/command_line/setup.php' );
+include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
 
+dnd1e_load_combat_state( $chars );
+
 $range   = get_transient( 'dnd1e_range' );
-$rounds  = 2;
+$rounds  = 3;
 $segment = intval( get_transient( 'dnd1e_segment' ) );
 
 if ( ! $range ) {
@@ -28,23 +30,23 @@ include_once( DND_FIRST_EDITION_DIR . '/command_line/getopts.php' );
 if ( ! empty( $hold ) ) { // $hold created in getopts.php
 	foreach( $hold as $hname => $hseg ) {
 		$hold [ $hname ] = $segment;
-		$chars[ $hname ]->set_segment( $segment );
+		$chars[ $hname ]->segment = $segment;
 	}
 	set_transient( 'dnd1e_hold', $hold );
 }
-
+/*
 if ( ! empty( $attack ) ) { // $attack created in getopts.php
 	foreach( $attack as $aname => $aseg ) {
 		if ( isset( $hold[ $aname ] ) ) continue;
-		$chars[ $aname ]->set_segment( $aseg );
+		$chars[ $aname ]->segment = $aseg;
 	}
-}
-
+} //*/
+/*
 if ( ! empty( $weapons ) ) { // $weapons created in getopts.php
 	foreach( $weapons as $wname => $wweapon ) {
 		$chars[ $wname ]->set_current_weapon( $wweapon );
 	}
-}
+} //*/
 
 $minus = ( ( ( $segment - 1 ) + floor( ( $segment -1 ) / 10 ) ) * 2 );
 
@@ -53,5 +55,7 @@ include_once( DND_FIRST_EDITION_DIR . '/command_line/show_characters.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/show_attackers.php' );
 
 set_transient( 'dnd1e_monster', $monster );
+
+dnd1e_save_combat_state( $chars );
 
 #print_r($monster);

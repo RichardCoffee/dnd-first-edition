@@ -1,13 +1,13 @@
 <?php
 
 $heading = '  ';
-$heading.= 'Att     ';
-$heading.= 'Name      ';
-$heading.= 'Weapon         ';
-$heading.= 'To Hit     ';
+$heading.= 'Att      ';
+$heading.= 'Name        ';
+$heading.= 'Weapon          ';
+$heading.= 'To Hit    ';
 $heading.= 'Dam    ';
 $heading.= 'Atts          ';
-$heading.= 'Movement          ';
+$heading.= 'Movement           ';
 $heading.= 'Seg   Attack Sequence';
 echo "$heading\n";
 
@@ -28,8 +28,9 @@ foreach( $chars as $name => $body ) {
 	$line .= sprintf( '%u/%u  ', $body->weapon['attacks'][0], $body->weapon['attacks'][1] );
 	$line .= sprintf( '%2u" ',   $body->movement );
 	$line .= sprintf( '%s  ',    dnd1e_show_movement_segments( $body->movement ) );
-	$line .= sprintf( '%2d  ',   $body->initiative['segment'] );
-	$line .= substr( dnd1e_show_attack_sequence( $rounds, $body->initiative['segment'], $body->weapon['attacks'] ), $minus );
+	$line .= sprintf( '%2d  ',   ( $body->segment ));//% 10 ) );
+	$seq = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
+	$line .= substr( dnd1e_show_attack_sequence( $rounds, $seq ), $minus );
 	echo "$line\n";
 }
 

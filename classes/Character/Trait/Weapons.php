@@ -190,7 +190,7 @@ trait DND_Character_Trait_Weapons {
 				'type'   => array( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 ),
 				'speed'  => 6,
 				'damage' => array( '2d4', '2d8', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'two-hand'
 			),
 			'Sword,Broad' => array(
 				'type'   => array( -5, -4, -3, -2, -1, 0, 0, 0, 1, 1, 1),

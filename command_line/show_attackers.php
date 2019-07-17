@@ -3,8 +3,10 @@
 echo "\nSegment $segment\n";
 $rank = array();
 foreach( $chars as $name => $body ) {
-	$atts = dnd1e_get_attack_sequence( $rounds, $body->initiative['segment'], $body->weapon['attacks'] );
+	$atts = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
 	if ( in_array( $segment, $atts ) ) {
+		$rank[] = $body;
+	} else if ( $cast && ( isset( $cast[ $name ] ) ) ) {
 		$rank[] = $body;
 	}
 }
@@ -27,11 +29,24 @@ if ( property_exists( $monster, 'fighter' ) ) {
 		$rank[] = $rank_obj;
 	}
 }
-dnd1e_rank_attackers( $rank );
+dnd1e_rank_attackers( $rank, $segment );
 foreach( $rank as $body ) {
-	echo "{$body->name}";
-	if ( isset( $hold[ $body->name ] ) ) {
+	$name = ( $body instanceOf DND_Character_Character ) ? $body->get_name() : $body->name;
+	echo "$name";
+	if ( isset( $hold[ $name ] ) ) {
 		echo " (holding)";
+	}
+	if ( isset( $cast[ $name ] ) ) {
+		if ( $segment === $cast[ $name ]['when'] ) {
+			$spell = $body->get_spell_info( $cast[ $name ]['spell'] );
+			echo " casting {$cast[ $name ]['spell']} {$spell['page']}";
+			if ( isset( $spell['range']    ) ) echo "\n\t         Range: {$spell['range']}";
+			if ( isset( $spell['duration'] ) ) echo "\n\t      Duration: {$spell['duration']}";
+			if ( isset( $spell['aoe']      ) ) echo "\n\tArea of Effect: {$spell['aoe']}";
+			if ( isset( $spell['special']  ) ) echo "\n\t       Special: {$spell['special']}";
+		} else {
+			echo " (casting {$segment}/{$cast[ $name ]['when']})";
+		}
 	}
 	echo "\n";
 }

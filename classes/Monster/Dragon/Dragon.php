@@ -96,7 +96,6 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$this->specials = array(
 			'breath'   => '50% chance of using breath weapon on any given round (max 3/day).',
 			'senses'   => "Infravision 60', Detects hidden or invisible creatures within " . sprintf( '%u feet.', $this->hd_minimum * 10 ),
-			'defense'  => sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() ),
 			'treasure' => $this->get_treasure_amounts_description(),
 		);
 		if ( $this->hd_minimum > 4 ) {
@@ -104,8 +103,25 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		}
 	}
 
+	protected function determine_saving_throw() {
+		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
+	}
+
 	protected function get_saving_throw_level() {
 		return max( $this->hit_dice, round( $this->hit_points / 4 ) );
+	}
+
+	public function get_appearing_hit_points( $number = 1 ) {
+		$number = intval( $number );
+		$hit_points = array( $this->hit_points );
+		for( $i = 1; $i < $number; $i++ ) {
+			$dragon = 0;
+			for( $j = 1; $j <= $this->hit_dice; $j++ ) {
+				$dragon += mt_rand( $this->hd_minimum, $this->hd_value );
+			}
+			$hit_points[] = $dragon + $this->hp_extra;
+		}
+		return $hit_points;
 	}
 
 	protected function set_magic_user() {

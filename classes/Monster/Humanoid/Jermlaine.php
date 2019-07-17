@@ -38,7 +38,7 @@ class DND_Monster_Humanoid_Jermlaine extends DND_Monster_Humanoid_Humanoid {
 			'detection' => '75% undetectable under normal conditions.',
 			'surprise'  => 'Surprise opponents on a 1-5.',
 			'defense'   => 'Treated as 4HD for magic effects and saving throws.',
-			'senses'    => "30' infravision, keen hearing and smell.  Detect invisible: 50%",
+			'senses'    => "Infravision 30', keen hearing and smell.  Detect invisible: 50%",
 		);
 	}
 

@@ -18,7 +18,7 @@ foreach( $chars as $name => $body ) {
 	$line .= sprintf( '%u/%u   ', $body->weapon['attacks'][0], $body->weapon['attacks'][1] );
 	$line .= sprintf( '%2u   ',   $body->initiative['actual'] );
 	$line .= sprintf( '%2u  ',    $body->initiative['segment'] );
-	$line .= dnd1e_show_attack_sequence( $rnds, $body->initiative['segment'], $body->weapon['attacks'] );
+	$line .= dnd1e_show_attack_sequence( $rnds, dnd1e_get_attack_sequence( $rnds, $body->initiative['segment'], $body->weapon['attacks'] ) );
 	echo "$line\n";
 } //*/
 

@@ -10,6 +10,8 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	protected $armor_type   = 11;
 	protected $attacks      = array();
 	protected $att_types    = array();
+	public    $current_hp   = 0;
+	protected $description  = '';
 	protected $frequency    = 'Common';
 	protected $hit_dice     = 0;
 	protected $hd_minimum   = 1;
@@ -31,12 +33,13 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	protected $specials     = array();
 	protected $to_hit_row   = array();
 	protected $treasure     = 'Nil';
-	protected $xp_value     = array();
+	protected $xp_value     = array( 0, 0 );
 
 
 	use DND_Character_Trait_Weapons;
 	use DND_Monster_Trait_Treasure;
 	use DND_Monster_Trait_JsonSerial;
+	use DND_Trait_Logging;
 	use DND_Trait_Magic;
 	use DND_Trait_ParseArgs;
 
@@ -55,13 +58,18 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 		$this->determine_to_hit_row();
 		$this->determine_attack_types();
 		$this->determine_specials();
+		$this->determine_saving_throw();
 		$this->determine_xp_value();
+		if ( ! $this->current_hp ) $this->current_hp = $this->hit_points;
 /*		add_filter( 'humanoid_fighter_data', function( $data, $class ) {
 			echo get_class($this);
 			echo " $class\n";
 		}, 10, 2 ); //*/
 	}
 
+	/**
+	 *  Note:  if overloading in a child class, then the child class also needs get_appearing_hit_points()
+	 */
 	protected function determine_hit_points() {
 		if ( ( $this->hit_points === 0 ) && ( $this->hit_dice > 0 ) ) {
 			if ( $this->maximum_hp ) {
@@ -70,7 +78,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 				for( $i = 1; $i <= $this->hit_dice; $i++ ) {
 					$this->hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
 				}
-				$this->hit_points += $this->hp_extra; //*/
+				$this->hit_points += $this->hp_extra;
 			}
 		}
 	}
@@ -104,7 +112,25 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 		}
 	}
 
+	protected function get_modified_weapon_type( $type ) {
+		$check = substr( $type, 0, 4 );
+		if ( in_array( $check, [ 'Bite', 'Claw' ] ) ) {
+			$type = $check;
+		}
+		return $type;
+	}
+
 	protected function determine_specials() { }
+
+	protected function determine_saving_throw() {
+		if ( $this->hp_extra > 3 ) {
+			$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
+		}
+	}
+
+	protected function get_saving_throw_level() {
+		return $this->hit_dice + ( ( $this->hp_extra > 3 ) ? 1 : 0 );
+}
 
 	protected function determine_xp_value() {
 		$xp = 0;
@@ -127,12 +153,22 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 		return $num;
 	}
 
-	public function get_modified_weapon_type( $type ) {
-		$check = substr( $type, 0, 4 );
-		if ( in_array( $check, [ 'Bite', 'Claw' ] ) ) {
-			$type = $check;
+	public function get_appearing_hit_points( $number = 1 ) {
+		$number = intval( $number );
+		$hit_points = array( $this->hit_points );
+		for( $i = 1; $i < $number; $i++ ) {
+			$monster = 0;
+			if ( $this->maximum_hp ) {
+				$monster = ( $this->hit_dice * $this->hd_value ) + $this->hp_extra;
+			} else {
+				for( $j = 1; $j <= $this->hit_dice; $j++ ) {
+					$monster += mt_rand( $this->hd_minimum, $this->hd_value );
+				}
+				$monster += $this->hp_extra;
+			}
+			$hit_points[] = $monster;
 		}
-		return $type;
+		return $hit_points;
 	}
 
 	public function get_possible_damage( $type = 'Bite' ) {
@@ -160,41 +196,43 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	/**
 	 * @param array $chars An array of character objects.
 	 */
-	public function get_to_hit_characters( $chars = array(), $string = false ) {
+	public function get_to_hit_characters( $chars = array(), $range = 2000 ) {
 		$data = array();
-		if ( $string ) { // intended for command line use only
-			foreach( $chars as $name => $obj ) {
-				$hits = array();
-				foreach( $this->att_types as $key => $attack ) {
-					$to_hit = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack['type'] );
-					if ( ! in_array( $to_hit, $hits ) ) $hits[] = $to_hit;
-				}
-				$data[ $name ] = implode( '/', $hits );
-			}
-		} else { // intended for website use
+		if ( defined( 'ABSPATH' ) ) { // intended for website use only
 			foreach( $this->att_types as $key => $attack ) {
 				$data[ $key ] = array();
 				foreach( $chars as $name => $obj ) {
-					$data[ $key ][ $name ] = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack['type'] );
+					$number = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack, $range );
+					$data[ $key ][ $name ] = apply_filters( 'monster_to_hit_character', $number, $this, $obj );
 				}
+			}
+		} else { // intended for command line use
+			foreach( $chars as $name => $obj ) {
+				$hits = array();
+				foreach( $this->att_types as $key => $attack ) {
+					$to_hit = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack, $range );
+					$to_hit = apply_filters( 'monster_to_hit_character', $to_hit, $this, $obj );
+					if ( ! in_array( $to_hit, $hits ) ) $hits[] = $to_hit;
+				}
+				$data[ $name ] = implode( '/', $hits );
 			}
 		}
 		return $data;
 	}
 
-	protected function get_to_hit_number( $armor_class, $armor_type = -1, $type = array() ) {
+	protected function get_to_hit_number( $armor_class, $armor_type, $info, $range = 2000 ) {
 		$armor_type = min( max( $armor_class, $armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) { $this->determine_to_hit_row(); }
 		$index  = 10 - $armor_class;
 		$number = $this->to_hit_row[ $index ];
-		if ( isset( $type[ $armor_type ] ) ) {
-			$number += $type[ $armor_type ];
+		if ( isset( $info['type'][ $armor_type ] ) ) {
+			$number -= $info['type'][ $armor_type ];
 		}
-		return $number;
-	}
-
-	protected function get_saving_throw_level() {
-		return $this->hit_dice;
+		if ( in_array( $info['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
+		} else if ( in_array( $info['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
+			$number -= $this->get_missile_range_adjustment( $info['range'], $range );
+		}
+		return apply_filters( 'monster_to_hit_number', $number, $this );
 	}
 
 	protected function check_chance( $chance ) {
@@ -223,12 +261,11 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 
 	public function command_line_display() {
 		$line = "{$this->name}: ";
-		$line.= $this->get_number_appearing();
-		$line.= ", HD {$this->hit_dice}";
+		$line.= "HD {$this->hit_dice}";
 		if ( $this->hp_extra ) {
 			$line .= "+{$this->hp_extra}";
 		}
-		$line .= ", HP {$this->hit_points}, ";
+		$line .= ", HP {$this->current_hp}/{$this->hit_points}, ";
 		$line .= $this->reference . "\n";
 		foreach( $this->specials as $string ) {
 			$line.= $string . "\n";

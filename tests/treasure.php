@@ -14,7 +14,7 @@ foreach( $treasure as $item => $data ) {
 	printf( '%10s %s', $item, $data );
 	echo "\n";
 } //*/
-
+/*
 $table = dnd1e_get_magic_armor_shields_table();
 
 $total = 0;
@@ -23,7 +23,7 @@ foreach( $table as $data ) {
 	$total += $data['chance'];
 }
 echo "Total: $total\n"; //*/
-/*
+
 require_once( DND_FIRST_EDITION_DIR . '/command_line/treasure.php' );
 
 $cnt = count( $argv );

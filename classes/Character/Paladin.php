@@ -14,6 +14,12 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 	protected $xp_table   = array( 0, 2750, 5500, 12000, 24000, 45000, 95000, 175000, 350000 );
 
 
+
+	public function __construct( $args = array() ) {
+		parent::__construct( $args );
+		add_filter( 'monster_to_hit_character', [ $this, 'protection_from_evil' ], 10, 3 );
+	}
+
 	public function initialize_character() {
 		parent::initialize_character();
 		if ( empty( $this->cleric ) ) {
@@ -73,6 +79,18 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 
 	public function get_undead_caps( $level = 0 ) {
 		return $this->cleric->get_undead_caps( $this->level - 2 );
+	}
+
+	public function protection_from_evil( $number, DND_Monster_Monster $monster, DND_Character_Character $target, $type = 'to_hit' ) {
+		if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
+			if ( $this->name === $target->name ) {
+				// Effect is either a 'to_hit' or a 'saving_throw'
+				$number += ( $type === 'to_hit' ) ? 2 : -2;
+			} else if (0) {
+				// TODO: check for other characters within 10 feet of paladin
+			}
+		}
+		return $number;
 	}
 
 

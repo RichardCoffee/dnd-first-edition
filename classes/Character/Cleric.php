@@ -7,7 +7,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 	protected $non_prof   = -3;
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 9, 'dex' => 3, 'con' => 3, 'chr' => 3 );
 	protected $undead     = array();
-	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff' );
+	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff,Quarter' );
 	protected $weap_init  = array( 'initial' => 2, 'step' => 4 );
 	protected $weapons    = array( 'Spell' => 'PF' );
 	protected $xp_bonus   = array( 'wis' => 16 );
@@ -148,7 +148,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 				'Continual Light' => array( 'page' => 'PH47', 'cast' => '6 segments' ),
 				'Cure Blindness' => array( 'page' => 'PH47', 'cast' => '1 round' ),
 				'Cure Disease' => array( 'page' => 'PH47', 'cast' => '1 turn' ),
-				"Death's  Door" => array( 'page' => 'UA35', 'cast' => '5 segments',
+				"Death's Door" => array( 'page' => 'UA35', 'cast' => '5 segments',
 					'duration' => sprintf( '%u hours', $this->level ),
 				),
 				'Dispel Magic' => array( 'page' => 'PH48', 'cast' => '6 segments' ),
