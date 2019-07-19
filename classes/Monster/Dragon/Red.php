@@ -1,31 +1,31 @@
 <?php
 
-class DND_Monster_Dragon_Bronze extends DND_Monster_Dragon_Dragon {
+class DND_Monster_Dragon_Red extends DND_Monster_Dragon_Dragon {
 
 
-	protected $alignment    = 'Lawful Good';
+	protected $alignment    = 'Chaotic Evil';
 #	protected $appearing    = array( 1, 4, 0 );
-	protected $armor_class  = 0;
+	protected $armor_class  = -1;
 #	protected $armor_type   = 11;
-#	protected $attacks      = array( 'Claw Right' => [ 1, 6, 0 ], 'Claw Left' => [ 1, 6, 0 ], 'Bite' => [ 4, 8, 0 ], 'Breath' => [ 1, 1, 0 ] );
-	protected $co_speaking  = 60;
-	protected $co_magic_use = 60;
-	protected $co_sleeping  = 25;
+	protected $attacks      = array( 'Claw Right' => [ 1, 8, 0 ], 'Claw Left' => [ 1, 8, 0 ], 'Bite' => [ 3, 10, 0 ], 'Breath' => [ 1, 1, 0 ] );
+	protected $co_speaking  = 75;
+	protected $co_magic_use = 40;
+	protected $co_sleeping  = 20;
 #	protected $frequency    = 'Rare';
 #	protected $hd_minimum   = 0;
-#	protected $hd_range     = array( 8, 9, 10 );
-	protected $in_lair      = 45;
+	protected $hd_range     = array( 9, 10, 11 );
+	protected $in_lair      = 60;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
 #| protected $magic_user   = null;
 #	protected $magic_use    = false;
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
-	protected $name         = 'Bronze Dragon';
+	protected $name         = 'Red Dragon';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Dragon';
-	protected $reference    = 'Monster Manual page 29-30,32';
+	protected $reference    = 'Monster Manual page 29-30,33-34';
 #	protected $resistance   = 'Standard';
-	protected $size         = "Large, 42' long";
+	protected $size         = "Large, 48' long";
 #	protected $sleeping     = false;
 #	protected $speaking     = false;
 #	protected $spells       = array();
@@ -35,13 +35,12 @@ class DND_Monster_Dragon_Bronze extends DND_Monster_Dragon_Dragon {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		$this->description = 'Bronze dragons prefer to dwell in subterranean lairs near substantial bodies of water such as lakes or seas. Despite their love of wealth, bronze dragons are basically of beneficent nature. They often assume the form of some animal in order to observe the affairs of humans.';
+		$this->description = 'The red dragon is usually found dwelling in great hills or mountainous regions. As with most others of this species, they make their lairs in subterranean coves and similar places. They are very greedy and avaricious. Of all evil dragons, this sort is the worst, save for Tiamat herself.';
 	}
 
 	protected function determine_specials() {
 		parent::determine_specials();
-		$this->specials['breath1'] = "1st BW: Lightning Bolt - 5' wide, 100' long.";
-		$this->specials['breath2'] = "2nd BW: Repulsion Gas Cloud - 30' wide, 20' long, 30' high.";
+		$this->specials['breath1'] = "BW: Cone of Fire - 90' long by 30' base diameter.";
 	}
 
 	protected function set_magic_user() {

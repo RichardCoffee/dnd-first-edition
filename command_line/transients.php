@@ -1,6 +1,6 @@
 <?php
 
-define( 'DND_TRANSIENT_DIR', DND_FIRST_EDITION_DIR . '/command_line/transients/' );
+define( 'DND_TRANSIENT_DIR', DND_FIRST_EDITION_DIR . '/../transients/' );
 
 function delete_transient( $transient ) {
 	$file = DND_TRANSIENT_DIR . clean_transient_name( $transient );
@@ -10,13 +10,13 @@ function delete_transient( $transient ) {
 }
 
 function get_transient( $transient ) {
-	$return = '';
+	$value = false;
 	$file = DND_TRANSIENT_DIR . clean_transient_name( $transient );
 	if ( file_exists( $file ) ) {
-		$trans  = file_get_contents( $file );
-		$return = json_decode( $trans, true );
+		$trans = file_get_contents( $file );
+		$value = json_decode( $trans, true );
 	}
-	return $return;
+	return $value;
 }
 
 function set_transient( $transient, $value, $expiration = 0 ) {

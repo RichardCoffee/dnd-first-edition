@@ -7,12 +7,12 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		if ( ( ! empty( $this->classes ) ) && ( count( $this->classes ) > 1 ) ) {
+		if ( ( ! empty( $this->classes ) ) && ( count( $this->classes ) > 1 ) ) { // Why are we checking count?
 			foreach( $this->classes as $key => $class ) {
 				$name   = str_replace( ' ', '', $class );
 				$actual = 'DND_Character_' . $name;
 				if ( class_exists( $actual ) ) {
-					$data = ( isset( $args[ $name ] ) ) ? $args[ $name ] : array();
+					$data = ( isset( $args[ $key ] ) ) ? $args[ $key ] : array();
 					$this->$key = new $actual( $data );
 				}
 			}

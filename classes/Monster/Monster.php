@@ -1,6 +1,6 @@
 <?php
 
-abstract class DND_Monster_Monster implements JsonSerializable {
+abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 
 	protected $ac_rows      = array( 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 14, 15, 15, 15 );
@@ -38,7 +38,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 
 	use DND_Character_Trait_Weapons;
 	use DND_Monster_Trait_Treasure;
-	use DND_Monster_Trait_JsonSerial;
+	use DND_Monster_Trait_Serialize;
 	use DND_Trait_Logging;
 	use DND_Trait_Magic;
 	use DND_Trait_ParseArgs;

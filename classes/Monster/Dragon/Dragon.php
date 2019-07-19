@@ -14,6 +14,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $frequency    = 'Rare';
 	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 8, 9, 10 );
+#	protected $in_lair      = 0;
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
 #	protected $magic_user   = null;
@@ -99,7 +100,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			'treasure' => $this->get_treasure_amounts_description(),
 		);
 		if ( $this->hd_minimum > 4 ) {
-			$this->specials['fear_aura'] = 'Radiates fear aura. Run Forest, Run!';
+			$this->specials['fear_aura'] = 'Radiates fear aura. Run meatbag, Run!';
 		}
 	}
 

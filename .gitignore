@@ -17,5 +17,5 @@ css/*.map
 logs
 old
 
-command_line/transients/dnd1e_*
+**/transients
 

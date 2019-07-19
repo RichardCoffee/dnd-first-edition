@@ -1,11 +1,20 @@
 <?php
 
-trait DND_Monster_Trait_JsonSerial {
+trait DND_Monster_Trait_Serialize {
 
 
 	public function JsonSerialize() {
+		$table = $this->get_serialization_data();
+		$table['what_am_i'] = get_class( $this );
+		return $table;
+	}
+
+	public function serialize() {
+		return serialize( $this->get_serialization_data() );
+	}
+
+	private function get_serialization_data() {
 		$table = array(
-			'monster'    => get_class( $this ),
 			'attacks'    => $this->attacks,
 			'current_hp' => $this->current_hp,
 			'hit_dice'   => $this->hit_dice,
@@ -14,7 +23,7 @@ trait DND_Monster_Trait_JsonSerial {
 			'name'       => $this->name,
 			'xp_value'   => $this->xp_value,
 		);
-		if ( ! empty( $this->spells ) ) {
+		if ( $this->spells ) {
 			$list = array();
 			foreach( $this->spells as $level => $spells ) {
 				$list[ $level ] = array();
@@ -25,7 +34,7 @@ trait DND_Monster_Trait_JsonSerial {
 			$table['spell_list'] = $list;
 		}
 		/** Dragons **/
-		if ( property_exists( $this, 'co_speaking' ) ) {
+		if ( $this instanceOf DND_Monster_Dragon_Dragon ) {
 			$table['hd_minimum']   = $this->hd_minimum;
 			$table['co_speaking']  = $this->co_speaking;
 			$table['co_magic_use'] = $this->co_magic_use;
@@ -35,6 +44,11 @@ trait DND_Monster_Trait_JsonSerial {
 			$table['sleeping']     = $this->sleeping;
 		}
 		return $table;
+	}
+
+	public function unserialize( $data ) {
+		$args = unserialize( $data );
+		$this->__construct( $args );
 	}
 
 

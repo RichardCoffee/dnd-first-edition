@@ -61,10 +61,10 @@ function dnd1e_get_adjusted_movement_map( $map, $segment ) {
 		case 8:
 		case 9:
 			$cnt = ( $mod * 2 ) - 1;
-			$map = replicate( '-', $cnt ) . substr( $map, $cnt );
+			$map = str_repeat( '-', $cnt ) . substr( $map, $cnt );
 			break;
 		case 0:
-			$map = replicate( '--', 9 ) . substr( $map, 19 );
+			$map = str_repeat( '-', 19 ) . substr( $map, 19 );
 			break;
 		default:
 	}

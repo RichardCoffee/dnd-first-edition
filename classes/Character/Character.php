@@ -1,6 +1,10 @@
 <?php
 
-abstract class DND_Character_Character implements JsonSerializable {
+abstract class DND_Character_Character implements JsonSerializable, Serializable {
+
+	/**
+	 *   Note:  unassigned filters: 'character_all_saving_throws', 'character_BW_saving_throw'
+	 */
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
@@ -37,7 +41,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 	use DND_Character_Import_Kregen;
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
-	use DND_Character_Trait_JsonSerial;
+	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
 #	use DND_Trait_Logging;
 	use DND_Trait_Magic;
