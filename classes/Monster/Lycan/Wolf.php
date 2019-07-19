@@ -30,8 +30,8 @@ class DND_Monster_Lycan_Wolf extends DND_Monster_Lycan_Lycan {
 	}
 
 	protected function determine_specials() {
-		parent::determine_specials();
 		$this->specials['surprise'] = 'Surprise opponents on 1-3.';
+		parent::determine_specials();
 	}
 
 

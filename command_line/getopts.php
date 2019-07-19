@@ -4,24 +4,26 @@ $cast = get_transient('dnd1e_cast');
 if ( ! $cast ) $cast = array();
 $hold = get_transient('dnd1e_hold');
 if ( ! $hold ) $hold = array();
-#$attack = get_transient('dnd1e_attack');
-#if ( ! $attack ) $attack = array();
-#$weapons = get_transient('dnd1e_weapons');
-#if ( ! $weapons ) $weapons = array();
 
 $opts = getopt( 'hr:s:t::', [ 'att:', 'help', 'hit:', 'hold:', 'mi:' ] );
 
 if ( ! $opts ) {
 	if ( count( $argv ) > 1 ) {
+#print_r($argv);
 		$name = $argv[1];
 		if ( isset( $chars[ $name ] ) ) {
 			if ( count( $argv ) > 2 ) {
 				if ( intval( $argv[2] ) ) {
 					$spell = dnd1e_get_numbered_spell( $chars[ $name ], $argv[2] );
 					echo "\n{$argv[1]}\n";
-					print_r( $spell );
-					$cast[ $name ] = array( 'spell' => $spell['name'], 'when' => $segment + intval( $spell['data']['cast'] ) );
+#print_r( $spell );
+					$length = ( strpos( $spell['data']['cast'], 'segment' ) ) ? intval( $spell['data']['cast'] ) : intval( $spell['data']['cast'] ) * 10;
+					$cast[ $name ] = array( 'spell' => $spell['name'], 'when' => $segment + $length );
 					set_transient( 'dnd1e_cast', $cast );
+					if ( isset( $holding[ $name ] ) ) {
+						unset( $holding[ $name ] );
+						set_transient( 'dnd1e_hold', $hold );
+					}
 				} else {
 					$seq = dnd1e_get_attack_sequence( $rounds, $chars[ $name ]->segment, $chars[ $name ]->weapon['attacks'] );
 					if ( ( $segment === 1 ) || ( in_array( $segment, $seq ) ) ) {
@@ -79,11 +81,11 @@ if ( isset( $opts['r'] ) ) {
 
 if ( isset( $opts['s'] ) ) {
 	foreach( $chars as $name => $body ) {
-		if ( $segment === $body->segment ) {
-			$seq = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
-			foreach( $seq as $seg ) {
-				if ( ( $seg === $segment ) && ( ( ( $seg - $segment ) % 10 ) === 0 ) ) {
-					$body->segment = $seg;
+		$sequence = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
+		foreach( $sequence as $seggie ) {
+			if ( $seggie === $segment ) {
+				if ( ( ( $seggie - $body->segment ) % 10 ) === 0 ) {
+					$body->segment = $seggie;
 					break;
 				}
 			}
@@ -119,15 +121,16 @@ if ( isset( $opts['hit'] ) ) {
 	$sitrep = explode( ':', $opts['hit'] );
 	$name   = $sitrep[0];
 	$damage = intval( $sitrep[1] );
-	if ( isset( $chars[ $name ] ) && ( $damage !== 0 ) ) {
+	if ( isset( $chars[ $name ] ) ) {
 		$chars[ $name ]->current_hp -= $damage;
+		$chars[ $name ]->check_temporary_hit_points( $damage );
 	} else if ( ( $name === 'Monster' ) || ( $name === $monster->name ) ) {
 		$monster->current_hp -= $damage;
 	}
 }
 
 if ( isset( $opts['mi'] ) ) {
-	$monster->set_initiative( $opts['mi'] );
+	$monster->initiative = intval( $opts['mi'] );
 }
 
 #if ( ! empty( $opts ) ) print_r($opts);

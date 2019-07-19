@@ -2,9 +2,9 @@
 
 function dnd1e_get_combat_string( DND_Character_Character $char, DND_Monster_Monster $monster, $range ) {
 	$name = $char->get_name();
-	$line = sprintf( '%12s',    sprintf( '%7s(%d)', $name, $char->current_hp ) );
-	$line.= sprintf( ': %-20s', dnd1e_get_combat_weapon( $char ) );
-	$line.= sprintf( '%2d  ',  $char->get_to_hit_number() );
+	$line = sprintf( '%12s',    sprintf( '%7s(%d)', $name, $char->get_hit_points() ) );
+	$line.= sprintf( ': %-20s', substr( dnd1e_get_combat_weapon( $char ), 0, 19 ) );
+	$line.= sprintf( '%2d  ',   max( 2, $char->get_to_hit_number() ) );
 	$line.= sprintf( '%5s+',    $char->get_weapon_damage( $monster->size ) );
 	$line.= sprintf( '%-2u   ', $char->get_weapon_damage_bonus( $range ) );
 	return $line;
@@ -25,7 +25,7 @@ function dnd1e_get_combat_weapon( DND_Character_Character $char ) {
 }
 
 
-function dnd1e_show_movement_segments( $movement = 12 ) {
+function dnd1e_get_mapped_movement_sequence( $movement = 12 ) {
 	$test = array( 1,2,3,4,5,6,7,8,9,10 );
 	$str  = '|';
 	$move = dnd1e_get_movement_sequence( $movement );
@@ -47,7 +47,31 @@ function dnd1e_show_movement_segments( $movement = 12 ) {
 	return $str;
 }
 
-function dnd1e_show_attack_sequence( $rounds, $seq ) {
+function dnd1e_get_adjusted_movement_map( $map, $segment ) {
+	$mod = $segment % 10;
+	switch( $mod ) {
+		case 1:
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+			$cnt = ( $mod * 2 ) - 1;
+			$map = replicate( '-', $cnt ) . substr( $map, $cnt );
+			break;
+		case 0:
+			$map = replicate( '--', 9 ) . substr( $map, 19 );
+			break;
+		default:
+	}
+	return $map;
+}
+
+function dnd1e_get_mapped_attack_sequence( $rounds, $seq ) {
 	$map  = '|';
 	$cur  = $cnt = 0;
 	$keys = 1;

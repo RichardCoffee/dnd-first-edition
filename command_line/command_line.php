@@ -9,11 +9,6 @@ require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
 
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
-include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
-include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
-
-dnd1e_load_combat_state( $chars );
-
 $range   = get_transient( 'dnd1e_range' );
 $rounds  = 3;
 $segment = intval( get_transient( 'dnd1e_segment' ) );
@@ -24,6 +19,13 @@ if ( ! $range ) {
 if ( ! $segment ) {
 	$segment = 1;
 }
+
+dnd1e_apply_ongoing_spell_effects( $segment );
+
+include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
+include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
+
+dnd1e_load_combat_state( $chars );
 
 include_once( DND_FIRST_EDITION_DIR . '/command_line/getopts.php' );
 
@@ -49,6 +51,8 @@ if ( ! empty( $weapons ) ) { // $weapons created in getopts.php
 } //*/
 
 $minus = ( ( ( $segment - 1 ) + floor( ( $segment -1 ) / 10 ) ) * 2 );
+
+delete_transient( 'dnd1e_movement' );
 
 include_once( DND_FIRST_EDITION_DIR . '/command_line/show_monster.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/show_characters.php' );

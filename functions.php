@@ -20,3 +20,13 @@ if ( ! function_exists( 'array_key_first' ) ) {
 		return NULL;
 	}
 }
+
+if ( ! function_exists( 'replicate' ) ) {
+	function replicate( $pattern = '', $iterations = 1 ) {
+		$string = $pattern;
+		for( $i = 1; $i < $iterations; $i++ ) {
+			$string .= $pattern;
+		}
+		return $string;
+	}
+}

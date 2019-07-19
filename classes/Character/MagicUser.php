@@ -46,7 +46,12 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
 				'Armor' => array( 'page' => 'UA51', 'type' => 'Conjuration', 'cast' => '1 round',
-					'special' => sprintf( 'absorbs %u points of damage', $this->level + 8 ),
+					'special'   => sprintf( 'absorbs %u points of damage', $this->level + 8 ),
+					'condition' => 'this_character_only',
+					'filters'   => array(
+						array( 'character_armor_class_adjustments', 1, 10, 2 ),
+						array( 'character_temporary_hit_points',   12, 10, 2 ),
+					),
 				),
 				'Burning Hands' => array( 'page' => 'PH65', 'type' => 'Alteration', 'cast' => '1 segment',
 					'special' => sprintf( 'damage: %u hit points', $this->level ),

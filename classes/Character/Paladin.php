@@ -17,7 +17,8 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		add_filter( 'monster_to_hit_character', [ $this, 'protection_from_evil' ], 10, 3 );
+		add_filter( 'monster_to_hit_character',    [ $this, 'protection_from_evil_to_hit' ],       10, 3 );
+		add_filter( 'character_all_saving_throws', [ $this, 'protection_from_evil_saving_throw' ], 10, 3 );
 	}
 
 	public function initialize_character() {
@@ -62,7 +63,7 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 	}
 
 	public function special_integer_cure() {
-		return ceil( $this->level / 5 );
+		return intval( ceil( $this->level / 5 ) );
 	}
 
 	private function special_string_protect() {
@@ -81,16 +82,28 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 		return $this->cleric->get_undead_caps( $this->level - 2 );
 	}
 
-	public function protection_from_evil( $number, DND_Monster_Monster $monster, DND_Character_Character $target, $type = 'to_hit' ) {
-		if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
-			if ( $this->name === $target->name ) {
-				// Effect is either a 'to_hit' or a 'saving_throw'
-				$number += ( $type === 'to_hit' ) ? 2 : -2;
-			} else if (0) {
-				// TODO: check for other characters within 10 feet of paladin
-			}
+	public function protection_from_evil_to_hit( $number, DND_Monster_Monster $monster, DND_Character_Character $target ) {
+		if ( $this->protection_from_evil_judgement( $monster, $target ) ) {
+			$number += 2;
 		}
 		return $number;
+	}
+
+	public function protection_from_evil_saving_throw( $number, DND_Monster_Monster $monster, DND_Character_Character $target ) {
+		if ( $this->protection_from_evil_judgement( $monster, $target ) ) {
+			$number += 2;
+		}
+		return $number;
+	}
+
+	private function protection_from_evil_judgement( DND_Monster_Monster $monster, DND_Character_Character $target ) {
+		$judgement = false;
+		if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
+			if ( $this->name === $target->name ) {
+				$judgement = true;
+			}
+		}
+		return $judgement;
 	}
 
 

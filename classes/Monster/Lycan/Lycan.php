@@ -15,7 +15,6 @@ abstract class DND_Monster_Lycan_Lycan extends DND_Monster_Monster {
 
 	protected function determine_specials() {
 		parent::determine_specials();
-		$this->mtdw_add_weapon_defense_special();
 	}
 
 	public function command_line_display() {

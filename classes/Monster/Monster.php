@@ -19,7 +19,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	protected $hit_points   = 0;
 	protected $hp_extra     = 0;
 	protected $in_lair      = 0;
-	protected $initiative   = 1;
+	public    $initiative   = 1;
 	protected $intelligence = 'Animal';
 	protected $magic_user   = null;
 	protected $maximum_hp   = false;
@@ -120,7 +120,9 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 		return $type;
 	}
 
-	protected function determine_specials() { }
+	protected function determine_specials() {
+		do_action( 'monster_determine_specials' );
+	}
 
 	protected function determine_saving_throw() {
 		if ( $this->hp_extra > 3 ) {
@@ -141,7 +143,6 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 	}
 
 	public function set_initiative( $new ) {
-		$new = min( 10, max( 1, intval( $new ) ) );
 		$this->initiative = $new;
 	}
 
@@ -166,7 +167,7 @@ abstract class DND_Monster_Monster implements JsonSerializable {
 				}
 				$monster += $this->hp_extra;
 			}
-			$hit_points[] = $monster;
+			$hit_points[] = [ $monster, $monster ];
 		}
 		return $hit_points;
 	}

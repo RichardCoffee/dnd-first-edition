@@ -17,8 +17,8 @@ if ( isset( $data['monster'] ) ) {
 #	$monster = new DND_Monster_Humanoid_Jermlaine;
 #	$monster = new DND_Monster_Lycan_Wolf( $data );
 #	$monster = new DND_Monster_Rat( $data );
-	$monster = new DND_Monster_Sphinx_Manticore( $data );
-#	$monster = new DND_Monster_Troll( $data );
+#	$monster = new DND_Monster_Sphinx_Manticore( $data );
+	$monster = new DND_Monster_Troll( $data );
 #	$monster = new DND_Monster_Water_StingRay( $data );
 }
 

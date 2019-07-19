@@ -3,7 +3,7 @@
 abstract class DND_Character_Character implements JsonSerializable {
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
-	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10 );
+	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
 	protected $armr_allow = array();
 	public    $current_hp = -100;
 	protected $experience = 0;
@@ -15,6 +15,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 	protected $movement   = 12;
 	protected $name       = 'Character Name';
 	protected $non_prof   = -100;
+	protected $ongoing    = array();
 	public    $opponent   = array( 'type' => '', 'ac' => 10, 'at' => 10, 'range' => 5 );
 	protected $race       = 'Human';
 	public    $segment    = 0;
@@ -128,7 +129,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 			$this->hit_points += ( $this->level - $this->hit_die['limit'] ) * $this->hit_die['step'];
 		}
 		if ( $this->current_hp === -100 ) {
-			$this->current_hp = $this->hit_points;
+			$this->current_hp  = $this->hit_points;
 		}
 	}
 
@@ -137,9 +138,37 @@ abstract class DND_Character_Character implements JsonSerializable {
 		return min( $bonus, 2 );
 	}
 
+	public function get_hit_points() {
+		return $this->current_hp + apply_filters( 'character_temporary_hit_points', 0, $this );
+	}
+
+	public function check_temporary_hit_points( $damage ) {
+		$damage = intval( $damage );
+		if ( $damage > 0 ) {
+			$ongoing = get_transient( 'dnd1e_ongoing' );
+			foreach( $ongoing as $name => $effect ) {
+				if ( $effect['target'] === $this->get_name() ) {
+					if ( isset( $effect['data']['condition'] ) ) {
+						// TODO: check for aoe conditions
+						if ( $effect['data']['condition'] === 'this_character_only' ) {
+							foreach( $effect['data']['filters'] as $key => $filter ) {
+								if ( $filter[0] === 'character_temporary_hit_points' ) {
+									$ongoing[ $name ]['data']['filters'][ $key ][1] -= $damage;
+									$ongoing[ $name ]['data']['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['data']['filters'][ $key ][1] );
+									set_transient( 'dnd1e_ongoing', $ongoing );
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	protected function determine_armor_class() {
 		$no_shld = in_array( $this->weapon['attack'], $this->get_weapons_not_allowed_shield() );
 		$this->armor['type'] = $this->get_armor_ac_value( $this->armor['armor'] );
+		$this->armor['rear'] = $this->armor['type'];
 		if ( ! ( ( $this->shield['type'] === 'none' ) || $no_shld ) ) {
 			$this->armor['type']--;
 		}
@@ -147,7 +176,9 @@ abstract class DND_Character_Character implements JsonSerializable {
 		$this->movement = min( $this->max_move, $this->get_armor_base_movement( $this->armor['armor'], $this->movement ) + $this->armor['bonus'] );
 		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 		$this->armor['class'] -= $this->armor['bonus'];
+		$this->armor['rear']  -= $this->armor['bonus'];
 		$this->armor['class'] -= ( $no_shld ) ? 0 : $this->shield['bonus'];
+		$this->armor['class'] -= apply_filters( 'character_armor_class_adjustments', 0, $this );
 	}
 
 	protected function determine_initiative() {
@@ -258,7 +289,9 @@ abstract class DND_Character_Character implements JsonSerializable {
 		}
 		$to_hit -= $this->weapon['bonus'];
 		if ( $prin ) printf( 'W%2s ', $to_hit );
-		return apply_filters( 'character_to_hit_opponent', $to_hit, $this->weapon, $this->opponent );
+		$to_hit -= apply_filters( 'character_to_hit_opponent', 0, $to_hit, $this );
+		if ( $prin ) printf( 'F%2s ', $to_hit );
+		return $to_hit;
 	}
 
 	protected function get_to_hit_base( $target_ac = 10 ) {
@@ -295,7 +328,7 @@ abstract class DND_Character_Character implements JsonSerializable {
 		}
 		$bonus += $this->weapon['bonus'];
 #echo "weap: $bonus\n";
-		return $bonus;
+		return apply_filters( 'character_weapon_damage_bonus', $bonus, $this );
 	}
 
 	protected function get_weapon_proficiencies_total() {
@@ -328,6 +361,13 @@ abstract class DND_Character_Character implements JsonSerializable {
 
 	public function get_spell_list() {
 		return $this->spells;
+	}
+
+	public function this_character_only( $purpose, $spell, $char ) {
+		if ( $char->get_name() === $spell['target'] ) {
+			return true;
+		}
+		return false;
 	}
 
 	public function save_as_transient() {

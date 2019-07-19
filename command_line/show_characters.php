@@ -11,11 +11,14 @@ $heading.= 'Movement           ';
 $heading.= 'Seg   Attack Sequence';
 echo "$heading\n";
 
+$opponent = array(
+	'type'  => $monster->race,
+	'ac'    => $monster->armor_class,
+	'at'    => $monster->armor_type,
+	'range' => $range,
+);
 foreach( $chars as $name => $body ) {
-	$body->opponent['type']  = $monster->race;
-	$body->opponent['ac']    = $monster->armor_class;
-	$body->opponent['at']    = $monster->armor_type;
-	$body->opponent['range'] = $range;
+	$body->opponent = $opponent;
 	$line  = ' ';
 	$line .= sprintf( '%5s  ',   $atts[ $name ] );
 	$line .= dnd1e_get_combat_string( $body, $monster, $range );
@@ -27,10 +30,12 @@ foreach( $chars as $name => $body ) {
 	}
 	$line .= sprintf( '%u/%u  ', $body->weapon['attacks'][0], $body->weapon['attacks'][1] );
 	$line .= sprintf( '%2u" ',   $body->movement );
-	$line .= sprintf( '%s  ',    dnd1e_show_movement_segments( $body->movement ) );
+	$mapped = dnd1e_get_mapped_movement_sequence( $body->movement );
+	$line .= sprintf( '%s  ',    dnd1e_get_adjusted_movement_map( $mapped, $segment ) );
 	$line .= sprintf( '%2d  ',   ( $body->segment ));//% 10 ) );
 	$seq = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
-	$line .= substr( dnd1e_show_attack_sequence( $rounds, $seq ), $minus );
+	$line .= substr( dnd1e_get_mapped_attack_sequence( $rounds, $seq ), $minus );
 	echo "$line\n";
+	dnd1e_update_movement_transient( $segment, $body );
 }
 
