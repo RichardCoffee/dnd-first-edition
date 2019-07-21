@@ -14,6 +14,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $frequency    = 'Rare';
 	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 8, 9, 10 );
+#	protected $hd_value     = 8;
 #	protected $in_lair      = 0;
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
@@ -44,7 +45,8 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		} else if ( $this->co_magic_use ) {
 			if ( $this->check_chance( $this->co_magic_use ) ) {
 				$this->set_magic_user();
-				$this->determine_magic_spells();
+				$spells = $this->determine_magic_spells();
+				$this->add_magic_spells( $spells );
 				$this->add_magic_spells_to_specials();
 			} else {
 				$this->co_magic_use = 0;
@@ -81,16 +83,16 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		}
 	}
 
-	protected function determine_hit_points() {
-		if ( ( $this->hit_points === 0 ) && ( $this->hit_dice > 0 ) ) {
-			if ( $this->hd_minimum === 0 ) {
-				$this->hd_minimum = mt_rand( 1, $this->hd_value );
-			}
-			for( $i = 1; $i <= $this->hit_dice; $i++ ) {
-				$this->hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
-			}
+	protected function calculate_hit_points() {
+		$hit_points = 0;
+		if ( $this->hd_minimum === 0 ) {
+			$this->hd_minimum = mt_rand( 1, $this->hd_value );
 		}
-		$this->attacks['Breath'][0] = $this->hit_points;
+		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
+			$hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
+		}
+		$this->attacks['Breath'][0] = $hit_points;
+		return $hit_points;
 	}
 
 	protected function determine_specials() {
@@ -112,6 +114,18 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return max( $this->hit_dice, round( $this->hit_points / 4 ) );
 	}
 
+	public function dragon_fear_aura_saving_throw() {
+		$adj = 0;
+		if ( $this->hd_minimum === 5 ) {
+			$adj = 5;
+		} else if ( $this->hd_minimum === 6 ) {
+			$adj = 3;
+		} else if ( $this->hd_minimum === 7 ) {
+			$adj = 1;
+		}
+		return $adj;
+	}
+
 	public function get_appearing_hit_points( $number = 1 ) {
 		$number = intval( $number );
 		$hit_points = array( $this->hit_points );
@@ -125,20 +139,25 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $hit_points;
 	}
 
-	protected function set_magic_user() {
+	protected function set_magic_user( $level = 0 ) {
 		if ( $this->magic_use ) {
+			$level = ( $level ) ? $level : $this->hit_dice;
 			$create = 'DND_Character_' . $this->magic_use;
-			$this->magic_user = new $create( [ 'level' => $this->hit_dice ] );
+			$this->magic_user = new $create( [ 'level' => $level ] );
 			$this->attacks['Spell'] = [ 0, 0, 0 ];
 		}
 	}
 
-	protected function import_spell_list( $spells ) {
-		foreach( $spells as $level => $list ) {
-			$this->spells[ $level ] = array();
-			foreach( $list as $spell ) {
-				$this->spells[ $level ][ $spell ] = $this->magic_user->get_spell_data( $level, $spell );
-			}
+	protected function add_magic_spells( $list ) {
+		foreach( $list as $level ) {
+			$spell = $this->magic_user->generate_random_spell( $level );
+			$this->spells[] = $this->magic_user->get_magic_spell_info( $level, $spell );
+		}
+	}
+
+	protected function import_spell_list( $list ) {
+		foreach( $list as $spell ) {
+			$this->spells[] = $this->magic_user->get_magic_spell_info( $spell['level'], $spell['name'] );
 		}
 		$this->add_magic_spells_to_specials();
 	}
@@ -146,11 +165,9 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected function add_magic_spells_to_specials() {
 		if ( $this->spells ) {
 			$cnt = 1;
-			foreach( $this->spells as $level => $list ) {
-				foreach( $list as $spell => $info ) {
-					$index = 'spell' . $cnt++;
-					$this->specials[ $index ] = sprintf( '%6s: %s', $level, $spell );
-				}
+			foreach( $this->spells as $spell ) {
+				$index = 'spell' . $cnt++;
+				$this->specials[ $index ] = sprintf( '%6s: %s', $spell['level'], $spell['name'] );
 			}
 		}
 	}

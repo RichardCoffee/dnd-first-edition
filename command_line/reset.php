@@ -11,3 +11,12 @@ delete_transient('dnd1e_hold');
 delete_transient('dnd1e_monster');
 delete_transient('dnd1e_ongoing');
 delete_transient('dnd1e_segment');
+
+/*
+$trans = array( 'appearing','cast','combat','hold','ongoing','segment' );
+
+foreach( $trans as $item ) {
+	$file = 'dnd1e_' . $item;
+	$data = get_transient( $file );
+	set_transient( $file, $data );
+} //*/

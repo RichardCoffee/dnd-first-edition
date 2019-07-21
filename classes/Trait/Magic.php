@@ -1,8 +1,6 @@
 <?php
 
 /*
- *  WARNING:  use of this trait will prevent PHP from returning an error if a called method does not exist.
- *
  *  https://secure.php.net/manual/en/language.oop5.magic.php
  *  http://php.net/manual/en/language.oop5.overloading.php
  *  http://www.garfieldtech.com/blog/magical-php-call
@@ -18,7 +16,7 @@ trait DND_Trait_Magic {
 
 	# do not use is_callable() within this function
 	public function __call( $string, $args ) {
-		$return = 'non-callable function';
+		$return = "non-callable function '$string'";
 		if ( isset( static::$magic__call[ $string ] ) ) {
 			$return = call_user_func_array( static::$magic__call[ $string ], $args );
 		} else if ( in_array( $string, static::$magic__call, true ) ) {
@@ -27,7 +25,7 @@ trait DND_Trait_Magic {
 			$return = $this->$string;
 		}
 		return $return;
-	} //*/
+	}
 
 	public function __get( $name ) {
 		if ( property_exists( $this, $name ) ) {

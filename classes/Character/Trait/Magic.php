@@ -3,7 +3,7 @@
 trait DND_Character_Trait_Magic {
 
 
-	protected $spell_table = array();
+	private $spell_table = array();
 
 
 	public function get_spell_data( $level, $spell, $type = '' ) {
@@ -15,16 +15,37 @@ trait DND_Character_Trait_Magic {
 		return $data;
 	}
 
-	public function get_spell_info( $spell, $type = '' ) {
+	// DEPRECATED - phase this out
+	public function get_spell_info( $level, $spell, $type = '' ) {
+		return array( 'name' => $spell, 'level' => $level, 'data' => $this->get_spell_data( $level, $spell ) );
+	}
+
+	public function get_magic_spell_info( $level, $spell, $type = '' ) {
+		$data = $this->get_spell_data( $level, $spell );
+		return array_merge( [ 'name' => $spell, 'level' => $level ], $data );
+	}
+
+	// DEPRECATED - phase this out
+	public function locate_spell( $spell, $type = '' ) {
 		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
 		foreach( $this->spell_table as $level => $spells ) {
 			foreach( $spells as $name => $data ) {
 				if ( $name === $spell ) {
-					return array( 'name' => $name, 'level' => $level, 'data' => $data );
+					return $this->get_spell_info( $level, $spell );
 				}
 			}
 		}
-		return false;
+	}
+
+	public function locate_magic_spell( $spell, $type = '' ) {
+		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
+		foreach( $this->spell_table as $level => $spells ) {
+			foreach( $spells as $name => $data ) {
+				if ( $name === $spell ) {
+					return $this->get_magic_spell_info( $level, $spell );
+				}
+			}
+		}
 	}
 
 	protected function add_spell( $data ) {
@@ -37,10 +58,7 @@ trait DND_Character_Trait_Magic {
 		$this->spell_table = $this->get_spell_table();
 		foreach( $this->spells as $level => $spells ) {
 			foreach( $spells as $name => $data ) {
-				$info = $this->get_spell_info( $name );
-				if ( $info ) {
-					$this->spells[ $level ][ $name ] = $info['data'];
-				}
+				$this->spells[ $level ][ $name ] = $this->get_spell_data( $level, $name );
 			}
 		}
 	}

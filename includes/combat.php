@@ -34,17 +34,36 @@ function dnd1e_save_character_combat_state( $chars ) {
 	return $combat;
 }
 
-function dnd1e_import_kregen_characters( $list ) {
-	$base    = 'DND_Character_';
-	$objects = array();
-	foreach( $list as $name => $data ) {
-		$load = $base . $data['class'];
-		$file = CSV_PATH . $name . '.csv';
-		$info = ( isset( $data['data'] ) ) ? $data['data'] : array();
-		$objects[ $name ] = new $load( $info );
-		$objects[ $name ]->import_kregen_csv( $file );
+function dnd1e_save_character_transients( $characters = array() ) {
+	foreach( $characters as $name => $obj ) {
+		$trans = 'dnd1e_' . get_class( $obj ) . '_' . $name;
+		set_transient( $trans, $obj );
 	}
-	return $objects;
+}
+
+function dnd1e_save_character_as_transient( $transient, DND_Character_Character $char ) {
+	set_transient( $transient, $char );
+}
+
+function dnd1e_change_weapons( $char, $weapon, $segment ) {
+	$rounds   = intval( $segment / 10 ) + 3;
+	$sequence = dnd1e_get_attack_sequence( $rounds, $char->segment, $char->weapon['attacks'] );
+	if ( $segment === 1 ) {
+		$char->set_current_weapon( $weapon );
+	} else if ( in_array( $segment, $sequence ) ) {
+		if ( $char->set_current_weapon( $weapon ) ) {
+			$char->segment = $segment;
+		}
+	} else {
+		foreach( $sequence as $seggie ) {
+			if ( $seggie > $segment ) {
+				if ( $char->set_current_weapon( $weapon ) ) {
+					$char->segment = $seggie;
+				}
+				break;
+			}
+		}
+	}
 }
 
 function dnd1e_get_attack_sequence( $rounds, $cur, $attacks = array( 1, 1 ) ) {
@@ -206,6 +225,35 @@ function dnd1e_rank_attackers( &$chars, $segment ) {
 	} );
 }
 
+function dnd1e_start_casting_spell( $caster, $spell, $segment, $target ) {
+	$cast = get_transient( 'dnd1e_cast' );
+	$hold = get_transient( 'dnd1e_hold' );
+	$len  = ( strpos( $spell['data']['cast'], 'segment' ) ) ? intval( $spell['data']['cast'] ) : intval( $spell['data']['cast'] ) * 10;
+	$cast[ $caster ] = array(
+		'spell'  => $spell['name'],
+		'when'   => $segment + $len,
+		'target' => $target,
+	);
+	set_transient( 'dnd1e_cast', $cast );
+	if ( isset( $hold[ $caster ] ) ) {
+		unset( $hold[ $caster ] );
+		set_transient( 'dnd1e_hold', $hold );
+	}
+}
+
+function dnd1e_finish_casting_spell( $spell, $segment ) {
+	if ( isset( $spell['filters'] ) ) {
+		$spell['segment'] = $segment;
+		if ( isset( $spell['duration'] ) ) {
+			$length = ( strpos( $spell['duration'], 'segment' ) ) ? intval( $spell['duration'] ) : intval( $spell['duration'] ) * 10;
+			$length = ( strpos( $spell['duration'], 'turn'    ) ) ? intval( $spell['duration'] ) * 100  : $length;
+			$length = ( strpos( $spell['duration'], 'hour'    ) ) ? intval( $spell['duration'] ) * 1000 : $length;
+			$spell['ends'] = $segment + $length;
+		}
+		dnd1e_add_ongoing_spell_effects( $spell );
+	}
+}
+
 function dnd1e_add_ongoing_spell_effects( $spell ) {
 	$ongoing = get_transient( 'dnd1e_ongoing' );
 	if ( ! $ongoing ) $ongoing = array();
@@ -239,4 +287,32 @@ function dnd1e_apply_ongoing_spell_effects( $segment ) {
 		}
 	}
 	set_transient( 'dnd1e_ongoing', $ongoing );
+}
+
+function dnd1e_damage_to_monster( $monster, $target, $damage ) {
+	if ( $target === 1 ) {
+		$monster->current_hp -= $damage;
+	} else {
+		$appearing = get_transient( 'dnd1e_appearing' );
+		$index = $target - 2;
+		$appearing['hit_points'][ $index ][0] -= $damage;
+		$appearing['hit_points'][ $index ][0] = min( $appearing['hit_points'][ $index ][0], $appearing['hit_points'][ $index ][1] );
+		set_transient( 'dnd1e_appearing', $appearing );
+	}
+
+
+
+}
+
+function dnd1e_import_kregen_characters( $list ) {
+	$base    = 'DND_Character_';
+	$objects = array();
+	foreach( $list as $name => $data ) {
+		$load = $base . $data['class'];
+		$file = CSV_PATH . $name . '.csv';
+		$info = ( isset( $data['data'] ) ) ? $data['data'] : array();
+		$objects[ $name ] = new $load( $info );
+		$objects[ $name ]->import_kregen_csv( $file );
+	}
+	return $objects;
 }

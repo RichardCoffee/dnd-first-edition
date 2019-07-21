@@ -18,8 +18,12 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 
 	/**  Cleric Abilities **/
 
-	public function get_spell_info( $spell, $type = 'Cleric' ) {
-		return parent::get_spell_info( $spell, $type );
+	public function locate_spell( $spell, $type = 'Cleric' ) {
+		return parent::locate_spell( $spell, $type );
+	}
+
+	public function locate_magic_spell( $spell, $type = 'Cleric' ) {
+		return parent::locate_magic_spell( $spell, $type );
 	}
 
 	public function special_string_undead( $type, $level = 0 ) {

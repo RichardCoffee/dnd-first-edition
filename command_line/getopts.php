@@ -9,35 +9,18 @@ $opts = getopt( 'hr:s:t::', [ 'att:', 'help', 'hit:', 'hold:', 'mi:' ] );
 
 if ( ! $opts ) {
 	if ( count( $argv ) > 1 ) {
-#print_r($argv);
 		$name = $argv[1];
 		if ( isset( $chars[ $name ] ) ) {
 			if ( count( $argv ) > 2 ) {
 				if ( intval( $argv[2] ) ) {
 					$spell = dnd1e_get_numbered_spell( $chars[ $name ], $argv[2] );
-					echo "\n{$argv[1]}\n";
-#print_r( $spell );
-					$length = ( strpos( $spell['data']['cast'], 'segment' ) ) ? intval( $spell['data']['cast'] ) : intval( $spell['data']['cast'] ) * 10;
-					$cast[ $name ] = array( 'spell' => $spell['name'], 'when' => $segment + $length );
-					set_transient( 'dnd1e_cast', $cast );
-					if ( isset( $holding[ $name ] ) ) {
-						unset( $holding[ $name ] );
-						set_transient( 'dnd1e_hold', $hold );
+					if ( $spell ) {
+						echo "\n{$argv[1]}\n";
+						$target = ( isset( $argv[3] ) ) ? $argv[3] : $name;
+						dnd1e_casting_spell( $name, $spell, $segment, $target );
 					}
 				} else {
-					$seq = dnd1e_get_attack_sequence( $rounds, $chars[ $name ]->segment, $chars[ $name ]->weapon['attacks'] );
-					if ( ( $segment === 1 ) || ( in_array( $segment, $seq ) ) ) {
-						$chars[ $name ]->set_current_weapon( $argv[2] );
-					} else {
-						foreach( $seq as $seg ) {
-							if ( $seg > $segment ) {
-								if ( $chars[ $name ]->set_current_weapon( $argv[2] ) ) {
-									$chars[ $name ]->segment = $seg;
-								}
-								break;
-							}
-						}
-					}
+					dnd1e_change_weapons( $chars[ $name ], $argv[2], $segment );
 				}
 			} else if ( $chars[ $name ]->weapon['current'] === 'Spell' ) {
 				dnd1e_show_possible_spells( $chars[ $name ] );
@@ -119,13 +102,22 @@ if ( isset( $opts['att'] ) ) {
 
 if ( isset( $opts['hit'] ) ) {
 	$sitrep = explode( ':', $opts['hit'] );
+print_r($sitrep);
 	$name   = $sitrep[0];
-	$damage = intval( $sitrep[1] );
 	if ( isset( $chars[ $name ] ) ) {
+		$damage = intval( $sitrep[1] );
 		$chars[ $name ]->current_hp -= $damage;
 		$chars[ $name ]->check_temporary_hit_points( $damage );
 	} else if ( ( $name === 'Monster' ) || ( $name === $monster->name ) ) {
-		$monster->current_hp -= $damage;
+		$cnt  = count( $sitrep );
+		if ( $cnt === 2 ) {
+			$damage = intval( $sitrep[1] );
+			$monster->current_hp -= $damage;
+		} else if ( $cnt === 3 ) {
+			$target = intval( $sitrep[1] );
+			$damage = intval( $sitrep[2] );
+			dnd1e_damage_to_monster( $monster, $target, $damage );
+		}
 	}
 }
 

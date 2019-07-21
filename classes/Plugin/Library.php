@@ -25,7 +25,7 @@ class DND_Plugin_Library {
 		}
 	}
 
-	#duplicated in TCC_Theme_Library
+	#duplicated in DND_Theme_Library
 	public function kses() {
 		return array(
 			'a'    => [ 'class' => [ ], 'href' => [ ], 'itemprop' => [ ], 'rel' => [ ], 'target' => [ ], 'title' => [ ], 'aria-label' => [ ] ],

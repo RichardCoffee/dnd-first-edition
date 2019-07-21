@@ -7,10 +7,12 @@ define( 'WP_DEBUG', true );
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
+#$test = new DND_Monster_Dragon_Bronze;
+#$test = new DND_Monster_Dragon_Faerie;
 #$test = new DND_Monster_Giant_Spider;
 #$test = new DND_Monster_Hydra;
 #$test = new DND_Monster_Humanoid_Jermlaine;
-$test = new DND_Monster_Lycan_Wolf;
+#$test = new DND_Monster_Lycan_Wolf;
 #$test = new DND_Character_Barbarian;
 #$test->import_kregen_csv( CSV_PATH . 'Krieg.csv' );
 #$test = new DND_Character_Cleric;
@@ -37,9 +39,9 @@ $test = new DND_Monster_Lycan_Wolf;
 #$test->import_kregen_csv( CSV_PATH . 'Mary.csv' );
 #$test = new DND_Character_Paladin( array( 'shield' => [ 'type' => 'Large' ] ) );
 #$test->import_kregen_csv( CSV_PATH . 'Ivan.csv' );
-#$test = new DND_Character_Ranger;
+$test = new DND_Character_Ranger;
 #$test->import_kregen_csv( CSV_PATH . 'Strider.csv' );
-#$test->import_kregen_csv( CSV_PATH . 'David.csv' );
+$test->import_kregen_csv( CSV_PATH . 'David.csv' );
 #$test = new DND_Character_RangerThief;
 #$test->import_kregen_csv( CSV_PATH . 'Pointer.csv' );
 
@@ -59,4 +61,10 @@ print_r( $test );
 #print_r( $test->weapon );
 #print_r( $test->weapons );
 #print_r( $test->magic->spells );
-$test->save_as_transient();
+
+$name = 'dnd1e_'.get_class($test).'_'.str_replace(' ','_',$test->name);
+set_transient( $name, $test );
+
+$obj = get_transient( $name );
+
+print_r($obj);

@@ -30,8 +30,9 @@ foreach( $chars as $name => $body ) {
 	}
 	$line .= sprintf( '%u/%u  ', $body->weapon['attacks'][0], $body->weapon['attacks'][1] );
 	$line .= sprintf( '%2u" ',   $body->movement );
-	$mapped = dnd1e_get_mapped_movement_sequence( $body->movement );
-	$line .= sprintf( '%s  ',    dnd1e_get_adjusted_movement_map( $mapped, $segment ) );
+#	$mapped = dnd1e_get_mapped_movement_sequence( $body->movement );
+#	$line .= sprintf( '%s  ',    dnd1e_get_adjusted_movement_map( $mapped, $segment ) );
+	$line .= sprintf( '%s  ',    dnd1e_get_mapped_movement_sequence( $body->movement ) );
 	$line .= sprintf( '%2d  ',   ( $body->segment ));//% 10 ) );
 	$seq = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
 	$line .= substr( dnd1e_get_mapped_attack_sequence( $rounds, $seq ), $minus );

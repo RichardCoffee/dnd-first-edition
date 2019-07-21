@@ -23,16 +23,6 @@ trait DND_Monster_Trait_Serialize {
 			'name'       => $this->name,
 			'xp_value'   => $this->xp_value,
 		);
-		if ( $this->spells ) {
-			$list = array();
-			foreach( $this->spells as $level => $spells ) {
-				$list[ $level ] = array();
-				foreach( $spells as $name => $info ) {
-					$list[ $level ][] = $name;
-				}
-			}
-			$table['spell_list'] = $list;
-		}
 		/** Dragons **/
 		if ( $this instanceOf DND_Monster_Dragon_Dragon ) {
 			$table['hd_minimum']   = $this->hd_minimum;
@@ -42,6 +32,26 @@ trait DND_Monster_Trait_Serialize {
 			$table['speaking']     = $this->speaking;
 			$table['magic_use']    = $this->magic_use;
 			$table['sleeping']     = $this->sleeping;
+			if ( $this instanceOf DND_Monster_Dragon_Cloud ) {
+				$table['mate'] = serialize( $this->mate );
+			} else {
+				if ( $this->spells ) {
+					$table['spell_list'] = array();
+					foreach( $this->spells as $spell ) {
+						$table['spell_list'][] = array( 'name' => $spell['name'], 'level' => $spell['level'] );
+					}
+				}
+			}
+		} else {
+			if ( $this->spells ) {
+				$table['spell_list'] = array();
+				foreach( $this->spells as $level => $spells ) {
+					$table['spell_list'][ $level ] = array();
+					foreach( $spells as $name => $info ) {
+						$table['spell_list'][ $level ][] = $name;
+					}
+				}
+			}
 		}
 		return $table;
 	}
@@ -49,6 +59,10 @@ trait DND_Monster_Trait_Serialize {
 	public function unserialize( $data ) {
 		$args = unserialize( $data );
 		$this->__construct( $args );
+		if ( $this instanceOf DND_Monster_Dragon_Cloud ) {
+			$this->mate = unserialize( $args['mate'] );
+			$this->specials['mate'] = sprintf( 'Mated Pair: HD %u, HP %u', $this->mate->hit_dice, $this->mate->hit_points );
+		}
 	}
 
 

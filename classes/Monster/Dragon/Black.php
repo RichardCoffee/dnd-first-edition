@@ -43,15 +43,19 @@ class DND_Monster_Dragon_Black extends DND_Monster_Dragon_Dragon {
 		$this->specials['breath1'] = "BW: Spitting Acid - 5' wide, 60' long.";
 	}
 
-	protected function set_magic_user() {
+	protected function set_magic_user( $level = 0 ) {
 		$this->magic_use = 'MagicUser';
 		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {
+		return true;
+	}
+
+	protected function add_magic_spells ( $list ) {
 		for( $i = 1; $i <= $this->hd_minimum; $i++ ) {
 			$spell = $this->magic_user->generate_random_spell( 'First' );
-			$this->spells[ 'First' ][ $spell ] = $this->magic_user->get_spell_data( 'First', $spell );
+			$this->spells[ 'First' ][ $spell ] = $this->magic_user->get_magic_spell_info( 'First', $spell );
 		}
 	}
 

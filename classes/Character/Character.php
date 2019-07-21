@@ -56,7 +56,9 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 		$this->parse_args_merge( $args );
 		$this->initialize_character();
-		$this->initialize_spell_list( $args );
+		if ( isset( $args['spell_list'] ) ) {
+			$this->initialize_spell_list( $args['spell_list'] ); // This has to be done after the level has been set.
+		}
 	}
 
 	public function initialize_character() {
@@ -146,29 +148,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->current_hp + apply_filters( 'character_temporary_hit_points', 0, $this );
 	}
 
-	public function check_temporary_hit_points( $damage ) {
-		$damage = intval( $damage );
-		if ( $damage > 0 ) {
-			$ongoing = get_transient( 'dnd1e_ongoing' );
-			foreach( $ongoing as $name => $effect ) {
-				if ( $effect['target'] === $this->get_name() ) {
-					if ( isset( $effect['data']['condition'] ) ) {
-						// TODO: check for aoe conditions
-						if ( $effect['data']['condition'] === 'this_character_only' ) {
-							foreach( $effect['data']['filters'] as $key => $filter ) {
-								if ( $filter[0] === 'character_temporary_hit_points' ) {
-									$ongoing[ $name ]['data']['filters'][ $key ][1] -= $damage;
-									$ongoing[ $name ]['data']['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['data']['filters'][ $key ][1] );
-									set_transient( 'dnd1e_ongoing', $ongoing );
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	protected function determine_armor_class() {
 		$no_shld = in_array( $this->weapon['attack'], $this->get_weapons_not_allowed_shield() );
 		$this->armor['type'] = $this->get_armor_ac_value( $this->armor['armor'] );
@@ -193,11 +172,11 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 	}
 
-	protected function initialize_spell_list( $args ) {
-		if ( isset( $args['spell_list'] ) ) {
-			foreach( $args['spell_list'] as $level => $list ) {
+	protected function initialize_spell_list( $book ) {
+		if ( $book ) {
+			foreach( $book as $level => $list ) {
 				foreach( $list as $spell ) {
-					$this->add_spell( $this->get_spell_info( $spell ) );
+					$this->spells[ $level ][ $spell ] = $this->get_spell_data( $level, $spell );
 				}
 			}
 		}
@@ -367,6 +346,8 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->spells;
 	}
 
+	/** Filters Effects **/
+
 	public function this_character_only( $purpose, $spell, $char ) {
 		if ( $char->get_name() === $spell['target'] ) {
 			return true;
@@ -374,9 +355,31 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return false;
 	}
 
-	public function save_as_transient() {
-		$trans = 'dnd1e_character_' . $this->name;
-		set_transient( $trans, $this );
+	public function check_temporary_hit_points( $damage ) {
+		$damage = intval( $damage );
+		if ( $damage > 0 ) {
+			$ongoing = get_transient( 'dnd1e_ongoing' );
+			foreach( $ongoing as $name => $effect ) {
+				if ( $effect['target'] === $this->get_name() ) {
+					if ( isset( $effect['data']['condition'] ) ) {
+						// TODO: check for aoe conditions
+						if ( $effect['data']['condition'] === 'this_character_only' ) {
+							foreach( $effect['data']['filters'] as $key => $filter ) {
+								if ( $filter[0] === 'character_temporary_hit_points' ) {
+									$ongoing[ $name ]['data']['filters'][ $key ][1] -= $damage;
+									$ongoing[ $name ]['data']['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['data']['filters'][ $key ][1] );
+									if ( $ongoing[ $name ]['data']['filters'][ $key ][1] === 0 ) {
+										unset( $ongoing[ $name ] );
+										break;
+									}
+									set_transient( 'dnd1e_ongoing', $ongoing );
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 

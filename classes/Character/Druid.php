@@ -50,6 +50,9 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				),
 			),
 			'Third' => array(
+				'Call Lightning' => array( 'page' => 'PH 58', 'type' => 'Alteration', 'cast' => '1 turn',
+					'duration' => sprintf( '%u turns', $this->level ),
+				),
 				'Magic Fang II' => array( 'page' => 'spec',
 					'range'    => sprintf( '%u feet', ( $this->level *2.5 ) + 25 ),
 					'duration' => sprintf( '%3.1f turns', $this->level * 0.5 ),
@@ -72,6 +75,16 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 5 ) ) ),
 					'desc'     => "This spell is a more potent version of the third level druid spell Magic Fang II.  The creature's attack now counts as a magical weapon for monsters that can only be hit by magical weapons, although the bonus is +1/+1 per every five levels of the druid.",
 				),
+			),
+			'Fifth' => array(
+				'Control Winds' => array( 'page' => 'PH 61', 'type' => 'Alteration', 'cast' => '7 segments',
+					'duration' => sprintf( '%u turns', $this->level ),
+					'aoe'      => sprintf( '%u foot radius hemisphere', $this->level * 40 ),
+					'special'  => sprintf( 'Increase/Decrease winds by %u miles/hour', $this->level * 3 ),
+				),
+			),
+			'Sixth' => array(
+				'Weather Summoning' => array( 'page' => 'PH 64, PH 53', 'type' => 'Conjuration/Summoning', 'cast' => '1 turn' ),
 			),
 		);
 	}

@@ -1,12 +1,9 @@
 <?php
 
-$data = get_transient( 'dnd1e_monster' );
-if ( empty( $data ) ) $data = array();
+$monster = get_transient( 'dnd1e_monster' );
 
-if ( isset( $data['monster'] ) ) {
-	$create = $data['monster'];
-	$monster = new $create( $data );
-	echo "Using transient data\n";
+if ( $monster instanceOf DND_Monster_Monster ) {
+	echo "Using transient monster data\n";
 } else {
 #	$monster = new DND_Monster_Dragon_Bronze( $data );
 #	$monster = new DND_Monster_Dragon_Bronze( [ 'hit_dice' => 9, 'hd_minimum' => 8, 'spell_list' => [ 'First' => [ 'Dancing Lights', 'Ventriloquism' ], 'Second' => [ 'Pyrotechnics', 'Continual Light' ], 'Third' => [ 'Hold Person', 'Protection From Normal Missiles' ], 'Fourth' => [ 'Wizard Eye', 'Dispel Illusion' ] ] ] );
@@ -24,7 +21,10 @@ if ( isset( $data['monster'] ) ) {
 
 $appearing = get_transient( 'dnd1e_appearing' );
 if ( empty( $appearing ) ) {
-	$appearing = array( 'number' => $monster->get_number_appearing() );
-	$appearing[ 'hit_points' ] = $monster->get_appearing_hit_points( $appearing['number'] );
+	$number = $monster->get_number_appearing();
+	$appearing = array(
+		'number'     => $number,
+		'hit_points' => $monster->get_appearing_hit_points( $number ),
+	);
 	set_transient( 'dnd1e_appearing', $appearing );
 }

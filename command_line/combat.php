@@ -24,7 +24,6 @@ function dnd1e_get_combat_weapon( DND_Character_Character $char ) {
 	return $weapon;
 }
 
-
 function dnd1e_get_mapped_movement_sequence( $movement = 12 ) {
 	$test = array( 1,2,3,4,5,6,7,8,9,10 );
 	$str  = '|';
@@ -141,7 +140,7 @@ function dnd1e_get_numbered_spell( DND_Character_Character $char, $number ) {
 				foreach( $listing as $level => $spells ) {
 					foreach( $spells as $spell => $data ) {
 						if ( $index === $number ) {
-							return $char->get_spell_info( $spell, $type );
+							return $char->locate_spell( $spell, $type );
 						}
 						$index++;
 					}
@@ -149,6 +148,7 @@ function dnd1e_get_numbered_spell( DND_Character_Character $char, $number ) {
 			}
 		}
 	}
+	return false;
 }
 
 function dnd1e_show_possible_weapons( $char ) {
@@ -157,4 +157,13 @@ function dnd1e_show_possible_weapons( $char ) {
 		echo "\t$weapon ({$info['skill']})\n";
 	}
 	echo "\n";
+}
+
+function dnd1e_show_casting_spell( $spell, $segment ) {
+	echo " casting {$spell['name']} {$spell['page']}";
+	if ( isset( $spell['reversible'] ) ) echo " Reversible";
+	if ( isset( $spell['range']      ) ) echo "\n\t\t         Range: {$spell['range']}";
+	if ( isset( $spell['duration']   ) ) echo "\n\t\t      Duration: {$spell['duration']}";
+	if ( isset( $spell['aoe']        ) ) echo "\n\t\tArea of Effect: {$spell['aoe']}";
+	if ( isset( $spell['special']    ) ) echo "\n\t\t       Special: {$spell['special']}";
 }

@@ -4,6 +4,7 @@ echo "\n";
 
 echo $monster->command_line_display() . "\n";
 
+$appearing = get_transient( 'dnd1e_appearing' );
 echo "{$appearing['number']} Appearing HP: {$monster->current_hp}/{$monster->hit_points}";
 for( $i = 1; $i < $appearing['number']; $i++ ) {
 	echo ", {$appearing['hit_points'][ $i ][0]}";

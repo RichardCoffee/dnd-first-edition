@@ -29,22 +29,34 @@ trait DND_Character_Trait_Serialize {
 			'weapons'    => $this->weapons,
 		);
 		if ( $this instanceOf DND_Character_Multi ) {
-#			foreach( $this->classes as $key => $class ) {
-#				$name = str_replace( ' ', '', $class );
-#				$table[ $name ] = json_encode( $this->$key );
-#			}
-		}
-		if ( $this->spells ) {
-			$list = array();
-			foreach( $this->spells as $level => $spells ) {
-				$list[ $level ] = array();
-				foreach( $spells as $name => $info ) {
-					$list[ $level ][] = $name;
-				}
+			foreach( $this->classes as $key => $class ) {
+				$table[ $key ] = serialize( $this->$key );
 			}
-			$table['spell_list'] = $list;
+		} else if ( $this instanceOf DND_Character_Ranger ) {
+			$table['druid'] = serialize( $this->druid );
+			$table['magic'] = serialize( $this->magic );
+			if ( $this->spells ) {
+				$list = array();
+				foreach( $this->spells as $class => $spells ) {
+					$list[ $class ] = $this->convert_spell_list( $spells );
+				}
+				$table['spell_list'] = $list;
+			}
+		} else if ( $this->spells ) {
+			$table['spell_list'] = $this->convert_spell_list( $this->spells );
 		}
 		return $table;
+	}
+
+	private function convert_spell_list( $book ) {
+		$list = array();
+		foreach( $book as $level => $spells ) {
+			$list[ $level ] = array();
+			foreach( $spells as $name => $info ) {
+				$list[ $level ][] = $name;
+			}
+		}
+		return $list;
 	}
 
 	public function unserialize( $data ) {

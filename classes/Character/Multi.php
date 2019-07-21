@@ -6,18 +6,20 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 
 
 	public function __construct( $args = array() ) {
-		parent::__construct( $args );
-		if ( ( ! empty( $this->classes ) ) && ( count( $this->classes ) > 1 ) ) { // Why are we checking count?
-			foreach( $this->classes as $key => $class ) {
+		foreach( $this->classes as $key => $class ) {
+			if ( isset( $args[ $key ] ) ) {
+				$this->$key = unserialize( $args[ $key ] );
+				unset( $args[ $key ] );
+			} else {
 				$name   = str_replace( ' ', '', $class );
 				$actual = 'DND_Character_' . $name;
 				if ( class_exists( $actual ) ) {
-					$data = ( isset( $args[ $key ] ) ) ? $args[ $key ] : array();
-					$this->$key = new $actual( $data );
+					$this->$key = new $actual( $args );
 				}
 			}
-			$this->initialize_multi();
 		}
+		parent::__construct( $args );
+		$this->initialize_multi();
 	}
 
 	public function initialize_character() { }
@@ -51,7 +53,6 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$this->non_prof             = $non_prof  / $number;
 		$this->weap_init['initial'] = $weap_init / $number;
 		$this->weap_init['step']    = $weap_step / $number;
-#		$this->set_level(0);
 		$props = array( 'armor', 'movement', 'name', 'race', 'stats', 'weapon', 'weapons' );
 		foreach( $props as $prop ) {
 			$this->$prop = $this->$initial->$prop;
@@ -76,6 +77,14 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$this->initialize_multi();
 	}
 
+	protected function initialize_spell_list( $spells ) {
+		if ( $spells ) {
+			foreach( $spells as $key => $list ) {
+				$this->$key->initialize_spell_list( $list );
+			}
+		}
+	}
+
 	public function get_spell_list() {
 		$spells = array();
 		foreach( $this->classes as $key => $class ) {
@@ -93,20 +102,33 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 	public function get_spell_data( $spell, $type ) {
 		foreach( $this->classes as $key => $class ) {
 			if ( $type === $class ) {
-				$data = $this->$key->get_spell_info( $spell );
+				$data = $this->$key->locate_spell( $spell );
 				if ( $data ) return $data;
 			}
 		}
 		return "Unable to locate a $type spell book for {$this->name}.";
 	} //*/
 
-	public function get_spell_info( $spell, $type ) {
+	public function locate_spell( $spell, $type ) {
 		foreach( $this->classes as $key => $class ) {
 			if ( $type === $class ) {
-				$data = $this->$key->get_spell_info( $spell );
+				$data = $this->$key->locate_spell( $spell );
 				if ( $data ) {
 					$info = array( 'type' => $type );
 					return array_merge( $info, $data );
+				}
+			}
+		}
+		return "Spell '$spell' not found in {$this->name}'s spell book.";
+	}
+
+	public function locate_magic_spell( $spell, $type ) {
+		foreach( $this->classes as $key => $class ) {
+			if ( $type === $class ) {
+				$info = $this->$key->locate_magic_spell( $spell );
+				if ( isset( $info['page'] ) ) {
+					$info['caster'] = $type;
+					return $info;
 				}
 			}
 		}

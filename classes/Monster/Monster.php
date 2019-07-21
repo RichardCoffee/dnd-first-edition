@@ -10,6 +10,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $armor_type   = 11;
 	protected $attacks      = array();
 	protected $att_types    = array();
+	public    $companions   = array();
+	protected $comparison   = array(); // used for weapon comparisons, such as the sword +1, +4 vs reptiles
 	public    $current_hp   = 0;
 	protected $description  = '';
 	protected $frequency    = 'Common';
@@ -72,15 +74,21 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	 */
 	protected function determine_hit_points() {
 		if ( ( $this->hit_points === 0 ) && ( $this->hit_dice > 0 ) ) {
-			if ( $this->maximum_hp ) {
-				$this->hit_points = ( $this->hit_dice * $this->hd_value ) + $this->hp_extra;
-			} else {
-				for( $i = 1; $i <= $this->hit_dice; $i++ ) {
-					$this->hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
-				}
-				$this->hit_points += $this->hp_extra;
-			}
+			$this->hit_points = $this->calculate_hit_points();
 		}
+	}
+
+	protected function calculate_hit_points() {
+		$hit_points = 0;
+		if ( $this->maximum_hp ) {
+			$hit_points = ( $this->hit_dice * $this->hd_value ) + $this->hp_extra;
+		} else {
+			for( $i = 1; $i <= $this->hit_dice; $i++ ) {
+				$hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
+			}
+			$hit_points += $this->hp_extra;
+		}
+		return $hit_points;
 	}
 
 	protected function determine_armor_type() {
@@ -158,15 +166,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$number = intval( $number );
 		$hit_points = array( $this->hit_points );
 		for( $i = 1; $i < $number; $i++ ) {
-			$monster = 0;
-			if ( $this->maximum_hp ) {
-				$monster = ( $this->hit_dice * $this->hd_value ) + $this->hp_extra;
-			} else {
-				for( $j = 1; $j <= $this->hit_dice; $j++ ) {
-					$monster += mt_rand( $this->hd_minimum, $this->hd_value );
-				}
-				$monster += $this->hp_extra;
-			}
+			$monster = $this->calculate_hit_points();
 			$hit_points[] = [ $monster, $monster ];
 		}
 		return $hit_points;

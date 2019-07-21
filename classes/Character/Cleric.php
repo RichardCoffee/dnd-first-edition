@@ -77,6 +77,18 @@ class DND_Character_Cleric extends DND_Character_Character {
 		);
 	}
 
+	private function reroll_healing_string() {
+		$string = ', re-roll 1s';
+		if ( $this->level > 15 ) {
+			$string = ', re-roll 1s, 2s and 3s';
+		} else if ( $this->level > 10 ) {
+			$string = ', re-roll 1s, 2s and 3s';
+		} else if ( $this->level > 5 ) {
+			$string = ', re-roll 1s and 2s';
+		}
+		return $string;
+	}
+
 	protected function get_spell_table() {
 		return array(
 			'First' => array(
@@ -89,7 +101,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 				'Command' => array( 'page' => 'PH44', 'cast' => '1 segment', 'duration' => '1 round' ),
 				'Create Water' => array( 'page' => 'PH44', 'cast' => '1 round' ),
 				'Cure Light Wounds' => array( 'page' => 'PH44', 'cast' => '5 segments',
-					'special' => sprintf( 'Heals 1d8+%u', $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] ) ),
+					'special' => sprintf( 'Heals 1d8+%u', $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] ) ) . $this->reroll_healing_string(),
 				),
 				'Detect Evil' => array( 'page' => 'PH45', 'cast' => '1 round',
 					'duration' => sprintf( '%3.1f turns', ( $this->level * 0.5 ) + 1 ),
@@ -232,6 +244,12 @@ class DND_Character_Cleric extends DND_Character_Character {
 				'Forbiddance' => array( 'page' => 'UA40', 'cast' => '6 rounds' ),
 				'Part Water' => array( 'page' => 'PH52', 'cast' => '1 turn',
 					'duration' => sprintf( '%u turns', $this->level ),
+				),
+			),
+			'Seventh' => array(
+				'Control Weather' => array( 'page' => 'PH 53', 'type' => 'Alteration', 'cast' => '1 turn',
+					'duration' => '4d12 hours',
+					'aoe'      => '4d4 square miles',
 				),
 			),
 		);

@@ -43,8 +43,12 @@ class DND_Character_RangerThief extends DND_Character_FighterMulti {
 		return $this->fight->special_string_surprise();
 	}
 
-	public function get_spell_info( $spell ) {
-		return $this->fight->get_spell_info( $spell );
+	public function locate_spell( $spell ) {
+		return $this->fight->locate_spell( $spell );
+	}
+
+	public function locate_magic_spell( $spell ) {
+		return $this->fight->locate_magic_spell( $spell );
 	}
 
 	/**  Thief Abilities  **/

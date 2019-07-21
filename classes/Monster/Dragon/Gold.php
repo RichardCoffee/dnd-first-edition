@@ -46,7 +46,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 		$this->specials['spells']  = '50% have spell books.';
 	}
 
-	protected function set_magic_user() {
+	protected function set_magic_user( $level = 0 ) {
 		$this->magic_use = 'MagicUser';
 		parent::set_magic_user();
 	}
@@ -60,10 +60,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 		if ( $this->hd_minimum > 5 ) { $needed[] = 'Fifth';  $needed[] = 'Fifth';  }
 		if ( $this->hd_minimum > 6 )   $needed[] = 'Sixth';
 		if ( $this->hd_minimum > 7 )   $needed[] = 'Sixth';
-		foreach( $needed as $level ) {
-			$spell = $this->magic_user->generate_random_spell( $level );
-			$this->spells[ $level ][ $spell ] = $this->magic_user->get_spell_data( $level, $spell );
-		}
+		return $needed;
 	}
 
 

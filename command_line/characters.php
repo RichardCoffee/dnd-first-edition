@@ -18,4 +18,10 @@ $players = array(
 ); //*/
 
 $chars = dnd1e_import_kregen_characters( $players );
+/*
+$read_character_transients = array(
+	'David' => 'Ranger',
+);
 
+foreach( $read_
+*/
