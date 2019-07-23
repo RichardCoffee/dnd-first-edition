@@ -61,6 +61,13 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		}
 	}
 
+	public function __get( $name ) {
+		if ( $name === 'movement' ) {
+			return $this->movement['air'];
+		}
+		return parent::__get( $name );
+	}
+
 	protected function determine_hit_dice() {
 		if ( $this->hit_dice === 0 ) {
 			$roll = mt_rand( 1, 8 );

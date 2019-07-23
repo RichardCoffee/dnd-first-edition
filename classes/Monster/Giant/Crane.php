@@ -11,7 +11,7 @@ class DND_Monster_Giant_Crane extends DND_Monster_Monster {
 	protected $frequency    = 'Rare';
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
-	protected $movement     = array( 'foot' => 9, 'fly' => 18 );
+	protected $movement     = array( 'foot' => 9, 'air' => 18 );
 	protected $name         = 'Giant Crane';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Crane';

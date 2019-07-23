@@ -14,7 +14,7 @@ class DND_Monster_Sphinx_Manticore extends DND_Monster_Monster {
 	protected $in_lair      = 20;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Low';
-	protected $movement     = array( 'foot' => 12, 'fly' => 18 );
+	protected $movement     = array( 'foot' => 12, 'air' => 18 );
 	protected $name         = 'Manticore';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Sphinx';

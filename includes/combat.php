@@ -121,6 +121,18 @@ function dnd1e_get_movement_sequence( $move = 12 ) {
 		case '15':
 			$segs = array( 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10 );
 			break;
+		case '18':
+			$segs = array( 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10 );
+			break;
+		case '24':
+			$segs = array( 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 10, 10 );
+			break;
+		case '30':
+			$segs = array( 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10 );
+			break;
+		case '39':
+			$segs = array( 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10 );
+			break;
 		case '12':
 		default:
 			$segs = array( 1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 10 );
@@ -137,7 +149,7 @@ function dnd1e_update_movement_transient( $segment, $obj ) {
 	$cnt = count( array_keys( $sequence, $seg ) );
 	if ( $cnt ) {
 		$name = $obj->get_name();
-		$moves[] = $name . ( ( $cnt == 2 ) ? ' x 2' : '' );
+		$moves[] = $name . ( ( $cnt > 1 ) ? sprintf( ' x %u', $cnt ) : '' );
 		set_transient( 'dnd1e_movement', $moves );
 	}
 }

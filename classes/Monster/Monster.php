@@ -42,7 +42,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	use DND_Monster_Trait_Treasure;
 	use DND_Monster_Trait_Serialize;
 	use DND_Trait_Logging;
-	use DND_Trait_Magic;
+	use DND_Trait_Magic { __get as magic__get; }
 	use DND_Trait_ParseArgs;
 
 
@@ -67,6 +67,24 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 			echo get_class($this);
 			echo " $class\n";
 		}, 10, 2 ); //*/
+	}
+
+	public function __get( $name ) {
+		if ( substr( $name, 0, 4 ) === 'move' ) {
+			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && isset( $this->movement['foot'] ) ) {
+				return $this->movement['foot'];
+			} else if ( ( $name === 'move_air' ) && isset( $this->movement['air'] ) ) {
+				return $this->movement['air'];
+			} else if ( ( $name === 'move_sea' ) && isset( $this->movement['sea'] ) ) {
+				return $this->movement['sea'];
+			} else if ( ( $name === 'move_web' ) && isset( $this->movement['web'] ) ) {
+				return $this->movement['web'];
+			}
+		}
+		if ( property_exists( $this, $name ) ) {
+			return $this->$name;  #  Allow read access to private/protected variables
+		}
+		return null;
 	}
 
 	/**
@@ -152,6 +170,10 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function set_initiative( $new ) {
 		$this->initiative = $new;
+	}
+
+	public function get_name() {
+		return $this->name;
 	}
 
 	public function get_number_appearing() {
