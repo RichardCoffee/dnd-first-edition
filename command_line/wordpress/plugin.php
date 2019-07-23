@@ -17,7 +17,7 @@
  * This file should have no external dependencies.
  *
  * @package WordPress
- * @subpackage Plugin
+ * @subpackage FirstEdition
  * @since 1.5.0
  */
 

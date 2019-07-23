@@ -3,7 +3,7 @@
  * Plugin API: WP_Hook class
  *
  * @package WordPress
- * @subpackage Plugin
+ * @subpackage FirstEdition
  * @since 4.7.0
  */
 

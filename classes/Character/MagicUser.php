@@ -278,10 +278,24 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => '4d6 hours',
 					'aoe'      => '4d4 square miles',
 				),
+				'Legend Lore' => array( 'page' => 'PH 85', 'type' => 'Divination', 'cast' => 'Special' ),
+				'Project Image' => array( 'page' => 'PH 85', 'type' => 'Alteration,Illusion/Phantasm', 'cast' => '6 segments',
+					'range'    => sprintf( '%u feet', $this->level * 10 ),
+					'duration' => sprintf( '%u rounds', $this->level ),
+				),
 			),
 			'Seventh' => array(
+				'Limited Wish' => array( 'page' => 'PH 89', 'type' => 'Conjuration/Summoning', 'cast' => 'Special' ),
+				'Simulacrum' => array( 'page' => 'PH 89', 'type' => 'Illusion/Phantasm', 'cast' => 'Special',
+					'special' => "50%+1d10% of the original's hit points.",
+				),
 			),
 			'Eighth' => array(
+				"Otto's Irresistible Dance" => array( 'page' => 'PH 91', 'type' => 'Enchantment/Charm', 'cast' => '5 segments',
+					'duraction' => '1d4+1 rounds',
+					'aoe'       => 'Creature touched',
+					'special'   => 'Target AC is -4, no STs allowed, no shield',
+				),
 			),
 		);
 	}

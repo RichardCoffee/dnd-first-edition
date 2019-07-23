@@ -2,14 +2,13 @@
 /**
  *  Add support for pre-loading class properties.
  *
- * @package Fluidity
+ * @package FirstEdition
  * @subpackage Traits
  * @since 20170128
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2018, Richard Coffee
  * @link https://github.com/RichardCoffee/fluidity-theme/blob/master/classes/Trait/ParseArgs.php
  */
-#defined( 'ABSPATH' ) || exit;
 /**
  *  trait DND_Trait_ParseArgs
  *

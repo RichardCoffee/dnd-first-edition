@@ -2,6 +2,8 @@
 /**
  * classes/Plugin/FirstEdition.php
  *
+ * @package FirstEdition
+ * @subpackage Plugin_Core
  */
 /**
  * Main plugin class
