@@ -203,7 +203,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Tongues' => array( 'page' => 'PH 76', 'type' => 'Alteration', 'cast' => '3 segments', 'reversible' => true,
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
-				'Water Breathing' => array( 'page' => 'PH 76, PH 59', 'type' => 'Alteration', 'cast' => '3 segments', 'reversible' => true,
+				'Water Breathing' => array( 'page' => 'PH 76, PH 59-60', 'type' => 'Alteration', 'cast' => '3 segments', 'reversible' => true,
 					'duration' => sprintf( '%u turns', $this->level * 3 ),
 				),
 			),
