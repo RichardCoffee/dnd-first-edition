@@ -185,3 +185,7 @@ abstract class DND_Plugin_Plugin {
     $option['dbvers']  = $dbvers;
     $option['version'] = $this->paths->version;
     update_option($addr,$option);
+  } //*/
+
+
+}
