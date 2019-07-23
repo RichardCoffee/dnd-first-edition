@@ -1,11 +1,26 @@
 <?php
-
+/**
+ *   Supplies basic plugin functions
+ *
+ * @package Plugin
+ * @subpackage Plugin_Core
+ * @since 20170111
+ * @author Richard Coffee <richard.coffee@rtcenterprises.net>
+ * @copyright Copyright (c) 2017, Richard Coffee
+ * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Plugin/Plugin.php
+ */
+defined( 'ABSPATH' ) || exit;
+/**
+ *  Abstract class that contains helper functions for a plugin.
+ *
+ * @since 20170214
+ */
 abstract class DND_Plugin_Plugin {
 
 	protected $admin    = null;
 	public    $dbvers   = '0';
 	protected $github   = '';    #  'https://github.com/MyGithubName/my-plugin-name/';
-	public    $paths    = null;  #  PMW_Plugin_Paths object
+	public    $paths    = null;  #  DND_Plugin_Paths object
 	public    $plugin   = 'plugin-slug';
 	protected $setting  = '';    #  settings link
 	protected $state    = '';
@@ -106,7 +121,11 @@ abstract class DND_Plugin_Plugin {
 		return $files;
 	}
 
-	public function get_stylesheet( $file = 'css/privacy-my-way.css', $path = '/' ) {
+	public function get_stylesheet( $file = 'css/dnd-first-edition.css', $path = '/' ) {
+		return $this->paths->get_plugin_file_path( $file );
+	}
+
+	/*
 		return $this->paths->get_plugin_file_path( $file );
 	}
 
@@ -120,9 +139,9 @@ abstract class DND_Plugin_Plugin {
 	public function settings_link( $links, $file, $data, $context ) {
 		if ( strpos( $file, $this->plugin ) !== false ) {
 			unset( $links['edit'] );
-			if ( is_plugin_active( $file ) ) {
+			if ( is_plugin_active( $file ) && ! ( $this->tab === 'about' ) ) {
 				$url   = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
-				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'privacy-my-way' ) );
+				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'dnd-first-edition' ) );
 			}
 		}
 		return $links;
@@ -166,7 +185,3 @@ abstract class DND_Plugin_Plugin {
     $option['dbvers']  = $dbvers;
     $option['version'] = $this->paths->version;
     update_option($addr,$option);
-  } //*/
-
-
-}
