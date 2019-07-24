@@ -94,7 +94,10 @@ class DND_Character_Cleric extends DND_Character_Character {
 			'First' => array(
 				'Bless' => array( 'page' => 'PH44', 'cast' => '1 round', 'duration' => '6 rounds',
 					'special' => 'To hit: +1, morale: +5%',
-					'filters' => array( array( 'character_to_hit_opponent', 1, 10, 2 ) ),
+					'filters' => array( array(
+						'character_to_hit_opponent', 1, 10, 2 ),
+						'character_morale_check',    5, 10, 2 ),
+					),
 				),
 				'Ceremony' => array( 'page' => 'UA32', 'cast' => '1 hour' ),
 				'Combine' => array( 'page' => 'UA32', 'cast' => '1 round' ),

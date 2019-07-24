@@ -296,7 +296,11 @@ function dnd1e_apply_ongoing_spell_effects( $segment ) {
 					$condition = $spell['condition'];
 					foreach( [ $b, $c, $d ] as $obj ) {
 						if ( ( gettype( $obj ) === 'object' ) && method_exists( $obj, $condition ) ) {
-							if ( ! $obj->$condition( $filter[0], $spell, $obj ) ) {
+							if ( $obj->$condition( $filter[0], $spell, $obj ) ) {
+								if ( in_array( $filter[0], dnd1e_replacement_filters() ) ) {
+									return $filter[1];
+								}
+							} else {
 								return $value;
 							}
 						}
@@ -307,6 +311,10 @@ function dnd1e_apply_ongoing_spell_effects( $segment ) {
 		}
 	}
 	set_transient( 'dnd1e_ongoing', $ongoing );
+}
+
+function dnd1e_replacement_filters() {
+	return apply_filters( 'dnd1e_replacement_filters', array() );
 }
 
 function dnd1e_damage_to_monster( $monster, $target, $damage ) {

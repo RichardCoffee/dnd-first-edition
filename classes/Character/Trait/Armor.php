@@ -57,7 +57,9 @@ trait DND_Character_Trait_Armor {
 	}
 
 	private function get_armor_ac_value( $armor ) {
-		return $this->get_armor_trait_value( $armor, 'ac' );
+		$ac = $this->get_armor_trait_value( $armor, 'ac' );
+		add_filter( 'dnd1e_replacement_filters', function( $filters ) { $filters[] = 'character_armor_type'; return $filters; } );
+		return apply_filters( 'character_armor_type', $ac, $this );
 	}
 
 	protected function get_armor_bulk( $armor ) {
