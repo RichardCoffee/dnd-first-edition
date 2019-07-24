@@ -18,7 +18,7 @@ class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'High';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Copper Dragon';
 #	protected $psionic      = 'Nil';
@@ -42,11 +42,6 @@ class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 		parent::determine_specials();
 		$this->specials['breath1'] = "1st BW: Lightning Bolt - 5' wide, 70' long.";
 		$this->specials['breath2'] = "2nd BW: Slow Gas Cloud - 20' wide, 30' long, 20' high.";
-	}
-
-	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
-		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {

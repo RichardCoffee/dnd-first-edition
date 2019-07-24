@@ -18,7 +18,7 @@ class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Silver Dragon';
 #	protected $psionic      = 'Nil';
@@ -43,11 +43,6 @@ class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 		$this->specials['breath1'] = "1st BW: Cone of Frost - 80' long by 30' base diameter.";
 		$this->specials['breath2'] = "2nd BW: Paralyzing Gas Cloud - 40' wide, 50' long, 20' high.";
 		$this->specials['spells']  = '25% have spell books.';
-	}
-
-	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
-		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {

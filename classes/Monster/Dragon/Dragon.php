@@ -12,6 +12,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $co_magic_use = 0;
 	protected $co_sleeping  = 0;
 	protected $frequency    = 'Rare';
+	protected $hd_extra     = 0; // Only used by shadow dragon
 	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 8, 9, 10 );
 #	protected $hd_value     = 8;
@@ -19,7 +20,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
 #	protected $magic_user   = null;
-	protected $magic_use    = false;
+	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Dragon';
 #	protected $psionic      = 'Nil';
@@ -93,10 +94,10 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected function calculate_hit_points() {
 		$hit_points = 0;
 		if ( $this->hd_minimum === 0 ) {
-			$this->hd_minimum = mt_rand( 1, $this->hd_value );
+			$this->hd_minimum = mt_rand( 1, $this->hd_value ) + $this->hd_extra;
 		}
 		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
-			$hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
+			$hit_points += mt_rand( $this->hd_minimum, ( $this->hd_value + $this->hd_extra ) );
 		}
 		$this->attacks['Breath'][0] = $hit_points;
 		return $hit_points;
@@ -177,12 +178,10 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	protected function set_magic_user( $level = 0 ) {
-		if ( $this->magic_use ) {
-			$level = ( $level ) ? $level : $this->hit_dice;
-			$create = 'DND_Character_' . $this->magic_use;
-			$this->magic_user = new $create( [ 'level' => $level ] );
-			$this->attacks['Spell'] = [ 0, 0, 0 ];
-		}
+		$level = ( $level ) ? $level : $this->hit_dice;
+		$create = 'DND_Character_' . $this->magic_use;
+		$this->magic_user = new $create( [ 'level' => $level ] );
+		$this->attacks['Spell'] = [ 0, 0, 0 ];
 	}
 
 	protected function add_magic_spells( $list ) {

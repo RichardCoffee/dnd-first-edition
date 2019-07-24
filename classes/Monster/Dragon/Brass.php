@@ -18,7 +18,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'High';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 24 );
 	protected $name         = 'Brass Dragon';
 #	protected $psionic      = 'Nil';
@@ -43,11 +43,6 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		$this->specials['breath1'] = "1st BW: Cone of Sleep Gas - 70' long, terminating diameter of 20'.";
 		$this->specials['breath2'] = "2nd BW: Fear Gas Cloud - 40' wide, 50' long, 20' high.";
 		add_filter( 'character_BW_saving_throw', [ $this, 'brass_dragon_breath_weapon_saving_throw' ], 10 );
-	}
-
-	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
-		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {

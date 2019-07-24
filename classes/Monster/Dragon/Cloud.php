@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'Genius';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 39 );
 	protected $name         = 'Cloud Dragon';
 #	protected $psionic      = 'Nil';
@@ -55,7 +55,6 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
 		parent::set_magic_user();
 		$this->cleric      = new DND_Character_Cleric(      [ 'level' => $this->hit_dice ] );
 		$this->druid       = new DND_Character_Druid(       [ 'level' => $this->hit_dice ] );

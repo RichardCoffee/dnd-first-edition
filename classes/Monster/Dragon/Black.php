@@ -18,7 +18,7 @@ class DND_Monster_Dragon_Black extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'Average';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 24 );
 	protected $name         = 'Black Dragon';
 #	protected $psionic      = 'Nil';
@@ -41,11 +41,6 @@ class DND_Monster_Dragon_Black extends DND_Monster_Dragon_Dragon {
 	protected function determine_specials() {
 		parent::determine_specials();
 		$this->specials['breath1'] = "BW: Spitting Acid - 5' wide, 60' long.";
-	}
-
-	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
-		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {

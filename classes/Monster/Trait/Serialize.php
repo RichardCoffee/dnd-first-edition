@@ -15,13 +15,14 @@ trait DND_Monster_Trait_Serialize {
 
 	private function get_serialization_data() {
 		$table = array(
-			'attacks'    => $this->attacks,
-			'current_hp' => $this->current_hp,
-			'hit_dice'   => $this->hit_dice,
-			'hit_points' => $this->hit_points,
-			'initiative' => $this->initiative,
-			'name'       => $this->name,
-			'xp_value'   => $this->xp_value,
+			'attacks'      => $this->attacks,
+			'current_hp'   => $this->current_hp,
+			'hit_dice'     => $this->hit_dice,
+			'hit_points'   => $this->hit_points,
+			'initiative'   => $this->initiative,
+			'intelligence' => $this->intelligence,
+			'name'         => $this->name,
+			'xp_value'     => $this->xp_value,
 		);
 		/** Dragons **/
 		if ( $this instanceOf DND_Monster_Dragon_Dragon ) {

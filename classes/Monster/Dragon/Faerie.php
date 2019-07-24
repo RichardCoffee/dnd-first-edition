@@ -20,7 +20,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'High to Genius';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 24 );
 	protected $name         = 'Faerie Dragon';
 #	protected $psionic      = 'Nil';
@@ -79,7 +79,6 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
 		$level = $this->faerie[ $this->hd_minimum ]['mu'];
 		if ( $this->check_chance( 65 ) ) {
 			$this->magic_use = 'Druid';

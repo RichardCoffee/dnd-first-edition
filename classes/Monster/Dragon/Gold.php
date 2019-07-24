@@ -18,7 +18,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'Genius';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 30 );
 	protected $name         = 'Gold Dragon';
 #	protected $psionic      = 'Nil';
@@ -44,11 +44,6 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 		$this->specials['breath2'] = "2nd BW: Chlorine Gas Cloud - 40' wide, 50' long, 30' high.";
 		$this->specials['ability'] = 'Polymorph self - three times per day.';
 		$this->specials['spells']  = '50% have spell books.';
-	}
-
-	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
-		parent::set_magic_user();
 	}
 
 	protected function determine_magic_spells() {

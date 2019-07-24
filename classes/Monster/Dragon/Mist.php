@@ -12,6 +12,7 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	protected $co_speaking  = 100;
 	protected $co_magic_use = 100;
 	protected $co_sleeping  = 20;
+	private   $druid        = null;
 #	protected $frequency    = 'Rare';
 #	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 9, 10, 11 );
@@ -19,7 +20,7 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
 #| protected $magic_user   = null;
-#	protected $magic_use    = false;
+#	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 33 );
 	protected $name         = 'Mist Dragon';
 #	protected $psionic      = 'Nil';
@@ -52,7 +53,6 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function set_magic_user( $level = 0 ) {
-		$this->magic_use = 'MagicUser';
 		parent::set_magic_user();
 		$this->cleric = new DND_Character_Cleric( [ 'level' => $this->hit_dice ] );
 		$this->druid  = new DND_Character_Druid(  [ 'level' => $this->hit_dice ] );
