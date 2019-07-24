@@ -102,8 +102,38 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $hit_points;
 	}
 
+	public function get_dragon_age() {
+		switch( $this->hd_minimum ) {
+			case 1:
+				$age = 'Very Young';
+				break;
+			case 2:
+				$age = 'Young';
+				break;
+			case 3:
+				$age = 'Sub-Adult';
+				break;
+			case 4:
+				$age = 'Young Adult';
+				break;
+			case 5:
+				$age = 'Adult';
+				break;
+			case 6:
+				$age = 'Old';
+				break;
+			case 7:
+				$age = 'Very Old';
+				break;
+			case 8:
+				$age = 'Ancient';
+		}
+		return $age;
+	}
+
 	protected function determine_specials() {
 		$this->specials = array(
+			'age'      => 'Dragon Age: ' . $this->get_dragon_age(),
 			'breath'   => '50% chance of using breath weapon on any given round (max 3/day).',
 			'senses'   => "Infravision 60', Detects hidden or invisible creatures within " . sprintf( '%u feet.', $this->hd_minimum * 10 ),
 			'treasure' => $this->get_treasure_amounts_description(),
@@ -174,7 +204,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			$cnt = 1;
 			foreach( $this->spells as $spell ) {
 				$index = 'spell' . $cnt++;
-				$this->specials[ $index ] = sprintf( '%6s: %s', $spell['level'], $spell['name'] );
+				$this->specials[ $index ] = sprintf( '%7s: %s', $spell['level'], $spell['name'] );
 			}
 		}
 	}

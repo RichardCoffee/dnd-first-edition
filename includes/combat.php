@@ -37,7 +37,7 @@ function dnd1e_save_character_combat_state( $chars ) {
 function dnd1e_save_character_transients( $characters = array() ) {
 	foreach( $characters as $name => $obj ) {
 		$trans = 'dnd1e_' . get_class( $obj ) . '_' . $name;
-		set_transient( $trans, $obj );
+		dnd1e_save_character_as_transient( $trans, $obj );
 	}
 }
 
@@ -94,6 +94,9 @@ function dnd1e_get_movement_sequence( $move = 12 ) {
 		case '5':
 			$segs = array( 2, 4, 6, 8, 10 );
 			break;
+		case '5a':
+			$segs = array( 1, 3, 5, 7, 9 );
+			break;
 		case '6':
 			$segs = array( 2, 4, 5, 6, 8, 10 );
 			break;
@@ -129,6 +132,9 @@ function dnd1e_get_movement_sequence( $move = 12 ) {
 			break;
 		case '30':
 			$segs = array( 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10 );
+			break;
+		case '33':
+			$segs = array( 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10 );
 			break;
 		case '39':
 			$segs = array( 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10 );
@@ -240,7 +246,7 @@ function dnd1e_rank_attackers( &$chars, $segment ) {
 function dnd1e_start_casting_spell( $caster, $spell, $segment, $target ) {
 	$cast = get_transient( 'dnd1e_cast' );
 	$hold = get_transient( 'dnd1e_hold' );
-	$len  = ( strpos( $spell['data']['cast'], 'segment' ) ) ? intval( $spell['data']['cast'] ) : intval( $spell['data']['cast'] ) * 10;
+	$len  = ( strpos( $spell['cast'], 'segment' ) ) ? intval( $spell['cast'] ) : intval( $spell['cast'] ) * 10;
 	$cast[ $caster ] = array(
 		'spell'  => $spell['name'],
 		'when'   => $segment + $len,
@@ -267,6 +273,7 @@ function dnd1e_finish_casting_spell( $spell, $segment ) {
 }
 
 function dnd1e_add_ongoing_spell_effects( $spell ) {
+print_r($spell);
 	$ongoing = get_transient( 'dnd1e_ongoing' );
 	if ( ! $ongoing ) $ongoing = array();
 	$ongoing[ $spell['name'] ] = $spell;
@@ -275,17 +282,18 @@ function dnd1e_add_ongoing_spell_effects( $spell ) {
 
 function dnd1e_apply_ongoing_spell_effects( $segment ) {
 	$ongoing = get_transient( 'dnd1e_ongoing' );
+	if ( ! $ongoing ) $ongoing = array();
 	foreach( $ongoing as $name => $spell ) {
 		if ( isset( $spell['ends'] ) && ( $segment > $spell['ends'] ) ) {
 			unset( $ongoing[ $name ] );
 			continue;
 		}
-		$filters = $spell['data']['filters'];
+		$filters = $spell['filters'];
 		// TODO: take aoe into account
 		foreach( $filters as $filter ) {
 			add_filter( $filter[0], function( $value, $b = null, $c = null, $d = null ) use ( $filter, $spell ) {
-				if ( isset( $spell['data']['condition'] ) ) {
-					$condition = $spell['data']['condition'];
+				if ( isset( $spell['condition'] ) ) {
+					$condition = $spell['condition'];
 					foreach( [ $b, $c, $d ] as $obj ) {
 						if ( ( gettype( $obj ) === 'object' ) && method_exists( $obj, $condition ) ) {
 							if ( ! $obj->$condition( $filter[0], $spell, $obj ) ) {

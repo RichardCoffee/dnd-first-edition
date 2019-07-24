@@ -21,36 +21,31 @@ trait DND_Character_Trait_Magic {
 	}
 
 	public function get_magic_spell_info( $level, $spell, $type = '' ) {
-		$data = $this->get_spell_data( $level, $spell );
-		return array_merge( [ 'name' => $spell, 'level' => $level ], $data );
-	}
-
-	// DEPRECATED - phase this out
-	public function locate_spell( $spell, $type = '' ) {
-		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
-		foreach( $this->spell_table as $level => $spells ) {
-			foreach( $spells as $name => $data ) {
-				if ( $name === $spell ) {
-					return $this->get_spell_info( $level, $spell );
-				}
-			}
-		}
+		return array_merge( [ 'name' => $spell, 'level' => $level ], $this->get_spell_data( $level, $spell ) );
 	}
 
 	public function locate_magic_spell( $spell, $type = '' ) {
 		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
+		$info = array();
+		if ( ( ! $type ) || ( $type === 'Single' ) ) {
+			$maybe = explode( '_', get_class( $this ) );
+			$type  = str_replace( 'rU', 'r U', $maybe[2] );
+		}
 		foreach( $this->spell_table as $level => $spells ) {
 			foreach( $spells as $name => $data ) {
 				if ( $name === $spell ) {
-					return $this->get_magic_spell_info( $level, $spell );
+					$info = array_merge( [ 'caster' => $type ], $this->get_magic_spell_info( $level, $spell ) );
 				}
 			}
 		}
+		return $info;
 	}
 
 	protected function add_spell( $data ) {
-		if ( ! isset( $this->spells[ $data['level'] ][ $data['name'] ] ) ) {
-			$this->spells[ $data['level'] ][ $data['name'] ] = $data['data'];
+		$level = $data['level'];
+		$name  = $data['name'];
+		if ( ! isset( $this->spells[ $level ][ $name ] ) ) {
+			$this->spells[ $level ][ $name ] = $this->get_spell_data( $level, $name );
 		}
 	}
 
@@ -74,6 +69,8 @@ trait DND_Character_Trait_Magic {
 		}
 		return $spell;
 	}
+
+	/**  Import Functions **/
 
 	protected function set_kregen_weapon_skill( $weapon, $line, $bonus ) {
 		if ( $weapon === 'Spell' ) {

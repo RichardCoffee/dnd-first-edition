@@ -5,7 +5,7 @@ if ( ! $cast ) $cast = array();
 $hold = get_transient('dnd1e_hold');
 if ( ! $hold ) $hold = array();
 
-$opts = getopt( 'hr:s:t::', [ 'att:', 'help', 'hit:', 'hold:', 'mi:' ] );
+$opts = getopt( 'hr:s:t::', [ 'att:', 'help', 'hit:', 'hold:', 'mi:', 'pre:' ] );
 
 if ( ! $opts ) {
 	if ( count( $argv ) > 1 ) {
@@ -17,7 +17,7 @@ if ( ! $opts ) {
 					if ( $spell ) {
 						echo "\n{$argv[1]}\n";
 						$target = ( isset( $argv[3] ) ) ? $argv[3] : $name;
-						dnd1e_casting_spell( $name, $spell, $segment, $target );
+						dnd1e_start_casting_spell( $name, $spell, $segment, $target );
 					}
 				} else {
 					dnd1e_change_weapons( $chars[ $name ], $argv[2], $segment );
@@ -52,6 +52,8 @@ if ( isset( $opts['h'] ) || isset( $opts['help'] ) ) {
 	--mi=number     Set the monster's initiative.
 
 	--name=name     Used to indicate a character's name.
+
+	--pre=name:#    Use this when a character casts a spell before combat.
 
 "
 	);
@@ -123,6 +125,28 @@ print_r($sitrep);
 
 if ( isset( $opts['mi'] ) ) {
 	$monster->initiative = intval( $opts['mi'] );
+}
+
+if ( isset( $opts['pre'] ) ) {
+	if ( $segment < 2 ) {
+		$sitrep = explode( ':', $opts['pre'] );
+print_r($sitrep);
+		$name   = $sitrep[0];
+		if ( isset( $chars[ $name ] ) ) {
+			$number = intval( $sitrep[1] );
+			if ( $number ) {
+				$spell = dnd1e_get_numbered_spell( $chars[ $name ], $number );
+				if ( $spell ) {
+					$target = ( isset( $sitrep[2] ) ) ? $sitrep[2] : $name;
+					$spell['target'] = $target;
+					$spell['caster'] = $name;
+					dnd1e_finish_casting_spell( $spell, 1 );
+					echo "\n$name has cast {$spell['name']} on $target\n\n";
+					exit;
+				}
+			}
+		}
+	}
 }
 
 #if ( ! empty( $opts ) ) print_r($opts);

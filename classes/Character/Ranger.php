@@ -3,6 +3,7 @@
 class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected $ac_rows    = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 );
+	protected $classes    = array( 'druid' => 'Druid', 'magic' => 'Magic User' );
 	protected $druid      = null;
 	protected $hit_die    = array( 'limit' => 11, 'size' => 8, 'step' => 2 );
 	protected $magic      = null;
@@ -107,50 +108,40 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	public function special_integer_track() {
 		return min( 100, $this->level * 10 ) + 10;
-	} //*/
+	}
 
 	public function special_string_surprise() {
 		return 'opponents 50% (3 in 6), self 16% (1 in 6)';
-	} //*/
-
-	public function locate_spell( $spell ) {
-		$info = $this->druid->locate_spell( $spell );
-		if ( ! empty( $info['data'] ) ) {
-			$info['caster'] = 'druid';
-		} else {
-			$info = $this->magic->locate_spell( $spell );
-			if ( $info ) {
-				$info['caster'] = 'magic';
-			}
-		}
-		return $info;
 	}
 
-	public function locate_magic_spell( $spell ) {
-		$info = $this->druid->locate_magic_spell( $spell );
-		if ( isset( $info['page'] ) ) {
-			$info['caster'] = 'druid';
-		} else {
-			$info = $this->magic->locate_magic_spell( $spell );
-			if ( isset( $info['page'] ) ) {
-				$info['caster'] = 'magic';
-			}
+	public function get_spell_data( $level, $name, $caster ) {
+		$key = array_keys( $this->classes, $caster )[0];
+		return $this->$key->get_spell_data( $level, $name );
+	}
+
+	public function locate_magic_spell( $spell, $type = '' ) {
+		$info = array();
+		if ( empty( $type ) || ( $type === 'Druid' ) ) {
+			$info = $this->druid->locate_magic_spell( $spell, 'Druid' );
+		}
+		if ( ! isset( $info['page'] ) ) {
+			$info = $this->magic->locate_magic_spell( $spell, 'Magic User' );
 		}
 		return $info;
 	}
 
 	protected function add_spell( $data ) {
-		if ( ! isset( $this->spells[ $data['caster'] ][ $data['level'] ][ $data['name'] ] ) ) {
-			$this->spells[ $data['caster'] ][ $data['level'] ][ $data['name'] ] = $data['data'];
+		$caster = $data['caster'];
+		$level  = $data['level'];
+		$name   = $data['name'];
+		if ( ! isset( $this->spells[ $caster ][ $level ][ $name ] ) ) {
+			$this->spells[ $caster ][ $level ][ $name ] = $this->get_spell_data( $level, $name, $caster );
 		}
 	}
 
 	public function parse_csv_line( $line ) {
-#print_r($line);
 		parent::parse_csv_line( $line );
-#echo "druid task: {$this->druid->import_task}\n";
 		$this->druid->parse_csv_line( $line );
-#echo "magic task: {$this->magic->import_task}\n";
 		$this->magic->parse_csv_line( $line );
 	}
 

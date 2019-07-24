@@ -43,7 +43,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	use DND_Character_Trait_Attributes;
 	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
-#	use DND_Trait_Logging;
+	use DND_Trait_Logging;
 	use DND_Trait_Magic;
 	use DND_Trait_ParseArgs;
 
@@ -361,14 +361,14 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$ongoing = get_transient( 'dnd1e_ongoing' );
 			foreach( $ongoing as $name => $effect ) {
 				if ( $effect['target'] === $this->get_name() ) {
-					if ( isset( $effect['data']['condition'] ) ) {
+					if ( isset( $effect['condition'] ) ) {
 						// TODO: check for aoe conditions
-						if ( $effect['data']['condition'] === 'this_character_only' ) {
-							foreach( $effect['data']['filters'] as $key => $filter ) {
+						if ( $effect['condition'] === 'this_character_only' ) {
+							foreach( $effect['filters'] as $key => $filter ) {
 								if ( $filter[0] === 'character_temporary_hit_points' ) {
-									$ongoing[ $name ]['data']['filters'][ $key ][1] -= $damage;
-									$ongoing[ $name ]['data']['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['data']['filters'][ $key ][1] );
-									if ( $ongoing[ $name ]['data']['filters'][ $key ][1] === 0 ) {
+									$ongoing[ $name ]['filters'][ $key ][1] -= $damage;
+									$ongoing[ $name ]['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['filters'][ $key ][1] );
+									if ( $ongoing[ $name ]['filters'][ $key ][1] === 0 ) {
 										unset( $ongoing[ $name ] );
 										break;
 									}

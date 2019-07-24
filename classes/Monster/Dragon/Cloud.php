@@ -22,7 +22,6 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 	protected $intelligence = 'Genius';
 #| protected $magic_user   = null;
 #	protected $magic_use    = false;
-	private   $mate         = null;
 	protected $movement     = array( 'foot' => 6, 'air' => 39 );
 	protected $name         = 'Cloud Dragon';
 #	protected $psionic      = 'Nil';
@@ -31,18 +30,17 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 #	protected $resistance   = 'Standard';
 	protected $size         = "Large, 66' long";
 #	protected $sleeping     = false;
-	(private   $solitary     = 95;
 #	protected $speaking     = false;
 #	protected $spells       = array();
 	protected $treasure     = 'H,S,T';
-	protected $xp_value     = array( 6100, 10 );
+	protected $xp_value     = array( 6100, 10, 100, 48 );
+
+	use DND_Monster_Dragon_Mated;
 
 
 	public function __construct( $args = array() ) {
-		if ( isset( $args['mate'] ) ) {
-			$this->mate = unserialize( $args['mate'] );
-			unset( $args['mate'] );
-		}
+		$this->solitary = 95;
+		$this->check_for_existing_mate( $args );
 		parent::__construct( $args );
 		$this->description = 'Cloud dragons are sky-dwelling creatures. While some live in caves which are shrouded by clouds, most (75%) dwell on cloud islands and lair there (cf., "Cloud Giant"). They dislike intrusion and will either avoid contact with or attack unwanted visitors.  Cloud dragons appear to be fringed and frilled gold dragons.';
 		$this->description.= '  Coloration depends on surroundings and mood, ranging from dark gray (angry) through pearlywhite (neutral) to golden or rose-colored (satisfied or very pleased). In solid form they have a translucent, opaline coloration with color specks reflecting mood.';
@@ -52,34 +50,8 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 		parent::determine_specials();
 		$this->specials['breath1'] = "BW: Repulsion Gas Cloud - 30' wide, " . sprintf( '%3u', $this->hit_dice * 10 ) . "' long, 30' high.";
 		$this->specials['defense'] = 'Assume gaseous form at will, with AC:-3 and Magic Resistance 50%';
-		$this->specials['sleep']   = 'Use sleeping % to determine if found in gaseous form.'
-	}
-
-	protected function determine_xp_value() {
-		parent::determine_xp_value();
-		if ( $this->hit_points > 48 ) {
-			$mod = $this->hit_points - 48;
-			$this->xp_value += ( 100 * $mod );
-		}
-	}
-
-	public function get_number_appearing() {
-		if ( $this->solitary && ( $this->hd_minimum > 4 ) ) {
-			$roll = mt_rand( 1, 100 );
-			if ( $roll > $this->solitary ) {
-				$age = mt_rand( 5, 8 );
-				$this->mate = new DND_Monster_Dragon_Cloud( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
-				$this->specials['mate'] = sprintf( 'Mated Pair: HD %u, HP %u', $this->mate->hit_dice, $this->mate->hit_points );
-			}
-		}
-	}
-
-	public function get_appearing_hit_points( $number = 1 ) {
-		$hit_points = array( $this->hit_points );
-		if ( $this->mate ) {
-			$hit_points[] = array( $this->mate->hit_points, $this->mate->hit_points );
-		}
-		return $hit_points;
+		$this->specials['sleep']   = sprintf( 'Use sleeping (%u%%) to determine if found in gaseous form.', $this->co_sleeping );
+		$this->specials_mate();
 	}
 
 	protected function set_magic_user( $level = 0 ) {

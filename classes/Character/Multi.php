@@ -94,42 +94,15 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		if ( ! empty( $spells ) ) {
-			$spells['multi'] = true;
+			$spells['multi'] = array();
 		}
 		return $spells;
-	}
-/*
-	public function get_spell_data( $spell, $type ) {
-		foreach( $this->classes as $key => $class ) {
-			if ( $type === $class ) {
-				$data = $this->$key->locate_spell( $spell );
-				if ( $data ) return $data;
-			}
-		}
-		return "Unable to locate a $type spell book for {$this->name}.";
-	} //*/
-
-	public function locate_spell( $spell, $type ) {
-		foreach( $this->classes as $key => $class ) {
-			if ( $type === $class ) {
-				$data = $this->$key->locate_spell( $spell );
-				if ( $data ) {
-					$info = array( 'type' => $type );
-					return array_merge( $info, $data );
-				}
-			}
-		}
-		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
 
 	public function locate_magic_spell( $spell, $type ) {
 		foreach( $this->classes as $key => $class ) {
 			if ( $type === $class ) {
-				$info = $this->$key->locate_magic_spell( $spell );
-				if ( isset( $info['page'] ) ) {
-					$info['caster'] = $type;
-					return $info;
-				}
+				return $this->$key->locate_magic_spell( $spell, $type );
 			}
 		}
 		return "Spell '$spell' not found in {$this->name}'s spell book.";

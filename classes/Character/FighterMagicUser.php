@@ -25,10 +25,6 @@ class DND_Character_FighterMagicUser extends DND_Character_FighterMulti {
 		}
 	}
 
-	public function locate_spell( $spell, $type = 'Magic User' ) {
-		return parent::locate_spell( $spell, $type );
-	}
-
 	public function locate_magic_spell( $spell, $type = 'Magic User' ) {
 		return parent::locate_magic_spell( $spell, $type );
 	}

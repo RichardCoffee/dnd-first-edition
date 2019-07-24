@@ -9,13 +9,10 @@ require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
 
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
-$range   = get_transient( 'dnd1e_range' );
+$range   = 2000;
 $rounds  = 3;
 $segment = intval( get_transient( 'dnd1e_segment' ) );
 
-if ( ! $range ) {
-	$range = 2000;
-}
 if ( ! $segment ) {
 	$segment = 1;
 }
@@ -36,19 +33,6 @@ if ( ! empty( $hold ) ) { // $hold created in getopts.php
 	}
 	set_transient( 'dnd1e_hold', $hold );
 }
-/*
-if ( ! empty( $attack ) ) { // $attack created in getopts.php
-	foreach( $attack as $aname => $aseg ) {
-		if ( isset( $hold[ $aname ] ) ) continue;
-		$chars[ $aname ]->segment = $aseg;
-	}
-} //*/
-/*
-if ( ! empty( $weapons ) ) { // $weapons created in getopts.php
-	foreach( $weapons as $wname => $wweapon ) {
-		$chars[ $wname ]->set_current_weapon( $wweapon );
-	}
-} //*/
 
 $minus = ( ( ( $segment - 1 ) + floor( ( $segment -1 ) / 10 ) ) * 2 );
 

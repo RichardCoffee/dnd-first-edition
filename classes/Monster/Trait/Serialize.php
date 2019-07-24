@@ -32,7 +32,7 @@ trait DND_Monster_Trait_Serialize {
 			$table['speaking']     = $this->speaking;
 			$table['magic_use']    = $this->magic_use;
 			$table['sleeping']     = $this->sleeping;
-			if ( $this instanceOf DND_Monster_Dragon_Cloud ) {
+		if ( property_exists( $this, 'mate' ) && $this->mate ) {
 				$table['mate'] = serialize( $this->mate );
 			} else {
 				if ( $this->spells ) {

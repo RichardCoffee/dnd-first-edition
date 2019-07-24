@@ -109,7 +109,7 @@ trait DND_Character_Import_Kregen {
 					}
 				} else if ( $this->import_task === 'spells' ) {
 #print_r ( $line );
-					if ( method_exists( $this, 'locate_spell' ) ) {
+					if ( method_exists( $this, 'locate_magic_spell' ) ) {
 						foreach( $line as $item ) {
 							if ( intval( $item ) > 0 ) {
 								continue;
@@ -122,8 +122,8 @@ trait DND_Character_Import_Kregen {
 								$name = substr( $name, 0, $pos );
 							}
 #echo __CLASS__."  spell: $name\n";
-							$check = $this->locate_spell( $name );
-							if ( ! empty( $check['data'] ) ) {
+							$check = $this->locate_magic_spell( $name );
+							if ( ! empty( $check['page'] ) ) {
 								$this->add_spell( $check );
 							}
 						}

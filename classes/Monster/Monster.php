@@ -162,8 +162,14 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	protected function determine_xp_value() {
 		$xp = 0;
-		if ( is_array( $this->xp_value ) && ( ! empty( $this->xp_value )  ) ) {
+		if ( is_array( $this->xp_value ) && $this->xp_value ) {
 			$xp = $this->xp_value[0] + ( $this->xp_value[1] * $this->hit_points );
+			if ( isset( $this->xp_value[2] ) && isset( $this->xp_value[3] ) ) {
+				if ( $this->hit_points > $this->xp_value[3] ) {
+					$mod = $this->hit_points - $this->xp_value[3];
+					$xp += ( $this->xp_value[2] * $mod );
+				}
+			}
 		}
 		$this->xp_value = $xp;
 	}

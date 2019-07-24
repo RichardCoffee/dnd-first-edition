@@ -140,7 +140,7 @@ function dnd1e_get_numbered_spell( DND_Character_Character $char, $number ) {
 				foreach( $listing as $level => $spells ) {
 					foreach( $spells as $spell => $data ) {
 						if ( $index === $number ) {
-							return $char->locate_spell( $spell, $type );
+							return $char->locate_magic_spell( $spell, $type );
 						}
 						$index++;
 					}

@@ -18,10 +18,6 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 
 	/**  Cleric Abilities **/
 
-	public function locate_spell( $spell, $type = 'Cleric' ) {
-		return parent::locate_spell( $spell, $type );
-	}
-
 	public function locate_magic_spell( $spell, $type = 'Cleric' ) {
 		return parent::locate_magic_spell( $spell, $type );
 	}
@@ -48,21 +44,21 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 		return $this->thief->special_integer_backstab();
 	}
 
-/**  Character Functions  **/
+	/**  Character Functions  **/
 
 	public function set_current_weapon( $new = '' ) {
-#echo "weapon: $new\n";
 		$this->cleric->set_current_weapon( $new );
 		$this->thief->set_current_weapon( $new );
 		$this->armor  = $this->cleric->armor;
 		$this->weapon = $this->cleric->weapon;
-#print_r($this->weapon);
 	}
 
 	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
 		$this->cleric->opponent = $this->opponent;
 		return $this->cleric->get_to_hit_number( $target_ac, $target_at, $range );
 	}
+
+	/**  Import Functions **/
 
 	public function import_kregen_csv( $file ) {
 		parent::import_kregen_csv( $file );
