@@ -290,12 +290,14 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function command_line_display() {
 		$line = "{$this->name}: ";
-		$line.= "HD {$this->hit_dice}";
+		$line.= "AC:{$this->armor_class}";
+		$line.= ", HD:{$this->hit_dice}";
 		if ( $this->hp_extra ) {
 			$line .= "+{$this->hp_extra}";
 		}
-		$line .= ", HP {$this->current_hp}/{$this->hit_points}, ";
+		$line .= ", HP:{$this->current_hp}/{$this->hit_points}, ";
 		$line .= $this->reference . "\n";
+		ksort( $this->specials );
 		foreach( $this->specials as $string ) {
 			$line.= $string . "\n";
 		}

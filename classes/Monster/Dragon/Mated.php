@@ -3,7 +3,7 @@
 trait DND_Monster_Dragon_Mated {
 
 
-	private   $mate     = null;
+	protected $mate     = null;
 	protected $solitary = 100;
 
 

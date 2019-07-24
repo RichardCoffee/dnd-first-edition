@@ -7,7 +7,6 @@ abstract class DND_Monster_Lycan_Lycan extends DND_Monster_Monster {
 
 
 	public function __construct( $args = array() ) {
-		$this->mtdw_limit  = 1;
 		$this->mtdw_silver = true;
 		$this->mtdw_setup();
 		parent::__construct( $args );

@@ -25,7 +25,7 @@ function dnd1e_get_combat_weapon( DND_Character_Character $char ) {
 }
 
 function dnd1e_get_mapped_movement_sequence( $movement = 12 ) {
-	$test = array( 1,2,3,4,5,6,7,8,9,10 );
+	$test = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
 	$str  = '|';
 	$move = dnd1e_get_movement_sequence( $movement );
 	foreach( $test as $seg ) {
@@ -37,10 +37,8 @@ function dnd1e_get_mapped_movement_sequence( $movement = 12 ) {
 			case 1:
 				$str .= ( $seg === 10 ) ? '0|' : $seg . '|';
 				break;
-			case 2:
-				$str .= '@|';
-				break;
 			default:
+				$str .= '@|';
 		}
 	}
 	return $str;

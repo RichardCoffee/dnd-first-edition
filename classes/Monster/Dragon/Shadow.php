@@ -30,21 +30,35 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 #	protected $sleeping     = false;
 #	protected $speaking     = false;
 #	protected $spells       = array();
-	protected $treasure     = 'X,Y,Z';
+	protected $stats        = array( 'dex' => 14 );
+	private   $thief        = null;
+	protected $treasure     = 'U';
 	protected $xp_value     = array( 3450, 5, 50, 36 );
 
 	use DND_Monster_Dragon_Mated;
+	use DND_Monster_Trait_Defense_Weapons;
 
 
 	public function __construct( $args = array() ) {
 		$this->solitary = 75;
-		$this->check_for_existing_mate();
+		$this->check_for_existing_mate( $args );
 		$this->determine_intelligence();
+		$this->mtdw_setup();
+		$this->thief = new DND_Character_Thief( [ 'level' => 10, 'stats' => $this->stats ] );
 		parent::__construct( $args );
 		$this->description = 'The shadow dragon is nocturnal, subterranean, or found on planes of dimness such as Shadowland.';
 		$this->description.= ' The species is also independent and solitary. Only occasionally will a mated pair be encountered.';
 		$this->description.= ' The female lays a clutch of 5-8 eggs in a dark place. and the first one to hatch quickly devours the others.';
 		$this->description.= ' Shadow dragons cannot abide either very hot climes or arctic conditions, but they thrive in cooler temperate regions.  Shadow dragons prefer to walk rather than fly, for they are poor flyers and tire in a few turns.';
+		$this->description.= ' Shadow dragons appear as wormlike dragons of lighter and darker shadows. The bat-like wings are semitransparent, as is most of the body.';
+		$this->description.= ' If someone is trying to spot a shadow dragon, the eyes, pools of feral gray opalesence, are the easiest to detect. Then, however, it is usually too late.';
+	}
+
+	public function __get( $name ) {
+		if ( $name === 'movement' ) {
+			return $this->movement['foot'];
+		}
+		return parent::__get( $name );
 	}
 
 	protected function determine_intelligence() {
@@ -70,6 +84,7 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 			if ( $roll < 17 ) {
 				$this->co_magic_use = 0;
 			}
+			$this->stats['int'] = $roll;
 		}
 	}
 
@@ -97,9 +112,10 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 
 	protected function determine_specials() {
 		parent::determine_specials();
-		$this->specials['sense']   = "Poor vision in bright light.  Ultravision 60', Infravision 180'.";
-		$this->specials['breath1'] = "BW: Misty Vapors Cloud - 30' wide, 90' long, 30' high.";
-		$this->specials['defense'] = 'Assume gaseous form at will, with AC:-2 and Magic Resistance 30%';
+		$this->specials['senses']  = "Poor vision in bright light.  Ultravision 60', Infravision 180'.";
+		$this->specials['breath1'] = "BW: Cloud of Darkness - 30' wide, 40' long, 20' high.";
+		$this->specials['hide']    = sprintf( 'Hide in Shadows: %u%%', $this->thief->get_thief_skill( 'Hide Shadow' ) );
+		$this->specials['drain']   = 'Immune to life level loss of all types, and cannot be subdued.';
 		$this->specials_mate();
 	}
 

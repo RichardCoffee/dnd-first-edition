@@ -132,9 +132,19 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $age;
 	}
 
+	protected function get_comparative_size() {
+		$size = 'average';
+		if ( $this->hit_dice === $this->hd_range[0] ) {
+			$size = 'small';
+		} else if ( $this->hit_dice === $this->hd_range[2] ) {
+			$size = 'huge';
+		}
+		return $size;
+	}
+
 	protected function determine_specials() {
 		$this->specials = array(
-			'age'      => 'Dragon Age: ' . $this->get_dragon_age(),
+			'age'      => sprintf( 'Dragon Age(%u): %s / %s, Size: %s', $this->hd_minimum, $this->get_dragon_age(), $this->get_comparative_size(), $this->size ),
 			'breath'   => '50% chance of using breath weapon on any given round (max 3/day).',
 			'senses'   => "Infravision 60', Detects hidden or invisible creatures within " . sprintf( '%u feet.', $this->hd_minimum * 10 ),
 			'treasure' => $this->get_treasure_amounts_description(),
@@ -142,6 +152,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		if ( $this->hd_minimum > 4 ) {
 			$this->specials['fear_aura'] = 'Radiates fear aura. Run meatbag, Run!';
 		}
+		do_action( 'monster_determine_specials' );
 	}
 
 	protected function determine_saving_throw() {

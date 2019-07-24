@@ -243,7 +243,7 @@ trait DND_Character_Trait_Weapons {
 	}
 
 	private function get_weapons_using_missile_adjustment() {
-		return array( 'bow', 'breath', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
+		return array( 'bow', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
 	}
 
 	private function get_weapon_attacks_array( $type ) {

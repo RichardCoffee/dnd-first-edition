@@ -3,7 +3,7 @@
 trait DND_Monster_Trait_Defense_Weapons {
 
 
-	protected $mtdw_limit  = 0;
+	protected $mtdw_limit  = 1;
 	protected $mtdw_silver = false;
 
 
@@ -22,8 +22,10 @@ trait DND_Monster_Trait_Defense_Weapons {
 	public function mtdw_verify_to_hit( $number, $to_hit, $character ) {
 		// TODO: apply check for silver weapons
 		// FIXME: add check for multiple opponents
-		if ( $character->weapon['bonus'] < $this->mtdw_limit ) {
-			return ( $to_hit - 99 );
+		if ( $character->weapon['current'] !== 'Spell' ) {
+			if ( $character->weapon['bonus'] < $this->mtdw_limit ) {
+				return ( $to_hit - 99 );
+			}
 		}
 		return $number;
 	}

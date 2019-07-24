@@ -44,9 +44,10 @@ if ( $monster instanceOf DND_Monster_Humanoid_Humanoid ) {
 	$att_cnt-= ( isset( $monster->attacks['Spell']   ) ) ? 1 : 0;
 	$att_cnt-= ( isset( $monster->attacks['Special'] ) ) ? 1 : 0;
 	$att_mon = dnd1e_get_attack_sequence( $rounds, $monster->initiative, [ $att_cnt, 1 ] );
+
 	foreach( $monster->att_types as $type => $attack ) {
 		if ( in_array( $type, [ 'Breath', 'Spell', 'Special' ] ) ) {
-			$att_seq[ $type ] = dnd1e_get_attack_sequence( $rounds, $monster->initiative, $attack['attacks'] );
+			$att_seq[ $type ] = dnd1e_get_attack_sequence( $rounds, $monster->initiative, [ 1, 1 ] );
 		} else {
 			$att_seq[ $type ] = dnd1e_get_attack_sequence( $rounds, $att_mon[ $att_num++ ], [ 1, 1 ] );
 		}

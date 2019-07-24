@@ -33,15 +33,17 @@ trait DND_Monster_Trait_Serialize {
 			$table['speaking']     = $this->speaking;
 			$table['magic_use']    = $this->magic_use;
 			$table['sleeping']     = $this->sleeping;
-		if ( property_exists( $this, 'mate' ) && $this->mate ) {
-				$table['mate'] = serialize( $this->mate );
-			} else {
-				if ( $this->spells ) {
-					$table['spell_list'] = array();
-					foreach( $this->spells as $spell ) {
-						$table['spell_list'][] = array( 'name' => $spell['name'], 'level' => $spell['level'] );
-					}
+			if ( $this->spells ) {
+				$table['spell_list'] = array();
+				foreach( $this->spells as $spell ) {
+					$table['spell_list'][] = array( 'name' => $spell['name'], 'level' => $spell['level'] );
 				}
+			}
+			if ( property_exists( $this, 'mate' ) && $this->mate ) {
+				$table['mate'] = serialize( $this->mate );
+			}
+			if ( $this instanceOf DND_Monster_Dragon_Shadow ) {
+				$table['stats'] = $this->stats;
 			}
 		} else {
 			if ( $this->spells ) {

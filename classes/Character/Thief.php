@@ -30,18 +30,19 @@ class DND_Character_Thief extends DND_Character_Character {
 			$index = ( isset( $table[ $key ][ $this->level ] ) ) ? $this->level : count( $table[ $key ] ) - 1;
 #echo "$key: $index  ";
 			$this->skills[ $key ] = $table[ $key ][ $index ];
+#echo "B:{$this->skills[ $key ]}  ";
 			if ( isset( $racial[ $key ] ) ) {
 				$this->skills[ $key ] += $racial[ $key ];
 			}
-#echo "{$this->skills[ $key ]}  ";
+#echo "R:{$this->skills[ $key ]}  ";
 			if ( isset( $armor[ $key ] ) ) {
 				$this->skills[ $key ] += $armor[ $key ];
 			}
-#echo "{$this->skills[ $key ]}  ";
+#echo "A:{$this->skills[ $key ]}  ";
 			if ( isset( $dex[ $key ] ) ) {
 				$this->skills[ $key ] += $dex[ $key ];
 			}
-#echo "{$this->skills[ $key ]}\n";
+#echo "D:{$this->skills[ $key ]}\n";
 		}
 		if ( $this->skills['Climb Walls'] < 99 ) {
 			$this->skills['Climb Walls'] = round( $this->skills['Climb Walls'] );
