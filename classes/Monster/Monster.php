@@ -35,7 +35,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $specials     = array();
 	protected $to_hit_row   = array();
 	protected $treasure     = 'Nil';
-	protected $xp_value     = array( 0, 0 );
+	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
 	use DND_Character_Trait_Weapons;
