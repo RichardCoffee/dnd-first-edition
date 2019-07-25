@@ -27,6 +27,8 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 		return $this->cleric->get_to_hit_number( $target_ac, $target_at, $range );
 	}
 
+	/**  Import Functions  **/
+
 	public function import_kregen_csv( $file ) {
 		parent::import_kregen_csv( $file );
 		$this->set_current_weapon( $this->weapon['current'] );

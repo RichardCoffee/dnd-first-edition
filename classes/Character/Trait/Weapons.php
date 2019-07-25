@@ -306,15 +306,16 @@ trait DND_Character_Trait_Weapons {
 	}
 
 	private function get_missile_proficiency_bonus( $weapon, $range, $desire = 'hit' ) {
-		$bonus = $this->get_weapon_proficiency_bonus( $weapon['skill'], $desire );
-		if ( ( $bonus > 0 ) && ( $range > 0 ) ) {
+		$bonus = 0;
+		$check = $this->get_weapon_proficiency_bonus( $weapon['skill'], $desire );
+		if ( ( $check > 0 ) && ( $range > 0 ) ) {
 			if ( $weapon['attack'] === 'bow' ) {
 				if ( $range < 31 ) {
 					$bonus = 2;
 				} else if ( $range < $weapon['range'][0] ) {
 					$bonus = 1;
 				}
-			} else if ( $weapon['attack'] === 'lgtXbow' ) {
+			} else if ( substr( $weapon['attack'], 3 ) === 'Xbow' ) {
 				if ( $range < 61 ) {
 					$bonus = 2;
 				} else if ( $range < $weapon['range'][0] ) {

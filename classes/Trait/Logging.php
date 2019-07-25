@@ -201,11 +201,17 @@ trait DND_Trait_Logging {
 		if ( ! is_object( $object ) ) {
 			return $object;
 		}
-		$class   = get_class( $object );
-		$reduced = array( 'class:name' => $class );
+		$classes = array( get_class( $object ) );
+		$parents = class_parents( $object, false );
+		if ( $parents ) {
+			$classes = array_merge( $classes, $parents );
+		}
+		$reduced = array( 'class:name' => $classes[0] );
 		foreach ( (array)$object as $key => $value ) {
 			$nkey = str_replace( "\0*\0", 'protected:', $key );
-			$nkey = str_replace( "\0$class\0", 'private:', $nkey );
+			foreach( $classes as $class ) {
+				$nkey = str_replace( "\0$class\0", 'private:', $nkey );
+			}
 			if ( is_object( $value ) ) {
 				$reduced[ $nkey ] = 'object ' . get_class( $value );
 			} else {

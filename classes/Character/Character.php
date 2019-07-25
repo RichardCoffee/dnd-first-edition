@@ -304,13 +304,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	public function get_weapon_damage_bonus( $range = -1 ) {
 		if ( $this->opponent['range'] > 0 ) { $range = $this->opponent['range']; }
 		$bonus = $this->get_missile_proficiency_bonus( $this->weapon, $range, 'damage' );
-#echo "prof: $bonus\n";
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_damage() ) ) {
 			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
-#echo " str: $bonus\n";
 		}
 		$bonus += $this->weapon['bonus'];
-#echo "weap: $bonus\n";
 		return apply_filters( 'character_weapon_damage_bonus', $bonus, $this );
 	}
 

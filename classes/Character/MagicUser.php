@@ -8,7 +8,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 	protected $stats      = array( 'str' => 3, 'int' => 9, 'wis' => 3, 'dex' => 6, 'con' => 3, 'chr' => 3 );
 	protected $weap_allow = array( 'Caltrop', 'Dagger', 'Dagger,Thrown', 'Dart', 'Knife', 'Knife,Thrown', 'Sling', 'Spell', 'Staff,Quarter' );
 	protected $weap_init  = array( 'initial' => 1, 'step' => 6 );
-	protected $weapons    = array( 'Spell' => 'PF' );
+	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'Skill' => 'PF' ) );
 	protected $xp_bonus   = array( 'int' => 16 );
 	protected $xp_step    = 375000;
 	protected $xp_table   = array( 0, 2500, 5000, 10000, 22500, 40000, 60000, 90000, 135000, 250000, 375000 );

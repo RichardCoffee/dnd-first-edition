@@ -25,7 +25,7 @@ foreach( $chars as $name => $body ) {
 	if ( $body->is_off_hand_weapon() ) {
 		$body->set_primary_weapon();
 		$string = dnd1e_get_combat_string( $body, $monster, $range );
-		echo "      $string\n";
+		echo "        $string\n";
 		$body->set_dual_weapon();
 	}
 	$line .= sprintf( '%u/%u  ', $body->weapon['attacks'][0], $body->weapon['attacks'][1] );

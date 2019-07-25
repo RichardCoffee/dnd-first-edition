@@ -322,7 +322,7 @@ function dnd1e_damage_to_monster( $monster, $target, $damage ) {
 		$monster->current_hp -= $damage;
 	} else {
 		$appearing = get_transient( 'dnd1e_appearing' );
-		$index = $target - 2;
+		$index = $target - 1;
 		$appearing['hit_points'][ $index ][0] -= $damage;
 		$appearing['hit_points'][ $index ][0] = min( $appearing['hit_points'][ $index ][0], $appearing['hit_points'][ $index ][1] );
 		set_transient( 'dnd1e_appearing', $appearing );

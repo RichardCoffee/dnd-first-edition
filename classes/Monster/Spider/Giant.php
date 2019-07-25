@@ -1,6 +1,6 @@
 <?php
 
-class DND_Monster_Spider_Giant extends DND_Monster_Monster {
+class DND_Monster_Spider_Giant extends DND_Monster_Spider_Spider {
 
 
 	protected $alignment    = 'Chaotic Evil';

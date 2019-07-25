@@ -99,10 +99,11 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		return $spells;
 	}
 
-	public function locate_magic_spell( $spell, $type ) {
+	public function locate_magic_spell( $spell, $type = '' ) {
 		foreach( $this->classes as $key => $class ) {
-			if ( $type === $class ) {
-				return $this->$key->locate_magic_spell( $spell, $type );
+			$spell = $this->$key->locate_magic_spell( $spell, $type );
+			if ( isset( $spell['page'] ) ) {
+				return $spell;
 			}
 		}
 		return "Spell '$spell' not found in {$this->name}'s spell book.";

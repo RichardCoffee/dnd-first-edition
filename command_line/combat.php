@@ -3,7 +3,13 @@
 function dnd1e_get_combat_string( DND_Character_Character $char, DND_Monster_Monster $monster, $range ) {
 	$name = $char->get_name();
 	$line = sprintf( '%12s',    sprintf( '%7s(%d)', $name, $char->get_hit_points() ) );
-	$line.= sprintf( ': %-20s', substr( dnd1e_get_combat_weapon( $char ), 0, 19 ) );
+	$weapon = dnd1e_get_combat_weapon( $char );
+	if ( ( substr( $weapon, 0, 3) === 'Bow' ) && ( $range < 31 ) ) {
+		$weapon .= ": Damage*2";
+	} else if ( ( substr( $weapon, 0, 5) === 'Cross' ) && ( $range < 61 ) ) {
+		$weapon .= ": D*2";
+	}
+	$line.= sprintf( ': %-20s', substr( $weapon, 0, 19 ) );
 	$line.= sprintf( '%2d  ',   max( 2, $char->get_to_hit_number() ) );
 	$line.= sprintf( '%5s+',    $char->get_weapon_damage( $monster->size ) );
 	$line.= sprintf( '%-2u   ', $char->get_weapon_damage_bonus( $range ) );
@@ -109,7 +115,7 @@ function dnd1e_show_possible_spells( DND_Character_Character $char ) {
 				$start = dnd1e_show_numbered_spell_list( $spells, $start );
 			}
 		} else {
-			dnd1e_show_numbered_spell_list( $spells );
+			dnd1e_show_numbered_spell_list( $list );
 		}
 	}
 }

@@ -103,6 +103,7 @@ if ( isset( $opts['att'] ) ) {
 }
 
 if ( isset( $opts['hit'] ) ) {
+print_r($opts);
 	$sitrep = explode( ':', $opts['hit'] );
 print_r($sitrep);
 	$name   = $sitrep[0];
