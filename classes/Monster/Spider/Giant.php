@@ -27,6 +27,11 @@ class DND_Monster_Spider_Giant extends DND_Monster_Spider_Spider {
 
 	protected function determine_hit_dice() {
 		$this->hit_dice = 4;
+		$this->description = 'These monsters are web builders. They will construct their sticky traps horizontally or vertically so as to entrap any creature which';
+		$this->description.= ' touches the web. Some will lurk above a path in order to drop upon prey. The web is as tough and clinging as a web spell. Any creature';
+		$this->description.= ' with 18 or greater strength con break free in 1 melee round, a 17 strength requires 2 melee rounds, etc. Webs are quite inflammable.';
+		$this->description.= ' The bite of a giant spider is poisonous. A victim must save versus poison or be killed. A giant spider will flee from an encounter';
+		$this->description.= ' with a superior foe, typically hiding in some secret spot for safety.';
 	}
 
 	protected function determine_specials() {

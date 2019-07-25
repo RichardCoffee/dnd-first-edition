@@ -115,6 +115,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 	}
 
 	public function set_import_task( $task = 'import' ) {
+		parent::set_import_task( $task );
 		foreach( $this->classes as $key => $class ) {
 			$this->$key->set_import_task( $task );
 		}

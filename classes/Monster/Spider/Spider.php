@@ -1,6 +1,6 @@
 <?php
 
-class DND_Monster_Spider_Spider extends DND_Monster_Monster {
+abstract class DND_Monster_Spider_Spider extends DND_Monster_Monster {
 
 
 	public function __get( $name ) {

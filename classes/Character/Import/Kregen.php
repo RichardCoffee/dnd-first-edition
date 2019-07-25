@@ -107,7 +107,7 @@ trait DND_Character_Import_Kregen {
 						$this->set_kregen_weapon_skill( $weapon, $line, $bonus );
 						$this->check_current_weapon( $weapon );
 					}
-				} else if ( $this->import_task === 'spells' ) {
+				} else if ( in_array( $this->import_task, [ 'cleric', 'magic', 'spells' ] ) ) {
 #print_r ( $line );
 					if ( method_exists( $this, 'locate_magic_spell' ) ) {
 						foreach( $line as $item ) {
