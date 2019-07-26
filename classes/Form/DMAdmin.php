@@ -32,7 +32,7 @@ class DND_Form_DMAdmin {
 	}
 
 	public function show_dma_form() { ?>
-		<h1 class="text-center">Dungeon Master Admin Form</h1>
+		<h1 class="text-center">Dungeon Master Admin Form</h1><?php
 	}
 
 
