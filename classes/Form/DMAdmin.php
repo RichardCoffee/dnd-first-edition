@@ -4,7 +4,7 @@ class DND_Form_DMAdmin {
 
 
 	protected $capability = 'import';
-	ptotected $hook       = null;
+	protected $hook       = null;
 	protected $slug       = 'dnd1e';
 
 
