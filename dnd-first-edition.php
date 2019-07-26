@@ -2,7 +2,7 @@
 /**
  *  DnD First Edition Combat Helper
  *
- * @package   Combat Helper
+ * @package   Combat_Helper
  * @author    Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright 2019 Richard Coffee
  * @license   GPLv2  <need uri here>

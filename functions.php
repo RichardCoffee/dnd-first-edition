@@ -11,6 +11,20 @@ function dnd_first_edition_class_loader( $class ) {
 }
 spl_autoload_register( 'dnd_first_edition_class_loader' ); //*/
 
+if ( ! function_exists( 'dnd1e' ) ) {
+	function dnd1e( $force = false ) {
+		static $library;
+		if ( empty( $library ) ) {
+			$library = new DND_Plugin_Library;
+		}
+		if ( $force ) {
+			#  force log entry during ajax call
+			$library->logging_force = $force;
+		}
+		return $library;
+	}
+}
+
 /** array_key_first() introduced in PHP 7.3.0  **/
 if ( ! function_exists( 'array_key_first' ) ) {
 	function array_key_first( array $arr ) {
@@ -18,16 +32,6 @@ if ( ! function_exists( 'array_key_first' ) ) {
 			return $key;
 		}
 		return NULL;
-	}
-}
-
-if ( ! function_exists( 'replicate' ) ) {
-	function replicate( $pattern = '', $iterations = 1 ) {
-		$string = $pattern;
-		for( $i = 1; $i < $iterations; $i++ ) {
-			$string .= $pattern;
-		}
-		return $string;
 	}
 }
 

@@ -21,6 +21,12 @@ class DND_Plugin_FirstEdition extends DND_Plugin_Plugin {
 		register_uninstall_hook(    $this->paths->file, [ 'DND_Register_Register', 'uninstall'  ] );
 		$this->add_actions();
 		$this->add_filters();
+		if ( is_admin() ) {
+			new DND_Form_DMAdmin;
+		} else {
+			$form = new DND_Form_DMScreen;
+			add_shortcode( 'dm_screen', [ $form, 'show_screen' ] );
+		}
 	}
 
 	public function add_actions() {
