@@ -123,7 +123,8 @@ class DND_Character_Cleric extends DND_Character_Character {
 				),
 				'Penetrate Disguise' => array( 'page' => 'UA 33', 'cast' => '2 rounds', 'duration' => '1 round' ),
 				'Protection from Evil' => array( 'page' => 'PH 45', 'cast' => '4 segments',
-					'duration' => sprintf( '%u rounds', $this->level * 3 ),
+					'duration'  => sprintf( '%u rounds', $this->level * 3 ),
+					'condition' => 'this_character_only',
 					'filters' => array(
 						array( 'character_to_hit_opponent',  2, 10, 2 ),
 						array( 'monster_to_hit_character',  -2, 10, 3 ),

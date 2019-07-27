@@ -38,9 +38,9 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $xp_step    = 1000000;
 	protected $xp_table   = array( 1000000 );
 
-	use DND_Character_Import_Kregen;
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
+	use DND_Character_Trait_Kregen;
 	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;

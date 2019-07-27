@@ -43,7 +43,7 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 			'string_protect' => $this->special_string_protect(),
 		);
 		if ( ( $this->level > 3 ) && ( ! $this->has_horse ) ) {
-			$this->special['boolean_warhorse'] = 'Summon Warhorse';
+			$this->specials['boolean_warhorse'] = 'Summon Warhorse';
 		}
 		if ( $this->level > 2 ) {
 			$this->specials = array_merge( $this->specials, $this->cleric->specials );
