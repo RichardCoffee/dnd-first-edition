@@ -32,7 +32,9 @@ class DND_Form_DMAdmin {
 	}
 
 	/**
-	 *  Add .csv to allowable mime types
+	 *  Add .csv to allowable mime types.
+	 *
+	 *  Wordpress already allows .csv files.
 	 *
 	 * @since 20190728
 	 * @link https://neliosoftware.com/blog/how-to-upload-additional-file-types-in-wordpress/
@@ -42,7 +44,6 @@ class DND_Form_DMAdmin {
 	 * @return array
 	 */
 	public function upload_mimes( $mime_types ) {
-dnd1e()->log($mime_types);
 		if ( ! isset( $mime_types['csv'] ) ) {
 			$mime_types['csv'] = 'text/csv';
 		}
@@ -63,6 +64,12 @@ dnd1e()->log($mime_types);
 				</div> */ ?>
 			</div>
 		</form><?php
+		$meta = get_user_meta( get_current_user_id() ); ?>
+		<div>
+			<pre>
+				<?php print_r( $meta ); ?>
+			</pre>
+		</div><?php
 	}
 
 	public function import_kregen_csv() {
