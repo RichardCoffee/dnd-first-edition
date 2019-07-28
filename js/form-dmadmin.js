@@ -31,9 +31,9 @@ jQuery( document ).ready( function( $ ) {
 			file_frame.on( 'select', function() {
 				// We set multiple to false so only get one file from the uploader
 				attachment = file_frame.state().get( 'selection' ).first().toJSON();
-				convertFile( attachment.id );
+				import_csv_file( attachment.id );
 				// Do something with attachment.id and/or attachment.url here
-				jQuery( '#file_status' ).html( 'Please Wait Until Processing ... <i class="fa fa-spinner fa-spin"></i>' );
+				jQuery( '#file_status' ).html( 'Please wait while importig file ... <i class="fa fa-spinner fa-spin"></i>' );
 				jQuery( '#file_log' ).html( '' );
 
 				// Restore the main post ID
@@ -73,7 +73,7 @@ jQuery( document ).ready( function( $ ) {
 } );
 
 
-function convertFile( attachment_id ) {
+function import_csv_file( attachment_id ) {
 	jQuery.ajax( {
 		type: "POST",
 		url: ajaxurl,

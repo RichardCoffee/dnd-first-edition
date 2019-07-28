@@ -3,7 +3,7 @@
 class DND_Character_Import_Kregen {
 
 	public    $character      = null;
-	protected $classes        = '';
+	protected $classes        = array();
 	protected $data           = array();
 	protected $experience     = 0;
 	public    $import_message = 'Could not import file.';
@@ -56,12 +56,12 @@ class DND_Character_Import_Kregen {
 	}
 
 	protected function check_class_name( $string ) {
+		$class = '';
 		switch( $string ) {
 			case 'Climb': // shows up on Barbarian spreadsheet
 			case 'Dr':    // shows up on Ranger / RangerThief spreadsheets
-			case 'MP':
+			case 'MP':    // shows up on spreadsheets where the character uses magic
 			case 'Race':
-				$class = '';
 				break;
 			case 'MU':
 			case '"Magic User"':
