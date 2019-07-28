@@ -92,7 +92,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	public function get_class() {
-		return substr( get_class( $char ), 14 );
+		return substr( get_class( $this ), 14 );
 	}
 
 	public function get_level() {
