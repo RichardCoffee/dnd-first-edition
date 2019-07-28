@@ -28,8 +28,9 @@ class DND_Form_DMAdmin {
 	public function admin_enqueue_scripts( $hook ) {
 		$paths = DND_Plugin_Paths::instance();
 		wp_enqueue_media();
-		wp_enqueue_style(  'dnd-form-admin.css', $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
-		wp_enqueue_script( 'dnd-form-admin.js',  $paths->get_plugin_file_uri( 'js/form-dmadmin.js' ), [ 'jquery' ], $paths->version, true );
+		wp_enqueue_style(  'dnd-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
+		wp_enqueue_style(  'dnd-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ), null, $paths->version );
+		wp_enqueue_script( 'dnd-form-admin.js',      $paths->get_plugin_file_uri( 'js/form-dmadmin.js' ), [ 'jquery' ], $paths->version, true );
 	}
 
 	/**
@@ -55,20 +56,38 @@ class DND_Form_DMAdmin {
 		$this->get_available_chars(); ?>
 		<h1 class="centered"><?php _e( 'Dungeon Master Admin Form', 'dnd-first' );?></h1>
 		<form method='post'>
-			<p id="file_status" class="centered">No file selected</p>
+			<p id="file_status" class="centered"></p>
 			<div id="file_log" class="centered"></div>
 			<div>
-				<div class="pull-right">
-					<input id="upload_kregen_button" type="button" class="button" value="<?php _e( 'Choose file to import', 'wmn-workbook' ); ?>" />
-				</div>
+				<?php $this->show_file_upload_button(); ?>
 			</div>
 		</form>
-		<div>
-			<pre><?php
-				foreach( $this->chars as $key => $char ) {
-					echo "$char\n";
-				} ?>
-			</pre>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="row">
+						<div class="col-lg-6">
+							<h2 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h2>
+							<pre><?php
+								foreach( $this->chars as $key => $char ) {
+									echo "{$char->get_name()}\n";
+								} ?>
+							</pre>
+						</div>
+						<div class="col-lg-6">
+							<h2 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h2>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="row">
+						<h2><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h2>
+					</div>
+					<div class="row">
+						<h2><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h2>
+					</div>
+				</div>
+			</div>
 		</div><?php
 	}
 
@@ -77,15 +96,32 @@ class DND_Form_DMAdmin {
 	 *
 	 * @since 20190728
 	 */
-	protected function get_available_chars() {
-		$me = get_current_user_id();
-		$meta = get_user_meta( $me );
-		foreach( $meta as $key => $data ) {
-			if ( substr( $key, 0, 20 ) === 'dnd1e_DND_Character_' ) {
-				$char = substr( $key, 20 );
-				$this->chars[ $char ] = unserialize( get_user_meta( $me, $key, true ) );
+	protected function get_available_chars( $reload = false ) {
+		if ( empty( $this->chars ) || $reload ) {
+			$me = get_current_user_id();
+			$meta = get_user_meta( $me );
+			foreach( $meta as $key => $data ) {
+				if ( substr( $key, 0, 20 ) === 'dnd1e_DND_Character_' ) {
+					$char = substr( $key, 20 );
+					$this->chars[ $char ] = unserialize( get_user_meta( $me, $key, true ) );
+				}
 			}
 		}
+	}
+
+	/**
+	 *  Show the file upload button
+	 *
+	 * @since 20190728
+	 */
+	protected function show_file_upload_button() {
+		$attrs = array(
+			'id' => 'upload_kregen_button',
+			'type' => 'button',
+			'class' => 'button pull-right',
+			'value' => _e( 'Choose file to import', 'dnd-first-edition' ),
+		);
+		dnd1e()->tag( 'input', $attrs );
 	}
 
 	public function import_kregen_csv() {
