@@ -58,12 +58,9 @@ class DND_Form_DMAdmin {
 			<p id="file_status" class="centered">No file selected</p>
 			<div id="file_log" class="centered"></div>
 			<div>
-				<div class="centered">
-					<input id="upload_kregen_button" type="button" class="button" value="<?php _e( 'Choose file to import', 'wmn-workbook' ); ?>" />
-				</div><?php /*
 				<div class="pull-right">
-					<input id="reset_nodelist_button" type="button" class="button" value="<?php _e( 'Reset nodelist', 'wmn-workbook' ); ?>" />
-				</div> */ ?>
+					<input id="upload_kregen_button" type="button" class="button" value="<?php _e( 'Choose file to import', 'wmn-workbook' ); ?>" />
+				</div>
 			</div>
 		</form>
 		<div>
@@ -86,7 +83,7 @@ class DND_Form_DMAdmin {
 		foreach( $meta as $key => $data ) {
 			if ( substr( $key, 0, 20 ) === 'dnd1e_DND_Character_' ) {
 				$char = substr( $key, 20 );
-				$this->chars[ $char ] = get_user_meta( $me, $key, true );
+				$this->chars[ $char ] = unserialize( get_user_meta( $me, $key, true ) );
 			}
 		}
 	}
