@@ -97,6 +97,7 @@ class DND_Form_DMAdmin {
 					$this->chars[ $char ] = unserialize( get_user_meta( $me, $key, true ) );
 				}
 			}
+			ksort( $this->chars );
 		}
 	}
 
@@ -132,6 +133,9 @@ class DND_Form_DMAdmin {
 				<th>
 					<?php _e( 'Level', 'dnd-first-edition' ); ?>
 				</th>
+				<th>
+					<?php _e( 'Hit Points', 'dnd-first-edition' ); ?>
+				</th>
 			</thead>
 			<tbody><?php
 				foreach( $this->chars as $name => $char ) { ?>
@@ -142,8 +146,11 @@ class DND_Form_DMAdmin {
 						<td>
 							<?php echo $char->get_class(); ?>
 						</td>
-						<td>
+						<td class="centered">
 							<?php echo $char->get_level(); ?>
+						</td>
+						<td class="centered">
+							<?php echo $char->hit_points; ?>
 						</td>
 					</tr><?php
 				} ?>
