@@ -34,20 +34,27 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				'Faerie Fire' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '3 segments',
 					'duration' => sprintf( '%u rounds', $this->level * 4 ),
 				),
+				'Invisibility to Animals' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '4 segments',
+					'duration' => sprintf( '%3.1u turns', ( $this->level * 0.1 ) + 10 ),
+				),
 				'Locate Animals' => array( 'page' => 'PH 56', 'type' => 'Divination', 'cast' => '1 round',
 					'duration' => sprintf( '%u rounds', $this->level ),
 					'aoe' => sprintf( '20 foot path, %u feet long', $this->level * 20 ),
 				),
 				'Magic Fang' => array( 'page' => 'spec',
-					'type'     => 'Alteration',
-					'range'    => 'touch',
-					'duration' => sprintf( '%u rounds', $this->level ),
-					'aoe'      => 'Creature touched',
-					'comps'    => 'V,S,M',
-					'cast'     => '3 segments',
-					'saving'   => 'None',
-					'special'  => '+1 to hit, +1 damage',
-					'desc'     => 'By means of this spell, the druid is able to affect an animal that the druid has befriended.  The animal recieves a bonus of +1 to hit and +1 damage. Material component is a fang from a woodland animal.',
+					'type'      => 'Alteration',
+					'range'     => 'touch',
+					'duration'  => sprintf( '%u rounds', $this->level ),
+					'aoe'       => 'Creature touched',
+					'comps'     => 'V,S,M',
+					'cast'      => '3 segments',
+					'saving'    => 'None',
+					'special'   => '+1 to hit, +1 damage',
+/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'filters'   => array(
+						array( 'monster_to_hit_number', 1, 10, 2 ),
+						array( 'monster_damage_bonus',  1, 10, 2 ),
+					), */
 				),
 				'Predict Weather' => array( 'page' => 'PH 56', 'type' => 'Divination', 'cast' => '1 round',
 					'duration' => sprintf( '%u hours', $this->level * 2 ),
@@ -86,15 +93,19 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'range' => sprintf( '%u feet', $this->level * 10 ),
 				),
 				'Magic Fang II' => array( 'page' => 'spec',
-					'type'     => 'Alteration',
-					'range'    => sprintf( '%u feet', ( $this->level *2.5 ) + 25 ),
-					'duration' => sprintf( '%3.1f turns', $this->level * 0.5 ),
-					'aoe'      => 'One targeted creature',
-					'comps'    => 'V,S,M',
-					'cast'     => '5 segments',
-					'saving'   => 'None',
-					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 4 ) ) ),
-					'desc'     => 'This spell works identically to the first level druid spell Magic Fang, except the bonus is +1/+1 per every 4 levels of the druid, maximum of +5/+5.',
+					'type'      => 'Alteration',
+					'range'     => sprintf( '%u feet', ( $this->level *2.5 ) + 25 ),
+					'duration'  => sprintf( '%3.1f turns', $this->level * 0.5 ),
+					'aoe'       => 'One targeted creature',
+					'comps'     => 'V,S,M',
+					'cast'      => '5 segments',
+					'saving'    => 'None',
+					'special'   => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 4 ) ) ),
+/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'filters'   => array(
+						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+					), */
 				),
 				'Plant Growth' => array( 'page' => 'PH 58-59', 'type' => 'Alteration', 'cast' => '1 round',
 					'aoe' => sprintf( '%1$u x %1$u square area', $this->level * 20 ),
@@ -129,7 +140,12 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'cast'     => '6 segments',
 					'saving'   => 'None',
 					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 5 ) ) ),
-					'desc'     => "This spell is a more potent version of the third level druid spell Magic Fang II.  The creature's attack now counts as a magical weapon for monsters that can only be hit by magical weapons, although the bonus is +1/+1 per every five levels of the druid.",
+/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'filters'   => array(
+						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						//  May need mtdw filter as well
+					), */
 				),
 				'Speak With Plants' => array( 'page' => 'PH 61, PH 50', 'type' => 'Alteration', 'cast' => '1 turn',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
@@ -161,6 +177,23 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				),
 			),
 		);
+	}
+
+	protected function get_description_table() {
+		static $table = null;
+		if ( $table ) return $table;
+		$table = array(
+			'First' => array(
+				'Magic Fang' => 'By means of this spell, the druid is able to affect an animal that the druid has befriended.  The animal recieves a bonus of +1 to hit and +1 damage. Material component is a fang from a woodland animal.',
+			),
+			'Third' => array(
+				'Magic Fang II' => 'This spell works identically to the first level druid spell Magic Fang, except the bonus is +1/+1 per every 4 levels of the druid, maximum of +5/+5.',
+			),
+			'Fourth' => array(
+				'Magic Fang III' => "This spell is a more potent version of the third level druid spell Magic Fang II.  The creature's attack now counts as a magical weapon for monsters that can only be hit by magical weapons, although the bonus is +1/+1 per every five levels of the druid.",
+			),
+		);
+		return $table;
 	}
 
 	public function special_defense_fire() {

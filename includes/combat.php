@@ -327,20 +327,4 @@ function dnd1e_damage_to_monster( $monster, $target, $damage ) {
 		$appearing['hit_points'][ $index ][0] = min( $appearing['hit_points'][ $index ][0], $appearing['hit_points'][ $index ][1] );
 		set_transient( 'dnd1e_appearing', $appearing );
 	}
-
-
-
-}
-
-function dnd1e_import_kregen_characters( $list ) {
-	$base    = 'DND_Character_';
-	$objects = array();
-	foreach( $list as $name => $data ) {
-		$load = $base . $data['class'];
-		$file = CSV_PATH . $name . '.csv';
-		$info = ( isset( $data['data'] ) ) ? $data['data'] : array();
-		$objects[ $name ] = new $load( $info );
-		$objects[ $name ]->import_kregen_csv( $file );
-	}
-	return $objects;
 }

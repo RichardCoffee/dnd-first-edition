@@ -1,14 +1,14 @@
 <?php
 
-class DND_Character_ClericThief extends DND_Character_Multi {
+class DND_Character_MagicUserThief extends DND_Character_Multi {
 
 
-	protected $cleric = null;
-	protected $thief  = null;
+	protected $magic = null;
+	protected $thief = null;
 
 
 	public function __construct( $args = array() ) {
-		$this->classes = array( 'cleric' => 'Cleric', 'thief' => 'Thief' );
+		$this->classes = array( 'magic' => 'Magic User', 'thief' => 'Thief' );
 		parent::__construct( $args );
 	}
 
@@ -16,18 +16,10 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 		parent::initialize_multi();
 	}
 
-	/**  Cleric Abilities **/
+	/**  Magic User Abilities **/
 
-	public function locate_magic_spell( $spell, $type = 'Cleric' ) {
+	public function locate_magic_spell( $spell, $type = 'Magic User' ) {
 		return parent::locate_magic_spell( $spell, $type );
-	}
-
-	public function special_string_undead( $type, $level = 0 ) {
-		return $this->cleric->special_string_undead( $type, $this->level );
-	}
-
-	public function get_undead_caps( $level = 0 ) {
-		return $this->cleric->get_undead_caps( $this->level );
 	}
 
 	/**  Thief Abilities  **/
@@ -47,15 +39,15 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 	/**  Character Functions  **/
 
 	public function set_current_weapon( $new = '' ) {
-		$this->cleric->set_current_weapon( $new );
+		$this->magic->set_current_weapon( $new );
 		$this->thief->set_current_weapon( $new );
-		$this->armor  = $this->cleric->armor;
-		$this->weapon = $this->cleric->weapon;
+		$this->armor  = $this->thief->armor;
+		$this->weapon = $this->thief->weapon;
 	}
 
 	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
-		$this->cleric->opponent = $this->opponent;
-		return $this->cleric->get_to_hit_number( $target_ac, $target_at, $range );
+		$this->thief->opponent = $this->opponent;
+		return $this->thief->get_to_hit_number( $target_ac, $target_at, $range );
 	}
 
 

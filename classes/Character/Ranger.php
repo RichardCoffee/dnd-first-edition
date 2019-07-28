@@ -27,14 +27,17 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			unset( $args['magic'] );
 		}
 		parent::__construct( $args );
+		if ( isset( $args['spell_import'] ) ) {
+			$this->import_spells( $args['spell_import'] );
+		}
 	}
 
 	public function initialize_character() {
-		parent::initialize_character();
 		if ( empty( $this->druid ) ) {
 			$this->druid = new DND_Character_Druid( [ 'level' => $this->level ] );
 			$this->magic = new DND_Character_MagicUser( [ 'level' => $this->level ] );
 		}
+		parent::initialize_character();
 		$this->initialize_spell_list( $this->spell_list );
 	}
 
@@ -48,6 +51,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected function determine_hit_points() {
 		parent::determine_hit_points();
 		if ( $this->hit_points ) {
+			$this->current_hp += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 			$this->hit_points += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 		}
 	}
@@ -66,11 +70,19 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 	}
 
+	protected function import_spells( $spells ) {
+		foreach( $spells as $spell ) {
+			$new = $this->locate_magic_spell( $spell );
+			if ( ! isset( $new['page'] ) ) return;
+			$this->add_spell( $new );
+		}
+	}
+
 	protected function define_specials() {
 		$this->specials = array(
-			'integer_giant'   => "Damage vs 'giant' class opponent: +" . $this->special_integer_giant( 'giant', 'int' ),
-			'integer_track'   => 'Tracking: ' . $this->special_integer_track() . '%',
-			'string_surprise' => 'Surprise: ' . $this->special_string_surprise(),
+			'integer_giant'   => sprintf( "Damage vs 'giant' class opponent: +%u (UA 22)", $this->special_integer_giant( 'giant', 'int' ) ),
+			'integer_track'   => sprintf( 'Tracking: %u%% (PH 25,UA 21-22)', $this->special_integer_track() ),
+			'string_surprise' => sprintf( 'Surprise: %s', $this->special_string_surprise() ),
 		);
 	}
 
@@ -139,12 +151,6 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		if ( ! isset( $this->spells[ $caster ][ $level ][ $name ] ) ) {
 			$this->spells[ $caster ][ $level ][ $name ] = $this->get_spell_data( $level, $name, $caster );
 		}
-	}
-
-	public function parse_csv_line( $line ) {
-		parent::parse_csv_line( $line );
-		$this->druid->parse_csv_line( $line );
-		$this->magic->parse_csv_line( $line );
 	}
 
 

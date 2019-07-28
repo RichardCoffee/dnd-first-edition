@@ -87,6 +87,7 @@ function dnd1e_get_magic_potions_table() {
 		array( 'chance' => 20, 'text' => 'Invulnerability(F)',       'xp' => 350, 'gp' =>   500, 'link' => 'DMG' ),
 		array( 'chance' => 20, 'text' => 'Levitation',               'xp' => 250, 'gp' =>   400, 'link' => 'DMG' ),
 		array( 'chance' => 20, 'text' => 'Longevity',                'xp' => 500, 'gp' =>  1000, 'link' => 'DMG' ),
+		array( 'chance' => 30, 'text' => 'Neutralize Poison',        'xp' => 300, 'gp' =>   500, 'link' => 'DMG' ),
 		array( 'chance' => 10, 'text' => 'Oil of Acid Resistance',   'xp' => 500, 'gp' =>  5000, 'link' => '' ),
 		array( 'chance' => 10, 'text' => 'Oil of Disenchantment',    'xp' => 750, 'gp' =>  3500, 'link' => '' ),
 		array( 'chance' => 20, 'text' => 'Oil of Elemental Invulnerability*', 'xp' => 500, 'gp' => 5000, 'link' => '' ),
@@ -120,7 +121,7 @@ function dnd1e_get_magic_potions_table() {
 		array( 'chance' => 10, 'text' => 'Ventriloquism',             'xp' => 200, 'gp' =>   800, 'link' => '' ),
 		array( 'chance' => 10, 'text' => 'Vitality',                  'xp' => 300, 'gp' =>  2500, 'link' => '' ),
 		array( 'chance' => 20, 'text' => 'Water Breathing',           'xp' => 400, 'gp' =>   900, 'link' => 'DMG' ),
-		array( 'chance' => 65, 'text' => "DM's choice",               'xp' => '~', 'gp' => '~~~', 'link' => '' ),
+		array( 'chance' => 35, 'text' => "DM's choice",               'xp' => '~', 'gp' => '~~~', 'link' => '' ),
 	);
 }
 

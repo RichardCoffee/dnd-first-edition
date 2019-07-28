@@ -210,7 +210,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	protected function get_damage_string( $damage ) {
 		$string  = sprintf( '%ud%u', $damage[0], $damage[1] );
-		$string .= ( $damage[2] > 0 ) ? sprintf( '+%u', $damage[2] ) : '';
+		$bonus   = apply_filters( 'monster_damage_bonus', $damage[2], $this );
+		$string .= ( $bonus > 0 ) ? sprintf( '+%u', $bonus ) : '';
 		return $string;
 	}
 
@@ -287,6 +288,17 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		}
 		return $response;
 	}
+
+	/**  Filter Conditions  **/
+
+	public function this_monster_only( $purpose, $spell, $monster ) {
+		if ( $monster->get_name() === $spell['target'] ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**  Command Line  **/
 
 	public function command_line_display() {
 		$line = "{$this->name}: ";

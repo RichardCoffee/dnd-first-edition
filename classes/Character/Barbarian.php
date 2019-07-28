@@ -22,5 +22,12 @@ class DND_Character_Barbarian extends DND_Character_Fighter {
 		return $bonus;
 	}
 
+	protected function attr_get_constitution_hit_point_adjustment( $con ) {
+		$bonus = parent::attr_get_constitution_hit_point_adjustment( $con );
+		if ( $bonus > 0 ) {
+			$bonus = ( $con - 14 ) * 2;
+		}
+		return $bonus;
+	}
 
 }

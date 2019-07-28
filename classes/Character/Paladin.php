@@ -22,10 +22,10 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 	}
 
 	public function initialize_character() {
-		parent::initialize_character();
 		if ( empty( $this->cleric ) ) {
 			$this->cleric = new DND_Character_Cleric( [ 'level' => $this->level ] );
 		}
+		parent::initialize_character();
 	}
 
 	protected function calculate_level( $xp ) {

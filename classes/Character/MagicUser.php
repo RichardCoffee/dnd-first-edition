@@ -17,12 +17,30 @@ class DND_Character_MagicUser extends DND_Character_Character {
 	use DND_Character_Trait_Magic;
 
 
+	public function __construct( $args = array() ) {
+		parent::__construct( $args );
+		if ( isset( $args['spell_import'] ) ) {
+			$this->import_spell_list( $args['spell_import'] );
+		}
+	}
+
 	protected function define_specials() { }
 
 	protected function get_spell_table() {
 		return array(
 			'Cantrips' => array(
 				'Change'  => array( 'page' => 'UA 48' ),
+				'Chill'   => array( 'page' => 'UA 45' ),
+				'Clean'   => array( 'page' => 'UA 45' ),
+				'Color'   => array( 'page' => 'UA 45' ),
+				'Cough' => array(
+					'kind' => 'Person-Affecting',
+					'page' => 'UA 49',
+					'type' => 'Evocation',
+					'aoe'  => 'One person',
+				),
+				'Dust'    => array( 'page' => 'UA 45-46' ),
+				'Flavor'  => array( 'page' => 'UA 46' ),
 				'Freshen' => array( 'page' => 'UA 46' ),
 				'Giggle'  => array( 'page' => 'UA 49' ),
 				'Hide'    => array( 'page' => 'UA 48' ),
@@ -31,10 +49,28 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Rattle'  => array( 'page' => 'UA 51' ),
 				'Ravel'   => array( 'page' => 'UA 47' ),
 				'Salt'    => array( 'page' => 'UA 46' ),
+				'Shine' => array(
+					'kind' => 'Useful',
+					'page' => 'UA 46',
+					'type' => 'Alteration',
+					'aoe'  => 'One object',
+				),
 				'Smokepuff' => array( 'page' => 'UA 50' ),
 				'Sneeze'  => array( 'page' => 'UA 48' ),
 				'Spill'   => array( 'page' => 'UA 47' ),
 				'Tangle'  => array( 'page' => 'UA 48' ),
+				'Tweak' => array(
+					'kind' => 'Personal',
+					'page' => 'UA 50',
+					'type' => 'Conjuration',
+					'aoe'  => 'One Creature',
+				),
+				'Untie' => array(
+					'kind' => 'Reversed',
+					'page' => 'UA 48',
+					'type' => 'Alteration',
+					'aoe'  => 'One object',
+				),
 				'Whistle' => array( 'page' => 'UA 51' ),
 				'Wilt'    => array( 'page' => 'UA 48' ),
 				'Wink'    => array( 'page' => 'UA 49' ),
@@ -45,7 +81,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Affect Normal Fires' => array( 'page' => 'PH 65', 'type' => 'Alteration', 'cast' => '1 segment',
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
-				'Armor' => array( 'page' => 'UA 51', 'type' => 'Conjuration', 'cast' => '1 round',
+				'Armor' => array( 'page' => 'UA 51-52', 'type' => 'Conjuration', 'cast' => '1 round',
 					'special'   => sprintf( 'absorbs %u points of damage', $this->level + 8 ),
 					'condition' => 'this_character_only',
 					'filters'   => array(
@@ -57,7 +93,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'special' => sprintf( 'damage: %u hit points', $this->level ),
 				),
 				'Comprehend Languages' => array( 'page' => 'PH 66', 'type' => 'Alteration', 'cast' => '1 round',
-					'duration' => sprintf( '%u rounds', $this->level * 5 ),
+					'duration' => sprintf( '%3.1f turns', $this->level / 2  ),
 				),
 				'Dancing Lights' => array( 'page' => 'PH 66', 'type' => 'Alteration', 'cast' => '1 segment',
 					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 40 ),
@@ -70,6 +106,27 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u segments', $this->level ),
 				),
 				'Find Familiar' => array( 'page' => 'PH 67', 'type' => 'Conjuration/Summoning', 'cast' => '24 hours' ),
+				'Firewater' => array(
+					'page'     => 'UA 52',
+					'type'     => 'Alteration',
+					'range'    => '10 feet',
+					'duration' => '1 round',
+					'aoe'      => sprintf( '%u pints of water', $this->level ),
+					'comps'    => 'V, S, M',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
+				),
+				'Friends' => array(
+					'page'     => 'PH 67',
+					'type'     => 'Enchantment/Charm',
+					'range'    => '0',
+					'duration' => sprintf( '%u rounds', $this->level ),
+					'aoe'      => sprintf( '%u radius sphere', ( $this->level * 10 ) + 10 ),
+					'comps'    => 'V, S, M',
+					'cast'     => '1 segment',
+					'saving'   => 'Special',
+					'special'  => 'Opponent ST: fail: +2d4 charisma, succeed: -1d4 charisma',
+				),
 				'Hold Portal' => array( 'page' => 'PH 67', 'type' => 'Alteration', 'cast' => '1 segment',
 					'range'    => sprintf( '%u feet', $this->level * 20 ),
 					'duration' => sprintf( '%u rounds', $this->level ),
@@ -78,6 +135,17 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u segments', $this->level ),
 					'special'  => ( 15 + ( $this->level * 5 ) ) . '%',
 				),
+				'Jump' => array(
+					'page'     => 'PH 68',
+					'type'     => 'Alteration',
+					'range'    => 'Touch',
+					'duration' => '1 turn or all jumps used',
+					'aoe'      => 'Creature touched',
+					'comps'    => 'V, S, M',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
+					'special'  => sprintf( 'Allows %u jumps', ceil( $this->level / 3 ) ),
+				),
 				'Light' => array( 'page' => 'PH 68, PH 45', 'type' => 'Alteration', 'cast' => '1 segment',
 					'duration' => sprintf( '%u turns', $this->level ),
 				),
@@ -85,10 +153,31 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'range'   => sprintf( '%u feet', ( $this->level * 10 ) + 60 ),
 					'special' => sprintf( '%1$ud4+%1$u', intval( ( $this->level + 1 ) / 2 ) )
 				),
+				'Melt' => array(
+					'page'     => 'UA 52',
+					'type'     => 'Alteration',
+					'range'    => '30 feet',
+					'duration' => sprintf( '%u rounds', $this->level ),
+					'aoe'      => sprintf( '%u cubic yards of ice or %u cubic yards of snow', $this->level, $this->level * 2 ),
+					'comps'    => 'V, S, M',
+					'cast'     => '1 segment',
+					'saving'   => 'Special',
+					'special'  => sprintf( 'Cold creatures: %u points of damage, or half that if ST is successful.', $this->level * 2 ),
+				),
 				'Mending' => array( 'page' => 'PH 68', 'type' => 'Alteration', 'cast' => '1 segment' ),
 				'Message' => array( 'page' => 'PH 68', 'type' => 'Alteration', 'cast' => '1 segment',
 					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 60 ),
 					'duration' => sprintf( '%u segments', $this->level + 5 ),
+				),
+				'Mount' => array(
+					'page'     => 'UA 52',
+					'type'     => 'ConjurationlSummoning',
+					'range'    => '10 feet',
+					'duration' => sprintf( '%u hours', $this->level + 2 ),
+					'aoe'      => 'One creature',
+					'comps'    => 'V, S, M',
+					'cast'     => '1 round',
+					'saving'   => 'None',
 				),
 				'Precipitation' => array( 'page' => 'UA 52, UA 34', 'type' => 'Alteration', 'cast' => '1 segment',
 					'duration' => sprintf( '%u segments', $this->level ),
@@ -98,6 +187,17 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				),
 				'Read Magic' => array( 'page' => 'PH 69', 'type' => 'Divination', 'cast' => '1 round', 'reversible' => true,
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
+				),
+				'Run' => array(
+					'page'     => 'UA 52',
+					'type'     => 'Enchantment',
+					'range'    => 'Touch',
+					'duration' => '1d4+4 hours',
+					'aoe'      => 'Humans and demi-humans only',
+					'comps'    => 'V, S, M',
+					'cast'     => '1 round',
+					'saving'   => 'None',
+					'special'  => sprintf( 'Can affect %u individuals', floor( $this->level / 2 ) + 1 ),
 				),
 				'Sleep' => array( 'page' => 'PH 69', 'type' => 'Enchantment/Charm', 'cast' => '1 segment',
 					'duration' => sprintf( '%u rounds', $this->level * 5 ),
@@ -125,12 +225,34 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 60 ),
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
+				'Bind' =>array(
+					'page'     => 'UA 53',
+					'type'     => 'AlterationlEnchantment',
+					'range'    => '30 feet',
+					'duration' => sprintf( '%u rounds', $this->level ),
+					'aoe'      => sprintf( '%u feet of 1 inch diameter rope', ( $this->level * 5 ) + 50 ),
+					'comps'    => 'V, S, M',
+					'cast'     => '2 segments',
+					'saving'   => 'None',
+					'special'  => 'Commands: Coil; Coil & Knot; Loop; Loop & Knot; Tie & Knot; and reverses.',
+				),
 				'Continual Light' => array( 'page' => 'PH 70, PH 47', 'type' => 'Alteration', 'cast' => '2 segments' ),
 				"Darkness 15' Radius" => array( 'page' => 'PH 70', 'type' => 'Alteration', 'cast' => '2 segments',
 					'range'    => sprintf( '%u feet', $this->level * 10 ),
 					'duration' => sprintf( '%3.1f turns', ( $this->level / 10 ) + 1 ),
 				),
 				'Forget' => array( 'page' => 'PH 71', 'type' => 'Enchantment/Charm', 'cast' => '2 segments' ),
+				'Invisibility' => array( 'page' => 'PH 71', 'type' => 'Illusion/Phantasm', 'cast' => '2 segments' ),
+				'Knock' => array(
+					'page'     => 'PH 71',
+					'type'     => 'Alteration',
+					'range'    => '60 feet',
+					'duration' => 'Special',
+					'aoe'      => sprintf( '%u square feet', $this->level * 10 ),
+					'comps'    => 'V',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
+				),
 				"Leomund's Trap" => array( 'page' => 'PH 71', 'type' => 'Illusion/Phantasm', 'cast' => '3 rounds' ),
 				'Levitate' => array( 'page' => 'PH 71', 'type' => 'Alteration', 'cast' => '2 segments',
 					'range'    => sprintf( '%u feet', $this->level * 20 ),
@@ -143,16 +265,37 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'special'  => sprintf( '01-%u: 1, %u-%u: 2, %u-%u: 3, %u-00: 4', max( 1, 25 - $this->level ), max( 2, 26 - $this->level ), max( 2, 50 - $this->level ), max( 3, 51 - $this->level ), max( 3, 75 - $this->level ), max( 4, 76 - $this->level ) ),
 				),
 				'Preserve' => array( 'page' => 'UA 54', 'type' => 'Abjuration', 'cast' => '2 rounds' ),
-				'Protection from Cantrips' => array( 'page' => 'UA54', 'type' => 'Abjuration', 'cast' => '2 segments',
+				'Protection from Cantrips' => array( 'page' => 'UA 54', 'type' => 'Abjuration', 'cast' => '2 segments',
 					'duration' => sprintf( '%u days', $this->level ),
 				),
 				'Pyrotechnics' => array( 'page' => 'PH 73', 'type' => 'Alteration', 'cast' => '2 segments' ),
+				'Scare' => array(
+					'page'     => 'PH 72',
+					'type'     => 'Enchantrnent/Charm',
+					'range'    => '10 feet',
+					'duration' => '3d4 rounds',
+					'aoe'      => 'One creature',
+					'comps'    => 'V, S, M',
+					'cast'     => '2 segments',
+					'saving'   => 'Negates',
+				),
 				'Stinking Cloud' => array( 'page' => 'PH 72, PH 59', 'type' => 'Evocation', 'cast' => '2 segments',
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
 				'Strength' => array( 'page' => 'PH 73', 'type' => 'Alteration', 'cast' => '1 turn',
 					'duration' => sprintf( '%u turns', $this->level * 6 ),
-					'special'  => 'C:d6, F:d8, MU:d4, T:d6, M:d4',
+					'special'  => 'Cleric:d6, Fighter:d8, Magic User:d4, Thief:d6, Monk:d4',
+				),
+				"Tasha's Uncontrollable Hideous Laughter" => array(
+					'page'     => 'UA 54',
+					'type'     => 'Evocation',
+					'range'    => '50 feet',
+					'duration' => '1 round',
+					'aoe'      => 'One creature',
+					'comps'    => 'V, S, M',
+					'cast'     => '2 segments',
+					'saving'   => 'Negates',
+					'special'  => 'ST depends on intelligence: up to 3: immune, 4-8: -6, 9-12: -4, 13-15: -2, 16+: normal',
 				),
 				'Zephyr' => array( 'page' => 'UA 55', 'type' => 'Evocation', 'cast' => '2 segments',
 					'aoe' => sprintf( "10' path, %u' length", $this->level * 5 ),
@@ -169,6 +312,17 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Dispel Magic' => array( 'page' => 'PH 74, PH 48', 'type' => 'Abjuration', 'cast' => '3 segments' ),
 				'Feign Death' => array( 'page' => 'PH 74', 'type' => 'Necromantic', 'cast' => '1 segment',
 					'duration' => sprintf( '%u rounds', $this->level + 6 ),
+				),
+				'Fireball' => array(
+					'page'     => 'PH 74',
+					'type'     => 'Evocation',
+					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 100 ),
+					'duration' => 'Instantaneous',
+					'aoe'      => "20' radius sphere",
+					'comps'    => 'V, S',
+					'cast'     => '3 segments',
+					'saving'   => 'Half Damage',
+					'special'  => sprintf( 'Does %ud6 damage', $this->level ),
 				),
 				'Fly' => array( 'page' => 'PH 74', 'type' => 'Alteration', 'cast' => '3 segments',
 					'duration' => sprintf( '%u turns plus 1d6 turns', $this->level ),
@@ -190,6 +344,16 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'aoe'     => 'Single Bolt: 5 ft wide, 80 feet long; Forked Bolt: 10 ft wide, 40 feet long',
 					'special' => sprintf( 'damage %ud6', $this->level ),
 				),
+				"Melf's Minute Meteor" => array(
+					'page'     => 'UA 55-56',
+					'type'     => 'Evocation/Alteration',
+					'range'    => sprintf( '%u feet', $this->level * 10 ),
+					'duration' => sprintf( '%u segments or %u rounds', $this->level * 2, $this->level ),
+					'aoe'      => 'One target per missile, 1d4 damage',
+					'comps'    => 'V,S,M',
+					'cast'     => '5 segments',
+					'saving'   => 'None',
+				),
 				'Monster Summoning I' => array( 'page' => 'PH 75', 'type' => 'Conjuration/Summoning', 'cast' => '3 segments',
 					'duration' => sprintf( '%u rounds', $this->level + 2 ),
 				),
@@ -199,6 +363,17 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				),
 				'Protection From Normal Missiles' => array( 'page' => 'PH 76', 'type' => 'Abjuration', 'cast' => '3 segments',
 					'duration' => sprintf( '%u turns', $this->level ),
+				),
+				'Sepia Snake Sigil' => array(
+					'page'     => 'UA 56',
+					'type'     => 'ConjurationlSummoning',
+					'range'    => '5 feet',
+					'duration' => 'Special',
+					'aoe'      => 'One sigil',
+					'comps'    => 'V,S,M',
+					'cast'     => '3 segments',
+					'saving'   => 'None',
+					'special'  => sprintf( 'Snake attacks a %u HD monster', $this->level ),
 				),
 				'Slow' => array( 'page' => 'PH 76', 'type' => 'Alteration', 'cast' => '3 segments',
 					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 90 ),
@@ -218,6 +393,17 @@ class DND_Character_MagicUser extends DND_Character_Character {
 			'Fourth' => array(
 				'Dispel Illusion' => array( 'page' => 'UA 56, PH 97', 'type' => 'Abjuration', 'cast' => '4 segments',
 					'range' => sprintf( '%u feet', $this->level * 5 ),
+				),
+				'Enchanted Weapon' => array(
+					'page'       => 'PH 77',
+					'type'       => 'Alteration',
+					'reversible' => true,
+					'range'      => 'Touch',
+					'duration'   => sprintf( '%3.1f turns', $this->level / 2 ),
+					'aoe'        => 'Weapon(s) touched',
+					'comps'      => 'V, S, M',
+					'cast'       => '1 turn',
+					'saving'     => 'None',
 				),
 				"Evard's Black Tentacles" => array( 'page' => 'UA 56', 'type' => 'Conjuration/Summoning', 'cast' => '8 segments',
 					'duration' => sprintf( '%u rounds', $this->level ),
@@ -249,6 +435,16 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u turns', $this->level * 2 ),
 				),
 				'Shout' => array( 'page' => 'UA 57', 'type' => 'Evocation', 'cast' => '1 segment' ),
+				'Stoneskin' => array(
+					'page'     => 'UA 57',
+					'type'     => 'Alteration',
+					'range'    => 'Touch',
+					'duration' => 'Special',
+					'aoe'      => 'One creature',
+					'comps'    => 'V,S,M',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
+				),
 				'Wall of Ice' => array( 'page' => 'PH 79', 'type' => 'Evocation', 'cast' => '4 segments',
 					'range'    => sprintf( '%u feet', $this->level * 10 ),
 					'duration' => sprintf( '%u turns', $this->level ),
@@ -276,6 +472,16 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
 				'Sending' => array( 'page' => 'UA 59', 'type' => 'Evocation', 'cast' => '1 turn' ),
+				'Stone Shape' => array(
+					'page'     => 'PH 82',
+					'type'     => 'Alteration',
+					'range'    => 'Touch',
+					'duration' => 'Permanent',
+					'aoe'      => sprintf( '%u cubic feet', $this->level ),
+					'comps'    => 'V, S, M',
+					'cast'     => '1 round',
+					'saving'   => 'None',
+				),
 				'Telekinesis' => array( 'page' => 'PH 83', 'type' => 'Alteration', 'cast' => '5 segments',
 					'range'    => sprintf( '%u feet', $this->level * 10 ),
 					'duration' => sprintf( '%u rounds', $this->level + 2 ),
@@ -327,5 +533,56 @@ class DND_Character_MagicUser extends DND_Character_Character {
 			),
 		);
 	}
+
+	protected function get_description_table() {
+		static $table = null;
+		if ( $table ) return $table;
+		$table = array(
+			'Cantrips' => array(
+				'Cough' => 'This cantrip enables the caster to make the subject individual cough spasmodically. If a saving throw is made, the cough is only a brief hacking which will not usually disturb other activities. Failing the saving throw indicates the victim is affected by a loud and active series of coughs lasting from 1 to 3 seconds. The somatic component is a gagging gesture while a gasp is verbalized.',
+				'Shine' => "Similar to the polish cantrip, this magic allows the caster to remove tarnish, rust, corrosion, and similar substances from the desired object. This cantrip brings about a mirror-bright shine to objects capable of such, causing their surfaces to be smooth and unmarred. A piece of jewelry, for instance, would be made more attractive, and the gems (only) of such a piece might be actually made more valuable: If base value of the gem(s) in a piece of jewelry was originally decreased, and a shine cantrip is used upon the object, then the owner may (if desired) find out whether the value of the gem(s) has been changed. (The DM should roll again on the \"Increase or Decrease of Worth Beyond Base Value\" table on page 26 of the DMG, with a -1 modifier to the die roll.) No gem can be \"re-valued\" in this manner more than once.
+A single object up to about 1 cubic yard in volume can be treated by this cantrip. Its components,are similar to those of polish.",
+				'Tweak' => "By means of this cantrip, the caster causes an unseen thumb and forefinger to harmlessly, but annoyingly, tweak some portion of a chosen subject within a 10 foot radius of the caster. Portions subject to the tweak cantrip are: cheek, nose, ear, beard, moustache, whiskers, or tail. The cantrip's effects do not disturb spell casting, although the tweaking might distract any creature by causing it to turn to discover the source of the annoyance. A failure to save versus spell (with respect to creatures with an intelligence under 7), or failure to roll a score greater than intelligence on 3d6 (with respect to creatures with intelligence of 7 or greater), indicates a 1-segment distraction. The caster speaks a magic phrase (such as kitchy-kitchy-coo) while making a pinching and pulling motion with thumb and forefinger.",
+				'Untie' => 'This permutation of a tie cantrip is simply the reverse of the magic. The caster selects an object thread, string, cord, etc. - which is knotted or tied. The cantrip removes the knot or tying. Note that the untie cantrip will cause a tangle to be nullified. The cantrip will not remove both a knot and a normal tying (normal knot or one caused by a tie cantrip), but it will cause the former to disappear so that only a normal tying remains. This cantrip has no effect on magical objects. Somatic and verbal components vary according to the desired result. In general, a popping sound is made while the hands are moved apart either as if a knot were being untied or a cord snapped.',
+			),
+			'First' => array(
+				'Firewater' => 'By means of this spell, the magic-user changes a volume of water to a volatile, flammable substance similar to alcohol and likewise lighter than water. If this substance is exposed to flame, fire, or even a spark, it will burst into flames and burn with a hot fire. Each creature subject to firewater flame will suffer 2-12 hit points of damage. The firewater created will evaporate and be useless within 1 round, even if it is securely contained and sealed, so it must be utilized (ignited) within 10 segments of its creation. The material components of this spell are a few grains of sugar and a raisin.',
+				'Friends' => "A friends spell causes the magic-user to gain a temporary increase of 2-8 points in charisma - or a temporary lowering of charisma by 1-4 points- depending on whether creatures within the area of effect of the spell make - or fail - their saving throw versus magic. Those that fail their saving throw will be very impressed with the spell caster and desire greatly to be his or her friend and help. Those that do not fail will be uneasy in the spell caster's presence and tend to find him or her irritating. Note that this spell has absolutely no effect on creatures of animal intelligence or lower. The components for this spell are chalk (or white flour), lampblack (or soot), and vermillion applied to the face before casting the spell.",
+				'Jump' => "When this spell is cast, the individual is empowered to leap up to 30' forward or 10' backward or straight upward. Horizontal leaps forward or backward are in only a slight arc - about 2'/10' of distance traveled. The jump spell does not insure any safety in landing or grasping at the end of the leap. For every 3 additional levels of experience of the magic-user beyond the lst, he or she is able to empower 1 additional leap, so a 4th level magic-user can cast a jump spell which enables the recipient to make 2 leaps, 3 leaps at 7th level, etc. All leaps must be completed within 1 turn after the spell is cast, for after that period has elapsed the spell wears off. The material component of this spell is a grasshopper's hind leg, one for each leap, to be broken when the leap is made.",
+				'Melt' => 'When a melt spell is cast, the magic-user effectively raises the temperature in the area of effect. This sudden increase in warmth will melt ice in 1 round, so that a 1st level magic-user can melt a cube of solid ice, 1 yard on a side, in 1 round after the spell is cast, so that the ice becomes water. Twice this volume of snow can be affected, so that the spell will melt 1 cubic yard of snow in 6 segments, or will turn 2 cubic yards (1 yd. x 1 yd. x 2 yds.) of snow to water in 1 round. Against such monsters as white dragons, winter wolves, yeti, woolly rhinos, those composed of para-elemental ice, and the like, a melt spell will inflict 2 points of damage per level of the spell caster, or 1 point per level if the subject creature makes its saving throw versus spell. The melt spell is generally ineffective against types of creatures other than those enumerated above. The material components for a melt spell are a few crystals or rock salt and a pinch of soot.',
+				'Mount' => "By means of this spell, the caster calls a normal animal to serve him or her as a mount. The animal will serve willingly and well, but at the expiration of the spell duration it will disappear, returning to its own place. The type of mount gained by this spell depends on the level of the caster; of course, a caster of sufficiently high level to qualify for a camel (for instance) can choose a \"lower leve\" mount if he or she so desires. Available mounts are these:
+    1st through  3rd level: mule or light horse
+    4th through  7th level: draft horse or warhorse
+    8th through 12th level: camel
+   13th through 17th level: elephant
+   18th level and up: elephant with houda
+The mount will not come with any riding gear, unless it is of a class lower than the caster would normally be entitled to gain, i.e. a 4th level magic-user can gain a warhorse without saddle and harness or a light horse with saddle and harness. The statistics of the animal gained are typical of all creatures of the same class. The material component of the spell is a bit of hair or dung from the type of animal to be conjured.",
+				'Run' => "The run spell enables the recipient to run at full speed (twice normal speed) for from 5-8 hours without tiring. However, after so running the individual must spend a like number of hours resting, as well as drinking plenty of liquids and eating heartily. For every 2 levels of experience of the spell caster, another individual can be affected, Le. at 4th level, 2 individuals can be touched and empowered to run; at 6th level, 3 individuals; etc. Only humans and demi-humans in their natural forms are affected by this spell, and barbarians having the special running ability of that class are immune to the spell's effects. The material component of this spell is an elixir made from the juice of dried plums boiled in spring water and the oil of 5-8 beans of a spurge (castor) plant.",
+			),
+			'Second' => array(
+				'Bind' => "When this spell is employed, the magic-user causes any ropelike object of non-living material to behave as he or she orders. The subject can be string, yarn, cord, line, rope, or even a cable. About 50' of normal rope (1 inch diameter), plus 5' per level of the spell caster, can be affected. Reduce length proportionately when diameter increases, and increase length by 50% when diameter is halved. The commands possible to give under a bind spell are: Coil (form a neat, coiled stack); Coil & Knot; Loop; Loop & Knot; Tie & Knot; and the reverses of all of the above (Uncoil, etc.). The rope or other ropelike object must be within about 1 foot of any object in order for it to respond properly, so it must usually be thrown or hurled nearby. Any creature affected by the ropelike object can, of course, interact with it as if it were a normal object. The creature's hold overrides the dweomer on the rope, and the rope takes 2 points of slashing damage before breaking. The rope cannot be used as a garrot, but can be used as a trip line or to entangle (as the druid spell) a single opponent. The dweomer does not cause the rope to have magical properties beyond its ability to obey commands (cf. rope of climbing, rope of entanglement).",
+				'Knock' => 'The knock spell will open stuck or held or wizard-locked doors. It will also open barred or otherwise locked doors. It causes secret doors to open. The knock spell will also open locked or trick-opening boxes or chests. It will loose shackles or chains as well. If it is used to open a wizbrd-locked door, the knock does not remove the former spell, but it simply suspends its functioning for 1 turn. In all other cases, the knock will permanently open locks or welds - although the former could be closed and locked again thereafter. It will not raise bars or similar impediments (such as a portcullis). The spell will perform two functions, but if a door is locked, barred, and held, opening it will require two knock spells.',
+				'Scare' => 'When this spell is directed at any creature with fewer than 6 levels of experience/hit dice, i t must save versus magic or fall into a fit of trembling and shaking. The frightened creature will not drop any items held unless i t is encumbered. If cornered, the spell recipient will fight, but at -1 on "to hit" and damage dice rolls and all saving throws as well. Note that this spell does not have any effect on elves, half-elves, the undead (skeletons, zombies, ghouls, shadows, ghasts, wights, wraiths), larvae, lemures, manes, or clerics of any sort. The material component used for this spell is a bit of bone from an undead skeleton, zombie, ghoul, ghost or mummy.',
+				"Tasha's Uncontrollable Hideous Laughter" => "This spell enables the caster to cause the subject to perceive everything as hilariously funny. The effect is not immediate, and the subject creature will feel only a slight tingling on the round the dweomer is placed, but on the round immediately following, it will begin smiling, then giggling, chuckling, tittering, snickering, guffawing, and finally collapsing into gales of uncontrollable hideous laughter. Although this magic mirth lasts only a single round, the affected creature must spend the next round regaining its feet, and it will be at -2 from its strength (or -2 \"to hit\" and damage) on the 3rd and 4th rounds following the spell casting. A successful save versus spell negates the effect. The saving throw depends on the intelligence of the creature. Creatures with intelligence of 3 or less are totally unaffected. Those with intelligence of 4-8 save at -6; those with intelligence of 9-1 2 save at -4; those with intelligence of 13-1 5 save at -2; and those with intelligence of 16 or greater have normal saving throw probability. The material components of the spell are a small feather, a tiny wooden paddle, and a minute tort. The tort is hurled at the subject, while the feather is waved in one hand and the paddle is tapped against the posterior of the spell caster.",
+			),
+			'Third' => array(
+				'Fireball' => "A fireball is an explosive burst of flame, which detonates with a low roar, and delivers damage proportionate to the level of the magic-user who cast it, i.e. 1 six-sided die (d6) for each level of experience of the spell caster. Exception: Magic fireball wands deliver 6 die fireballs (6d6), magic staves with this capability deliver 8 die fireballs, and scroll spells of this type deliver a fireball of from 5 to 10 dice (d6+4) of damage. The burst of the fireball does not expend a considerable amount of pressure, and the burst will generally conform to the shape of the area in which it occurs, thus covering an area equal to its normal spherical volume. [The area which is covered by the fireball is a total volume of roughly 33,000 cubic feet (or yards)]. Besides causing damage to creatures, the fireball ignites all combustible materials within its burst radius, and the heat of the fireball will melt soft metals such as gold, copper, silver, etc. Items exposed to the spell's effects must be rolled for to determine if they are affected. Items with a creature which makes its saving throw are considered as unaffected. The magic-u,ser points his or her finger and speaks the range (distance and height) at which the fireball is to borst. A streak flashes from the pointing digit and, unless i t impacts upon a material body prior to attaining the prescribed range, flowers into the fireball If creatures fail their saving throws, they all take full hit point damage frqm the blast. Those who make saving throws manage to dodge, fall flat or roll aside, taking half the full hit point damage - each and every one within the blast area. The material component of this spell is a tiny ball composed of bat guano and sulphur.",
+				"Melf's Minute Meteor" => "This spell is unusual in two respects. First, the dweomer enables the caster to cast small globes of fire, each of which bursts into a 1 ft. diameter sphere upon impact, inflicting 1-4 points of damage upon the target creature - or otherwise igniting combustible materials (even solid planks). These meteors are missile weapons thrown by the mage, with misses being treated as grenade-like missiles. This ability continues from round to round until the caster has fired off as many of these \"meteor\" as he or she has levels of experience, until he or she decides to forego casting any additional missiles still remaining, or until a dispel magic spell is successfully cast upon the magic-user. Second, once Melf's Minute Meteors is cast, the magic-user has the option to discharge the available missiles at the rate of 1 every 2 segments, as desired, or 1 every round (beginning with the initial round of casting). The magic-user may not switch between these options once one of them is chosen.
+In the first option, the caster must point at the desired target on the second segment after the spell is cast, and a missile will be discharged. This process is repeated every 2 segments thereafter until all of the missiles are so released. Naturally, this usually will mean that the spell actually carries over into at least the following round.
+If the second option is chosen, the magic-user can withhold or discharge missiles as he or she sees fit, so long as one missile is let go during each subsequent round. This option has the benefit of enabling the spell caster to actually discharge one of the \"meteors\" and conjure some other spell as well in the same round. The other spell must be of such a nature as to not require the continuing concentration of the spell caster, or else he or she will involuntarily forego the casting of any further missiles from the original spell. However, the magic-user's opportunity to discharge a missile and cast a spell in te same round is of such benefit that the potential loss is not of concern. If the magic-user fails to maintain an exact mental count of the number of missiles remaining, this is an unfailing indication that he or she has involuntarily foregone the remaining portion of the spell.
+The components necessary for the casting of this dweomer are nitre and sulphur formed into a bead by the admixture of pine tar, and a small hollow tube of minute proportion, fashioned from gold. The tube costs no less than 1,000 gp to construct, so fine is its workmanship and magical engraving, but it remains potent throughout numerous castings of the spell - unless damaged by accident or abuse.",
+				'Sepia Snake Sigil' => 'There are three forms of this spell, but each eventually causes the conjuration of a deep brown snake-like force. This so-called sepia snake springs into being and strikes at the nearest living creature (but the sepia snake will not attack the magic-user who cast the spell). Its attack is made as if it were a monster with hit dice equal to the level of the magic-user who cast the dweomer. If it is successful in striking, the victim is engulfed in a shimmering amber field of force, frozen and immobilized until the caster releases the dweomer or until a dispel magic spell does so. Until then, nothing can get at the victim, move the shimmering force surrounding him or her, or otherwise affect the field or the victim. The victim does not age, grow hungry, sleep or regain spells when in this state, and is not aware of his or her surroundings. If the sepia snake misses its target, it dissipates in a flash of brown light, with a loud noise and a puff of dun-colored smoke which is 10 feet in diameter and lasts for 1 round. The three applications are: 1) as a glowing sigil in the air drawn by the spell caster and pointed at the intended target; 2) as a glyph of umber marked on some surface that is touched or gazed upon; and 3) as a small character written into some magic work to protect it. The components for the spell are 100 gp worth of powdered amber, a scale from any snake, and a pinch of mushroom spores.',
+			),
+			'Fourth' => array(
+				'Enchanted Weapon' => 'This spell turns an ordinary weapon into a magical one. The weapon is the equivalent of a f l weapon but has no bonuses whatsoever. Thus, arrows, axes, bolts, bows, daggers, hammers, maces, spears, swords, etc. can be made into enchanted weapons. Two small (arrows, bolts, daggers, etc.) or one large (axe, bow, hammer, mace, etc.) weapon can be affected by the spell. Note that successful hits by enchanted missile weapons cause the spell to be broken, but that otherwise the spell duration lasts until the time limit based on the level of experience of the magic-user casting i t expires, i.e. 40 rounds (4 turns) in the case of an 8th level magic-user. The material components of this spell are powdered lime and carbon.',
+				'Stoneskin' => "When this spell is cast, the affected creature gains a virtual immunity to any attack by cut, blow, projectile or the like. Thus, even a sword of sharpness would not affect a creature protected by stoneskin, nor would a rock hurled by a giant, a snake's strike, etc. However, magic attacks from such spells as fireball, magic missile, lightning bolt, and so forth would have normal effect. Any attack or attack sequence from a single opponent dispels the dweomer, although it makes the creature immune to that single attack or attack sequence. Attacks with relatively soft weapons, such as a monk's hands, an ogrillon's fist, etc, will inflict 1-2 points of damage on the attacker for each such attack while the attacked creature is protected by the stoneskin spell, but will not dispel the dweomer. The material components of the spell are granite and diamond dust sprinkled on the recipient's skin",
+			),
+			'Fifth' => array(
+				'Stone Shape' => 'By means of this spell the magic-user con form an existing piece of stone into a shape which will suit his or her purposes. For example, a stone weapon can be made, a special trapdoor fashioned, or an idol sculpted. By the same token, i t would allow the spell caster to reshape a stone door, perhaps, so as to escape imprisonment, providing the volume of stone involved was within the limits of the area of effect. While stone coffers can be thus formed, secret doors made, etc., the fineness of detail is not great. The material component of this spell is soft clay which must be worked into roughly the desired shape of the stone object and then touched to the stone when the spell is uttered.',
+			),
+		);
+		return $table;
+	}
+
 
 }

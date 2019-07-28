@@ -1,5 +1,16 @@
 <?php
 
+function dnd1e_import_kregen_characters( $list ) {
+	$objects = array();
+	foreach( $list as $name => $data ) {
+		$file = CSV_PATH . $name . '.csv';
+		$info = ( isset( $data['data'] ) ) ? $data['data'] : array();
+		$temp = new DND_Character_Import_Kregen( $file, $info );
+		$objects[ $name ] = $temp->character;
+	}
+	return $objects;
+}
+
 function dnd1e_get_combat_string( DND_Character_Character $char, DND_Monster_Monster $monster, $range ) {
 	$name = $char->get_name();
 	$line = sprintf( '%12s',    sprintf( '%7s(%d)', $name, $char->get_hit_points() ) );

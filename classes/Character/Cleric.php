@@ -18,8 +18,20 @@ class DND_Character_Cleric extends DND_Character_Character {
 	use DND_Character_Trait_Magic;
 
 
+	public function __construct( $args = array() ) {
+		parent::__construct( $args );
+		if ( isset( $args['spell_import'] ) ) {
+			$this->import_spell_list( $args['spell_import'] );
+		}
+	}
+
 	public function initialize_character() {
 		parent::initialize_character();
+		$this->undead = $this->get_undead_caps();
+	}
+
+	public function set_level( $level ) {
+		parent::set_level( $level );
 		$this->undead = $this->get_undead_caps();
 	}
 
@@ -162,7 +174,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 				"Silence 15' Radius" => array( 'page' => 'PH 46', 'type' => 'Alteration', 'cast' => '5 segments',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
-				'Slow Poison' => array( 'page' => 'PH46', 'cast' => '1 segment',
+				'Slow Poison' => array( 'page' => 'PH 46', 'cast' => '1 segment',
 					'duration' => sprintf( '%u hours', $this->level ),
 				),
 				'Snake Charm' => array( 'page' => 'PH 47', 'cast' => '5 segments' ),
@@ -198,7 +210,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 					'duration' => sprintf( '%u rounds', $this->level * 6 ),
 				),
 				'Meld into Stone' => array( 'page' => 'UA 36', 'cast' => '7 segments' ),
-				'Prayer' => array( 'page' => 'PH48', 'cast' => '6 segments',
+				'Prayer' => array( 'page' => 'PH 48', 'cast' => '6 segments',
 					'duration' => sprintf( '%u rounds', $this->level ),
 					'aoe'      => "60' radius",
 					'special'  => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
@@ -209,7 +221,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 						array( 'monster_to_hit_character',      1, 10, 3 ),
 					),
 				),
-				'Remove Curse' => array( 'page' => 'PH48', 'cast' => '6 segments', 'reversible' => true ),
+				'Remove Curse' => array( 'page' => 'PH4 8', 'cast' => '6 segments', 'reversible' => true ),
 			),
 			'Fourth' => array(
 				'Abjure' => array( 'page' => 'UA 37', 'cast' => '1 round',
@@ -261,6 +273,14 @@ class DND_Character_Cleric extends DND_Character_Character {
 				),
 			),
 		);
+	}
+
+	protected function get_description_table() {
+		static $table = null;
+		if ( $table ) return $table;
+		$table = array(
+		);
+		return $table;
 	}
 
 

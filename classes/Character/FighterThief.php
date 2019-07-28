@@ -24,15 +24,5 @@ class DND_Character_FighterThief extends DND_Character_FighterMulti {
 		$this->weapon = $this->fight->weapon;
 	}
 
-	public function parse_csv_line( $line ) {
-		if ( $line[0] === 'AC' ) {
-			$index = array_search( 'XP', $line );
-			$this->fight->parse_csv_line( [ 0 => 'AC', 4 => 'XP', 5 => $line[ ++$index ] ] );
-			$this->thief->parse_csv_line( [ 0 => 'AC', 4 => 'XP', 5 => $line[ $index + 2 ] ] );
-		} else {
-			parent::parse_csv_line( $line );
-		}
-	}
-
 
 }

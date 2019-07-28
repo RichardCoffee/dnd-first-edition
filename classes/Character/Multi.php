@@ -2,6 +2,8 @@
 
 abstract class DND_Character_Multi extends DND_Character_Character {
 
+
+#	protected $base_xp = 0;
 	protected $classes = array();
 
 
@@ -16,6 +18,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 				if ( class_exists( $actual ) ) {
 					$this->$key = new $actual( $args );
 				}
+				$args['last_spell'] = $this->$key->last_spell;
 			}
 		}
 		parent::__construct( $args );
@@ -29,6 +32,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 	protected function initialize_multi() {
 		$number     = count( $this->classes );
 		$initial    = '';
+#		$experience = 0;
 		$hit_points = 0;
 		$level      = 0;
 		$non_prof   = 0;
@@ -107,24 +111,6 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		return "Spell '$spell' not found in {$this->name}'s spell book.";
-	}
-
-	public function import_kregen_csv( $file ) {
-		parent::import_kregen_csv( $file );
-		$this->initialize_multi();
-	}
-
-	public function set_import_task( $task = 'import' ) {
-		parent::set_import_task( $task );
-		foreach( $this->classes as $key => $class ) {
-			$this->$key->set_import_task( $task );
-		}
-	}
-
-	public function parse_csv_line( $line ) {
-		foreach( $this->classes as $key => $class ) {
-			$this->$key->parse_csv_line( $line );
-		}
 	}
 
 

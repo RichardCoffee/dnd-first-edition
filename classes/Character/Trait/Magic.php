@@ -15,11 +15,6 @@ trait DND_Character_Trait_Magic {
 		return $data;
 	}
 
-	// DEPRECATED - phase this out
-	public function get_spell_info( $level, $spell, $type = '' ) {
-		return array( 'name' => $spell, 'level' => $level, 'data' => $this->get_spell_data( $level, $spell ) );
-	}
-
 	public function get_magic_spell_info( $level, $spell, $type = '' ) {
 		return array_merge( [ 'name' => $spell, 'level' => $level ], $this->get_spell_data( $level, $spell ) );
 	}
@@ -39,14 +34,6 @@ trait DND_Character_Trait_Magic {
 			}
 		}
 		return $info;
-	}
-
-	protected function add_spell( $data ) {
-		$level = $data['level'];
-		$name  = $data['name'];
-		if ( ! isset( $this->spells[ $level ][ $name ] ) ) {
-			$this->spells[ $level ][ $name ] = $this->get_spell_data( $level, $name );
-		}
 	}
 
 	protected function reload_spells() {
@@ -70,14 +57,32 @@ trait DND_Character_Trait_Magic {
 		return $spell;
 	}
 
-	/**  Import Functions **/
-
-	protected function set_kregen_weapon_skill( $weapon, $line, $bonus ) {
-		if ( $weapon === 'Spell' ) {
-			$this->weapons[ $weapon ] = array( 'bonus' => 0, 'skill' => 'PF' );
-		} else {
-			parent::set_kregen_weapon_skill( $weapon, $line, $bonus );
+	protected function import_spell_list( $list, $type = '' ) {
+		$last = '';
+		foreach( $list as $k => $name ) {
+			if ( $this->last_spell ) {
+				if ( $this->last_spell === $name ) {
+					$this->last_spell = '';
+				}
+				continue;
+			}
+			$spell = $this->locate_magic_spell( $name );
+			if ( isset( $spell['page'] ) ) {
+				$this->spells[ $spell['level'] ][ $name ] = $this->get_spell_data( $spell['level'], $name );
+				$last = $name;
+			} else {
+				$this->last_spell = $last;
+				return;
+			}
 		}
+	}
+
+	public function get_spell_description( $level, $name ) {
+		$table = $this->get_description_table();
+		if ( isset( $table[ $level ][ $name ] ) ) {
+			return $table[ $level ][ $name ];
+		}
+		return '';
 	}
 
 

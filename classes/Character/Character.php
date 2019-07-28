@@ -9,11 +9,13 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
 	protected $armr_allow = array();
+	protected $base_xp    = 0;
 	public    $current_hp = -100;
 	protected $experience = 0;
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = 0;
 	protected $initiative = array( 'roll' => 0, 'actual' => 0, 'segment' => 0 );
+	protected $last_spell = '';
 	protected $level      = 0;
 	protected $max_move   = 12;
 	protected $movement   = 12;
@@ -40,7 +42,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
-	use DND_Character_Trait_Kregen;
 	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;
@@ -62,10 +63,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	public function initialize_character() {
-		if ( ( $this->level === 0 ) && ( $this->experience > 0 ) ) {
+		if ( ( $this->level < 2 ) && ( $this->experience > 0 ) ) {
 			$this->level = $this->calculate_level( $this->experience );
-		}
-		if ( $this->hit_points === 0 ) {
+			$this->set_level( $this->level );
+		} else if ( $this->hit_points === 0 ) {
 			$this->determine_hit_points();
 		}
 		if ( $this->weapon['current'] === 'none' ) {
@@ -109,9 +110,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( $this->current_hp < $this->hit_points ) {
 			$this->current_hp += $this->hit_points - $old_hp;
 		}
-		if ( method_exists( $this, 'reload_spells' ) ) {
-			$this->reload_spells();
-		}
+		if ( method_exists( $this, 'reload_spells' ) ) $this->reload_spells();
 	}
 
 	public function add_experience( $xp ) {
@@ -121,6 +120,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 				$bonus = false;
 			}
 		}
+		$this->base_xp    += $xp;
 		$this->experience += ( $bonus ) ? round( $xp * 1.1 ) : $xp;
 		$level = $this->calculate_level( $this->experience );
 		if ( $level > $this->level ) {
@@ -135,7 +135,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$this->hit_points += ( $this->level - $this->hit_die['limit'] ) * $this->hit_die['step'];
 		}
 		if ( $this->current_hp === -100 ) {
-			$this->current_hp  = $this->hit_points;
+			$this->current_hp = $this->hit_points;
 		}
 	}
 
