@@ -121,7 +121,7 @@ class DND_Form_DMAdmin {
 	 * @since 20190728
 	 */
 	protected function show_character_listing() { ?>
-		<table class='form-table>
+		<table class='form-table">
 			<thead>
 				<th class="centered">
 					<?php _e( 'Name', 'dnd-first-edition' ); ?>
