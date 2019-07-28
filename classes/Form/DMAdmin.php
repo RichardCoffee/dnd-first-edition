@@ -123,11 +123,14 @@ class DND_Form_DMAdmin {
 	protected function show_character_listing() { ?>
 		<table class="form-table">
 			<thead>
-				<th class="centered">
+				<th>
 					<?php _e( 'Name', 'dnd-first-edition' ); ?>
 				</th>
-				<th class="centered">
+				<th>
 					<?php _e( 'Class', 'dnd-first-edition' ); ?>
+				</th>
+				<th>
+					<?php _e( 'Level', 'dnd-first-edition' ); ?>
 				</th>
 			</thead>
 			<tbody><?php
@@ -137,7 +140,10 @@ class DND_Form_DMAdmin {
 							<?php echo $char->get_name(); ?>
 						</td>
 						<td>
-							<?php echo substr( get_class( $char ), 14 ); ?>
+							<?php echo $char->get_class(); ?>
+						</td>
+						<td>
+							<?php echo $char->get_level(); ?>
 						</td>
 					</tr><?php
 				} ?>

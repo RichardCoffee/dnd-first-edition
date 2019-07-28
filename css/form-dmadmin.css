@@ -10,3 +10,12 @@
 #dnd1e_upload_kregen_button {
 	margin-right: 10px;
 }
+
+.form-table th {
+	padding: 0;
+	width: auto;
+}
+
+.form-table td {
+	padding: 3px 0px;
+}

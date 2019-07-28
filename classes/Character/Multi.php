@@ -27,6 +27,18 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 
 	public function initialize_character() { }
 
+	public function get_class() {
+		return implode( '/', $this->classes );
+	}
+
+	public function get_level() {
+		$arr = array();
+		foreach( $this->classes as $key => $class ) {
+			$arr[] = $this->key->get_level();
+		}
+		return implode( '/', $arr );
+	}
+
 	protected function define_specials() { }
 
 	protected function initialize_multi() {
