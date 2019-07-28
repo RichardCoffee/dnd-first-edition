@@ -67,7 +67,7 @@ class DND_Form_DMAdmin {
 		</form>
 		<div class="container-fluid">
 			<div class="row">
-				<div id="dnd1e_character_listing" class="col-lg-6">
+				<div id="dnd1e_character_listing" class="col-lg-5">
 					<?php $this->show_character_listing(); ?>
 				</div>
 				<div class="col-lg-6">

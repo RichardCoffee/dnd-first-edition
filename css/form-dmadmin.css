@@ -8,12 +8,16 @@
 }
 
 #dnd1e_upload_kregen_button {
-	margin-right: 10px;
+	margin-right: 30px;
 }
 
 .form-table th {
 	padding: 0;
 	width: auto;
+}
+
+.form-table th.centered {
+	text-align: center;
 }
 
 .form-table td {
