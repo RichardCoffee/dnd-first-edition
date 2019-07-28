@@ -3,9 +3,10 @@
 class DND_Form_DMAdmin {
 
 
-	protected $cap  = 'import';
-	protected $hook = null;
-	protected $slug = 'dnd1e';
+	protected $cap   = 'import';
+	protected $chars = array();
+	protected $hook  = null;
+	protected $slug  = 'dnd1e';
 
 
 	public function __construct() {
@@ -50,7 +51,8 @@ class DND_Form_DMAdmin {
 		return $mime_types;
 	}
 
-	public function show_dma_form() { ?>
+	public function show_dma_form() {
+		$this->get_available_chars(); ?>
 		<h1 class="centered"><?php _e( 'Dungeon Master Admin Form', 'dnd-first' );?></h1>
 		<form method='post'>
 			<p id="file_status" class="centered">No file selected</p>
@@ -63,13 +65,30 @@ class DND_Form_DMAdmin {
 					<input id="reset_nodelist_button" type="button" class="button" value="<?php _e( 'Reset nodelist', 'wmn-workbook' ); ?>" />
 				</div> */ ?>
 			</div>
-		</form><?php
-		$meta = get_user_meta( get_current_user_id() ); ?>
+		</form>
 		<div>
-			<pre>
-				<?php print_r( $meta ); ?>
+			<pre><?php
+				foreach( $this->chars as $key => $char ) {
+					echo "$char\n";
+				} ?>
 			</pre>
 		</div><?php
+	}
+
+	/**
+	 *  Load available characters into an array.
+	 *
+	 * @since 20190728
+	 */
+	protected function get_available_chars() {
+		$me = get_current_user_id();
+		$meta = get_user_meta( $me );
+		foreach( $meta as $key => $data ) {
+			if ( substr( $key, 0, 20 ) === 'dnd1e_DND_Character_' ) {
+				$char = substr( $key, 20 );
+				$this->chars[ $char ] = get_user_meta( $me, $key, true );
+			}
+		}
 	}
 
 	public function import_kregen_csv() {

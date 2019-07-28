@@ -62,6 +62,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 	}
 
+	public function __toString() {
+		return $this->name;
+	}
+
 	public function initialize_character() {
 		if ( ( $this->level < 2 ) && ( $this->experience > 0 ) ) {
 			$this->level = $this->calculate_level( $this->experience );
