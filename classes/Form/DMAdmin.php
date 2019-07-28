@@ -29,6 +29,7 @@ class DND_Form_DMAdmin {
 		$paths = DND_Plugin_Paths::instance();
 		wp_enqueue_media();
 		wp_enqueue_style(  'dnd-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
+		wp_enqueue_style(  'dnd-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ), null, $paths->version );
 		wp_enqueue_style(  'dnd-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ), null, $paths->version );
 		wp_enqueue_script( 'dnd-form-admin.js',      $paths->get_plugin_file_uri( 'js/form-dmadmin.js' ), [ 'jquery' ], $paths->version, true );
 	}
@@ -62,7 +63,7 @@ class DND_Form_DMAdmin {
 				<?php $this->show_file_upload_button(); ?>
 			</div>
 		</form>
-		<div class="container container-fluid">
+		<div class="container-fluid">
 			<div class="row">
 				<div class="col-lg-6">
 					<div class="row">
