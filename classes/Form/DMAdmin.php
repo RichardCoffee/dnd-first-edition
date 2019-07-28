@@ -61,7 +61,7 @@ class DND_Form_DMAdmin {
 		<form method='post'>
 			<p id="file_status" class="centered"></p>
 			<div id="file_log" class="centered"></div>
-			<div>
+			<div class="row">
 				<?php $this->show_file_upload_button(); ?>
 			</div>
 		</form>
@@ -70,22 +70,22 @@ class DND_Form_DMAdmin {
 				<div class="col-lg-6">
 					<div class="row">
 						<div class="col-lg-6">
-							<h3 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h3>
+							<h4 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h4>
 							<div id="character_listing">
 								<?php $this->show_character_listing(); ?>
 							</div>
 						</div>
 						<div class="col-lg-6">
-							<h3 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h3>
+							<h4 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h4>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-6">
 					<div class="row">
-						<h3 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h3>
+						<h4 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h4>
 					</div>
 					<div class="row">
-						<h3 class="centered"><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h3>
+						<h4 class="centered"><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h4>
 					</div>
 				</div>
 			</div>
@@ -133,7 +133,7 @@ class DND_Form_DMAdmin {
 	protected function show_character_listing() {
 		foreach( $this->chars as $name => $char ) { ?>
 			<div><?php
-				echo $char->get_name(); ?>
+				printf( '%-10s : %s', $char->get_name(), substr( get_class( $char ), 14 ) ); ?>
 			</div><?php
 		}
 	}
