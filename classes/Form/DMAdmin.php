@@ -67,18 +67,8 @@ class DND_Form_DMAdmin {
 		</form>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-lg-6">
-					<div class="row">
-						<div class="col-lg-6">
-							<h4 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h4>
-							<div id="character_listing">
-								<?php $this->show_character_listing(); ?>
-							</div>
-						</div>
-						<div class="col-lg-6">
-							<h4 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h4>
-						</div>
-					</div>
+				<div id="dnd1e_character_listing" class="col-lg-6">
+					<?php $this->show_character_listing(); ?>
 				</div>
 				<div class="col-lg-6">
 					<div class="row">
@@ -130,12 +120,29 @@ class DND_Form_DMAdmin {
 	 *
 	 * @since 20190728
 	 */
-	protected function show_character_listing() {
-		foreach( $this->chars as $name => $char ) { ?>
-			<div><?php
-				printf( '%-10s : %s', $char->get_name(), substr( get_class( $char ), 14 ) ); ?>
-			</div><?php
-		}
+	protected function show_character_listing() { ?>
+		<table>
+			<thead>
+				<th class="centered">
+					<?php _e( 'Name', 'dnd-first-edition' ); ?>
+				</th>
+				<th class="centered">
+					<?php _e( 'Class', 'dnd-first-edition' ); ?>
+				</th>
+			</thead>
+			<tbody><?php
+				foreach( $this->chars as $name => $char ) { ?>
+					<tr>
+						<td>
+							<?php echo $char->get_name(); ?>
+						</td>
+						<td>
+							<?php echo substr( get_class( $char ), 14 ); ?>
+						</td>
+					</tr><?php
+				} ?>
+			</tbody>
+		</table><?php
 	}
 
 	/**
