@@ -62,7 +62,7 @@ class DND_Form_DMAdmin {
 				<?php $this->show_file_upload_button(); ?>
 			</div>
 		</form>
-		<div class="container-fluid">
+		<div class="container container-fluid">
 			<div class="row">
 				<div class="col-lg-6">
 					<div class="row">
