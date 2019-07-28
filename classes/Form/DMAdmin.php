@@ -130,11 +130,14 @@ class DND_Form_DMAdmin {
 				<th>
 					<?php _e( 'Class', 'dnd-first-edition' ); ?>
 				</th>
-				<th>
+				<th class="centered">
 					<?php _e( 'Level', 'dnd-first-edition' ); ?>
 				</th>
-				<th>
+				<th class="centered">
 					<?php _e( 'Hit Points', 'dnd-first-edition' ); ?>
+				</th>
+				<th>
+					<?php _e( 'Location', 'dnd-first-edition' ); ?>
 				</th>
 			</thead>
 			<tbody><?php
