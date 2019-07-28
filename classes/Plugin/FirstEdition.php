@@ -35,6 +35,23 @@ class DND_Plugin_FirstEdition extends DND_Plugin_Plugin {
 
 	public function add_filters() {
 		parent::add_filters();
+		add_filter( 'plugin_action_links', [ $this, 'setup_link' ], 10, 4 );
+		add_filter( 'network_admin_plugin_action_links', [ $this, 'setup_link' ], 10, 4 );
 	}
+
+	public function setup_link( $links, $file, $data, $context ) {
+		if ( strpos( $file, $this->plugin ) !== false ) {
+			if ( is_plugin_active( $file ) ) {
+				$args = array(
+					'href'   => admin_url( 'tools.php?page=dnd1e' ),
+					'title'  => __( 'DM Setup Screen', 'dnd-first-edition' ),
+					'target' => 'dm_setup_screen',
+				);
+				$links['setup'] = dnd1e()->get_element( 'a', $args, __( 'Setup', 'dnd-first-edition' ) );
+			}
+		}
+		return $links;
+	}
+
 
 }

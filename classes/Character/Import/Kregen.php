@@ -24,13 +24,10 @@ class DND_Character_Import_Kregen {
 		$class = $this->parse_class( $contents[0] );
 		if ( class_exists( $class ) ) {
 			$info = array_merge( $this->data, $extra );
-print_r( $info );
 			$this->character = new $class( $info );
 			ksort( $this->time_line );
-#print_r($this->time_line);
 			$last = array_pop( $this->time_line );
 			$this->experience = $last[1];
-echo "{$this->name}: {$this->experience}\n";
 			$this->character->add_experience( $this->experience );
 			$key = 'dnd1e_' . $class . '_' . $this->character->get_name();
 			$this->save_character( $key );
@@ -171,7 +168,6 @@ echo "{$this->name}: {$this->experience}\n";
 			$this->data['spell_import'] = array();
 			return;
 		}
-#print_r ( $line );
 		$bonus = 0;
 		$index = 0;
 		if ( intval( $line[0] ) > 0 ) {
@@ -194,7 +190,6 @@ echo "{$this->name}: {$this->experience}\n";
 		if ( in_array( $line[0], $skip1 ) ) {
 			return;
 		}
-#print_r ( $line );
 		$skip2 = array_merge(
 			array( 'Spc', 0.1, '%' ),
 			array( 'Pick Pockets', 'Open Locks', 'Find Traps', 'Move Silently', 'Hide Shadow', 'Hear Noise', 'Climb Walls', 'Languages' )
@@ -250,7 +245,7 @@ echo "{$this->name}: {$this->experience}\n";
 				if ( $check ) {
 					$this->time_line["$item"] = array( $line[ $k + 1 ] );
 					if ( $k + 2 < $cnt ) $this->time_line["$item"][] = $line[ $k + 2 ];
-					if ( ( $mul > 1 ) && ( $k + 3 < $cnt ) ) $this->time_line["$item"][] = $line[ $k + 3 ];
+#					if ( ( $mul > 1 ) && ( $k + 3 < $cnt ) ) $this->time_line["$item"][] = $line[ $k + 3 ];
 				}
 			}
 		}

@@ -39,10 +39,10 @@ class DND_Form_DMAdmin {
 			<div>
 				<div class="centered">
 					<input id="upload_kregen_button" type="button" class="button" value="<?php _e( 'Choose file to import', 'wmn-workbook' ); ?>" />
-				</div><?php/*
+				</div><?php /*
 				<div class="pull-right">
 					<input id="reset_nodelist_button" type="button" class="button" value="<?php _e( 'Reset nodelist', 'wmn-workbook' ); ?>" />
-				</div>*/?>
+				</div> */ ?>
 			</div>
 		</form><?php
 	}
