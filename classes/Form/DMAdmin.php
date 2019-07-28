@@ -12,7 +12,7 @@ class DND_Form_DMAdmin {
 		add_action( 'admin_enqueue_scripts',       [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'admin_menu',                  [ $this, 'add_menu_option' ] );
 		add_action( 'wp_ajax_dnd_import_kregen',   [ $this, 'import_kregen_csv' ] );
-#		add_action( 'wp_ajax_wmn_reset_nodelist',  [ $this, 'reset_nodelist' ] );
+		add_filter( 'upload_mimes',                [ $this, 'upload_mimes' ] );
 	}
 
 	public function add_menu_option() {
@@ -29,6 +29,24 @@ class DND_Form_DMAdmin {
 		wp_enqueue_media();
 		wp_enqueue_style(  'dnd-form-admin.css', $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
 		wp_enqueue_script( 'dnd-form-admin.js',  $paths->get_plugin_file_uri( 'js/form-dmadmin.js' ), [ 'jquery' ], $paths->version, true );
+	}
+
+	/**
+	 *  Add .csv to allowable mime types
+	 *
+	 * @since 20190728
+	 * @link https://neliosoftware.com/blog/how-to-upload-additional-file-types-in-wordpress/
+	 * @link https://www.wpbeginner.com/wp-tutorials/how-to-add-additional-file-types-to-be-uploaded-in-wordpress/
+	 * @link https://www.freeformatter.com/mime-types-list.html
+	 * @param array $mime_types
+	 * @return array
+	 */
+	public function upload_mimes( $mime_types ) {
+dnd1e()->log($mime_types);
+		if ( ! isset( $mime_types['csv'] ) ) {
+			$mime_types['csv'] = 'text/csv';
+		}
+		return $mime_types;
 	}
 
 	public function show_dma_form() { ?>

@@ -22,7 +22,7 @@ jQuery( document ).ready( function( $ ) {
 					text: 'Use this file',
 				},
 				library: {
-					type: "application" // limits the frame to show only application files
+					type: "text" // limits the frame to show only text files
 				},
 				multiple: false // Set to true to allow multiple files to be selected
 			} );
