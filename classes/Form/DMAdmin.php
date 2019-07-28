@@ -13,6 +13,7 @@ class DND_Form_DMAdmin {
 		add_action( 'admin_enqueue_scripts',       [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'admin_menu',                  [ $this, 'add_menu_option' ] );
 		add_action( 'wp_ajax_dnd_import_kregen',   [ $this, 'import_kregen_csv' ] );
+		add_action( 'wp_ajax_dnd_character_list',  [ $this, 'js_character_list' ] );
 		add_filter( 'upload_mimes',                [ $this, 'upload_mimes' ] );
 	}
 
@@ -31,7 +32,8 @@ class DND_Form_DMAdmin {
 		wp_enqueue_style(  'dnd-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
 		wp_enqueue_style(  'dnd-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ), null, $paths->version );
 		wp_enqueue_style(  'dnd-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ), null, $paths->version );
-		wp_enqueue_script( 'dnd-form-admin.js',      $paths->get_plugin_file_uri( 'js/form-dmadmin.js' ), [ 'jquery' ], $paths->version, true );
+		wp_enqueue_script( 'dnd-library.js',         $paths->get_plugin_file_uri( 'js/library.js' ),      [ 'jquery' ], $paths->version, true );
+		wp_enqueue_script( 'dnd-file-upload.js',     $paths->get_plugin_file_uri( 'js/file-upload.js' ),  [ 'jquery' ], $paths->version, true );
 	}
 
 	/**
@@ -69,11 +71,9 @@ class DND_Form_DMAdmin {
 					<div class="row">
 						<div class="col-lg-6">
 							<h3 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h3>
-							<pre><?php
-								foreach( $this->chars as $key => $char ) {
-									echo "{$char->get_name()}\n";
-								} ?>
-							</pre>
+							<div id="character_listing">
+								<?php $this->show_character_listing(); ?>
+							</div>
 						</div>
 						<div class="col-lg-6">
 							<h3 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h3>
@@ -117,12 +117,35 @@ class DND_Form_DMAdmin {
 	 */
 	protected function show_file_upload_button() {
 		$attrs = array(
-			'id'    => 'upload_kregen_button',
+			'id'    => 'dnd1e_upload_kregen_button',
 			'type'  => 'button',
 			'class' => 'button pull-right',
 			'value' => __( 'Choose file to import', 'dnd-first-edition' ),
 		);
 		dnd1e()->tag( 'input', $attrs );
+	}
+
+	/**
+	 *  Show character list.
+	 *
+	 * @since 20190728
+	 */
+	protected function show_character_listing() {
+		foreach( $this->chars as $name => $char ) { ?>
+			<div><?php
+				echo $char->get_name(); ?>
+			</div><?php
+		}
+	}
+
+	/**
+	 *  Reload character list via ajax.
+	 *
+	 * @since 20190728
+	 */
+	public function js_character_list() {
+		$this->show_character_listing();
+		wp_die();
 	}
 
 	public function import_kregen_csv() {

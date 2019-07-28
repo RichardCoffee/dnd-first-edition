@@ -12,7 +12,7 @@ jQuery( document ).ready( function( $ ) {
 	if( typeof wp.media != 'undefined' ) {
 		var wp_media_post_id = wp.media.model.settings.post.id; // Store the old id
 
-		jQuery( '#upload_kregen_button' ).on( 'click', function( event ) {
+		jQuery( '#dnd1e_upload_kregen_button' ).on( 'click', function( event ) {
 
 			event.preventDefault();
 			// Create the media frame.
