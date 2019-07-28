@@ -3,8 +3,10 @@
 class DND_Character_ClericThief extends DND_Character_Multi {
 
 
-	protected $cleric = null;
 	protected $thief  = null;
+
+
+	use DND_Character_Trait_Multi_Cleric;
 
 
 	public function __construct( $args = array() ) {
@@ -16,18 +18,10 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 		parent::initialize_multi();
 	}
 
-	/**  Cleric Abilities **/
+	/**  Cleric Abilities  **/
 
-	public function locate_magic_spell( $spell, $type = 'Cleric' ) {
-		return parent::locate_magic_spell( $spell, $type );
-	}
-
-	public function special_string_undead( $type, $level = 0 ) {
-		return $this->cleric->special_string_undead( $type, $this->level );
-	}
-
-	public function get_undead_caps( $level = 0 ) {
-		return $this->cleric->get_undead_caps( $this->level );
+	public function locate_magic_spell( $spell, $type = '' ) {
+		return $this->locate_cleric_spell( $spell );
 	}
 
 	/**  Thief Abilities  **/
@@ -47,15 +41,12 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 	/**  Character Functions  **/
 
 	public function set_current_weapon( $new = '' ) {
-		$this->cleric->set_current_weapon( $new );
-		$this->thief->set_current_weapon( $new );
-		$this->armor  = $this->cleric->armor;
-		$this->weapon = $this->cleric->weapon;
+		$this->set_cleric_weapon( $new );
+		$this->set_cleric_armor();
 	}
 
 	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
-		$this->cleric->opponent = $this->opponent;
-		return $this->cleric->get_to_hit_number( $target_ac, $target_at, $range );
+		return $this->get_cleric_to_hit_number( $target_ac, $target_at, $range );
 	}
 
 
