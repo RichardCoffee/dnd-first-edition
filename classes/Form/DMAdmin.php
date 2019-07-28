@@ -68,7 +68,7 @@ class DND_Form_DMAdmin {
 				<div class="col-lg-6">
 					<div class="row">
 						<div class="col-lg-6">
-							<h2 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h2>
+							<h3 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h3>
 							<pre><?php
 								foreach( $this->chars as $key => $char ) {
 									echo "{$char->get_name()}\n";
@@ -76,16 +76,16 @@ class DND_Form_DMAdmin {
 							</pre>
 						</div>
 						<div class="col-lg-6">
-							<h2 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h2>
+							<h3 class="centered"><?php _e( 'Assigned', 'dnd-first-edition' ); ?></h3>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-6">
 					<div class="row">
-						<h2><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h2>
+						<h3 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h3>
 					</div>
 					<div class="row">
-						<h2><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h2>
+						<h3 class="centered"><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h3>
 					</div>
 				</div>
 			</div>
@@ -117,10 +117,10 @@ class DND_Form_DMAdmin {
 	 */
 	protected function show_file_upload_button() {
 		$attrs = array(
-			'id' => 'upload_kregen_button',
-			'type' => 'button',
+			'id'    => 'upload_kregen_button',
+			'type'  => 'button',
 			'class' => 'button pull-right',
-			'value' => _e( 'Choose file to import', 'dnd-first-edition' ),
+			'value' => __( 'Choose file to import', 'dnd-first-edition' ),
 		);
 		dnd1e()->tag( 'input', $attrs );
 	}
