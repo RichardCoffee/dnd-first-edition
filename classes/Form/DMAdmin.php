@@ -124,6 +124,8 @@ class DND_Form_DMAdmin {
 	protected function show_character_listing() { ?>
 		<table class="form-table">
 			<thead>
+				<td>
+				</td>
 				<th>
 					<?php _e( 'Name', 'dnd-first-edition' ); ?>
 				</th>
@@ -143,8 +145,17 @@ class DND_Form_DMAdmin {
 			<tbody><?php
 				foreach( $this->chars as $name => $char ) { ?>
 					<tr>
+						<th class="check-column"><?php
+							$attrs = array(
+								'id'   => 'assign-' . $name,
+								'type' => 'checkbox',
+								'name' => 'assign_chars[]',
+								'value' => $name,
+							);
+							dnd1e()->tag( 'input', $attrs ); ?>
+						</th>
 						<td>
-							<?php echo $char->get_name(); ?>
+							<?php echo $name; ?>
 						</td>
 						<td>
 							<?php echo $char->get_class(); ?>
