@@ -29,11 +29,11 @@ class DND_Form_DMAdmin {
 	public function admin_enqueue_scripts( $hook ) {
 		$paths = DND_Plugin_Paths::instance();
 		wp_enqueue_media();
-		wp_enqueue_style(  'dnd-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
-		wp_enqueue_style(  'dnd-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ), null, $paths->version );
-		wp_enqueue_style(  'dnd-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ), null, $paths->version );
-		wp_enqueue_script( 'dnd-library.js',         $paths->get_plugin_file_uri( 'js/library.js' ),      [ 'jquery' ], $paths->version, true );
-		wp_enqueue_script( 'dnd-file-upload.js',     $paths->get_plugin_file_uri( 'js/file-upload.js' ),  [ 'jquery' ], $paths->version, true );
+		wp_enqueue_style(  'dnd1e-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),       null, $paths->version );
+		wp_enqueue_style(  'dnd1e-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ), null, $paths->version );
+		wp_enqueue_style(  'dnd1e-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ), null, $paths->version );
+		wp_enqueue_script( 'dnd1e-library.js',         $paths->get_plugin_file_uri( 'js/library.js' ),     [ 'jquery' ],  $paths->version, true );
+		wp_enqueue_script( 'dnd1e-file-upload.js',     $paths->get_plugin_file_uri( 'js/file-upload.js' ), [ 'dnd1e-library.js' ], $paths->version, true );
 	}
 
 	/**
