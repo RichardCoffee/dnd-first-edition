@@ -111,8 +111,8 @@ class DND_Form_Setup {
 		$attrs = array(
 			'id'    => 'dnd1e_upload_kregen_button',
 			'type'  => 'button',
-			'class' => 'button pull-right',
-			'value' => __( 'Choose file to import', 'dnd-first-edition' ),
+			'class' => 'button pull-left',
+			'value' => __( 'Import character file', 'dnd-first-edition' ),
 		);
 		dnd1e()->tag( 'input', $attrs );
 	}
