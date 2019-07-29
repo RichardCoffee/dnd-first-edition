@@ -1,7 +1,6 @@
 
 
-function dnd1e_get_content( action, div, out, wait ) {
-	var async  = ( typeof( wait ) === 'undefined' ) ? false : !wait;
+function dnd1e_get_content( action, div, out ) {
 	var retval = false;
 	jQuery.ajax({
 		url: ajaxurl,
@@ -10,8 +9,9 @@ function dnd1e_get_content( action, div, out, wait ) {
 			action: action,
 			info:   out,
 		},
-//		async: async, // jQuery default is true, or not to wait
 		success: function( result, textStatus, jqXHR ) {
+console.log(textStatus);
+console.log(result);
 			if ( result ) {
 				$( div ).html( result );
 				retval = true;

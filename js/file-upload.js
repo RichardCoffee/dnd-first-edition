@@ -78,18 +78,19 @@ function import_csv_file( attachment_id ) {
 		type: "POST",
 		url: ajaxurl,
 		data: {
-			action: "dnd_import_kregen",
+			action: "dnd1e_import_kregen",
 			attachment_id: attachment_id,
 		},
 		success: function ( response ) {
-			var result = JSON.parse( response );
+			var feedback = JSON.parse( response );
+			var result   = feedback.data;
 			if( ( result['status'] == 'success' ) && ( result['type'] == 'incomplete' ) ) {
 				jQuery( "#file_log" ).append( '<p>' + result['message'] + '</p>' );
 				return false;
 			} else if( ( result['status'] == 'success' ) && ( result['type'] == 'complete' ) ) {
 				jQuery( '#file_status' ).html( '' );
 				jQuery( "#file_log" ).html( '<p>' + result['message'] + '</p>' );
-				dnd1e_get_content( 'dnd_character_list', 'dnd1e_character_listing' );
+				dnd1e_get_content( 'dnd1e_character_list', 'character_listing' );
 				return true;
 			} else {
 				jQuery( '#file_status' ).html( '' );

@@ -10,17 +10,17 @@ class DND_Form_Setup {
 
 
 	public function __construct() {
-		add_action( 'admin_enqueue_scripts',       [ $this, 'admin_enqueue_scripts' ] );
-		add_action( 'admin_menu',                  [ $this, 'add_menu_option' ] );
-		add_action( 'wp_ajax_dnd_import_kregen',   [ $this, 'import_kregen_csv' ] );
-		add_action( 'wp_ajax_dnd_character_list',  [ $this, 'js_character_list' ] );
-		add_filter( 'upload_mimes',                [ $this, 'upload_mimes' ] );
+		add_action( 'admin_enqueue_scripts',         [ $this, 'admin_enqueue_scripts' ] );
+		add_action( 'admin_menu',                    [ $this, 'add_menu_option' ] );
+		add_action( 'wp_ajax_dnd1e_import_kregen',   [ $this, 'import_kregen_csv' ] );
+		add_action( 'wp_ajax_dnd1e_character_list',  [ $this, 'js_character_list' ] );
+		add_filter( 'upload_mimes',                  [ $this, 'upload_mimes' ] );
 	}
 
 	public function add_menu_option() {
 		if ( current_user_can( $this->cap ) ) {
-			$page = __( 'DM Setup', 'dnd-first' );
-			$menu = __( 'DM Setup', 'dnd-first' );
+			$page = __( 'D&D1e Setup', 'dnd-first' );
+			$menu = __( 'D&D1e Setup', 'dnd-first' );
 			$func = array( $this, 'show_dma_form' );
 			$this->hook = add_management_page( $page, $menu, $this->cap, $this->slug, $func );
 		}
@@ -67,7 +67,7 @@ class DND_Form_Setup {
 		</form>
 		<div class="container-fluid">
 			<div class="row">
-				<div id="dnd1e_character_listing" class="col-lg-5">
+				<div id="character_listing" class="col-lg-5">
 					<?php $this->show_character_listing(); ?>
 				</div>
 				<div class="col-lg-6">
@@ -171,7 +171,6 @@ class DND_Form_Setup {
 				} ?>
 			</tbody>
 		</table><?php
-dnd1e(true)->log($_POST);
 	}
 
 	/**
@@ -180,6 +179,7 @@ dnd1e(true)->log($_POST);
 	 * @since 20190728
 	 */
 	public function js_character_list() {
+dnd1e(true)->log($_POST);
 		$this->show_character_listing();
 		wp_die();
 	}
@@ -192,8 +192,7 @@ dnd1e(true)->log($_POST);
 			'type'    => 'complete',
 			'message' => $import->import_message,
 		);
-		echo json_encode( $response );
-		wp_die();
+		wp_send_json_success( $response );
 	}
 
 
