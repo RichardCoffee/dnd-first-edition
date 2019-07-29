@@ -89,6 +89,7 @@ function import_csv_file( attachment_id ) {
 			} else if( ( result['status'] == 'success' ) && ( result['type'] == 'complete' ) ) {
 				jQuery( '#file_status' ).html( '' );
 				jQuery( "#file_log" ).html( '<p>' + result['message'] + '</p>' );
+				dnd1e_get_content( 'dnd_character_list', 'dnd1e_character_listing' );
 				return true;
 			} else {
 				jQuery( '#file_status' ).html( '' );
