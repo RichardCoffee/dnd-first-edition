@@ -93,7 +93,7 @@ class DND_Form_DMAdmin {
 			$meta = get_user_meta( $me );
 			foreach( $meta as $key => $data ) {
 				if ( substr( $key, 0, 20 ) === 'dnd1e_DND_Character_' ) {
-					$char = substr( $key, 20 );
+					$char = array_pop( explode( '_', $key ) );
 					$this->chars[ $char ] = unserialize( get_user_meta( $me, $key, true ) );
 				}
 			}
