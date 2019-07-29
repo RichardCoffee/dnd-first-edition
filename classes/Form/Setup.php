@@ -123,6 +123,7 @@ class DND_Form_Setup {
 	 * @since 20190728
 	 */
 	protected function show_character_listing() { ?>
+		<h3 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h3>
 		<table class="form-table">
 			<thead>
 				<td>
