@@ -1,6 +1,6 @@
 <?php
 
-class DND_Form_DMAdmin {
+class DND_Form_Setup {
 
 
 	protected $cap   = 'import';

@@ -22,10 +22,10 @@ class DND_Plugin_FirstEdition extends DND_Plugin_Plugin {
 		$this->add_actions();
 		$this->add_filters();
 		if ( is_admin() ) {
-			new DND_Form_DMAdmin;
+			new DND_Form_Setup;
 		} else {
-			$form = new DND_Form_DMScreen;
-			add_shortcode( 'dm_screen', [ $form, 'show_screen' ] );
+			$form = new DND_Form_Combat;
+			add_shortcode( 'dnd1e_combat', [ $form, 'show_screen' ] );
 		}
 	}
 

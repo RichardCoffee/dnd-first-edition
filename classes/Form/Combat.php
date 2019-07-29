@@ -1,6 +1,6 @@
 <?php
 
-class DND_Form_DMScreen {
+class DND_Form_Combat {
 
 
 	public function __construct() {
