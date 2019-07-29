@@ -23,3 +23,8 @@
 .form-table td {
 	padding: 3px 0px;
 }
+
+#character_listing .h3 {
+	margin-bottom: 0;
+	margin-top: 0;
+}
