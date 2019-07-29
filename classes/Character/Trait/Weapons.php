@@ -73,11 +73,13 @@ trait DND_Character_Trait_Weapons {
 			),
 			'Beak' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 2,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
 			),
 			'Bite' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 3,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
 			),
@@ -100,8 +102,15 @@ trait DND_Character_Trait_Weapons {
 			),
 			'Claw' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 4,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
+			),
+			'Club' => array(
+				'type'   => array( -7, -6, -5, -4, -3, -2, -1, -1, 0, 0, 1 ),
+				'speed'  => 4,
+				'damage' => array( '1d6', '1d3', 'Yes' ),
+				'attack' => 'hand'
 			),
 			'Crossbow,Heavy' => array(
 				'type'   => array( -1, 0, 1, 2, 3, 3, 3, 4, 4, 4, 4 ),
@@ -218,6 +227,7 @@ trait DND_Character_Trait_Weapons {
 			),
 			'Tail' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 5,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
 			),

@@ -1,4 +1,8 @@
 <?php
+/* Name: Cooshee
+ * Class: DND_Monster_Cooshee
+ * Encounter: {"CW":{"H":"VR","F":"R","SM":"VR"},"TW":{"H":"VR","F":"R","SM":"VR"},"TSW":{"H":"VR","F":"R","SM":"VR"}}
+ */
 
 class DND_Monster_Cooshee extends DND_Monster_Monster {
 

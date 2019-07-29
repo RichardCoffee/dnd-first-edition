@@ -30,4 +30,8 @@ class DND_Character_Fighter extends DND_Character_Character {
 		return $this->attr_get_constitution_hit_point_adjustment( $con );
 	}
 
+	protected function get_saving_throw_table() {
+		return $this->get_fighter_saving_throw_table();
+	}
+
 }

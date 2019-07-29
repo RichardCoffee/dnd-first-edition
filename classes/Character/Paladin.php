@@ -2,8 +2,9 @@
 
 class DND_Character_Paladin extends DND_Character_Fighter {
 
-	private   $cleric     = null;
+	protected $alignment  = 'Lawful Good';
 	protected $armr_allow = array( 'Banded', 'Bronze Plate', 'Chain', 'Elfin Chain', 'Field Plate', 'Full Plate', 'Plate Mail', 'Ring', 'Scale', 'Splint' );
+	private   $cleric     = null;
 	protected $has_horse  = false;
 	protected $hit_die    = array( 'limit' => 9, 'size' => 10, 'step' => 3 );
 	protected $non_prof   = -3;
@@ -17,8 +18,9 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		add_filter( 'monster_to_hit_character',    [ $this, 'protection_from_evil_to_hit' ],       10, 3 );
-		add_filter( 'character_all_saving_throws', [ $this, 'protection_from_evil_saving_throw' ], 10, 3 );
+		add_filter( 'monster_to_hit_character', [ $this, 'protection_from_evil_to_hit' ], 10, 3 );
+		$filter = $this->get_name() . '_all_saving_throws';
+		add_filter( $filter, [ $this, 'protection_from_evil_saving_throw' ], 10, 3 );
 	}
 
 	public function initialize_character() {
@@ -82,21 +84,21 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 		return $this->cleric->get_undead_caps( $this->level - 2 );
 	}
 
-	public function protection_from_evil_to_hit( $number, DND_Monster_Monster $monster, DND_Character_Character $target ) {
+	public function protection_from_evil_to_hit( $number, $monster, $target ) {
 		if ( $this->protection_from_evil_judgement( $monster, $target ) ) {
 			$number += 2;
 		}
 		return $number;
 	}
 
-	public function protection_from_evil_saving_throw( $number, DND_Monster_Monster $monster, DND_Character_Character $target ) {
+	public function protection_from_evil_saving_throw( $number, $target, $monster ) {
 		if ( $this->protection_from_evil_judgement( $monster, $target ) ) {
-			$number += 2;
+			$number -= 2;
 		}
 		return $number;
 	}
 
-	private function protection_from_evil_judgement( DND_Monster_Monster $monster, DND_Character_Character $target ) {
+	private function protection_from_evil_judgement( $monster, $target ) {
 		$judgement = false;
 		if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
 			if ( $this->name === $target->name ) {

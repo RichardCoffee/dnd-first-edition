@@ -76,7 +76,7 @@ class DND_Character_Thief extends DND_Character_Character {
 	}
 
 	protected function get_thief_racial_adjustments() {
-		$adj = array( 'Pick Pockets' => 0, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0, 'Hear Noise' => 0, 'Climb Walls' => 0, 'Languages' => 0 );
+		$adj = array();
 		switch( strtolower( $this->race ) ) {
 			case 'dwarf':
 				$adj = array( 'Open Locks' => 15, 'Find Traps' => 15, 'Move Silently' => -5, 'Climb Walls' => -10, 'Languages' => -5 );
@@ -105,7 +105,7 @@ class DND_Character_Thief extends DND_Character_Character {
 	}
 
 	protected function get_thief_armor_adjustments() {
-		$adj = array( 'Pick Pockets' => 0, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0, 'Hear Noise' => 0, 'Climb Walls' => 0 );
+		$adj = array();
 		switch( strtolower( $this->armor['armor'] ) ) {
 			case 'none':
 				$adj = array( 'Pick Pockets' => 5, 'Move Silently' => 10, 'Hide Shadow' => 5, 'Climb Walls' => 10 );
@@ -113,7 +113,7 @@ class DND_Character_Thief extends DND_Character_Character {
 			case 'elfin chain':
 				switch( $this->armor['bonus'] ) {
 					case 5:
-						$adj = array( 'Pick Pockets' => -5, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0, 'Hear Noise' => 0, 'Climb Walls' => -5 );
+						$adj = array( 'Pick Pockets' => -5, 'Climb Walls' => -5 );
 						break;
 					case 4:
 						$adj = array( 'Pick Pockets' => -8, 'Open Locks' => -1, 'Find Traps' => -1, 'Move Silently' => -1, 'Hide Shadow' => -2, 'Hear Noise' => -2, 'Climb Walls' => -8 );
@@ -155,13 +155,12 @@ class DND_Character_Thief extends DND_Character_Character {
 				break;
 			case 'leather':
 			default:
-				$adj = array( 'Pick Pockets' => 0, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0, 'Hear Noise' => 0, 'Climb Walls' => 0 );
 		}
 		return $adj;
 	}
 
 	protected function get_thief_dexterity_adjustments() {
-		$adj = array( 'Pick Pockets' => 0, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0 );
+		$adj = array();
 		switch( $this->stats['dex'] ) {
 			case 3:
 				$adj = array( 'Pick Pockets' => -45, 'Open Locks' => -40, 'Find Traps' => -25, 'Move Silently' => -50, 'Hide Shadow' => -40 );
@@ -229,7 +228,6 @@ class DND_Character_Thief extends DND_Character_Character {
 				$adj = array( 'Pick Pockets' => 45, 'Open Locks' => 50, 'Find Traps' => 40, 'Move Silently' => 30, 'Hide Shadow' => 30 );
 				break;
 			default:
-				$adj = array( 'Pick Pockets' => 0, 'Open Locks' => 0, 'Find Traps' => 0, 'Move Silently' => 0, 'Hide Shadow' => 0 );
 		}
 		return $adj;
 	}
@@ -242,6 +240,10 @@ class DND_Character_Thief extends DND_Character_Character {
 
 	public function special_integer_backstab() {
 		return ceil( ( $this->level / 4 ) + 1 );
+	}
+
+	protected function get_saving_throw_table() {
+		return $this->get_thief_saving_throw_table();
 	}
 
 

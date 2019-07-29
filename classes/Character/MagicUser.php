@@ -584,5 +584,9 @@ The components necessary for the casting of this dweomer are nitre and sulphur f
 		return $table;
 	}
 
+	protected function get_saving_throw_table() {
+		return $this->get_magic_saving_throw_table();
+	}
+
 
 }

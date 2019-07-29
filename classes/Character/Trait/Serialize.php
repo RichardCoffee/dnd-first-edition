@@ -15,6 +15,7 @@ trait DND_Character_Trait_Serialize {
 
 	private function get_serialization_data() {
 		$table = array(
+			'alignment'  => $this->alignment,
 			'armor'      => $this->armor,
 			'current_hp' => $this->current_hp,
 			'experience' => $this->experience,
@@ -33,8 +34,8 @@ trait DND_Character_Trait_Serialize {
 				$table[ $key ] = serialize( $this->$key );
 			}
 		} else if ( $this instanceOf DND_Character_Ranger ) {
-			$table['druid'] = serialize( $this->druid );
-			$table['magic'] = serialize( $this->magic );
+#			$table['druid'] = serialize( $this->druid );
+#			$table['magic'] = serialize( $this->magic );
 			if ( $this->spells ) {
 				$list = array();
 				foreach( $this->spells as $class => $spells ) {

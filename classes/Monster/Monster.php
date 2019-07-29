@@ -31,6 +31,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $race         = 'Monster';
 	protected $reference    = 'Monster Manual page';
 	protected $resistance   = 'Standard';
+	protected $saving       = array( 'fight' );
 	protected $size         = 'Medium';
 	protected $specials     = array();
 	protected $to_hit_row   = array();
@@ -38,6 +39,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
+	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Weapons;
 	use DND_Monster_Trait_Treasure;
 	use DND_Monster_Trait_Serialize;
@@ -157,8 +159,14 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	protected function get_saving_throw_level() {
-		return $this->hit_dice + ( ( $this->hp_extra > 3 ) ? 1 : 0 );
+		$level = $this->hit_dice;
+		$level+= ceil( $this->hp_extra / 4 );
+		return $level;
 }
+
+	protected function get_saving_throw_table() {
+		return $this->get_combined_saving_throw_table( $this->saving );
+	}
 
 	protected function determine_xp_value() {
 		$xp = 0;
@@ -275,6 +283,17 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 			}
 		}
 		return $result;
+	}
+
+	public function check_for_lair() {
+		if ( $this->in_lair) {
+			if ( $this->check_chance( $this->in_lair ) ) {
+				$this->in_lair = 100;
+			} else {
+				$this->in_lair = 0;
+			}
+		}
+		return ( $this->in_lair ) ? true : false;
 	}
 
 	public function get_treasure( $possible = '' ) {

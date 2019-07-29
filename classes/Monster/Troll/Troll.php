@@ -1,6 +1,10 @@
 <?php
+/* Name: Troll
+ * Class: DND_Monster_Troll
+ * Encounter: {
+ */
 
-class DND_Monster_Troll extends DND_Monster_Monster {
+class DND_Monster_Troll_Troll extends DND_Monster_Monster {
 
 
 	protected $alignment    = 'Chaotic Evil';

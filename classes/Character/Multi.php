@@ -125,5 +125,13 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
 
+	protected function get_saving_throw_table() {
+		$saving = array();
+		foreach( $this->classes as $key => $class ) {
+			$saving[] = $key;
+		}
+		return $this->get_combined_saving_throw_table( $saving );
+	}
+
 
 }

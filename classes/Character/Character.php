@@ -7,6 +7,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	 */
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
+	protected $alignment  = 'Neutral';
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
 	protected $armr_allow = array();
 	protected $base_xp    = 0;
@@ -42,6 +43,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
+	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;
@@ -146,9 +148,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( $this->level > $this->hit_die['limit'] ) {
 			$this->hit_points += ( $this->level - $this->hit_die['limit'] ) * $this->hit_die['step'];
 		}
-		if ( $this->current_hp === -100 ) {
-			$this->current_hp = $this->hit_points;
-		}
+		$this->current_hp = $this->hit_points;
 	}
 
 	protected function get_constitution_hit_point_adjustment( $con ) {

@@ -19,11 +19,17 @@ trait DND_Monster_Trait_Serialize {
 			'current_hp'   => $this->current_hp,
 			'hit_dice'     => $this->hit_dice,
 			'hit_points'   => $this->hit_points,
+			'in_lair'      => $this->in_lair,
 			'initiative'   => $this->initiative,
 			'intelligence' => $this->intelligence,
 			'name'         => $this->name,
 			'xp_value'     => $this->xp_value,
 		);
+		foreach( [ 'extra' ] as $prop ) {
+			if ( property_exists( $this, $prop ) ) {
+				$table[ $prop ] = $this->$prop;
+			}
+		}
 		/** Dragons **/
 		if ( $this instanceOf DND_Monster_Dragon_Dragon ) {
 			$table['hd_minimum']   = $this->hd_minimum;

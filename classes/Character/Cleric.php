@@ -138,8 +138,9 @@ class DND_Character_Cleric extends DND_Character_Character {
 					'duration'  => sprintf( '%u rounds', $this->level * 3 ),
 					'condition' => 'this_character_only',
 					'filters' => array(
-						array( 'character_to_hit_opponent',  2, 10, 2 ),
-						array( 'monster_to_hit_character',  -2, 10, 3 ),
+						array( 'character_to_hit_opponent',   2, 10, 2 ),
+						array( 'character_all_saving_throws', 2, 10, 2 ),
+						array( 'monster_to_hit_character',   -2, 10, 3 ),
 					),
 				),
 				'Purify Food & Drink' => array( 'page' => 'PH 45', 'type' => 'Alteration', 'cast' => '1 round' ),
@@ -281,6 +282,10 @@ class DND_Character_Cleric extends DND_Character_Character {
 		$table = array(
 		);
 		return $table;
+	}
+
+	protected function get_saving_throw_table() {
+		return $this->get_cleric_saving_throw_table();
 	}
 
 

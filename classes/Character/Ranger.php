@@ -3,6 +3,7 @@
 class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected $ac_rows    = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 );
+	protected $alignment  = 'Good';
 	protected $classes    = array( 'druid' => 'Druid', 'magic' => 'Magic User' );
 	protected $druid      = null;
 	protected $hit_die    = array( 'limit' => 11, 'size' => 8, 'step' => 2 );
@@ -19,11 +20,11 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	public function __construct( $args = array() ) {
 		if ( isset( $args['druid'] ) ) {
-			$this->druid = unserialize( $args['druid'] );
+#			$this->druid = unserialize( $args['druid'] );
 			unset( $args['druid'] );
 		}
 		if ( isset( $args['magic'] ) ) {
-			$this->magic = unserialize( $args['magic'] );
+#			$this->magic = unserialize( $args['magic'] );
 			unset( $args['magic'] );
 		}
 		parent::__construct( $args );
@@ -50,10 +51,8 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected function determine_hit_points() {
 		parent::determine_hit_points();
-		if ( $this->hit_points ) {
-			$this->current_hp += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
-			$this->hit_points += $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
-		}
+		$this->hit_points+= $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
+		$this->current_hp = $this->hit_points;
 	}
 
 	protected function initialize_spell_list( $book ) {

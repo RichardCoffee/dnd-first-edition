@@ -29,13 +29,13 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Logos.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Mary.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Meera.csv' );
-$test = new DND_Character_Import_Kregen( CSV_PATH . 'Pointer.csv' );
+#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Pointer.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Ragnor.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Rider.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Robb.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Saerwen.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Smurf.csv' );
-#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Strider.csv' );
+$test = new DND_Character_Import_Kregen( CSV_PATH . 'Strider.csv' );   // Ranger
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Susan.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Susan2.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tank.csv' );

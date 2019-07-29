@@ -3,6 +3,7 @@
 class DND_Character_Druid extends DND_Character_Cleric {
 
 	protected $ac_rows    = array( 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 12, 12, 12, 13 );
+	protected $alignment  = 'Neutral';
 	protected $armr_allow = array( 'Leather', 'Padded' );
 	protected $hit_die    = array( 'limit' => 15, 'size' => 8, 'step' => 1 );
 	protected $non_prof   = -4;
