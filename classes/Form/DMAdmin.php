@@ -171,7 +171,7 @@ class DND_Form_DMAdmin {
 				} ?>
 			</tbody>
 		</table><?php
-dnd1e(true)->log($_POST)
+dnd1e(true)->log($_POST);
 	}
 
 	/**
