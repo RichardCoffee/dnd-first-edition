@@ -10,7 +10,7 @@ function dnd1e_get_content( action, div, out, wait ) {
 			action: action,
 			info:   out,
 		},
-		async: async, // jQuery default is true, or not to wait
+//		async: async, // jQuery default is true, or not to wait
 		success: function( result, textStatus, jqXHR ) {
 			if ( result ) {
 				$( div ).html( result );
