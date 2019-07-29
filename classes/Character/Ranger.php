@@ -59,11 +59,12 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected function initialize_spell_list( $book ) {
 		if ( $book ) {
 			foreach( $book as $class => $list ) {
+				$key = array_search( $class, [ 'druid' => 'Druid', 'magic' => 'Magic User' ] );
 				$this->spells[ $class ] = array();
 				foreach( $list as $level => $spells ) {
 					$this->spells[ $class ][ $level ] = array();
 					foreach( $spells as $spell ) {
-						$this->spells[ $class ][ $level ][ $spell ] = $this->$class->get_spell_data( $level, $spell );
+						$this->spells[ $class ][ $level ][ $spell ] = $this->$key->get_spell_data( $level, $spell );
 					}
 				}
 			}

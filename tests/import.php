@@ -29,7 +29,7 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Logos.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Mary.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Meera.csv' );
-#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Pointer.csv' );
+$test = new DND_Character_Import_Kregen( CSV_PATH . 'Pointer.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Ragnor.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Rider.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Robb.csv' );
@@ -40,12 +40,12 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Susan2.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tank.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Thorodon.csv' );
-$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tifa.csv' );
+#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tifa.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Trindle.csv', [ 'weap_dual' => [ 'Dagger', 'Dagger,Off-Hand' ] ] );
 #$test = new DND_Character_Thief( [ 'level' => 10, 'stats' => [ 'dex' => 14 ] ] );
 
-echo $test->import_message."\n";
-print_r($test->character);
+#echo $test->import_message."\n";
+#print_r($test->character);
 
 #$test->set_current_weapon('Bow,Long');
 #$test->set_current_weapon('Dagger,Off-Hand');
@@ -66,9 +66,9 @@ print_r($test->character);
 #print_r( $test->weapons );
 #print_r( $test->magic->spells );
 
-#$name = 'dnd1e_'.get_class($test).'_'.str_replace(' ','_',$test->name);
-#set_transient( $name, $test );
+$name = 'dnd1e_' . get_class( $test->character ) . '_' . $test->character->get_name();
+set_transient( $name, $test->character );
 
-#$obj = get_transient( $name );
+$obj = get_transient( $name );
 
-#print_r($obj);
+print_r( $obj );

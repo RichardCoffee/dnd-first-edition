@@ -273,7 +273,6 @@ function dnd1e_finish_casting_spell( $spell, $segment ) {
 }
 
 function dnd1e_add_ongoing_spell_effects( $spell ) {
-print_r($spell);
 	$ongoing = get_transient( 'dnd1e_ongoing' );
 	if ( ! $ongoing ) $ongoing = array();
 	$ongoing[ $spell['name'] ] = $spell;
