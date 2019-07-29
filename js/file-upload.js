@@ -82,8 +82,7 @@ function import_csv_file( attachment_id ) {
 			attachment_id: attachment_id,
 		},
 		success: function ( response ) {
-			var feedback = JSON.parse( response );
-			var result   = feedback.data;
+			var result = JSON.parse( response );
 			if( ( result['status'] == 'success' ) && ( result['type'] == 'incomplete' ) ) {
 				jQuery( "#file_log" ).append( '<p>' + result['message'] + '</p>' );
 				return false;

@@ -192,6 +192,9 @@ dnd1e(true)->log($_POST);
 			'type'    => 'complete',
 			'message' => $import->import_message,
 		);
+		echo json_encode( $response );
+		wp_die();
+		// this just errors out in the js - just so much crappy documentation.
 		wp_send_json_success( $response );
 	}
 
