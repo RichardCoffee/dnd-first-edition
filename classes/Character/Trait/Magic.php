@@ -3,8 +3,8 @@
 trait DND_Character_Trait_Magic {
 
 
-	private $last_spell  = '';
-	private $spell_table = array();
+	protected $last_spell  = '';
+	private   $spell_table = array();
 
 
 	public function get_spell_list() {

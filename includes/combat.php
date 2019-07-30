@@ -5,7 +5,7 @@ function dnd1e_load_combat_state( $chars ) {
 }
 
 function dnd1e_load_character_combat_state( $chars ) {
-	$combat = get_transient( 'dnd1e_combat' );
+	$combat = dnd1e_transient( 'combat' );
 	if ( $combat ) {
 		foreach( $chars as $name => $object ) {
 			if ( isset( $combat[ $name ] ) ) {
@@ -19,7 +19,7 @@ function dnd1e_load_character_combat_state( $chars ) {
 
 function dnd1e_save_combat_state( $chars ) {
 	$combat = dnd1e_save_character_combat_state( $chars );
-	set_transient( 'dnd1e_combat', $combat );
+	dnd1e_transient( 'combat', $combat );
 }
 
 function dnd1e_save_character_combat_state( $chars ) {
@@ -36,13 +36,13 @@ function dnd1e_save_character_combat_state( $chars ) {
 
 function dnd1e_save_character_transients( $characters = array() ) {
 	foreach( $characters as $name => $obj ) {
-		$trans = 'dnd1e_' . get_class( $obj ) . '_' . $name;
+		$trans = get_class( $obj ) . '_' . $name;
 		dnd1e_save_character_as_transient( $trans, $obj );
 	}
 }
 
 function dnd1e_save_character_as_transient( $transient, DND_Character_Character $char ) {
-	set_transient( $transient, $char );
+	dnd1e_transient( $transient, $char );
 }
 
 function dnd1e_change_weapons( $char, $weapon, $segment ) {
@@ -147,7 +147,7 @@ function dnd1e_get_movement_sequence( $move = 12 ) {
 }
 
 function dnd1e_update_movement_transient( $segment, $obj ) {
-	$moves = get_transient( 'dnd1e_movement' );
+	$moves = dnd1e_transient( 'movement' );
 	if ( ! $moves ) $moves = array();
 	$sequence = dnd1e_get_movement_sequence( $obj->movement );
 	$seg = $segment % 10;
@@ -156,13 +156,13 @@ function dnd1e_update_movement_transient( $segment, $obj ) {
 	if ( $cnt ) {
 		$name = $obj->get_name();
 		$moves[] = $name . ( ( $cnt > 1 ) ? sprintf( ' x %u', $cnt ) : '' );
-		set_transient( 'dnd1e_movement', $moves );
+		dnd1e_transient( 'movement', $moves );
 	}
 }
 
 function dnd1e_get_character_attackers( $chars, $rounds, $segment ) {
 	$rank = array();
-	$cast = get_transient('dnd1e_cast');
+	$cast = dnd1e_transient('cast');
 	foreach( $chars as $name => $body ) {
 		$sequence = dnd1e_get_attack_sequence( $rounds, $body->segment, $body->weapon['attacks'] );
 		if ( in_array( $segment, $sequence ) ) {
@@ -170,7 +170,7 @@ function dnd1e_get_character_attackers( $chars, $rounds, $segment ) {
 		} else if ( $cast && ( isset( $cast[ $name ] ) ) ) {
 			if ( $segment > $cast[ $name ]['when'] ) {
 				unset( $cast[ $name ] );
-				set_transient( 'dnd1e_cast', $cast );
+				dnd1e_transient( 'cast', $cast );
 			} else {
 				$rank[] = $body;
 			}
@@ -206,8 +206,8 @@ function dnd1e_get_monster_attackers( $monster, $att_seq, $segment ) {
 }
 
 function dnd1e_rank_attackers( &$chars, $segment ) {
-	$hold = get_transient( 'dnd1e_hold' );
-	$cast = get_transient( 'dnd1e_cast' );
+	$hold = dnd1e_transient( 'hold' );
+	$cast = dnd1e_transient( 'cast' );
 	usort( $chars, function( $a, $b ) use ( $hold, $cast, $segment ) {
 		$aname = ( $a instanceOf DND_Character_Character ) ? $a->get_name() : $a->name;
 		$bname = ( $b instanceOf DND_Character_Character ) ? $b->get_name() : $b->name;
@@ -244,18 +244,18 @@ function dnd1e_rank_attackers( &$chars, $segment ) {
 }
 
 function dnd1e_start_casting_spell( $caster, $spell, $segment, $target ) {
-	$cast = get_transient( 'dnd1e_cast' );
-	$hold = get_transient( 'dnd1e_hold' );
+	$cast = dnd1e_transient( 'cast' );
+	$hold = dnd1e_transient( 'hold' );
 	$len  = ( strpos( $spell['cast'], 'segment' ) ) ? intval( $spell['cast'] ) : intval( $spell['cast'] ) * 10;
 	$cast[ $caster ] = array(
 		'spell'  => $spell['name'],
 		'when'   => $segment + $len,
 		'target' => $target,
 	);
-	set_transient( 'dnd1e_cast', $cast );
+	dnd1e_transient( 'cast', $cast );
 	if ( isset( $hold[ $caster ] ) ) {
 		unset( $hold[ $caster ] );
-		set_transient( 'dnd1e_hold', $hold );
+		dnd1e_transient( 'hold', $hold );
 	}
 }
 
@@ -273,14 +273,14 @@ function dnd1e_finish_casting_spell( $spell, $segment ) {
 }
 
 function dnd1e_add_ongoing_spell_effects( $spell ) {
-	$ongoing = get_transient( 'dnd1e_ongoing' );
+	$ongoing = dnd1e_transient( 'ongoing' );
 	if ( ! $ongoing ) $ongoing = array();
 	$ongoing[ $spell['name'] ] = $spell;
-	set_transient( 'dnd1e_ongoing', $ongoing );
+	dnd1e_transient( 'ongoing', $ongoing );
 }
 
 function dnd1e_apply_ongoing_spell_effects( $segment ) {
-	$ongoing = get_transient( 'dnd1e_ongoing' );
+	$ongoing = dnd1e_transient( 'ongoing' );
 	if ( ! $ongoing ) $ongoing = array();
 	foreach( $ongoing as $name => $spell ) {
 		if ( isset( $spell['ends'] ) && ( $segment > $spell['ends'] ) ) {
@@ -309,7 +309,7 @@ function dnd1e_apply_ongoing_spell_effects( $segment ) {
 			}, $filter[2], $filter[3] );
 		}
 	}
-	set_transient( 'dnd1e_ongoing', $ongoing );
+	dnd1e_transient( 'ongoing', $ongoing );
 }
 
 function dnd1e_replacement_filters() {
@@ -320,10 +320,10 @@ function dnd1e_damage_to_monster( $monster, $target, $damage ) {
 	if ( $target === 1 ) {
 		$monster->current_hp -= $damage;
 	} else {
-		$appearing = get_transient( 'dnd1e_appearing' );
+		$appearing = dnd1e_transient( 'appearing' );
 		$index = $target - 1;
 		$appearing['hit_points'][ $index ][0] -= $damage;
 		$appearing['hit_points'][ $index ][0] = min( $appearing['hit_points'][ $index ][0], $appearing['hit_points'][ $index ][1] );
-		set_transient( 'dnd1e_appearing', $appearing );
+		dnd1e_transient( 'appearing', $appearing );
 	}
 }

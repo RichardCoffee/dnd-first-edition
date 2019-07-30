@@ -30,7 +30,7 @@ function dnd1e_get_combat_string( DND_Character_Character $char, DND_Monster_Mon
 function dnd1e_get_combat_weapon( DND_Character_Character $char ) {
 	$weapon = $char->weapon['current'];
 	if ( $weapon === 'Spell' ) {
-		$cast = get_transient( 'dnd1e_cast' );
+		$cast = dnd1e_transient( 'cast' );
 		if ( $cast ) {
 			$name = $char->get_name();
 			if ( isset( $cast[ $name ] ) ) {

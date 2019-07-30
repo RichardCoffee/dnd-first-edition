@@ -11,7 +11,7 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
 $range   = 2000;
 $rounds  = 3;
-$segment = intval( get_transient( 'dnd1e_segment' ) );
+$segment = intval( dnd1e_transient( 'segment' ) );
 
 if ( ! $segment ) {
 	$segment = 1;
@@ -31,7 +31,7 @@ if ( ! empty( $hold ) ) { // $hold created in getopts.php
 		$hold [ $hname ] = $segment;
 		$chars[ $hname ]->segment = $segment;
 	}
-	set_transient( 'dnd1e_hold', $hold );
+	dnd1e_transient( 'hold', $hold );
 }
 
 $minus = ( ( ( $segment - 1 ) + floor( ( $segment -1 ) / 10 ) ) * 2 );
@@ -42,7 +42,7 @@ include_once( DND_FIRST_EDITION_DIR . '/command_line/show_monster.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/show_characters.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/show_attackers.php' );
 
-set_transient( 'dnd1e_monster', $monster );
+dnd1e_transient( 'monster', $monster );
 
 dnd1e_save_combat_state( $chars );
 

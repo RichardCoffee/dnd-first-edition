@@ -16,7 +16,6 @@ delete_transient('dnd1e_segment');
 $trans = array( 'appearing','cast','combat','hold','ongoing','segment' );
 
 foreach( $trans as $item ) {
-	$file = 'dnd1e_' . $item;
-	$data = get_transient( $file );
-	set_transient( $file, $data );
+	$data = dnd1e_transient( $item );
+	dnd1e_transient( $item, $data );
 } //*/

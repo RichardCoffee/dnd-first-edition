@@ -25,7 +25,7 @@ foreach( $rank as $body ) {
 	echo "\n";
 }
 
-$moves = get_transient( 'dnd1e_movement' );
+$moves = dnd1e_transient( 'movement' );
 if ( $moves ) {
 	echo "---Movement---\n";
 	foreach( $moves as $moving ) {

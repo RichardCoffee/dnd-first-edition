@@ -1,6 +1,6 @@
 <?php
 
-$monster = get_transient( 'dnd1e_monster' );
+$monster = dnd1e_transient( 'monster' );
 
 if ( $monster instanceOf DND_Monster_Monster ) {
 	echo "Using transient monster data\n";
@@ -20,12 +20,12 @@ if ( $monster instanceOf DND_Monster_Monster ) {
 #	$monster = new DND_Monster_Water_StingRay();
 }
 
-$appearing = get_transient( 'dnd1e_appearing' );
+$appearing = dnd1e_transient( 'appearing' );
 if ( empty( $appearing ) ) {
 	$number = $monster->get_number_appearing();
 	$appearing = array(
 		'number'     => $number,
 		'hit_points' => $monster->get_appearing_hit_points( $number ),
 	);
-	set_transient( 'dnd1e_appearing', $appearing );
+	dnd1e_transient( 'appearing', $appearing );
 }

@@ -35,6 +35,17 @@ if ( ! function_exists( 'array_key_first' ) ) {
 	}
 }
 
+if ( ! function_exists( 'dnd1e_transient' ) ) {
+	function dnd1e_transient( $name, $data = null, $expire = YEAR_IN_SECONDS ) {
+		$entry = "dnd1e_$name";
+		if ( $data ) {
+			set_transient( $entry, $data, $expire );
+		} else {
+			return dnd1e_unserialize( get_transient( $entry ) );
+		}
+	}
+}
+
 if ( ! function_exists( 'dnd1e_unserialize' ) ) {
 	function dnd1e_unserialize( $original ) {
 		if ( is_string( $original ) ) {

@@ -1,8 +1,8 @@
 <?php
 
-$cast = get_transient('dnd1e_cast');
+$cast = dnd1e_transient('cast');
 if ( ! $cast ) $cast = array();
-$hold = get_transient('dnd1e_hold');
+$hold = dnd1e_transient('hold');
 if ( ! $hold ) $hold = array();
 
 $opts = getopt( 'hr:s:t::', [ 'att:', 'help', 'hit:', 'hold:', 'mi:', 'pre:' ] );
@@ -77,7 +77,7 @@ if ( isset( $opts['s'] ) ) {
 		}
 	}
 	$segment  = intval( $opts['s'] );
-	set_transient( 'dnd1e_segment', $segment );
+	dnd1e_transient( 'segment', $segment );
 }
 $seg_diff = floor( $segment / 10 );
 $rounds  += $seg_diff;
@@ -90,14 +90,14 @@ if ( isset( $opts['t'] ) ) {
 
 if ( isset( $opts['hold'] ) ) {
 	$hold[ $opts['hold'] ] = $segment;
-	set_transient( 'dnd1e_hold', $hold );
+	dnd1e_transient( 'hold', $hold );
 }
 
 if ( isset( $opts['att'] ) ) {
 	$name = $opts['att'];
 	if ( isset( $hold[ $name ] ) ) {
 		unset( $hold[ $name ] );
-		set_transient( 'dnd1e_hold', $hold );
+		dnd1e_transient( 'hold', $hold );
 	}
 	$chars[ $name ]->segment = $segment;
 }

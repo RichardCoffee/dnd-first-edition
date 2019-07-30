@@ -369,7 +369,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	public function check_temporary_hit_points( $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
-			$ongoing = maybe_unserialize( get_transient( 'dnd1e_ongoing' ) );
+			$ongoing = dnd1e_transient( 'ongoing' );
 			foreach( $ongoing as $name => $effect ) {
 				if ( $effect['target'] === $this->get_name() ) {
 					if ( isset( $effect['condition'] ) ) {
@@ -383,7 +383,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 										unset( $ongoing[ $name ] );
 										break;
 									}
-									set_transient( 'dnd1e_ongoing', $ongoing );
+									dnd1e_transient( 'ongoing', $ongoing );
 								}
 							}
 						}

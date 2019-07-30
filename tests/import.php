@@ -66,9 +66,9 @@ print_r( $test->logging_reduce_object( $test ) );
 #print_r( $test->weapons );
 #print_r( $test->magic->spells );
 /*
-$name = 'dnd1e_' . get_class( $test->character ) . '_' . $test->character->get_name();
-set_transient( $name, $test->character );
+$name = get_class( $test->character ) . '_' . $test->character->get_name();
+dnd1e_transient( $name, $test->character );
 
-$obj = get_transient( $name );
+$obj = dnd1e_transient( $name );
 
 print_r( $obj ); //*/
