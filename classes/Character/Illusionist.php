@@ -33,8 +33,16 @@ class DND_Character_Illusionist extends DND_Character_MagicUser {
 				'Hypnotism' => array( 'page' => 'PH 96, PH 76', 'type' => 'Enchantment/Charm', 'cast' => '1 segment',
 					'duration' => sprintf( '%u rounds', $this->level + 1 ),
 				),
-				'Light' => array( 'page' => 'PH 96, PH 45', 'type' => 'Alteration', 'cast' => '1 segment',
+				'Light' => array(
+					'page'     => 'PH 96, PH 68, PH 45',
+					'type'     => 'Alteration',
+					'reversible' => true,
+					'range'    => '60 feet',
 					'duration' => sprintf( '%u turns', $this->level ),
+					'aoe'      => '20 foot radius globe',
+					'comps'    => 'V, S',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
 				),
 				'Phantom Armor' => array( 'page' => 'UA 67', 'type' => 'Alteration', 'cast' => '1 round',
 					'special'   => sprintf( 'absorbs %u points of damage', $this->level ),
@@ -107,6 +115,9 @@ class DND_Character_Illusionist extends DND_Character_MagicUser {
 		static $table = null;
 		if ( $table ) return $table;
 		$table = array(
+			'First' => array(
+				'Light' => 'This spell is the same as the first level magic-user light spell (PH 68). (cf. first level cleric light spell.(PH 45))',
+			),
 		);
 		return $table;
 	}

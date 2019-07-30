@@ -2,9 +2,6 @@
 
 abstract class DND_Character_Character implements JsonSerializable, Serializable {
 
-	/**
-	 *   Note:  unassigned filters: 'character_all_saving_throws', 'character_BW_saving_throw'
-	 */
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
 	protected $alignment  = 'Neutral';
@@ -16,7 +13,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = 0;
 	protected $initiative = array( 'roll' => 0, 'actual' => 0, 'segment' => 0 );
-	protected $last_spell = '';
 	protected $level      = 0;
 	protected $max_move   = 12;
 	protected $movement   = 12;
@@ -82,6 +78,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 		$this->define_specials();
 		$this->determine_initiative();
+		$this->add_filters();
 	}
 
 	public function get_name( $full = false ) {
@@ -184,22 +181,31 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 	}
 
-	protected function initialize_spell_list( $book ) {
-		if ( $book ) {
-			foreach( $book as $level => $list ) {
-				foreach( $list as $spell ) {
-					$this->spells[ $level ][ $spell ] = $this->get_spell_data( $level, $spell );
-				}
-			}
+	protected function add_filters() {
+		if ( $this->race === 'Dwarf' ) {
+			add_filter( "Dwarf_Rod_saving_throws",    [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Staff_saving_throws",  [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Wand_saving_throws",   [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Spells_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
 		}
+		if ( $this->race === 'Gnome' ) {
+			add_filter( "Gnome_Poison_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+		}
+		add_filter( 'character_Spells_saving_throws', [ $this, 'mental_wisdom_saving_throws' ], 10, 4 );
 	}
 
-	public function set_alternative_movement() {
-		if ( $this->movement === 6 ) {
-			$this->movement = '6a';
-		} else if ( $this->movement === '6a' ) {
-			$this->movement = 6;
+	public function racial_constitution_saving_throws( $num, $target ) {
+		if ( $target === $this ) {
+			$num -= intval( $this['stats']['con'] / 3.5 );
 		}
+		return $num;
+	}
+
+	public function mental_wisdom_saving_throws( $num, $target, $origin, $type ) {
+		if ( ( $target === $this ) && ( $type === 'mental' ) ) {
+			$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+		}
+		return $num;
 	}
 
 	public function is_off_hand_weapon() {
@@ -351,10 +357,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $total - $current;
 	}
 
-	public function get_spell_list() {
-		return $this->spells;
-	}
-
 	/** Filters Effects **/
 
 	public function this_character_only( $purpose, $spell, $char ) {
@@ -367,7 +369,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	public function check_temporary_hit_points( $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
-			$ongoing = get_transient( 'dnd1e_ongoing' );
+			$ongoing = maybe_unserialize( get_transient( 'dnd1e_ongoing' ) );
 			foreach( $ongoing as $name => $effect ) {
 				if ( $effect['target'] === $this->get_name() ) {
 					if ( isset( $effect['condition'] ) ) {

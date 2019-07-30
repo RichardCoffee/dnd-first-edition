@@ -146,8 +146,16 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'saving'   => 'None',
 					'special'  => sprintf( 'Allows %u jumps', ceil( $this->level / 3 ) ),
 				),
-				'Light' => array( 'page' => 'PH 68, PH 45', 'type' => 'Alteration', 'cast' => '1 segment',
+				'Light' => array(
+					'page'     => 'PH 68, PH 45',
+					'type'     => 'Alteration',
+					'reversible' => true,
+					'range'    => '60 feet',
 					'duration' => sprintf( '%u turns', $this->level ),
+					'aoe'      => '20 foot radius globe',
+					'comps'    => 'V, S',
+					'cast'     => '1 segment',
+					'saving'   => 'None'
 				),
 				'Magic Missile' => array( 'page' => 'PH 68', 'type' => 'Evocation', 'cast' => '1 segment',
 					'range'   => sprintf( '%u feet', ( $this->level * 10 ) + 60 ),
@@ -549,6 +557,7 @@ A single object up to about 1 cubic yard in volume can be treated by this cantri
 				'Firewater' => 'By means of this spell, the magic-user changes a volume of water to a volatile, flammable substance similar to alcohol and likewise lighter than water. If this substance is exposed to flame, fire, or even a spark, it will burst into flames and burn with a hot fire. Each creature subject to firewater flame will suffer 2-12 hit points of damage. The firewater created will evaporate and be useless within 1 round, even if it is securely contained and sealed, so it must be utilized (ignited) within 10 segments of its creation. The material components of this spell are a few grains of sugar and a raisin.',
 				'Friends' => "A friends spell causes the magic-user to gain a temporary increase of 2-8 points in charisma - or a temporary lowering of charisma by 1-4 points- depending on whether creatures within the area of effect of the spell make - or fail - their saving throw versus magic. Those that fail their saving throw will be very impressed with the spell caster and desire greatly to be his or her friend and help. Those that do not fail will be uneasy in the spell caster's presence and tend to find him or her irritating. Note that this spell has absolutely no effect on creatures of animal intelligence or lower. The components for this spell are chalk (or white flour), lampblack (or soot), and vermillion applied to the face before casting the spell.",
 				'Jump' => "When this spell is cast, the individual is empowered to leap up to 30' forward or 10' backward or straight upward. Horizontal leaps forward or backward are in only a slight arc - about 2'/10' of distance traveled. The jump spell does not insure any safety in landing or grasping at the end of the leap. For every 3 additional levels of experience of the magic-user beyond the lst, he or she is able to empower 1 additional leap, so a 4th level magic-user can cast a jump spell which enables the recipient to make 2 leaps, 3 leaps at 7th level, etc. All leaps must be completed within 1 turn after the spell is cast, for after that period has elapsed the spell wears off. The material component of this spell is a grasshopper's hind leg, one for each leap, to be broken when the leap is made.",
+				'Light' => 'With the exceptions noted, this spell is the same as the first level cleric light spell (PH 45).',
 				'Melt' => 'When a melt spell is cast, the magic-user effectively raises the temperature in the area of effect. This sudden increase in warmth will melt ice in 1 round, so that a 1st level magic-user can melt a cube of solid ice, 1 yard on a side, in 1 round after the spell is cast, so that the ice becomes water. Twice this volume of snow can be affected, so that the spell will melt 1 cubic yard of snow in 6 segments, or will turn 2 cubic yards (1 yd. x 1 yd. x 2 yds.) of snow to water in 1 round. Against such monsters as white dragons, winter wolves, yeti, woolly rhinos, those composed of para-elemental ice, and the like, a melt spell will inflict 2 points of damage per level of the spell caster, or 1 point per level if the subject creature makes its saving throw versus spell. The melt spell is generally ineffective against types of creatures other than those enumerated above. The material components for a melt spell are a few crystals or rock salt and a pinch of soot.',
 				'Mount' => "By means of this spell, the caster calls a normal animal to serve him or her as a mount. The animal will serve willingly and well, but at the expiration of the spell duration it will disappear, returning to its own place. The type of mount gained by this spell depends on the level of the caster; of course, a caster of sufficiently high level to qualify for a camel (for instance) can choose a \"lower leve\" mount if he or she so desires. Available mounts are these:
     1st through  3rd level: mule or light horse

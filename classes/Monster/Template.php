@@ -8,8 +8,6 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $armor_class  = 10;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Bite' => [ 1, 8, 0 ] );
-#	public    $companions   = array();
-#	protected $comparison   = array(); // used for weapon comparisons, such as the sword +1, +4 vs reptiles
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
@@ -29,6 +27,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $race         = 'Monster';
 #	protected $reference    = 'Monster Manual page';
 #	protected $resistance   = 'Standard';
+#	protected $saving       = array( 'fight' );
 #	protected $size         = 'Medium';
 #	protected $specials     = array();
 #	protected $treasure     = 'Nil';

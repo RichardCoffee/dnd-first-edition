@@ -4,7 +4,7 @@ trait DND_Monster_Dragon_Mated {
 
 
 	protected $mate     = null;
-	protected $solitary = 100;
+	protected $solitary = 1;
 
 
 	private function check_for_existing_mate( &$args ) {
@@ -16,23 +16,37 @@ trait DND_Monster_Dragon_Mated {
 	}
 
 	public function get_number_appearing() {
-		$num = 1;
-		if ( $this->mate ) {
-			$num = 2;
-		} else if ( $this->solitary && ( $this->hd_minimum > 4 ) ) {
-			$roll = mt_rand( 1, 100 );
-			if ( $roll > $this->solitary ) {
-				$age = mt_rand( 5, 8 );
-				$create = get_class( $this );
-				$this->mate = new $create( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
-				$this->solitary = 0;
-				$this->specials_mate();
-				$num = 2;
-			} else {
+		if ( ( $this->solitary === 1 ) ) {
+			$num = parent::get_number_appearing();
+			if ( $num === 1 ) {
 				$this->solitary = 100;
+			} else {
+				$this->determine_mate_stats();
+			}
+		} else {
+			$num = 1;
+			if ( $this->mate ) {
+				$num = 2;
+			} else if ( $this->solitary && ( $this->hd_minimum > 4 ) ) {
+				if ( ! $this->check_chance( $this->solitary ) ) {
+					$this->determine_mate_stats();
+					$num = 2;
+				} else {
+					$this->solitary = 100;
+				}
 			}
 		}
 		return $num;
+	}
+
+	private function determine_mate_stats() {
+		if ( $this->hd_minimum > 4 ) {
+			$age = mt_rand( 5, 8 );
+			$create = get_class( $this );
+			$this->mate = new $create( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
+			$this->solitary = 0;
+			$this->specials_mate();
+		}
 	}
 
 	public function get_appearing_hit_points( $number = 1 ) {

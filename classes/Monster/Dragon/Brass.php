@@ -33,6 +33,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $xp_value     = array();
 
 
+
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
 		$this->description = 'Sandy desert regions are the typical habitat of brass dragons, whose cavernous lairs are often found therein. Brass dragons are quite forward and officious, and they love to converse. They are rather selfish and tend towards neutrality because of this.';
@@ -42,7 +43,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		parent::determine_specials();
 		$this->specials['breath1'] = "1st BW: Cone of Sleep Gas - 70' long, terminating diameter of 20'.";
 		$this->specials['breath2'] = "2nd BW: Fear Gas Cloud - 40' wide, 50' long, 20' high.";
-		add_filter( 'character_BW_saving_throw', [ $this, 'brass_dragon_breath_weapon_saving_throw' ], 10 );
+		add_filter( 'character_BreathWeapon_saving_throw', [ $this, 'brass_dragon_breath_weapon_saving_throw' ], 10, 3 );
 	}
 
 	protected function determine_magic_spells() {
@@ -58,14 +59,15 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		}
 	}
 
-	public function brass_dragon_breath_weapon_saving_throw( $base ) {
-		$adj = 0;
-		if ( $this->hit_dice === 6 ) {
-			$adj = 2;
-		} else if ( $this->hit_dice === 8 ) {
-			$adj = -2;
+	public function brass_dragon_breath_weapon_saving_throw( $num, $target, $dragon ) {
+		if ( $dragon === $this ) {
+			if ( $this->hit_dice === 6 ) {
+				$num -= 2;
+			} else if ( $this->hit_dice === 8 ) {
+				$num += 2;
+			}
 		}
-		return $adj;
+		return $num;
 	}
 
 

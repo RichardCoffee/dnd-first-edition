@@ -36,7 +36,7 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 	}
 
 	protected function load_fighter( $new = 'Fighter' ) {
-		$data = $this->get_fighter_data();
+		$data = $this->get_fighter_data( $this->hit_dice );
 		$create = 'DND_Character_' . $new;
 		$this->fighter = new $create( $data );
 		if ( ! empty( $this->fighter->weapons ) ) {
@@ -45,7 +45,7 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		}
 	}
 
-	protected function get_fighter_data() {
+	protected function get_fighter_data( $level = 1 ) {
 		$data = array(
 			'ac_rows'    => $this->ac_rows,
 			'experience' => 1,
@@ -54,7 +54,14 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 			'movement'   => $this->movement['foot'],
 			'name'       => $this->name,
 			'race'       => $this->race,
-			'stats'      => array( 'str' => 12, 'int' => 12, 'wis' => 12, 'dex' => 12, 'con' => 12, 'chr' => 12 ),
+			'stats'      => array(
+				'str' => 12 + mt_rand( 1, 6 ),
+				'int' => 12 + mt_rand( 1, 6 ),
+				'wis' => 12 + mt_rand( 1, 6 ),
+				'dex' => 12 + mt_rand( 1, 6 ),
+				'con' => 12 + mt_rand( 1, 6 ),
+				'chr' => 12 + mt_rand( 1, 6 ),
+			),
 		);
 		return apply_filters( 'humanoid_fighter_data', $data, get_class( $this ) );
 	}

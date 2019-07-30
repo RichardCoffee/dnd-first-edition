@@ -48,6 +48,9 @@ trait DND_Monster_Trait_Serialize {
 			if ( property_exists( $this, 'mate' ) && $this->mate ) {
 				$table['mate'] = serialize( $this->mate );
 			}
+			if ( $this instanceOf DND_Monster_Dragon_Faerie ) {
+				$table['co_druid'] = $this->co_druid;
+			}
 			if ( $this instanceOf DND_Monster_Dragon_Shadow ) {
 				$table['stats'] = $this->stats;
 			}
@@ -68,10 +71,6 @@ trait DND_Monster_Trait_Serialize {
 	public function unserialize( $data ) {
 		$args = unserialize( $data );
 		$this->__construct( $args );
-		if ( $this instanceOf DND_Monster_Dragon_Cloud ) {
-			$this->mate = unserialize( $args['mate'] );
-			$this->specials['mate'] = sprintf( 'Mated Pair: HD %u, HP %u', $this->mate->hit_dice, $this->mate->hit_points );
-		}
 	}
 
 

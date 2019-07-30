@@ -27,6 +27,7 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	protected $race         = 'Dragon';
 	protected $reference    = 'Monster Manual II page 55-56, 58';
 #	protected $resistance   = 'Standard';
+	protected $saving       = array( 'fight', 'cleric' );
 	protected $size         = "Large, 51' long";
 #	protected $sleeping     = false;
 #	protected $speaking     = false;
@@ -34,12 +35,9 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	protected $treasure     = 'X,Y,Z';
 	protected $xp_value     = array( 3450, 5, 50, 36 );
 
-	use DND_Monster_Dragon_Mated;
-
 
 	public function __construct( $args = array() ) {
 		$this->solitary = 90;
-		$this->check_for_existing_mate();
 		parent::__construct( $args );
 		$this->description = 'Mist dragons resemble gold dragons in body form. They are semitransparent even in material form and have a grayish-white to blue-white color.  These creatures are found only near waterfalls, seacoasts, or in areas where rainfall is heavy, i.e., rain forests.';
 	}
@@ -49,7 +47,6 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 		$this->specials['breath1'] = "BW: Misty Vapors Cloud - 30' wide, 90' long, 30' high.";
 		$this->specials['defense'] = 'Assume gaseous form at will, with AC:-2 and Magic Resistance 30%';
 		$this->specials['sleep']   = sprintf( 'Use sleeping (%u%%) to determine if found in gaseous form.', $this->co_sleeping );
-		$this->specials_mate();
 	}
 
 	protected function set_magic_user( $level = 0 ) {

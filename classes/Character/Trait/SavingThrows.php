@@ -3,16 +3,24 @@
 trait DND_Character_Trait_SavingThrows {
 
 
-	public function get_base_saving_throw( $type = 'Spells', $index = 0, $opponent = null ) {
+	public function get_base_saving_throw( $type = 'Spells', $index = 0, $origin = null, $extra = null ) {
 		if ( ( $row = $this->get_saving_throw_table_row( $type ) ) === false ) {
 			return 100;
 		}
-		$table = $this->get_saving_throw_table();
+		if ( ( $this instanceOf DND_Monster_Monster ) && ( $this->intelligence === 'Non-' ) ) {
+			if ( ! in_array( $type, [ 'Poison', 'Death Magic' ] ) ) {
+				$index = ceil( $index / 2 );
+			}
+		}
 		$index = min( 21, $index );
+		$table = $this->get_saving_throw_table();
 		$base  = $table[ $row ][ $index ];
+		$type  = str_replace( ' ', '', $type );
 		$filters = array(
-			$this->get_name() . '_all_saving_throws',
 			$this->get_name() . "_{$type}_saving_throws",
+			$this->get_name() . '_all_saving_throws',
+			"{$this->race}_{$type}_saving_throws",
+			"{$this->race}_all_saving_throws",
 		);
 		if ( $this instanceOf DND_Character_Character ) {
 			$filters[] = "character_{$type}_saving_throws";
@@ -23,7 +31,7 @@ trait DND_Character_Trait_SavingThrows {
 			$filters[] = 'monster_all_saving_throws';
 		}
 		foreach( $filters as $filter ) {
-			$base = apply_filters( $filter, $base, $this, $opponent );
+			$base = apply_filters( $filter, $base, $this, $origin, $extra );
 		}
 		return $base;
 	}

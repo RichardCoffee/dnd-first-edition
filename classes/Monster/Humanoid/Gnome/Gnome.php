@@ -3,7 +3,7 @@
  * Class: DND_Monster_Humanoid_Gnome_Gnome
  * Encounter: {}
  */
-abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Humanoid {
+abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_DemiHuman {
 
 
 	protected $alignment    = 'Neutral to Lawful Good';
@@ -11,8 +11,8 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Hum
 	protected $armor_class  = 5;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Weapon' => [ 1, 6, 0 ] );
-	protected $extra        = array();
-	protected $fighter      = null;
+#	protected $extra        = array();
+#	protected $fighter      = null;
 	protected $frequency    = 'Rare';
 #	protected $hp_extra     = 0;
 	protected $in_lair      = 50;
@@ -30,29 +30,18 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Hum
 #	protected $xp_value     = array();
 
 
-	public function __construct( $args = array() ) {
-		parent::__construct( $args );
-		$this->load_fighter();
-	}
-
 	protected function determine_hit_dice() {
 		$this->hit_dice = 1;
 	}
 
 	protected function determine_specials() {
 		$this->specials = array(
-			'saving' => 'Save at 4 level higher',
+			'saving' => 'Saves at 4 levels higher',
 		);
 	}
 
-	protected function load_fighter( $new = 'Fighter' ) {
-		$data = $this->get_fighter_data();
-		$create = 'DND_Character_' . $new;
-		$this->fighter = new $create( $data );
-		if ( ! empty( $this->fighter->weapons ) ) {
-			$weapon = array_key_first( $this->fighter->weapons );
-			$this->fighter->set_current_weapon( $weapon );
-		}
+	protected function get_saving_throw_level() {
+		return parent::get_saving_throw_level() + 4;
 	}
 
 	protected function get_fighter_data( $level = 1 ) {

@@ -10,6 +10,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 	protected $attacks      = array( 'Bite' => [ 1, 2, 0 ], 'Breath' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 90;
 	protected $co_magic_use = 100;
+	protected $co_druid     = 65;
 	protected $co_sleeping  = 40;
 	private   $faerie       = array();
 	protected $frequency    = 'Very Rare';
@@ -25,8 +26,9 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 	protected $name         = 'Faerie Dragon';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Dragon';
-	protected $reference    = 'Monster Manual page 29-30,32';
+	protected $reference    = 'Monster Manual II page 29-30,32';
 #	protected $resistance   = 'Standard';
+	protected $saving       = array( 'fight' );
 	protected $size         = "Small, 1' to 1 1/2' long";
 #	protected $sleeping     = false;
 #	protected $speaking     = false;
@@ -80,9 +82,13 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 
 	protected function set_magic_user( $level = 0 ) {
 		$level = $this->faerie[ $this->hd_minimum ]['mu'];
-		if ( $this->check_chance( 65 ) ) {
+		if ( $this->check_chance( $this->co_druid ) ) {
+			$this->co_druid = 100;
 			$this->magic_use = 'Druid';
 			$level = $this->faerie[ $this->hd_minimum ]['d'];
+			$this->saving[] = 'cleric';
+		} else {
+			$this->co_druid = 0;
 		}
 		parent::set_magic_user( $level );
 	}
@@ -92,6 +98,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 			$needed = $this->determine_magic_spells_magic_user();
 		} else {
 			$needed = $this->determine_magic_spells_druid();
+		}
 		return $needed;
 	}
 

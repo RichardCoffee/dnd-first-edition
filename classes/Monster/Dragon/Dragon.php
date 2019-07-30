@@ -16,6 +16,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 8, 9, 10 );
 #	protected $hd_value     = 8;
+#	protected $hit_points   = 0;
 #	protected $in_lair      = 0;
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
@@ -27,6 +28,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $race         = 'Dragon';
 	protected $reference    = 'Monster Manual page 29-34';
 #	protected $resistance   = 'Standard';
+	protected $saving       = array( 'fight' );
 	protected $size         = 'Large';
 	protected $sleeping     = false;
 	protected $spells       = array();
@@ -35,11 +37,15 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 #	protected $xp_value     = array();
 
 
+	use DND_Monster_Dragon_Mated;
+
 	abstract protected function determine_magic_spells();
 
 
 	public function __construct( $args = array() ) {
+		$this->check_for_existing_mate( $args );
 		parent::__construct( $args );
+		$this->attacks['Breath'][0] = $this->hit_points;
 		if ( isset( $args['spell_list'] ) ) {
 			$this->set_magic_user();
 			$this->import_spell_list( $args['spell_list'] );
@@ -49,6 +55,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 				$spells = $this->determine_magic_spells();
 				$this->add_magic_spells( $spells );
 				$this->add_magic_spells_to_specials();
+				$this->co_magic_use = 100;
 			} else {
 				$this->co_magic_use = 0;
 			}
@@ -99,12 +106,12 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
 			$hit_points += mt_rand( $this->hd_minimum, ( $this->hd_value + $this->hd_extra ) );
 		}
-		$this->attacks['Breath'][0] = $hit_points;
 		return $hit_points;
 	}
 
 	public function get_dragon_age() {
-		switch( $this->hd_minimum ) {
+		$age = $this->hd_minimum - $this->hd_extra;
+		switch( $age ) {
 			case 1:
 				$age = 'Very Young';
 				break;
@@ -144,14 +151,17 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 	protected function determine_specials() {
 		$this->specials = array(
-			'age'      => sprintf( 'Dragon Age(%u): %s / %s, Size: %s', $this->hd_minimum, $this->get_dragon_age(), $this->get_comparative_size(), $this->size ),
+			'age'      => sprintf( 'Dragon Age(%u): %s / %s, Size: %s', $this->hd_minimum - $this->hd_extra, $this->get_dragon_age(), $this->get_comparative_size(), $this->size ),
 			'breath'   => '50% chance of using breath weapon on any given round (max 3/day).',
 			'senses'   => "Infravision 60', Detects hidden or invisible creatures within " . sprintf( '%u feet.', $this->hd_minimum * 10 ),
 			'treasure' => $this->get_treasure_amounts_description(),
 		);
 		if ( $this->hd_minimum > 4 ) {
 			$this->specials['fear_aura'] = 'Radiates fear aura. Run meatbag, Run!';
+			add_filter( 'character_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ]. 10, 4 );
+			add_filter( 'monster_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ]. 10, 4 );
 		}
+		$this->specials_mate();
 		do_action( 'monster_determine_specials' );
 	}
 
@@ -163,16 +173,17 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return max( $this->hit_dice, round( $this->hit_points / 4 ) );
 	}
 
-	public function dragon_fear_aura_saving_throw() {
-		$adj = 0;
-		if ( $this->hd_minimum === 5 ) {
-			$adj = 5;
-		} else if ( $this->hd_minimum === 6 ) {
-			$adj = 3;
-		} else if ( $this->hd_minimum === 7 ) {
-			$adj = 1;
+	public function dragon_fear_aura_saving_throw( $num, $target, $dragon, $cause ) {
+		if ( ( $dragon === $this ) && ( $cause === 'fear aura' ) ) {
+			if ( $this->hd_minimum === 5 ) {
+				$num -= 5;
+			} else if ( $this->hd_minimum === 6 ) {
+				$num -= 3;
+			} else if ( $this->hd_minimum === 7 ) {
+				$num -= 1;
+			}
 		}
-		return $adj;
+		return $num;
 	}
 
 	public function get_appearing_hit_points( $number = 1 ) {
@@ -193,6 +204,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$create = 'DND_Character_' . $this->magic_use;
 		$this->magic_user = new $create( [ 'level' => $level ] );
 		$this->attacks['Spell'] = [ 0, 0, 0 ];
+		if ( count( $this->saving ) === 1 ) $this->saving[] = 'magic';
 	}
 
 	protected function add_magic_spells( $list ) {
@@ -200,13 +212,29 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			$spell = $this->magic_user->generate_random_spell( $level );
 			$this->spells[] = $this->magic_user->get_magic_spell_info( $level, $spell );
 		}
+		usort( $this->spells, [ $this, 'sort_spells' ] );
 	}
 
 	protected function import_spell_list( $list ) {
 		foreach( $list as $spell ) {
 			$this->spells[] = $this->magic_user->get_magic_spell_info( $spell['level'], $spell['name'] );
 		}
+		usort( $this->spells, [ $this, 'sort_spells' ] );
 		$this->add_magic_spells_to_specials();
+	}
+
+	public function sort_spells( $a, $b ) {
+		require_once( DND_FIRST_EDITION_DIR . '/classes/Ordinal.php' );
+		$ord = Ordinal::instance();
+		$rel = $ord->compare( $a['level'], $b['level'] );
+		if ( $rel === 0 ) {
+			if ( $a['name'] === $b['name'] ) return 0;
+			$names = array( $a['name'], $b['name'] );
+			sort( $names );
+			if ( $names[0] === $a['name'] ) return -1;
+			return 1;
+		}
+		return $rel;
 	}
 
 	protected function add_magic_spells_to_specials() {
@@ -299,7 +327,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	public function command_line_display() {
-		$line  = parent::command_line_display();
+		$line = parent::command_line_display();
 		if ( $this->co_speaking === 100 ) {
 			$line.= "This dragon speaks common.\n";
 		}

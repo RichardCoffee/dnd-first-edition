@@ -35,17 +35,17 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 	protected $treasure     = 'U';
 	protected $xp_value     = array( 3450, 5, 50, 36 );
 
-	use DND_Monster_Dragon_Mated;
+
 	use DND_Monster_Trait_Defense_Weapons;
 
 
 	public function __construct( $args = array() ) {
 		$this->solitary = 75;
-		$this->check_for_existing_mate( $args );
 		$this->determine_intelligence();
 		$this->mtdw_setup();
-		$this->thief = new DND_Character_Thief( [ 'level' => 10, 'stats' => $this->stats ] );
 		parent::__construct( $args );
+		$this->thief = new DND_Character_Thief( [ 'level' => 10, 'stats' => $this->stats ] );
+		$this->specials['hide'] = sprintf( 'Hide in Shadows: %u%%', $this->thief->get_thief_skill( 'Hide Shadow' ) );
 		$this->description = 'The shadow dragon is nocturnal, subterranean, or found on planes of dimness such as Shadowland.';
 		$this->description.= ' The species is also independent and solitary. Only occasionally will a mated pair be encountered.';
 		$this->description.= ' The female lays a clutch of 5-8 eggs in a dark place. and the first one to hatch quickly devours the others.';
@@ -114,9 +114,7 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 		parent::determine_specials();
 		$this->specials['senses']  = "Poor vision in bright light.  Ultravision 60', Infravision 180'.";
 		$this->specials['breath1'] = "BW: Cloud of Darkness - 30' wide, 40' long, 20' high.";
-		$this->specials['hide']    = sprintf( 'Hide in Shadows: %u%%', $this->thief->get_thief_skill( 'Hide Shadow' ) );
 		$this->specials['drain']   = 'Immune to life level loss of all types, and cannot be subdued.';
-		$this->specials_mate();
 	}
 
 	protected function determine_magic_spells() {

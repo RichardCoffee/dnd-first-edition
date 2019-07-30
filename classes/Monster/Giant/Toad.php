@@ -8,8 +8,6 @@ class DND_Monster_Giant_Toad extends DND_Monster_Monster {
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Bite' => [ 2, 8, 0 ] );
-#	public    $companions   = array();
-#	protected $comparison   = array(); // used for weapon comparisons, such as the sword +1, +4 vs reptiles
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';

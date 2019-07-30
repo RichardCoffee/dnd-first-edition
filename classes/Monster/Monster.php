@@ -10,8 +10,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $armor_type   = 11;
 	protected $attacks      = array();
 	protected $att_types    = array();
-	public    $companions   = array();
-	protected $comparison   = array(); // used for weapon comparisons, such as the sword +1, +4 vs reptiles
 	public    $current_hp   = 0;
 	protected $description  = '';
 	protected $frequency    = 'Common';
@@ -153,7 +151,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	protected function determine_saving_throw() {
-		if ( $this->hp_extra > 3 ) {
+		if ( $this->hp_extra > 0 ) {
 			$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
 		}
 	}
@@ -162,7 +160,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$level = $this->hit_dice;
 		$level+= ceil( $this->hp_extra / 4 );
 		return $level;
-}
+	}
 
 	protected function get_saving_throw_table() {
 		return $this->get_combined_saving_throw_table( $this->saving );

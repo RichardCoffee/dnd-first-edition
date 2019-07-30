@@ -35,6 +35,18 @@ if ( ! function_exists( 'array_key_first' ) ) {
 	}
 }
 
+if ( ! function_exists( 'dnd1e_unserialize' ) ) {
+	function dnd1e_unserialize( $original ) {
+		if ( is_string( $original ) ) {
+			if ( $original === serialize( false ) ) return false;
+			// options parameter added in PHP 7.0.0 - no effect in earlier versions
+			$test = @unserialize( $original, [ 'DND_Monster_Monster', 'DND_Character_Character' ] );
+			if ( ! ( $test === false ) ) return $test;
+		}
+		return $original;
+	}
+}
+
 # https://stackoverflow.com/questions/5911067/compare-object-properties-and-show-diff-in-php
 function obj_diff( $obj1, $obj2 ) {
 	$a1 = (array)$obj1;
