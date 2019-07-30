@@ -24,6 +24,7 @@ if ( ! $opts ) {
 				}
 			} else if ( $chars[ $name ]->weapon['current'] === 'Spell' ) {
 				dnd1e_show_possible_spells( $chars[ $name ] );
+				dnd1e_show_possible_weapons( $chars[ $name ] );
 				exit;
 			} else {
 				dnd1e_show_possible_weapons( $chars[ $name ] );
@@ -35,25 +36,30 @@ if ( ! $opts ) {
 
 if ( isset( $opts['h'] ) || isset( $opts['help'] ) ) {
 	printf("
+
+	php command_line.php [OPTIONS] [NAME [WEAPON|SPELL#]]
+
+
 	-h, --help      Display this help screen.
 
 	-rn             Control missile weapon range, where n = range in feet.
 
 	-sn             Set the combat segment, where n = the segment.
 
-	-t              Show monster treasure, if any.
+	-t              Show possible monster treasure, if any.
 
 	--hold=name     Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
 
 	--att=name      Remove character from hold list, because the character is attacking on this segment.
 
-	--hit=name:#    Use to record damage to a character, format is <name>:<damge>.  Use a negative number to indicate healing.
+	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
+	                For monsters, the format is <name>:<#>:<damage>, where '#' is the number of the monster.
 
 	--mi=number     Set the monster's initiative.
 
 	--name=name     Used to indicate a character's name.
 
-	--pre=name:#    Use this when a character casts a spell before combat.
+	--pre=name:#    Use this when a character casts a spell before combat, where '#' indicates the spell's number, from the numbered spell list.
 
 "
 	);

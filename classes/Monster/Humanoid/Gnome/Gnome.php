@@ -1,7 +1,7 @@
 <?php
 /* Name: Gnome
  * Class: DND_Monster_Humanoid_Gnome_Gnome
- * Encounter: {}
+ * Encounter: {"CC":{"M":"VR","H":"R","F":"VR"},"TC":{"M":"VR","H":"R","F":"VR"},"TSC":{"M":"VR","H":"R","F":"VR"}}
  */
 abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_DemiHuman {
 
@@ -51,15 +51,15 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 		if ( $level > 1 ) {
 			$armor = 'Chain';
 			if ( $level > 5 ) {
-				$opts = [ 'Plate Mail', 'Field Plate', 'Full Plate' ];
-				$mail = mt_rand( 0, 2 );
+				$opts = [ 'Plate Mail', 'Plate Mail', 'Plate Mail', 'Field Plate', 'Field Plate', 'Full Plate' ];
+				$mail = mt_rand( 0, 5 );
 				$armor = $opts[ $mail ];
 			}
 			if ( $this->check_chance( $level * 10 ) ) {
-				$bonus = mt_rand( 1, min( 5, $level ) );
+				$bonus = mt_rand( 1, min( 5, ceil( $level / 4 ) ) );
 			}
 			if ( $this->check_chance( $level * 10 ) ) {
-				$shield = mt_rand( 1, min( 5, $level ) );
+				$shield = mt_rand( 1, min( 5, ceil( $level / 3 ) ) );
 			}
 		}
 		$data = array(
@@ -93,11 +93,11 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 		} else if ( $roll < 31 ) {
 			$carry = array( 'Sword,Short', 'Spear', 'Spear,Thrown' );
 		} else if ( $roll < 46 ) {
-			$carry = array( 'Club', 'Sword,Short' );
+			$carry = array( 'Sword,Short', 'Crossbow,Light' );
 		} else if ( $roll < 86 ) {
-			$carry = array( 'Club', 'Spear', 'Spear,Thrown' );
+			$carry = array( 'Crossbow,Light', 'Spear', 'Spear,Thrown' );
 		} else {
-			$carry = array( 'Club', 'Sling' );
+			$carry = array( 'Spear', 'Spear,Thrown' );
 		}
 		$weapons = array();
 		$single  = array( 'bonus' => 0, 'skill' => 'PF' );
@@ -105,7 +105,7 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 			$weapons[ $weap ] = $single;
 			if ( $level > 1 ) {
 				if ( $this->check_chance( $level * 10 ) ) {
-					$weapons[ $weap ]['bonus'] = mt_rand( 1, min( 5, $level ) );
+					$weapons[ $weap ]['bonus'] = mt_rand( 1, min( 5, ceil( $level / 3 ) ) );
 				}
 			}
 		}
