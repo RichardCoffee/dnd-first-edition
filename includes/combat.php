@@ -196,7 +196,12 @@ function dnd1e_get_monster_attackers( $monster, $att_seq, $segment ) {
 			if ( in_array( $segment, $attack ) ) {
 				$rank_obj = new StdClass;
 				$rank_obj->name = $monster->name . " ($type)";
-				$rank_obj->stats = array( 'dex' => round( ( ( 10 - $monster->armor_class ) * 1.5 ) + 3 ) );
+				if ( property_exists( $monster, 'stats' ) && isset( $monster->stats['dex'] ) ) {
+					$dex = $monster->stats['dex'];
+				} else {
+					$dex = round( ( ( 10 - $monster->armor_class ) * 1.5 ) + 3 );
+				}
+				$rank_obj->stats = array( 'dex' => $dex );
 				$rank_obj->initiative = array( 'actual' => $monster->initiative );
 				$rank[] = $rank_obj;
 			}
@@ -314,16 +319,4 @@ function dnd1e_apply_ongoing_spell_effects( $segment ) {
 
 function dnd1e_replacement_filters() {
 	return apply_filters( 'dnd1e_replacement_filters', array() );
-}
-
-function dnd1e_damage_to_monster( $monster, $target, $damage ) {
-	if ( $target === 1 ) {
-		$monster->current_hp -= $damage;
-	} else {
-		$appearing = dnd1e_transient( 'appearing' );
-		$index = $target - 1;
-		$appearing['hit_points'][ $index ][0] -= $damage;
-		$appearing['hit_points'][ $index ][0] = min( $appearing['hit_points'][ $index ][0], $appearing['hit_points'][ $index ][1] );
-		dnd1e_transient( 'appearing', $appearing );
-	}
 }

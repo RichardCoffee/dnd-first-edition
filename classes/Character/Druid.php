@@ -11,7 +11,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 12, 'dex' => 3, 'con' => 3, 'chr' => 15 );
 	protected $weap_allow = array( 'Aklys', 'Club', 'Dagger', 'Dart', 'Garrot', 'Hammer', 'Hammer,Lucern', 'Lasso', 'Sap', 'Scimitar', 'Sling', 'Spear', 'Spear,Thrown', 'Spell', 'Staff,Quarter', 'Staff Sling', 'Sword,Khopesh', 'Whip' );
 	protected $weap_init  = array( 'initial' => 2, 'step' => 5 );
-	protected $weapons    = array( 'Spell' => 'PF' );
+#	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'Skill' => 'PF' ) );
 	protected $xp_bonus   = array();
 	protected $xp_step    = 500000;
 	protected $xp_table   = array( 0, 2000, 4000, 8000, 12000, 20000, 35000, 60000, 90000, 125000, 200000, 300000, 750000, 1500000, 3000000 );

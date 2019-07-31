@@ -39,6 +39,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
+		$this->determine_magic_resistance();
 		$this->description = 'This chaotic offshoot of the pseudodragon lives in peaceful, tangled forests in all climes, often with a group of sprites or pixies.';
 		$this->description.= '  Faerie dragons enjoy swimming and diving. They can hover and are maneuverability class A. They eat fruit, roots, tubers, nuts, honey, and grains and may go to great lengths to get a fresh apple pie.';
 		$this->description.= "  Faerie dragons appear as thin, miniature dragons with long, prehensile tails, butterfly wings, and huge smiles. Their colors range through the spectrum from red forthe very young to purple for ancient individuals. Females' hides shine with a bright golden tinge in the sunlight, while males have a silver tinge.";
@@ -49,17 +50,19 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function determine_hit_points() {
-		$this->hd_minimum = mt_rand( 1, $this->hd_value );
-		$this->hit_points = ( $this->hd_minimum * 2 ) - mt_rand( 0, 1 );
-		$this->determine_faerie_dragon_aspects();
+		if ( $this->hit_points === 0 ) {
+			$this->hd_minimum = mt_rand( 1, $this->hd_value );
+			$this->hit_points = ( $this->hd_minimum * 2 ) - mt_rand( 0, 1 );
+		}
+		$this->load_faerie_dragon_aspects();
 	}
 
-	protected function calculate_hit_points() {
+	protected function calculate_dragon_hit_points( $hit_dice ) {
 		$minimum = mt_rand( 1, $this->hd_value );
 		return ( $minimum * 2 ) - mt_rand( 0, 1 );
 	}
 
-	private function determine_faerie_dragon_aspects() {
+	private function load_faerie_dragon_aspects() {
 		$this->faerie = array(
 			array(),
 			array( 'color' => 'Red',        'mr' => 12, 'mu' =>  2, 'd' =>  3 ),
@@ -71,6 +74,9 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 			array( 'color' => 'Blue',       'mr' => 84, 'mu' => 14, 'd' => 12 ),
 			array( 'color' => 'Purple',     'mr' => 96, 'mu' => 16, 'd' => 14 ),
 		);
+	}
+
+	protected function determine_magic_resistance() {
 		$this->resistance = $this->faerie[ $this->hd_minimum ]['mr'];
 	}
 

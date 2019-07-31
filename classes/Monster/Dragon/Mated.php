@@ -52,7 +52,12 @@ trait DND_Monster_Dragon_Mated {
 	public function get_appearing_hit_points( $number = 1 ) {
 		$hit_points = array( $this->hit_points );
 		if ( $this->mate ) {
-			$hit_points[] = array( $this->mate->hit_points, $this->mate->hit_points );
+			$hit_points[] = [ $this->mate->hit_points, $this->mate->hit_points ];
+			$number--;
+		}
+		for( $i = 1; $i < $number; $i++ ) {
+			$hp = $this->calculate_hit_points( true );
+			$hit_points[] = [ $hp, $hp ];
 		}
 		return $hit_points;
 	}

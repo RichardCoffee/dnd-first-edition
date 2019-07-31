@@ -9,7 +9,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 	protected $undead     = array();
 	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff,Quarter' );
 	protected $weap_init  = array( 'initial' => 2, 'step' => 4 );
-	protected $weapons    = array( 'Spell' => 'PF' );
+	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'Skill' => 'PF' ) );
 	protected $xp_bonus   = array( 'wis' => 16 );
 	protected $xp_step    = 225000;
 	protected $xp_table   = array( 0, 1500, 3000, 6000, 13000, 27500, 55000, 110000, 225000 );

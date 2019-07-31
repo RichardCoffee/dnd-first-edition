@@ -4,11 +4,10 @@ echo "\n";
 
 echo $monster->command_line_display() . "\n";
 
-$appearing = dnd1e_transient( 'appearing' );
-echo "{$appearing['number']} Appearing HP: {$monster->current_hp}/{$monster->hit_points}";
-for( $i = 1; $i < $appearing['number']; $i++ ) {
-	echo ", {$appearing['hit_points'][ $i ][0]}";
-	echo "/{$appearing['hit_points'][ $i ][1]}";
+$enemy = dnd1e_transient( 'enemy' );
+echo count( $enemy ) . " Appearing HP: ";
+foreach( $enemy as $key => $entity ) {
+	echo "  $key: {$entity->current_hp}/{$entity->hit_points}";
 }
 echo "\n\n";
 

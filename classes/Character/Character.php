@@ -72,7 +72,8 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$this->determine_hit_points();
 		}
 		if ( $this->weapon['current'] === 'none' ) {
-			$this->determine_armor_class(); // this gets called in set_current_weapon()
+			$list = array_keys( $this->weapons );
+			$this->set_current_weapon( $list[0] );
 		} else {
 			$this->set_current_weapon( $this->weapon['current'] );
 		}

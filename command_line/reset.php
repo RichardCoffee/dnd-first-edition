@@ -7,15 +7,9 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 delete_transient('dnd1e_appearing');
 delete_transient('dnd1e_cast');
 delete_transient('dnd1e_combat');
+delete_transient('dnd1e_enemy');
 delete_transient('dnd1e_hold');
 delete_transient('dnd1e_monster');
 delete_transient('dnd1e_ongoing');
 delete_transient('dnd1e_segment');
 
-/*
-$trans = array( 'appearing','cast','combat','hold','ongoing','segment' );
-
-foreach( $trans as $item ) {
-	$data = dnd1e_transient( $item );
-	dnd1e_transient( $item, $data );
-} //*/

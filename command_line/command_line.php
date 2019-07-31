@@ -6,7 +6,6 @@ define( 'WP_DEBUG', true );
 
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
-
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
 $range   = 2000;

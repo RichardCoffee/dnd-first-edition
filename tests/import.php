@@ -9,7 +9,7 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
 #$test = new DND_Monster_Dragon_Bronze;
 #$test = new DND_Monster_Dragon_Cloud(['solitary'=>1]);
-#$test = new DND_Monster_Dragon_Faerie;
+$test = new DND_Monster_Dragon_Faerie;
 #$test = new DND_Monster_Dragon_Mist;
 #$test = new DND_Monster_Dragon_Shadow;
 #$test = new DND_Monster_Giant_Spider;
@@ -23,7 +23,7 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Derryl.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Evandur.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Flint.csv' );
-$test = new DND_Character_Import_Kregen( CSV_PATH . 'Gaius.csv' );
+#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Gaius.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Ivan.csv', array( 'shield' => [ 'type' => 'Large' ] ) );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Krieg.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Logos.csv' );
@@ -55,3 +55,10 @@ dnd1e_transient( $name, $test->character );
 $obj = dnd1e_transient( $name );
 
 print_r( $obj ); //*/
+
+$number = $test->get_number_appearing();
+$appearing = array(
+'number'     => $number,
+'hit_points' => $test->get_appearing_hit_points( $number ),
+);
+print_r($appearing);

@@ -78,32 +78,47 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 	protected function determine_hit_dice() {
 		if ( $this->hit_dice === 0 ) {
-			$roll = mt_rand( 1, 8 );
-			switch( $roll ) {
-				case 1:
-				case 2:
-					$this->hit_dice = $this->hd_range[0];
-					break;
-				case 8:
-					$this->hit_dice = $this->hd_range[2];
-					break;
-				case 3:
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-				default:
-					$this->hit_dice = $this->hd_range[1];
-			}
+			$this->hit_dice = $this->determine_dragon_hit_dice();
 		}
 	}
 
-	protected function calculate_hit_points() {
+	protected function determine_dragon_hit_dice( $hit_dice = 0 ) {
+		$roll = mt_rand( 1, 8 );
+		switch( $roll ) {
+			case 1:
+			case 2:
+				$hit_dice = $this->hd_range[0];
+				break;
+			case 8:
+				$hit_dice = $this->hd_range[2];
+				break;
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			default:
+				$hit_dice = $this->hd_range[1];
+		}
+		return $hit_dice;
+	}
+
+	protected function calculate_hit_points( $appearing = false ) {
+		if ( $appearing ) {
+			$hit_dice = $this->calculate_dragon_hit_dice();
+			$hit_points = $this->calculate_dragon_hit_points( $hit_dice );
+		} else {
+			$hit_points = $this->calculate_dragon_hit_points( $this->hit_points );
+		}
+		return $hit_points;
+	}
+
+	protected function calculate_dragon_hit_points( $hit_dice ) {
 		$hit_points = 0;
 		if ( $this->hd_minimum === 0 ) {
 			$this->hd_minimum = mt_rand( 1, $this->hd_value ) + $this->hd_extra;
 		}
-		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
+		for( $i = 1; $i <= $hit_dice; $i++ ) {
 			$hit_points += mt_rand( $this->hd_minimum, ( $this->hd_value + $this->hd_extra ) );
 		}
 		return $hit_points;
@@ -158,8 +173,8 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		);
 		if ( $this->hd_minimum > 4 ) {
 			$this->specials['fear_aura'] = 'Radiates fear aura. Run meatbag, Run!';
-			add_filter( 'character_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ]. 10, 4 );
-			add_filter( 'monster_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ]. 10, 4 );
+			add_filter( 'character_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ], 10, 4 );
+			add_filter( 'monster_Spells_saving_throws',   [ $this, 'dragon_fear_aura_saving_throw' ], 10, 4 );
 		}
 		$this->specials_mate();
 		do_action( 'monster_determine_specials' );
@@ -184,19 +199,6 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			}
 		}
 		return $num;
-	}
-
-	public function get_appearing_hit_points( $number = 1 ) {
-		$number = intval( $number );
-		$hit_points = array( $this->hit_points );
-		for( $i = 1; $i < $number; $i++ ) {
-			$dragon = 0;
-			for( $j = 1; $j <= $this->hit_dice; $j++ ) {
-				$dragon += mt_rand( $this->hd_minimum, $this->hd_value );
-			}
-			$hit_points[] = $dragon + $this->hp_extra;
-		}
-		return $hit_points;
 	}
 
 	protected function set_magic_user( $level = 0 ) {

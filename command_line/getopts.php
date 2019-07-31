@@ -53,7 +53,7 @@ if ( isset( $opts['h'] ) || isset( $opts['help'] ) ) {
 	--att=name      Remove character from hold list, because the character is attacking on this segment.
 
 	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
-	                For monsters, the format is <name>:<#>:<damage>, where '#' is the number of the monster.
+	                For monsters, the format is M:<#>:<damage>, where 'M' is the letter M, and '#' is the number of the monster.
 
 	--mi=number     Set the monster's initiative.
 
@@ -117,16 +117,18 @@ print_r($sitrep);
 		$damage = intval( $sitrep[1] );
 		$chars[ $name ]->current_hp -= $damage;
 		$chars[ $name ]->check_temporary_hit_points( $damage );
-	} else if ( ( $name === 'Monster' ) || ( $name === $monster->name ) ) {
+	} else if ( ( $name === 'M' ) || ( $name === $monster->name ) ) {
 		$cnt  = count( $sitrep );
 		if ( $cnt === 2 ) {
 			$damage = intval( $sitrep[1] );
-			$monster->current_hp -= $damage;
+			$monster->current_hp  -= $damage;
+			$enemy[0]->current_hp -= $damage;
 		} else if ( $cnt === 3 ) {
 			$target = intval( $sitrep[1] );
 			$damage = intval( $sitrep[2] );
-			dnd1e_damage_to_monster( $monster, $target, $damage );
+			$enemy[ $target ]->current_hp -= $damage;
 		}
+		dnd1e_transient( 'enemy', $enemy );
 	}
 }
 
