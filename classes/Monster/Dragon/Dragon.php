@@ -46,7 +46,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$this->check_for_existing_mate( $args );
 		parent::__construct( $args );
 		$this->attacks['Breath'][0] = $this->hit_points;
-		if ( isset( $args['spell_list'] ) ) {
+		if ( array_key_exists( 'spell_list', $args ) ) {
 			$this->set_magic_user();
 			$this->import_spell_list( $args['spell_list'] );
 		} else if ( $this->co_magic_use ) {

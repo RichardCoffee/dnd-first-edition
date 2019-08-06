@@ -9,7 +9,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 
 	public function __construct( $args = array() ) {
 		foreach( $this->classes as $key => $class ) {
-			if ( isset( $args[ $key ] ) ) {
+			if ( array_key_exists( $key, $args ) ) {
 				$this->$key = unserialize( $args[ $key ] );
 				unset( $args[ $key ] );
 			} else {
@@ -52,7 +52,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$weap_step  = 0;
 		foreach( $this->classes as $key => $class ) {
 			if ( empty( $initial ) ) $initial = $key;
-			$this->$key->weap_dual = $this->weap_dual;
+#			$this->$key->weap_dual = $this->weap_dual;
 			$this->$key->initialize_character();
 			$hit_points += $this->$key->hit_points;
 			$level      += $this->$key->level;
@@ -84,13 +84,30 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$this->level = $this->level / count( $this->classes );
 	}
 
+	public function set_dual_weapons( $one, $two ) {
+		foreach( $this->classes as $key => $class ) {
+			if ( method_exists( $this->$key, 'set_dual_weapons' ) ) {
+				$this->$key->set_dual_weapons( $one, $two );
+			}
+		}
+		$this->weap_dual = [ $one, $two ];
+	}
+
+	public function set_current_weapon( $new = '' ) {
+		parent::set_current_weapon( $new );
+		foreach( $this->classes as $key => $class ) {
+			$this->$key->set_current_weapon( $new );
+		}
+	}
+
 	public function add_experience( $xp ) {
-		$cnt = count( $this->classes );
-		$new = $xp / $cnt;
+		$this->experience += $xp;
+		$new = $xp / count( $this->classes );
 		foreach( $this->classes as $key => $class ) {
 			$this->$key->add_experience( $new );
 		}
 		$this->initialize_multi();
+		$this->current_hp = $this->hit_points;
 	}
 
 	protected function initialize_spell_list( $spells ) {
@@ -104,33 +121,68 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 	public function get_spell_list() {
 		$spells = array();
 		foreach( $this->classes as $key => $class ) {
-			$list = $this->$key->get_spell_list();
-			if ( ! empty( $list ) ) {
-				$spells[ $class ] = $list;
+			if ( method_exists( $this->$key, 'get_spell_list' ) ) {
+				$list = $this->$key->get_spell_list();
+				if ( ! empty( $list ) ) {
+					if ( $this->$key instanceOf DND_Character_Ranger ) {
+						$spells = array_merge( $spells, $list ); // Only tested for Ranger/Thief combination
+					} else {
+						$spells[ $class ] = $list;
+					}
+				}
 			}
 		}
-		if ( ! empty( $spells ) ) {
-			$spells['multi'] = array();
-		}
+		$spells['multi'] = array();
 		return $spells;
 	}
 
-	public function locate_magic_spell( $spell, $type = '' ) {
+	public function get_magic_spell_info( $level, $spell, $type = "" ) {
+		if ( $type ) {
+			$which = array_keys( $this->classes, $type );
+			if ( $which ) {
+				$key = $which[0];
+				return $this->$key->get_magic_spell_info( $level, $spell, $type );
+			}
+		}
 		foreach( $this->classes as $key => $class ) {
-			$spell = $this->$key->locate_magic_spell( $spell, $type );
-			if ( isset( $spell['page'] ) ) {
-				return $spell;
+			if ( method_exists( $this->$key, 'get_magic_spell_info' ) ) {
+				$info = $this->$key->get_magic_spell_info( $spell, $type );
+				if ( array_key_exists( 'page', $info ) ) {
+					return $info;
+				}
 			}
 		}
 		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
 
-	protected function get_saving_throw_table() {
-		$saving = array();
+	public function locate_magic_spell( $spell, $type = '' ) {
 		foreach( $this->classes as $key => $class ) {
-			$saving[] = $key;
+			if ( method_exists( $this->$key, 'locate_magic_spell' ) ) {
+				$data = $this->$key->locate_magic_spell( $spell, $type );
+				if ( array_key_exists( 'page', $data ) ) {
+					return $data;
+				}
+			}
 		}
-		return $this->get_combined_saving_throw_table( $saving );
+		return "Spell '$spell' not found in {$this->name}'s spell book.";
+	}
+
+	public function get_character_saving_throws() {
+		$base = array();
+		foreach( $this->classes as $key => $class ) {
+			$base[ $key ] = $this->$key->get_raw_saving_throws( $this->$key->level );
+		}
+		$mixed = array();
+		foreach( $base as $key => $rolls ) {
+			foreach( $rolls as $index => $roll ) {
+				if ( array_key_exists( $index, $mixed ) ) {
+					$mixed[ $index ]['roll'] = min( $roll['roll'], $mixed[ $index ]['roll'] );
+				} else {
+					$mixed[ $index ] = $roll;
+				}
+			}
+		}
+		return $this->get_keyed_saving_throws( $mixed );
 	}
 
 

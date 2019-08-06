@@ -17,7 +17,7 @@ trait DND_Monster_Trait_Combat {
 
 	protected function determine_attack_types() {
 		foreach( $this->attacks as $key => $damage ) {
-			if ( ! isset( $this->att_types[ $key ] ) ) {
+			if ( ! array_key_exists( $key, $this->att_types ) ) {
 				$type = $this->get_modified_weapon_type( $key );
 				if ( $this->weapons_check( $type ) ) {
 					$this->att_types[ $key ] = $this->get_weapon_info( $type );
@@ -56,12 +56,12 @@ trait DND_Monster_Trait_Combat {
 
 	/**  Monster Combat functions  **/
 
-	protected function get_to_hit_number( $armor_class, $armor_type, $info, $range = 2000 ) {
+	public function get_to_hit_number( $armor_class, $armor_type, $info, $range = 2000 ) {
 		$armor_type = min( max( $armor_class, $armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) $this->determine_to_hit_row();
 		$index  = 10 - $armor_class;
 		$number = $this->to_hit_row[ $index ];
-		if ( isset( $info['type'][ $armor_type ] ) ) {
+		if ( array_key_exists( $armor_type, $info['type'] ) ) {
 			$number -= $info['type'][ $armor_type ];
 		}
 		if ( in_array( $info['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
@@ -80,7 +80,7 @@ trait DND_Monster_Trait_Combat {
 
 	public function get_possible_damage( $type = 'Bite' ) {
 		$dam = 'special';
-		if ( isset( $this->attacks[ $type ] ) ) {
+		if ( array_key_exists( $type, $this->attacks ) ) {
 			$dam = $this->get_damage_string( $this->attacks[ $type ] );
 		}
 		return $dam;

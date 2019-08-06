@@ -5,7 +5,6 @@ class DND_Character_Import_Kregen {
 	public    $character      = null;
 	protected $classes        = array();
 	protected $data           = array();
-	protected $experience     = 0;
 	public    $import_message = 'Could not import file.';
 	public    $import_status  = 'failed';
 	protected $import_task    = 'import';
@@ -15,24 +14,26 @@ class DND_Character_Import_Kregen {
 
 	public function __construct( $file, $extra = array() ) {
 		$contents = file ( $file, FILE_IGNORE_NEW_LINES );
-		foreach( $contents as $line ) {
-			$parsed = array_values( array_filter( explode( ',', $line ) ) );
-			if ( $parsed && ( count( $parsed ) > 1 ) ) {
-				$this->parse_line( $parsed );
-			}
-		}
-		$class = $this->parse_class( $contents[0] );
+		$class    = $this->parse_class( $contents[0] );
 		if ( class_exists( $class ) ) {
+			foreach( $contents as $line ) {
+				$parsed = array_values( array_filter( explode( ',', $line ) ) );
+				if ( $parsed && ( count( $parsed ) > 1 ) ) {
+					$this->parse_line( $parsed );
+				}
+			}
 			$info = array_merge( $this->data, $extra );
 			$this->character = new $class( $info );
 			ksort( $this->time_line );
 			$last = array_pop( $this->time_line );
-			$this->experience = $last[1];
-			$this->character->add_experience( $this->experience );
+			$this->character->add_experience( $last[1] );
 			$key = 'dnd1e_' . $class . '_' . $this->character->get_name();
 			$this->save_character( $key );
 			$this->import_status = 'success';
 			$this->import_message = "{$this->name} imported as $class.";
+		} else {
+			$this->import_status = 'fail';
+			$this->import_message = "The template for $class does not exist.  Talk to the programmer!";
 		}
 	}
 
@@ -60,7 +61,7 @@ class DND_Character_Import_Kregen {
 		switch( $string ) {
 			case 'Climb': // shows up on Barbarian spreadsheet
 			case 'Dr':    // shows up on Ranger / RangerThief spreadsheets
-			case 'MP':    // shows up on spreadsheets where the character uses magic
+			case 'MP':    // shows up on some spreadsheets where the character uses magic
 			case 'Race':
 				break;
 			case 'MU':
@@ -128,7 +129,7 @@ class DND_Character_Import_Kregen {
 				$this->data['armor'] = array();
 				$armor = $this->parse_name( $line[1] );
 				$this->data['armor']['armor'] = ( $armor === '(armor)' ) ? 'none' : $armor;
-				if ( ! isset( $line[2] ) ) break;
+				if ( ! array_key_exists( 2, $line ) ) break;
 				$test = intval( $line[2] );
 				if ( $test > 0 ) {
 					$this->data['armor']['bonus'] = $test;

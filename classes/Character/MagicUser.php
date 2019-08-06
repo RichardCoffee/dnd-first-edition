@@ -8,7 +8,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 	protected $stats      = array( 'str' => 3, 'int' => 9, 'wis' => 3, 'dex' => 6, 'con' => 3, 'chr' => 3 );
 	protected $weap_allow = array( 'Caltrop', 'Dagger', 'Dagger,Thrown', 'Dart', 'Knife', 'Knife,Thrown', 'Sling', 'Spell', 'Staff,Quarter' );
 	protected $weap_init  = array( 'initial' => 1, 'step' => 6 );
-	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'Skill' => 'PF' ) );
+	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
 	protected $xp_bonus   = array( 'int' => 16 );
 	protected $xp_step    = 375000;
 	protected $xp_table   = array( 0, 2500, 5000, 10000, 22500, 40000, 60000, 90000, 135000, 250000, 375000 );
@@ -19,7 +19,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		if ( isset( $args['spell_import'] ) ) {
+		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spell_list( $args['spell_import'] );
 		}
 	}
@@ -279,7 +279,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 				'Pyrotechnics' => array( 'page' => 'PH 73', 'type' => 'Alteration', 'cast' => '2 segments' ),
 				'Scare' => array(
 					'page'     => 'PH 72',
-					'type'     => 'Enchantrnent/Charm',
+					'type'     => 'Enchantment/Charm',
 					'range'    => '10 feet',
 					'duration' => '3d4 rounds',
 					'aoe'      => 'One creature',
@@ -417,10 +417,10 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'duration' => sprintf( '%u rounds', $this->level ),
 					'aoe'      => sprintf( '%u sq ft', $this->level * 30 ),
 				),
-				'Fire Charm' => array( 'page' => 'PH 77', 'type' => 'Enchantmen/Charm', 'cast' => '4 segments',
+				'Fire Charm' => array( 'page' => 'PH 77', 'type' => 'Enchantment/Charm', 'cast' => '4 segments',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
-				'Fumble' => array( 'page' => 'PH 78', 'type' => 'Enchantmen/Charm', 'cast' => '4 segments',
+				'Fumble' => array( 'page' => 'PH 78', 'type' => 'Enchantment/Charm', 'cast' => '4 segments',
 					'range'    => sprintf( '%u feet', $this->level * 10 ),
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
@@ -428,7 +428,7 @@ class DND_Character_MagicUser extends DND_Character_Character {
 					'range' => sprintf( '%u feet', $this->level * 20 ),
 					'aoe'   => sprintf( ' %1$u x %1$u square area', $this->level * 10 ),
 				),
-				"Leomund's Secure Shelter" => array( 'page' => 'UA 57', 'type' => 'Alteration Enchantment', 'cast' => '4 turns',
+				"Leomund's Secure Shelter" => array( 'page' => 'UA 57', 'type' => 'Alteration,Enchantment', 'cast' => '4 turns',
 					'duration' => sprintf( '%u hours', $this->level ),
 					'aoe'      => sprintf( '%u square feet', $this->level * 30 ),
 				),

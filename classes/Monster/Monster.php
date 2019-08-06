@@ -6,6 +6,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $alignment    = 'Neutral';
 	protected $appearing    = array( 1, 1, 0 );
 	protected $armor_class  = 10;
+	protected $armor_type   = 11;
 	protected $attacks      = array();
 	public    $current_hp   = 0;
 	protected $description  = '';
@@ -16,7 +17,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $hit_points   = 0;
 	protected $hp_extra     = 0;
 	protected $in_lair      = 0;
-	public    $initiative   = 1;
+	public    $initiative   = 10;
 	protected $intelligence = 'Animal';
 	protected $magic_user   = null;
 	protected $maximum_hp   = false;
@@ -48,9 +49,9 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function __construct( $args = array() ) {
 		$this->parse_args( $args );
-		if ( ! isset( $args['initiative'] ) ) {
-			$this->initiative = mt_rand( 1, 10 );
-		}
+#		if ( array_key_exists( 'initiative', $args ) ) {
+#			$this->initiative = mt_rand( 1, 10 );
+#		}
 		$this->determine_hit_dice();
 		$this->determine_hit_points();
 		$this->determine_armor_type();
@@ -64,13 +65,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function __get( $name ) {
 		if ( substr( $name, 0, 4 ) === 'move' ) {
-			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && isset( $this->movement['foot'] ) ) {
+			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && array_key_exists( 'foot', $this->movement ) ) {
 				return $this->movement['foot'];
-			} else if ( ( $name === 'move_air' ) && isset( $this->movement['air'] ) ) {
+			} else if ( ( $name === 'move_air' ) && array_key_exists( 'air', $this->movement ) ) {
 				return $this->movement['air'];
-			} else if ( ( $name === 'move_sea' ) && isset( $this->movement['sea'] ) ) {
+			} else if ( ( $name === 'move_sea' ) && array_key_exists( 'sea', $this->movement ) ) {
 				return $this->movement['sea'];
-			} else if ( ( $name === 'move_web' ) && isset( $this->movement['web'] ) ) {
+			} else if ( ( $name === 'move_web' ) && array_key_exists( 'web', $this->movement ) ) {
 				return $this->movement['web'];
 			}
 		}
@@ -128,7 +129,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( $this->xp_value && is_array( $this->xp_value ) ) {
 			$xp  = $this->xp_value[0];
 			$xp += ( $this->xp_value[1] * $this->hit_points );
-			if ( isset( $this->xp_value[2] ) && isset( $this->xp_value[3] ) ) {
+			if ( array_key_exists( 2, $this->xp_value ) && array_key_exists( 3, $this->xp_value ) ) {
 				if ( $this->hit_points > $this->xp_value[3] ) {
 					$mod = $this->hit_points - $this->xp_value[3];
 					$xp += ( $this->xp_value[2] * $mod );
@@ -138,8 +139,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->xp_value = $xp;
 	}
 
-	public function set_initiative( $new ) {
-		$this->initiative = $new;
+	public function set_initiative( $roll ) {
+		$this->initiative = 11 - $roll;
 	}
 
 	public function get_name() {

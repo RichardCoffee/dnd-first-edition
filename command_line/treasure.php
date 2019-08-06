@@ -1,14 +1,9 @@
 <?php
 
-#define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
-
-#require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
-#require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
-#include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
-
-function dnd1e_show_possible_monster_treasure( &$monster, $possible = '' ) {
+function dnd1e_show_possible_monster_treasure( array $enemy, $possible = '' ) {
+	$monster = array_pop( $enemy );
 	$treasure = $monster->get_treasure( $possible );
 	if ( is_array( $treasure ) ) {
 		foreach( $treasure as $item ) {

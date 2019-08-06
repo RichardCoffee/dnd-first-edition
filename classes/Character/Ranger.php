@@ -11,6 +11,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected $non_prof   = -2;
 	protected $spell_list = array();
 	protected $stats      = array( 'str' => 13, 'int' => 13, 'wis' => 14, 'dex' => 3, 'con' => 14, 'chr' => 3 );
+	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
 	protected $weap_init  = array( 'initial' => 3, 'step' => 3 );
 	protected $weap_reqs  = array( 'Bow/Crossbow,Light', 'Dagger/Knife', 'Spear/Axe', 'Sword' );
 	protected $xp_bonus   = array( 'str' => 16, 'int' => 16, 'wis' => 16 );
@@ -19,16 +20,14 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 
 	public function __construct( $args = array() ) {
-		if ( isset( $args['druid'] ) ) {
-#			$this->druid = unserialize( $args['druid'] );
+		if ( array_key_exists( 'druid', $args ) ) {
 			unset( $args['druid'] );
 		}
-		if ( isset( $args['magic'] ) ) {
-#			$this->magic = unserialize( $args['magic'] );
+		if ( array_key_exists( 'magic', $args ) ) {
 			unset( $args['magic'] );
 		}
 		parent::__construct( $args );
-		if ( isset( $args['spell_import'] ) ) {
+		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spells( $args['spell_import'] );
 		}
 	}
@@ -46,6 +45,9 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		$level = parent::calculate_level( $xp );
 		$this->druid->set_level( $level );
 		$this->magic->set_level( $level );
+		if ( ( $level < 8 ) && array_key_exists( 'Spell', $this->weapons ) ) {
+			unset( $this->weapons['Spell'] );
+		}
 		return $level;
 	}
 
@@ -73,7 +75,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected function import_spells( $spells ) {
 		foreach( $spells as $spell ) {
 			$new = $this->locate_magic_spell( $spell );
-			if ( ! isset( $new['page'] ) ) return;
+			if ( ! array_key_exists( 'page', $new ) ) return;
 			$this->add_spell( $new );
 		}
 	}
@@ -110,11 +112,11 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		return $result;
 	} //*/
 
-	public function get_weapon_damage_bonus( $range = -1 ) {
-		$bonus = parent::get_weapon_damage_bonus( $range );
-		if ( ! empty( $this->opponent['type'] ) ) {
+	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
+		$bonus = parent::get_weapon_damage_bonus( $target, $range );
+		if ( $target instanceOf DND_Monster_Monster ) {
 			if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
-				$bonus += $this->special_attack_giant( $this->opponent['type'], 'int' );
+				$bonus += $this->special_attack_giant( $target->race, 'int' );
 			}
 		}
 		return $bonus;
@@ -133,12 +135,16 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		return $this->$key->get_spell_data( $level, $name );
 	}
 
+	public function get_spell_list() {
+		return $this->spells;
+	}
+
 	public function locate_magic_spell( $spell, $type = '' ) {
 		$info = array();
 		if ( empty( $type ) || ( $type === 'Druid' ) ) {
 			$info = $this->druid->locate_magic_spell( $spell, 'Druid' );
 		}
-		if ( ! isset( $info['page'] ) ) {
+		if ( ! array_key_exists( 'page', $info ) ) {
 			$info = $this->magic->locate_magic_spell( $spell, 'Magic User' );
 		}
 		return $info;

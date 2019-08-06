@@ -9,7 +9,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 	protected $undead     = array();
 	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff,Quarter' );
 	protected $weap_init  = array( 'initial' => 2, 'step' => 4 );
-	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'Skill' => 'PF' ) );
+	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
 	protected $xp_bonus   = array( 'wis' => 16 );
 	protected $xp_step    = 225000;
 	protected $xp_table   = array( 0, 1500, 3000, 6000, 13000, 27500, 55000, 110000, 225000 );
@@ -20,7 +20,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		if ( isset( $args['spell_import'] ) ) {
+		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spell_list( $args['spell_import'] );
 		}
 	}
@@ -46,9 +46,9 @@ class DND_Character_Cleric extends DND_Character_Character {
 		$type   = ucfirst( $type );
 		$level  = ( $level === 0 ) ? $this->level : $level;
 		$undead = $this->get_undead_table();
-		if ( isset( $undead[ $type ] ) ) {
+		if ( array_key_exists( $type, $undead ) ) {
 			$foe = $undead[ $type];
-			if ( isset( $foe[ $level] ) ) {
+			if ( array_key_exists( $level, $foe ) ) {
 				$response = $foe[ $level ];
 			} else {
 				$response = array_pop( $foe );
@@ -62,7 +62,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 		$level  = ( $level === 0 ) ? $this->level : $level;
 		$undead = $this->get_undead_table();
 		foreach( $undead as $yuch => $turn ) {
-			if ( isset( $turn[ $level ] ) ) {
+			if ( array_key_exists( $level, $turn ) ) {
 				$caps[ $yuch ] = $turn[ $level ];
 			} else {
 				$caps[ $yuch ] = array_pop( $turn );
@@ -90,13 +90,13 @@ class DND_Character_Cleric extends DND_Character_Character {
 	}
 
 	private function reroll_healing_string() {
-		$string = ', re-roll 1s';
+		$string = '';
 		if ( $this->level > 15 ) {
 			$string = ', re-roll 1s, 2s and 3s';
 		} else if ( $this->level > 10 ) {
-			$string = ', re-roll 1s, 2s and 3s';
-		} else if ( $this->level > 5 ) {
 			$string = ', re-roll 1s and 2s';
+		} else if ( $this->level > 5 ) {
+			$string = ', re-roll 1s';
 		}
 		return $string;
 	}

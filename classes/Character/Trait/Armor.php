@@ -34,7 +34,7 @@ trait DND_Character_Trait_Armor {
 		$armor = strtolower( $armor );
 		$info  = false;
 		$table = $this->armor_get_armor_table();
-		if ( isset( $table[ $armor ] ) ) {
+		if ( array_key_exists( $armor, $table ) ) {
 			$info = $table[ $armor ];
 		}
 		return $info;
@@ -42,12 +42,15 @@ trait DND_Character_Trait_Armor {
 
 	private function get_armor_trait_value( $armor, $trait ) {
 		static $table = null;
-		$value = "Armor $armor not found in table.";
-		$armor = strtolower( $armor );
-		$trait = strtolower( $trait );
 		if ( ! $table ) $table = $this->armor_get_armor_table();
-		if ( isset( $table[ $armor ][ $trait ] ) ) {
-			$value = $table[ $armor ][ $trait ];
+		$value = "Armor $armor not found in armor table.";
+		$armor = strtolower( $armor );
+		if ( array_key_exists( $armor, $table ) ) {
+			$value = "$armor trait $trait not found in armor table.";
+			$trait = strtolower( $trait );
+			if ( array_key_exists( $trait, $table[ $armor ] ) ) {
+				$value = $table[ $armor ][ $trait ];
+			}
 		}
 		return $value;
 	}

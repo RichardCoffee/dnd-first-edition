@@ -4,7 +4,9 @@ class DND_Character_FighterThief extends DND_Character_FighterMulti {
 
 
 	protected $skills = array();
-	protected $thief  = null;
+
+
+	use DND_Character_Trait_Multi_Thief;
 
 
 	public function __construct( $args = array() ) {
@@ -18,8 +20,7 @@ class DND_Character_FighterThief extends DND_Character_FighterMulti {
 	}
 
 	public function set_current_weapon( $new = '' ) {
-		$this->fight->set_current_weapon( $new );
-		$this->thief->set_current_weapon( $new );
+		parent::set_current_weapon( $new );
 		$this->armor  = $this->thief->armor;
 		$this->weapon = $this->fight->weapon;
 	}

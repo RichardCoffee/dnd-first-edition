@@ -61,15 +61,16 @@ trait DND_Character_Trait_Magic {
 	}
 
 	public function generate_random_spell( $level ) {
-		$spell = '';
 		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
-		if ( isset( $this->spell_table[ $level ] ) ) {
+		$name = '';
+		if ( is_integer( $level ) ) $level = Ordinal::instance()->get( $level );
+		if ( array_key_exists( $level, $this->spell_table ) ) {
 			$limit = count( $this->spell_table[ $level ] );
 			$index = mt_rand( 1, $limit );
 			$keys  = array_keys( $this->spell_table[ $level ] );
-			$spell = $keys[ $index -1 ];
+			$name  = $keys[ $index - 1 ];
 		}
-		return $spell;
+		return $name;
 	}
 
 	protected function import_spell_list( $list, $type = '' ) {
@@ -82,7 +83,7 @@ trait DND_Character_Trait_Magic {
 				continue;
 			}
 			$spell = $this->locate_magic_spell( $name );
-			if ( isset( $spell['page'] ) ) {
+			if ( array_key_exists( 'page', $spell ) ) {
 				$this->spells[ $spell['level'] ][ $name ] = $this->get_spell_data( $spell['level'], $name );
 				$last = $name;
 			} else {

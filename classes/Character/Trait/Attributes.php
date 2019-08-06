@@ -4,13 +4,13 @@ trait DND_Character_Trait_Attributes {
 
 
 	private function parse_strength_percentage( $str ) {
-		$perc = -1;
+		$perc = 0;
 		if ( is_string( $str ) && ( intval( $str ) === 18 ) ) {
 			$sep = substr( $str, 2, 1 );
 			$arr = array_map( 'intval', explode( $sep, $str ) );
-			if ( isset( $arr[1] ) ) {
+			if ( array_key_exists( 1, $arr ) ) {
 				$perc = (int)$arr[1];
-				if ( $arr[1] === '00' ) {
+				if ( substr( $str, 3 ) === '00' ) {
 					$perc = 100;
 				}
 			}

@@ -1,6 +1,6 @@
 <?php
 
-class DND_Monster_Rat extends DND_Monster_Monster {
+class DND_Monster_Animal_Rat extends DND_Monster_Monster {
 
 
 	protected $alignment    = 'Neutral (evil)';

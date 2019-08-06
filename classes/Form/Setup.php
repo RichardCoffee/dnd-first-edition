@@ -49,7 +49,7 @@ class DND_Form_Setup {
 	 * @return array
 	 */
 	public function upload_mimes( $mime_types ) {
-		if ( ! isset( $mime_types['csv'] ) ) {
+		if ( ! array_key_exists( 'csv', $mime_types ) ) {
 			$mime_types['csv'] = 'text/csv';
 		}
 		return $mime_types;

@@ -7,6 +7,9 @@
 abstract class Enum {
 
 
+	protected $set = array();
+
+
 	public function get( $position ) {
 		if ( isset( $this->set[ $position ] ) ) {
 			return $this->set[ $position ];

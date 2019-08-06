@@ -3,10 +3,8 @@
 class DND_Character_ClericMagicUser extends DND_Character_Multi {
 
 
-	protected $magic  = null;
-
-
 	use DND_Character_Trait_Multi_Cleric;
+	use DND_Character_Trait_Multi_MagicUser { locate_magic_spell as locate_magic_user_spell; }
 
 
 	public function __construct( $args = array() ) {
@@ -23,8 +21,8 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 		$this->set_cleric_armor();
 	}
 
-	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
-		return $this->get_cleric_to_hit_number( $target_ac, $target_at, $range );
+	public function get_to_hit_number( $target, $range = -1 ) {
+		return $this->get_cleric_to_hit_number( $target, $range );
 	}
 
 	public function locate_magic_spell( $name, $type = '' ) {
@@ -33,10 +31,10 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 		if ( empty( $type ) || ( $type === 'Cleric' ) ) {
 			$spell = $this->locate_cleric_spell( $name );
 		}
-		if ( ! isset( $spell['page'] ) ) {
-			$spell = $this->locate_magic_spell( $name, 'Magic User' );
+		if ( ! array_key_exists( 'page', $spell ) ) {
+			$spell = locate_magic_user_spell( $name );
 		}
-		return ( isset( $spell['page'] ) ) ? $spell : $string;
+		return ( array_key_exists( 'page', $spell ) ) ? $spell : $string;
 	}
 
 

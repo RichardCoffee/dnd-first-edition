@@ -8,7 +8,7 @@ trait DND_Monster_Dragon_Mated {
 
 
 	private function check_for_existing_mate( &$args ) {
-		if ( isset( $args['mate'] ) ) {
+		if ( array_key_exists( 'mate', $args ) ) {
 			$this->mate = unserialize( $args['mate'] );
 			$this->solitary = 0;
 			unset( $args['mate'] );
@@ -22,6 +22,10 @@ trait DND_Monster_Dragon_Mated {
 				$this->solitary = 100;
 			} else {
 				$this->determine_mate_stats();
+				if ( $this->mate ) {
+#					for( $i = 3; $i <= $num; $i++ ) {
+#					}
+				}
 			}
 		} else {
 			$num = 1;
@@ -34,6 +38,8 @@ trait DND_Monster_Dragon_Mated {
 				} else {
 					$this->solitary = 100;
 				}
+			} else {
+				$this->solitary = 100;
 			}
 		}
 		return $num;
@@ -47,6 +53,13 @@ trait DND_Monster_Dragon_Mated {
 			$this->solitary = 0;
 			$this->specials_mate();
 		}
+	}
+
+	private function determine_young_stats() {
+		$age = mt_rand( 1, 2 );
+		$create = get_class( $this );
+		$young  = new $create( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
+		return $young;
 	}
 
 	public function get_appearing_hit_points( $number = 1 ) {
@@ -63,7 +76,7 @@ trait DND_Monster_Dragon_Mated {
 	}
 
 	private function specials_mate() {
-		if ( $this->mate && ( ! isset( $this->specials['mate'] ) ) ) {
+		if ( $this->mate && ( ! array_key_exists( 'mate', $this->specials ) ) ) {
 			$this->specials['mate'] = sprintf( 'Mated Pair: HD %u, HP %u, Age %s', $this->mate->hit_dice, $this->mate->hit_points, $this->mate->get_dragon_age() );
 		}
 	}

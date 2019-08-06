@@ -34,7 +34,7 @@ trait DND_Monster_Trait_Treasure {
 		$multiply = $this->get_treasure_multipliers();
 		$treasure = array();
 		$table    = $this->get_treasure_table();
-		if ( isset( $table[ $type ] ) ) {
+		if ( array_key_exists( $type, $table ) ) {
 			$row = $table[ $type ];
 			foreach( $row as $kind => $odds ) {
 				$name = ucfirst( $kind );

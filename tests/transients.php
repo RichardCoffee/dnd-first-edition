@@ -9,6 +9,6 @@ require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
 
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
-$trans = dnd1e_transient( 'ongoing' );
+$trans = dnd1e_transient( 'cast' );
 
 print_r($trans);

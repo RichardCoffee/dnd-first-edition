@@ -10,6 +10,7 @@ class DND_Character_Thief extends DND_Character_Character {
 	protected $skills     = array( 'Pick Pockets' => 30, 'Open Locks' => 25, 'Find Traps' => 20, 'Move Silently' => 15, 'Hide Shadow' => 10, 'Hear Noise' => 10, 'Climb Walls' => 85, 'Languages' => 1 );
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 9, 'con' => 3, 'chr' => 3 );
 	protected $weap_allow = array( 'Bow,Short', 'Caltrop', 'Club', 'Crossbow,Hand', 'Dagger', 'Dagger,Off-Hand', 'Dart', 'Garrot', 'Knife', 'Sap', 'Sling', 'Sword,Broad', 'Sword,Falchion', 'Sword,Long', 'Sword,Short' );
+	protected $weap_dual  = array();
 	protected $weap_init  = array( 'initial' => 2, 'step' => 4 );
 	protected $xp_bonus   = array( 'dex' => 16 );
 	protected $xp_step    = 220000;
@@ -19,6 +20,16 @@ class DND_Character_Thief extends DND_Character_Character {
 	public function initialize_character() {
 		parent::initialize_character();
 		$this->determine_thief_skills();
+	}
+
+	public function set_dual_weapons( $one, $two ) {
+		if ( stripos( $two, 'off-hand' ) ) {
+			if ( array_key_exists( $one, $this->weapons ) && array_key_exists( $two, $this->weapons ) ) {
+				$this->weap_dual = [ $one, $two ];
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected function determine_thief_skills() {
@@ -31,15 +42,15 @@ class DND_Character_Thief extends DND_Character_Character {
 #echo "$key: $index  ";
 			$this->skills[ $key ] = $table[ $key ][ $index ];
 #echo "B:{$this->skills[ $key ]}  ";
-			if ( isset( $racial[ $key ] ) ) {
+			if ( array_key_exists( $key, $racial ) ) {
 				$this->skills[ $key ] += $racial[ $key ];
 			}
 #echo "R:{$this->skills[ $key ]}  ";
-			if ( isset( $armor[ $key ] ) ) {
+			if ( array_key_exists( $key, $armor ) ) {
 				$this->skills[ $key ] += $armor[ $key ];
 			}
 #echo "A:{$this->skills[ $key ]}  ";
-			if ( isset( $dex[ $key ] ) ) {
+			if ( array_key_exists( $key, $dex ) ) {
 				$this->skills[ $key ] += $dex[ $key ];
 			}
 #echo "D:{$this->skills[ $key ]}\n";
@@ -55,8 +66,8 @@ class DND_Character_Thief extends DND_Character_Character {
 	}
 
 	public function get_thief_skill( $skill ) {
-		$percentage = 0;
-		if ( isset( $this->skills[ $skill ] ) ) {
+		$percentage = -1000;
+		if ( array_key_exists( $skill, $this->skills ) ) {
 			$percentage = $this->skills[ $skill ];
 		}
 		return $percentage;

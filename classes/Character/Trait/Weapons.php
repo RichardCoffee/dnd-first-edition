@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'BOW_POINT_BLANK' ) ) {
+	define( 'BOW_POINT_BLANK',      31 );
+	define( 'CROSSBOW_POINT_BLANK', 61 );
+}
+
 trait DND_Character_Trait_Weapons {
 
 
@@ -35,14 +40,12 @@ trait DND_Character_Trait_Weapons {
 		);
 	}
 
-
-
 	private function get_weapon_info( $weapon = 'Spell' ) {
 		if ( empty( static::$weapons_table ) ) {
 			static::$weapons_table = $this->get_weapons_table();
 		}
 		$info = array();
-		if ( isset( static::$weapons_table[ $weapon ] ) ) {
+		if ( array_key_exists( $weapon, static::$weapons_table ) ) {
 			$info = static::$weapons_table[ $weapon ];
 		} else {
 			$info = static::$weapons_table['Spell'];
@@ -54,7 +57,7 @@ trait DND_Character_Trait_Weapons {
 		if ( empty( static::$weapons_table ) ) {
 			static::$weapons_table = $this->get_weapons_table();
 		}
-		return isset( static::$weapons_table[ $weapon ] );
+		return array_key_exists( $weapon, static::$weapons_table );
 	}
 
 	private function get_weapons_table() {
@@ -256,6 +259,12 @@ trait DND_Character_Trait_Weapons {
 		return array( 'bow', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
 	}
 
+	private function get_weapon_attacks_per_round( $weapon ) {
+		$atts  = $this->get_weapon_attacks_array( $weapon['attack'] );
+		$index = $this->get_weapon_attacks_per_round_index( $weapon['skill'] );
+		return $atts[ $index ];
+	}
+
 	private function get_weapon_attacks_array( $type ) {
 		$table = array();
 		switch( $type ) {
@@ -289,7 +298,6 @@ trait DND_Character_Trait_Weapons {
 			default:
 				$index = 0;
 		}
-#echo "#atts: $index {$this->name}\n";
 		return $index;
 	}
 
@@ -320,13 +328,13 @@ trait DND_Character_Trait_Weapons {
 		$check = $this->get_weapon_proficiency_bonus( $weapon['skill'], $desire );
 		if ( ( $check > 0 ) && ( $range > 0 ) ) {
 			if ( $weapon['attack'] === 'bow' ) {
-				if ( $range < 31 ) {
+				if ( $range < BOW_POINT_BLANK ) {
 					$bonus = 2;
 				} else if ( $range < $weapon['range'][0] ) {
 					$bonus = 1;
 				}
 			} else if ( substr( $weapon['attack'], 3 ) === 'Xbow' ) {
-				if ( $range < 61 ) {
+				if ( $range < CROSSBOW_POINT_BLANK ) {
 					$bonus = 2;
 				} else if ( $range < $weapon['range'][0] ) {
 					$bonus = 1;
@@ -352,6 +360,47 @@ trait DND_Character_Trait_Weapons {
 			$adjust = -2;
 		}
 		return $adjust;
+	}
+
+	/**  Dual Weapon functions  **/
+
+	public function is_off_hand_weapon() {
+		if ( $this->weap_dual && array_key_exists( 1, $this->weap_dual ) ) {
+			if ( ( $this->weapon['current'] === $this->weap_dual[1] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function set_primary_weapon() {
+		if ( array_key_exists( 0, $this->weap_dual ) ) {
+			$this->set_current_weapon( $this->weap_dual[0] );
+		}
+	}
+
+	public function set_dual_weapon() {
+		if ( array_key_exists( 1, $this->weap_dual ) ) {
+			$this->set_current_weapon( $this->weap_dual[1] );
+		}
+	}
+
+	protected function set_current_weapon_dual() {
+		if ( in_array( $this->weapon['current'], $this->weap_dual ) ) {
+			if ( stripos( $this->weapon['current'], 'off-hand' ) ) {
+				$primary  = $this->weap_dual[0];
+				$priminfo = $this->get_weapon_info( $primary );
+				$primatt  = $this->get_weapon_attacks_array( $priminfo['attack'] );
+				$primidx  = $this->get_weapon_attacks_per_round_index( $this->weapons[ $primary ]['skill'] );
+				$prime    = $primatt[ $primidx ];
+				if ( $prime[1] === $this->weapon['attacks'][1] ) {
+					$this->weapon['attacks'][0] += $prime[0];
+				} else {
+					$this->weapon['attacks'][0] += ( $prime[1] === 2 ) ? ( $this->weapon['attacks'][0] + $prime[0] ) : ( $prime[0] * 2 ) ;
+					$this->weapon['attacks'][1] += ( $prime[1] === 2 ) ? 1 : 0;
+				}
+			}
+		}
 	}
 
 

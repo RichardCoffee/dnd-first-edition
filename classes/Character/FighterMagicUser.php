@@ -16,12 +16,10 @@ class DND_Character_FighterMagicUser extends DND_Character_FighterMulti {
 	}
 
 	public function set_current_weapon( $new = '' ) {
+		parent::set_current_weapon( $new );
 		if ( $new === 'Spell' ) {
 			$this->magic->set_current_weapon( $new );
-			$this->armor  = $this->magic->armor;
 			$this->weapon = $this->magic->weapon;
-		} else {
-			parent::set_current_weapon( $new );
 		}
 	}
 

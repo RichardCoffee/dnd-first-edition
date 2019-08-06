@@ -25,6 +25,19 @@ if ( ! function_exists( 'dnd1e' ) ) {
 	}
 }
 
+/** array_column() introduced in PHP 7.0.0  **/
+if ( ! function_exists( 'array_column' ) ) {
+	function array_column( array $input, $column_key ) {
+		$result = array();
+		foreach( $input as $item ) {
+			if ( array_key_exists( $column_key, $item ) ) {
+				$result[] = $item[ $column_key ];
+			}
+		}
+		return $result;
+	}
+}
+
 /** array_key_first() introduced in PHP 7.3.0  **/
 if ( ! function_exists( 'array_key_first' ) ) {
 	function array_key_first( array $arr ) {
@@ -41,20 +54,8 @@ if ( ! function_exists( 'dnd1e_transient' ) ) {
 		if ( $data ) {
 			set_transient( $entry, $data, $expire );
 		} else {
-			return dnd1e_unserialize( get_transient( $entry ) );
+			return dnd1e()->unserialize( get_transient( $entry ), [ 'DND_Combat', 'DND_Monster_Monster', 'DND_Character_Character' ] );
 		}
-	}
-}
-
-if ( ! function_exists( 'dnd1e_unserialize' ) ) {
-	function dnd1e_unserialize( $original ) {
-		if ( is_string( $original ) ) {
-			if ( $original === serialize( false ) ) return false;
-			// options parameter added in PHP 7.0.0 - no effect in earlier versions
-			$test = @unserialize( $original, [ 'DND_Monster_Monster', 'DND_Character_Character' ] );
-			if ( ! ( $test === false ) ) return $test;
-		}
-		return $original;
 	}
 }
 

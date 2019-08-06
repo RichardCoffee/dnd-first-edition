@@ -3,6 +3,53 @@
 trait DND_Character_Trait_SavingThrows {
 
 
+	public function get_character_saving_throws() {
+		return $this->get_saving_throws( $this->level );
+	}
+
+	public function get_monster_saving_throws() {
+		$level = $this->get_saving_throw_level();
+		return $this->get_saving_throws( $level );
+	}
+
+	protected function get_saving_throws( $level ) {
+		$base = $this->get_raw_saving_throws( $level );
+		return $this->get_keyed_saving_throws( $base );
+	}
+
+	protected function get_raw_saving_throws( $level ) {
+		$keys = $this->get_saving_throw_key_table();
+		$base = array();
+		foreach( $keys as $key => $index ) {
+			$base[] = array(
+				'key'  => $key,
+				'roll' => $this->get_base_saving_throw( $key, $this->level ),
+			);
+		}
+		return $base;
+	}
+
+	protected function get_keyed_saving_throws( $base ) {
+		$mixed = array();
+		foreach( $base as $roll ) {
+			$key = $roll['roll'];
+			if ( array_key_exists( $key, $mixed ) ) {
+				$mixed[ $key ] .= '/' . $roll['key'];
+			} else {
+				$mixed[ $key ] = $roll['key'];
+			}
+		}
+		$table = array();
+		foreach( $mixed as $roll => $type ) {
+			$table[ $type ] = $roll;
+		}
+		return $table;
+	}
+
+#	 * @param string $type An index from the saving throw key table
+#	 * @param integer $index Level of character/monster
+#	 * @param mixed $origin May be an object (Character/Monster) or an array (spell)
+#	 * @param mixed $extra parameter passed on to filter
 	public function get_base_saving_throw( $type = 'Spells', $index = 0, $origin = null, $extra = null ) {
 		if ( ( $row = $this->get_saving_throw_table_row( $type ) ) === false ) {
 			return 100;
@@ -33,12 +80,12 @@ trait DND_Character_Trait_SavingThrows {
 		foreach( $filters as $filter ) {
 			$base = apply_filters( $filter, $base, $this, $origin, $extra );
 		}
-		return $base;
+		return max( $base, 2 );
 	}
 
 	protected function get_saving_throw_table_row( $type = 'Spells' ) {
 		$keys = $this->get_saving_throw_key_table();
-		if ( isset( $keys[ $type ] ) ) {
+		if ( array_key_exists( $type, $keys ) ) {
 			return $keys[ $type ];
 		}
 		return false;
@@ -46,15 +93,15 @@ trait DND_Character_Trait_SavingThrows {
 
 	protected function get_saving_throw_key_table() {
 		return array(
-			'Paralyzation'  => 'Paralyzation',
-			'Poison'        => 'Poison',
-			'Death Magic'   => 'Death Magic',
-			'Petrification' => 'Petri/Poly',
-			'Polymorph'     => 'Petri/Poly',
 			'Rod'           => 'RSW',
 			'Staff'         => 'RSW',
 			'Wand'          => 'RSW',
 			'Breath Weapon' => 'Breath',
+			'Death Magic'   => 'Death Magic',
+			'Paralyzation'  => 'Paralyzation',
+			'Poison'        => 'Poison',
+			'Petrification' => 'Petri/Poly',
+			'Polymorph'     => 'Petri/Poly',
 			'Spells'        => 'Spells',
 		);
 	}
@@ -77,37 +124,58 @@ trait DND_Character_Trait_SavingThrows {
 
 	protected function get_cleric_saving_throw_table() {
 		return array(          /*    0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  */
-			'Paralyzation' => array( 11, 10, 10, 10,  9,  9,  9,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  4,  2,  2,  2 ),
+			'Paralyzation' => array( 11, 10, 10, 10,  9,  9,  8,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  3,  2,  2,  2 ),
+			'Poison'       => array( 11, 10, 10, 10,  9,  9,  8,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  3,  2,  2,  2 ),
+			'Death Magic'  => array( 11, 10, 10, 10,  9,  9,  8,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  3,  2,  2,  2 ),
+			'Petri/Poly'   => array( 14, 13, 13, 13, 12, 12, 11, 10, 10, 10,  9,  9,  9,  8,  8,  8,  7,  7,  7,  6,  6,  6 ),
+			'RSW'          => array( 15, 14, 14, 14, 13, 13, 12, 11, 11, 11, 10, 10, 10,  9,  9,  9,  8,  8,  7,  6,  6,  6 ),
+			'Breath'       => array( 17, 16, 16, 16, 15, 15, 14, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10,  9,  8,  8,  8 ),
+			'Spells'       => array( 16, 15, 15, 15, 14, 14, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10,  9,  9,  8,  7,  7,  7 ),
+/*			'Paralyzation' => array( 11, 10, 10, 10,  9,  9,  9,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  4,  2,  2,  2 ),
 			'Poison'       => array( 11, 10, 10, 10,  9,  9,  9,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  4,  2,  2,  2 ),
 			'Death Magic'  => array( 11, 10, 10, 10,  9,  9,  9,  7,  7,  7,  6,  6,  6,  5,  5,  5,  4,  4,  4,  2,  2,  2 ),
 			'Petri/Poly'   => array( 14, 13, 13, 13, 12, 12, 12, 10, 10, 10,  9,  9,  9,  8,  8,  8,  7,  7,  7,  6,  6,  6 ),
 			'RSW'          => array( 15, 14, 14, 14, 13, 13, 13, 11, 11, 11, 10, 10, 10,  9,  9,  9,  8,  8,  8,  6,  6,  6 ),
 			'Breath'       => array( 17, 16, 16, 16, 15, 15, 15, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10,  8,  8,  8 ),
-			'Spells'       => array( 16, 15, 15, 15, 14, 14, 14, 12, 12, 12, 11, 11, 11, 10, 10, 10,  9,  9,  9,  7,  7,  7 ),
+			'Spells'       => array( 16, 15, 15, 15, 14, 14, 14, 12, 12, 12, 11, 11, 11, 10, 10, 10,  9,  9,  9,  7,  7,  7 ), //*/
 		);
 	}
 
 	protected function get_fight_saving_throw_table() {
 		return array(          /*    0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21 */
-			'Paralyzation' => array( 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
+			'Paralyzation' => array( 16, 14, 14, 13, 12, 11, 11, 10,  9,  8,  8,  7,  6,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
+			'Poison'       => array( 16, 14, 14, 13, 12, 11, 11, 10,  9,  8,  8,  7,  6,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
+			'Death Magic'  => array( 16, 14, 14, 13, 12, 11, 11, 10,  9,  8,  8,  7,  6,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
+			'Petri/Poly'   => array( 17, 15, 15, 14, 13, 12, 12, 11, 10,  9,  9,  8,  7,  6,  6,  5,  5,  4,  4,  4,  4,  4 ),
+			'RSW'          => array( 18, 16, 16, 15, 14, 13, 13, 12, 11, 10, 10,  9,  8,  7,  7,  6,  6,  5,  5,  5,  5,  5 ),
+			'Breath'       => array( 20, 17, 17, 16, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  4,  4,  4,  4,  4,  4 ),
+			'Spells'       => array( 19, 17, 17, 16, 15, 14, 14, 13, 12, 11, 11, 10,  9,  8,  8,  7,  7,  6,  6,  6,  6,  6 ),
+/*			'Paralyzation' => array( 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
 			'Poison'       => array( 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
 			'Death Magic'  => array( 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  5,  5,  4,  4,  3,  3,  3,  3,  3 ),
 			'Petri/Poly'   => array( 17, 15, 15, 14, 14, 12, 12, 11, 11,  9,  9,  8,  8,  6,  6,  5,  5,  4,  4,  4,  4,  4 ),
 			'RSW'          => array( 18, 16, 16, 15, 15, 13, 13, 12, 12, 10, 10,  9,  9,  7,  7,  6,  6,  5,  5,  5,  5,  5 ),
 			'Breath'       => array( 20, 17, 17, 16, 16, 13, 13, 12, 12,  9,  9,  8,  8,  5,  5,  4,  4,  4,  4,  4,  4,  4 ),
-			'Spells'       => array( 19, 17, 17, 16, 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  6,  6,  6,  6,  6 ),
+			'Spells'       => array( 19, 17, 17, 16, 16, 14, 14, 13, 13, 11, 11, 10, 10,  8,  8,  7,  7,  6,  6,  6,  6,  6 ), //*/
 		);
 	}
 
 	protected function get_magic_saving_throw_table() {
 		return array(          /*    0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21 */
-			'Paralyzation' => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10,  8 ),
+			'Paralyzation' => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 10, 10, 10, 10,  9,  8 ),
+			'Poison'       => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 10, 10, 10, 10,  9,  8 ),
+			'Death Magic'  => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 10, 10, 10, 10,  9,  8 ),
+			'Petri/Poly'   => array( 14, 13, 13, 13, 13, 12, 11, 11, 11, 11, 10,  9,  9,  9,  9,  8,  7,  7,  7,  7,  6,  5 ),
+			'RSW'          => array( 12, 11, 11, 11, 11, 10,  9,  9,  9,  9,  8,  7,  7,  7,  7,  6,  5,  5,  5,  5,  4,  3 ),
+			'Breath'       => array( 16, 15, 15, 15, 15, 14, 13, 13, 13, 13, 12, 11, 11, 11, 11, 10,  9,  9,  9,  9,  8,  7 ),
+			'Spells'       => array( 13, 12, 12, 12, 12, 11, 10, 10, 10, 10,  9,  8,  8,  8,  8,  7,  6,  6,  6,  6,  5,  4 ),
+/*			'Paralyzation' => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10,  8 ),
 			'Poison'       => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10,  8 ),
 			'Death Magic'  => array( 15, 14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10,  8 ),
 			'Petri/Poly'   => array( 14, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11,  9,  9,  9,  9,  9,  7,  7,  7,  7,  7,  5 ),
 			'RSW'          => array( 12, 11, 11, 11, 11, 11,  9,  9,  9,  9,  9,  7,  7,  7,  7,  7,  5,  5,  5,  5,  5,  3 ),
 			'Breath'       => array( 16, 15, 15, 15, 15, 15, 13, 13, 13, 13, 13, 11, 11, 11, 11, 11,  9,  9,  9,  9,  9,  7 ),
-			'Spells'       => array( 13, 12, 12, 12, 12, 12, 10, 10, 10, 10, 10,  8,  8,  8,  8,  8,  6,  6,  6,  6,  6,  4 ),
+			'Spells'       => array( 13, 12, 12, 12, 12, 12, 10, 10, 10, 10, 10,  8,  8,  8,  8,  8,  6,  6,  6,  6,  6,  4 ), //*/
 		);
 	}
 
@@ -117,9 +185,12 @@ trait DND_Character_Trait_SavingThrows {
 			'Poison'       => array( 14, 13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10,  9,  9,  9,  9,  8 ),
 			'Death Magic'  => array( 14, 13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10,  9,  9,  9,  9,  8 ),
 			'Petri/Poly'   => array( 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10,  9,  9,  9,  9,  8,  8,  8,  8,  7 ),
-			'RSW'          => array( 15, 14, 14, 14, 14, 12, 12, 12, 12, 10, 10, 10, 10,  8,  8,  8,  8,  6,  6,  6,  6,  4 ),
+			'RSW'          => array( 15, 14, 14, 14, 13, 12, 12, 12, 11, 10, 10, 10,  9,  8,  8,  8,  7,  6,  6,  6,  5,  4 ),
 			'Breath'       => array( 17, 16, 16, 16, 16, 15, 15, 15, 15, 14, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 12, 11 ),
-			'Spells'       => array( 16, 15, 15, 15, 15, 13, 13, 13, 13, 11, 11, 11, 11,  9,  9,  9,  9,  7,  7,  7,  7,  5 ),
+			'Spells'       => array( 16, 15, 15, 15, 14, 13, 13, 13, 12, 11, 11, 11, 10,  9,  9,  9,  8,  7,  7,  7,  6,  5 ),
+/*			'RSW'          => array( 15, 14, 14, 14, 14, 12, 12, 12, 12, 10, 10, 10, 10,  8,  8,  8,  8,  6,  6,  6,  6,  4 ),
+			'Breath'       => array( 17, 16, 16, 16, 16, 15, 15, 15, 15, 14, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 12, 11 ),
+			'Spells'       => array( 16, 15, 15, 15, 15, 13, 13, 13, 13, 11, 11, 11, 11,  9,  9,  9,  9,  7,  7,  7,  7,  5 ), //*/
 		);
 	}
 

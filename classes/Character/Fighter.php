@@ -6,6 +6,7 @@ class DND_Character_Fighter extends DND_Character_Character {
 	protected $hit_die   = array( 'limit' => 9, 'size' => 10, 'step' => 3 );
 	protected $non_prof  = -2;
 	protected $stats     = array( 'str' => 9, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 7, 'chr' => 3 );
+	protected $weap_dual = array();
 	protected $weap_init = array( 'initial' => 4, 'step' => 3 );
 	protected $xp_bonus  = array( 'str' => 16 );
 	protected $xp_step   = 250000;
@@ -13,6 +14,16 @@ class DND_Character_Fighter extends DND_Character_Character {
 
 
 	protected function define_specials() { }
+
+	public function set_dual_weapons( $one, $two ) {
+		if ( stripos( $two, 'off-hand' ) ) {
+			if ( array_key_exists( $one, $this->weapons ) && array_key_exists( $two, $this->weapons ) ) {
+				$this->weap_dual = [ $one, $two ];
+				return true;
+			}
+		}
+		return false;
+	}
 
 	protected function get_weapon_attacks_per_round_index( $skill = 'NP' ) {
 		$index = parent::get_weapon_attacks_per_round_index( $skill );
@@ -22,7 +33,6 @@ class DND_Character_Fighter extends DND_Character_Character {
 				$index++;
 			}
 		}
-#echo "Fatts: $index {$this->name}\n";
 		return $index;
 	}
 
@@ -31,7 +41,7 @@ class DND_Character_Fighter extends DND_Character_Character {
 	}
 
 	protected function get_saving_throw_table() {
-		return $this->get_fighter_saving_throw_table();
+		return $this->get_fight_saving_throw_table();
 	}
 
 }

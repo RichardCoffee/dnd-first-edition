@@ -7,11 +7,13 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $alignment  = 'Neutral';
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
 	protected $armr_allow = array();
+	public    $assigned   = '';
 	protected $base_xp    = 0;
 	public    $current_hp = -100;
 	protected $experience = 0;
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = 0;
+	protected $horse      = '';
 	protected $initiative = array( 'roll' => 0, 'actual' => 0, 'segment' => 0 );
 	protected $level      = 0;
 	protected $max_move   = 12;
@@ -19,7 +21,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $name       = 'Character Name';
 	protected $non_prof   = -100;
 	protected $ongoing    = array();
-	public    $opponent   = array( 'type' => '', 'ac' => 10, 'at' => 10, 'range' => 5 );
 	protected $race       = 'Human';
 	public    $segment    = 0;
 	protected $shield     = array( 'type' => 'none', 'bonus' => 0 );
@@ -28,7 +29,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $spells     = array();
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 3, 'chr' => 3 );
 	protected $weap_allow = array();
-	protected $weap_dual  = array();
+	protected $weap_dual  = false;
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
 	protected $weap_reqs  = array();
 	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attack' => 'hand', 'bonus' => 0 );
@@ -49,14 +50,14 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	abstract protected function define_specials();
 
 	public function __construct( $args = array() ) {
-		if ( isset( $args['ac_rows'] ) ) {
+		if ( array_key_exists( 'ac_rows', $args ) ) {
 			$this->ac_rows = $args['ac_rows'];
 			unset( $args['ac_rows'] );
 		}
 		$this->parse_args_merge( $args );
 		$this->initialize_character();
-		if ( isset( $args['spell_list'] ) ) {
-			$this->initialize_spell_list( $args['spell_list'] ); // This has to be done after the level has been set.
+		if ( array_key_exists( 'spell_list', $args ) ) {
+			$this->initialize_spell_list( $args['spell_list'] ); // This needs to be done =after= the level has been set.
 		}
 	}
 
@@ -73,7 +74,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 		if ( $this->weapon['current'] === 'none' ) {
 			$list = array_keys( $this->weapons );
-			$this->set_current_weapon( $list[0] );
+			if ( $list ) $this->set_current_weapon( $list[0] );
 		} else {
 			$this->set_current_weapon( $this->weapon['current'] );
 		}
@@ -119,14 +120,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		$this->level = $level;
 		$old_hp = $this->hit_points;
 		$this->determine_hit_points();
-		if ( $this->current_hp < $this->hit_points ) {
-			$this->current_hp += $this->hit_points - $old_hp;
-		}
+		$this->current_hp = $this->hit_points;
 		if ( method_exists( $this, 'reload_spells' ) ) $this->reload_spells();
 	}
 
 	public function add_experience( $xp ) {
-		$bonus = true;
+		$bonus = ! empty( $this->xp_bonus );
 		foreach( $this->xp_bonus as $stat => $limit ) {
 			if ( $this->stats[ $stat ] < $limit ) {
 				$bonus = false;
@@ -146,7 +145,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( $this->level > $this->hit_die['limit'] ) {
 			$this->hit_points += ( $this->level - $this->hit_die['limit'] ) * $this->hit_die['step'];
 		}
-		$this->current_hp = $this->hit_points;
+		if ( ! ( $this->current_hp === -100 ) ) $this->current_hp = $this->hit_points;
 	}
 
 	protected function get_constitution_hit_point_adjustment( $con ) {
@@ -172,13 +171,27 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		$this->armor['rear']  -= $this->armor['bonus'];
 		$this->armor['class'] -= ( $no_shld ) ? 0 : $this->shield['bonus'];
 		$this->armor['class'] -= apply_filters( 'character_armor_class_adjustments', 0, $this );
+		if ( ! ( $this->armor['bonus'] === 0 ) ) {
+			$filter = $this->get_name() . '_all_saving_throws';
+			if ( ! has_filter( $filter ) ) {
+				add_filter( $filter, function( $num ) { return $num - $this->armor['bonus']; } );
+			}
+		}
 	}
 
 	protected function determine_initiative() {
 		if ( $this->initiative['roll'] > 0 ) {
 			$this->initiative['actual']  = $this->initiative['roll'] + $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
 			$this->initiative['segment'] = 11 - $this->initiative['actual'];
-			$this->segment = $this->initiative['segment'];
+			if ( $this->segment === 0 ) $this->segment = $this->initiative['segment'];
+		}
+	}
+
+	public function set_initiative( $roll ) {
+		$roll = intval( $roll, 10 );
+		if ( $roll ) {
+			$this->initiative['roll'] = $roll;
+			$this->determine_initiative();
 		}
 	}
 
@@ -203,30 +216,14 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	public function mental_wisdom_saving_throws( $num, $target, $origin, $type ) {
-		if ( ( $target === $this ) && ( $type === 'mental' ) ) {
-			$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+		if ( $target === $this ) {
+			if ( is_array( $origin ) && array_key_exists( 'type', $origin ) && ( stripos( $origin['type'], 'Charm' ) !== false ) ) {
+				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+			} else if ( is_string( $type ) && ( $type === 'mental' ) ) {
+				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+			}
 		}
 		return $num;
-	}
-
-	public function is_off_hand_weapon() {
-		$off = false;
-		if ( isset( $this->weap_dual[1] ) && ( $this->weapon['current'] === $this->weap_dual[1] ) ) {
-			$off = true;
-		}
-		return $off;
-	}
-
-	public function set_primary_weapon() {
-		if ( isset( $this->weap_dual[0] ) ) {
-			$this->set_current_weapon( $this->weap_dual[0] );
-		}
-	}
-
-	public function set_dual_weapon() {
-		if ( isset( $this->weap_dual[1] ) ) {
-			$this->set_current_weapon( $this->weap_dual[1] );
-		}
 	}
 
 	public function set_current_weapon( $new = '' ) {
@@ -235,45 +232,27 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 				return false;
 			}
 			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
-			if ( ( ! empty( $this->weapons ) ) && isset( $this->weapons[ $new ] ) ) {
+			if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
 				$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
 			} else {
 				// TODO: show alert for non-proficient weapon use
 			}
 			$data = $this->get_weapon_info( $this->weapon['current'] );
 			$this->weapon = array_merge( $this->weapon, $data );
-			$atts  = $this->get_weapon_attacks_array( $data['attack'] );
-			$index = $this->get_weapon_attacks_per_round_index( $this->weapon['skill'] );
-			$this->weapon['attacks'] = $atts[ $index ];
-			if ( stripos( $this->weapon['current'], 'off-hand' ) !== false ) {
-				$primary = $this->get_weapon_info( $this->weap_dual[0] );
-				$primatt = $this->get_weapon_attacks_array( $primary['attack'] );
-				$primidx = $this->get_weapon_attacks_per_round_index( $this->weapons[ $this->weap_dual[0] ]['skill'] );
-				$prime   = $primatt[ $primidx ];
-				if ( $prime[1] === $this->weapon['attacks'][1] ) {
-					$this->weapon['attacks'][0] += $prime[0];
-				} else {
-					$this->weapon['attacks'][0] += ( $prime[1] === 2 ) ? ( $this->weapon['attacks'][0] + $prime[0] ) : ( $prime[0] * 2 ) ;
-					$this->weapon['attacks'][1] += ( $prime[1] === 2 ) ? 1 : 0;
-				}
-			}
+			$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
+			if ( $this->weap_dual ) $this->set_current_weapon_dual();
 		}
 		$this->determine_armor_class();
 		return true;
 	}
 
-	public function get_to_hit_number( $target_ac = -11, $target_at = -1, $range = -1 ) {
+	public function get_to_hit_number( $target, $range = -1 ) {
 		$prin = false;
-#if ( $this->get_name() === 'Ivan' ) $prin = true;
-		if ( ! empty( $this->opponent['type'] ) ) {
-			$target_ac = $this->opponent['ac'];
-			$target_at = $this->opponent['at'];
-			$range     = $this->opponent['range'];
-		}
-		if ( $target_ac === -11 ) return 100;
-		$target_at = max( $target_ac, $target_at, 0 );
-		$to_hit  = $this->get_to_hit_base( $target_ac );
+#		if ( $this->get_name() === 'Ivan' ) $prin = true;
+		if ( $target->armor_class === -11 ) return 100; // error in target class
+		$to_hit  = $this->get_to_hit_base( $target->armor_class );
 		if ( $prin ) printf( 'B%2u ', $to_hit );
+		$target_at = max( $target->armor_class, $target->armor_type, 0 );
 		$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target_at );
 		if ( $prin ) printf( 'T%2u ', $to_hit );
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
@@ -299,9 +278,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected function get_to_hit_base( $target_ac = 10 ) {
 		$index = 10 - $target_ac;
 		$table = $this->to_hit_ac_table();
-		$row   = $this->ac_rows[ $this->level ];
+		$key   = min( $this->level, count( $this->ac_rows ) - 1 );
+		$row   = $this->ac_rows[ $key ];
 		$base  = $table[ $row ];
-		if ( isset( $base[ $index ] ) ) {
+		if ( array_key_exists( $index, $base ) ) {
 			return $base[ $index ];
 		}
 		return 10000;
@@ -320,14 +300,13 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $string;
 	}
 
-	public function get_weapon_damage_bonus( $range = -1 ) {
-		if ( $this->opponent['range'] > 0 ) { $range = $this->opponent['range']; }
+	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
 		$bonus = $this->get_missile_proficiency_bonus( $this->weapon, $range, 'damage' );
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_damage() ) ) {
 			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
 		}
 		$bonus += $this->weapon['bonus'];
-		return apply_filters( 'character_weapon_damage_bonus', $bonus, $this );
+		return apply_filters( 'character_weapon_damage_bonus', $bonus, $this, $target );
 	}
 
 	protected function get_weapon_proficiencies_total() {
@@ -353,7 +332,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	public function get_available_weapon_proficiencies() {
-		$total = $this->weap_init['initial'] + intval( ( $this->level - 1 ) / $this->weap_init['step'] );
+		$total   = $this->weap_init['initial'] + intval( ( $this->level - 1 ) / $this->weap_init['step'] );
 		$current = $this->get_weapon_proficiencies_total();
 		return $total - $current;
 	}
@@ -370,21 +349,24 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	public function check_temporary_hit_points( $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
-			$ongoing = dnd1e_transient( 'ongoing' );
-			foreach( $ongoing as $name => $effect ) {
+			$combat = dnd1e_combat();
+			foreach( $combat->effects as $name => $effect ) {
 				if ( $effect['target'] === $this->get_name() ) {
-					if ( isset( $effect['condition'] ) ) {
+					if ( array_key_exists( 'condition', $effect ) ) {
 						// TODO: check for aoe conditions
 						if ( $effect['condition'] === 'this_character_only' ) {
 							foreach( $effect['filters'] as $key => $filter ) {
 								if ( $filter[0] === 'character_temporary_hit_points' ) {
-									$ongoing[ $name ]['filters'][ $key ][1] -= $damage;
-									$ongoing[ $name ]['filters'][ $key ][1]  = max( 0, $ongoing[ $name ]['filters'][ $key ][1] );
-									if ( $ongoing[ $name ]['filters'][ $key ][1] === 0 ) {
-										unset( $ongoing[ $name ] );
+									$remaining = $ongoing[ $name ]['filters'][ $key ][1];
+									$remaining -= $damage;
+									if ( $remaining > 0 ) {
+										$ongoing[ $name ]['filters'][ $key ][1] -= $remaining;
+										$damage = 0;
+									} else {
+										$damage = abs( $remaining );
+										$combat->remove_effect( $name );
 										break;
 									}
-									dnd1e_transient( 'ongoing', $ongoing );
 								}
 							}
 						}
@@ -392,6 +374,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 				}
 			}
 		}
+		return $damage;
 	}
 
 

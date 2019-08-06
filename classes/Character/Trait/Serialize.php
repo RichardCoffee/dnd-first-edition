@@ -17,15 +17,18 @@ trait DND_Character_Trait_Serialize {
 		$table = array(
 			'alignment'  => $this->alignment,
 			'armor'      => $this->armor,
+			'assigned'   => $this->assigned,
 			'current_hp' => $this->current_hp,
 			'experience' => $this->experience,
 			'hit_points' => $this->hit_points,
 			'initiative' => $this->initiative,
+			'level'      => $this->level,
 			'name'       => $this->name,
 			'race'       => $this->race,
 			'segment'    => $this->segment,
 			'shield'     => $this->shield,
 			'stats'      => $this->stats,
+			'weap_dual'  => $this->weap_dual,
 			'weapon'     => $this->weapon,
 			'weapons'    => $this->weapons,
 		);
@@ -34,8 +37,6 @@ trait DND_Character_Trait_Serialize {
 				$table[ $key ] = serialize( $this->$key );
 			}
 		} else if ( $this instanceOf DND_Character_Ranger ) {
-#			$table['druid'] = serialize( $this->druid );
-#			$table['magic'] = serialize( $this->magic );
 			if ( $this->spells ) {
 				$list = array();
 				foreach( $this->spells as $class => $spells ) {

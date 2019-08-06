@@ -10,9 +10,6 @@ require_once('Enum.php');
 class Ordinal extends Enum {
 
 
-	protected $set = array();
-
-
 	use DND_Trait_Singleton;
 
 
