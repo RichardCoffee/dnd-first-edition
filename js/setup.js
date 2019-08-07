@@ -1,4 +1,6 @@
-
+let dnd1e = {
+	assigned: [],
+}
 
 jQuery( document ).ready( function( $ ) {
 
@@ -16,13 +18,19 @@ jQuery( document ).ready( function( $ ) {
 		}
 	} );
 
-	$( '#dnd1e_character_assignment_button' ).click( function( event ) {
-		var assigned = [];
+	$('#dnd1e_character_assignment_button').click( function( event ) {
 		$("input.assignment:checked").each( function() {
 			var name = this.id.split('_');
-			assigned.push( name[2] );
+			dnd1e.assigned.push( name[2] );
 		} );
-		dnd1e_get_content( 'wp_ajax_dnd1e_combat_party', 'combat_party', JSON.stringify( assigned ) );
+		dnd1e_get_content( 'dnd1e_combat_party', 'combat_party', JSON.stringify( dnd1e.assigned ) );
+		$('#dnd1e_character_clear_button').prop('disabled', false );
+	} );
+
+	$('#dnd1e_character_clear_button').click( function( event ) {
+		$( '#combat_party' ).html( '' );
+		dnd1e.assigned = [];
+		$('#dnd1e_character_clear_button').prop('disabled', true );
 	} );
 
 } );
