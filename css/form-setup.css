@@ -7,10 +7,6 @@
 	vertical-align: middle;
 }
 
-#dnd1e_upload_kregen_button {
-	margin-right: 30px;
-}
-
 .form-table th {
 	padding: 0;
 	width: auto;
@@ -22,6 +18,10 @@
 
 .form-table td {
 	padding: 3px 0px;
+}
+
+#assignment_buttons .button {
+	margin-bottom: 10px;
 }
 
 #character_listing .h3 {
