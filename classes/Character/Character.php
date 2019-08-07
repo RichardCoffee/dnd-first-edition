@@ -7,7 +7,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $alignment  = 'Neutral';
 	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
 	protected $armr_allow = array();
-	public    $assigned   = '';
+	public    $assigned   = 'Unassigned';
 	protected $base_xp    = 0;
 	public    $current_hp = -100;
 	protected $experience = 0;

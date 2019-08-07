@@ -13,7 +13,7 @@ function dnd1e_get_content( action, div, out ) {
 console.log(textStatus);
 console.log(result);
 			if ( result ) {
-				$( div ).html( result );
+				$( '#'+div ).html( result );
 				retval = true;
 			}
 		},

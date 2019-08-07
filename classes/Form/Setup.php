@@ -14,6 +14,7 @@ class DND_Form_Setup {
 		add_action( 'admin_menu',                    [ $this, 'add_menu_option' ] );
 		add_action( 'wp_ajax_dnd1e_import_kregen',   [ $this, 'import_kregen_csv' ] );
 		add_action( 'wp_ajax_dnd1e_character_list',  [ $this, 'js_character_list' ] );
+		add_action( 'wp_ajax_dnd1e_combat_party',    [ $this, 'js_combat_party' ] );
 		add_filter( 'upload_mimes',                  [ $this, 'upload_mimes' ] );
 	}
 
@@ -27,13 +28,17 @@ class DND_Form_Setup {
 	}
 
 	public function admin_enqueue_scripts( $hook ) {
-		$paths = DND_Plugin_Paths::instance();
-		wp_enqueue_media();
-		wp_enqueue_style(  'dnd1e-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),        null, $paths->version );
-		wp_enqueue_style(  'dnd1e-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ),  null, $paths->version );
-		wp_enqueue_style(  'dnd1e-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ),  null, $paths->version );
-		wp_enqueue_script( 'dnd1e-library.js',         $paths->get_plugin_file_uri( 'js/library.js', true ), [ 'jquery' ], $paths->version, true );
-		wp_enqueue_script( 'dnd1e-file-upload.js',     $paths->get_plugin_file_uri( 'js/file-upload.js' ),   [ 'dnd1e-library.js' ], $paths->version, true );
+		$screen = get_current_screen();
+		if ( $screen->id === 'tools_page_dnd1e' ) {
+			$paths = DND_Plugin_Paths::instance();
+			wp_enqueue_media();
+			wp_enqueue_style(  'dnd1e-form-admin.css',     $paths->get_plugin_file_uri( 'css/form-dmadmin.css' ),        null, $paths->version );
+			wp_enqueue_style(  'dnd1e-bootstrap-core.css', $paths->get_plugin_file_uri( 'css/bootstrap-core.min.css' ),  null, $paths->version );
+			wp_enqueue_style(  'dnd1e-bootstrap-grid.css', $paths->get_plugin_file_uri( 'css/bootstrap-grid.min.css' ),  null, $paths->version );
+			wp_enqueue_script( 'dnd1e-library.js',         $paths->get_plugin_file_uri( 'js/library.js', true ), [ 'jquery' ], $paths->version, true );
+			wp_enqueue_script( 'dnd1e-file-upload.js',     $paths->get_plugin_file_uri( 'js/file-upload.js' ),   [ 'dnd1e-library.js' ], $paths->version, true );
+			wp_enqueue_script( 'dnd1e-setup.js',           $paths->get_plugin_file_uri( 'js/setup.js' ),         [ 'dnd1e-library.js' ], $paths->version, true );
+		}
 	}
 
 	/**
@@ -72,10 +77,15 @@ class DND_Form_Setup {
 				</div>
 				<div class="col-lg-6">
 					<div class="row">
-						<h4 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h4>
+						<h3 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h3>
+						<div class="centered">
+							<?php $this->show_assign_button(); ?>
+						</div>
+						<div id="combat_party"></div>
+						<div id="combat_enemy"></div>
 					</div>
 					<div class="row">
-						<h4 class="centered"><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h4>
+						<h3 class="centered"><?php _e( 'Saved Combats', 'dnd-first-edition' ); ?></h3>
 					</div>
 				</div>
 			</div>
@@ -147,14 +157,8 @@ class DND_Form_Setup {
 			<tbody><?php
 				foreach( $this->chars as $name => $char ) { ?>
 					<tr>
-						<th class="check-column"><?php
-							$attrs = array(
-								'id'   => 'assign-' . $name,
-								'type' => 'checkbox',
-								'name' => 'assign_chars[]',
-								'value' => $name,
-							);
-							dnd1e()->tag( 'input', $attrs ); ?>
+						<th class="check-column">
+							<?php $this->show_assignment_checkbox( $name ); ?>
 						</th>
 						<td>
 							<?php echo $name; ?>
@@ -168,10 +172,60 @@ class DND_Form_Setup {
 						<td class="centered">
 							<?php echo $char->hit_points; ?>
 						</td>
+						<td>
+							<?php echo $char->assigned; ?>
+						</td>
 					</tr><?php
 				} ?>
 			</tbody>
 		</table><?php
+	}
+
+	/**
+	 *  Show assignment checkbox for character.
+	 *
+	 * @since 20190806
+	 * @param string $name Character name
+	 */
+	protected function show_assignment_checkbox( $name ) {
+		$attrs = array(
+			'id'    => 'dnd1e_assign_' . $name,
+			'type'  => 'checkbox',
+			'name'  => 'assign_chars[]',
+			'class' => 'assignment',
+			'value' => $name,
+		);
+		dnd1e()->tag( 'input', $attrs );
+	}
+
+	public function import_kregen_csv() {
+		$csv      = get_attached_file( $_POST['attachment_id'] );
+		$import   = new DND_Character_Import_Kregen( $csv );
+		$response = array(
+			'status'  => $import->import_status,
+			'type'    => 'complete',
+			'message' => $import->import_message,
+		);
+		echo json_encode( $response );
+		wp_die();
+		// this next line just errors out in the js - just so much crappy documentation.
+		wp_send_json_success( $response );
+	}
+
+	/**
+	 *  Show character assignment button.
+	 *
+	 * @since 201908006
+	 */
+	protected function show_assign_button() {
+		$attrs = array(
+			'id'    => 'dnd1e_character_assignment_button',
+			'type'  => 'button',
+			'class' => 'button',
+			'value' => __( 'Assign Marked Characters', 'dnd-first-edition' ),
+			'disabled' => true,
+		);
+		dnd1e()->tag( 'input', $attrs );
 	}
 
 	/**
@@ -185,18 +239,15 @@ dnd1e(true)->log($_POST);
 		wp_die();
 	}
 
-	public function import_kregen_csv() {
-		$csv      = get_attached_file( $_POST['attachment_id'] );
-		$import   = new DND_Character_Import_Kregen( $csv );
-		$response = array(
-			'status'  => $import->import_status,
-			'type'    => 'complete',
-			'message' => $import->import_message,
-		);
-		echo json_encode( $response );
+	/**
+	 *  Load party characters.
+	 *
+	 * @since 20190806
+	 */
+	public function js_combat_party() {
+dnd1e(true)->log($_POST);
+		echo "Combat Party goes here.";
 		wp_die();
-		// this just errors out in the js - just so much crappy documentation.
-		wp_send_json_success( $response );
 	}
 
 
