@@ -1,4 +1,8 @@
 <?php
+/* Name: Crane, Giant
+ * Class: DND_Monster_Giant_Crane
+ * Encounter: {"TC":{"S":"R"},"TW":{"S":"R"},"TSC":{"S":"R"},"TSW":{"S":"R"},"TF":{"S":"R"},"TS":{"S":"R"},"TSF":{"S":"R"},"TSS":{"S":"R"}}
+ */
 
 class DND_Monster_Giant_Crane extends DND_Monster_Monster {
 

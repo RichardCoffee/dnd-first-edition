@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Mist
+ * Class: DND_Monster_Dragon_Mist
+ * Encounter: {"TW":{"F":"VR","S":"VR"},"TSW":{"F":"VR","S":"VR"},"TF":{"S":"R"},"TS":{"S":"R"},"TSF":{"S":"R"},"TSS":{"S":"R"}}
+ */
 
 class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 

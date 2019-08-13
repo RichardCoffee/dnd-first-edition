@@ -3,7 +3,6 @@
 abstract class DND_Character_Multi extends DND_Character_Character {
 
 
-#	protected $base_xp = 0;
 	protected $classes = array();
 
 

@@ -194,5 +194,36 @@ trait DND_Character_Trait_SavingThrows {
 		);
 	}
 
+	protected function add_racial_saving_throw_filters() {
+		if ( $this->race === 'Dwarf' ) {
+			add_filter( "Dwarf_Rod_saving_throws",    [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Staff_saving_throws",  [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Wand_saving_throws",   [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+			add_filter( "Dwarf_Spells_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+		}
+		if ( $this->race === 'Gnome' ) {
+			add_filter( "Gnome_Poison_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
+		}
+		add_filter( 'character_Spells_saving_throws', [ $this, 'mental_wisdom_saving_throws' ], 10, 4 );
+	}
+
+	public function racial_constitution_saving_throws( $num, $target ) {
+		if ( $target === $this ) {
+			$num -= intval( $this['stats']['con'] / 3.5 );
+		}
+		return $num;
+	}
+
+	public function mental_wisdom_saving_throws( $num, $target, $origin, $type ) {
+		if ( $target === $this ) {
+			if ( is_array( $origin ) && array_key_exists( 'type', $origin ) && ( stripos( $origin['type'], 'Charm' ) !== false ) ) {
+				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+			} else if ( is_string( $type ) && ( $type === 'mental' ) ) {
+				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
+			}
+		}
+		return $num;
+	}
+
 
 }

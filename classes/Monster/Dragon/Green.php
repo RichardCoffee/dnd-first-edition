@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Green
+ * Class: DND_Monster_Dragon_Green
+ * Encounter: {"CW":{"H":"VR","F":"R","S":"VR"},"TW":{"H":"VR","F":"R","S":"VR"},"TSW":{"H":"VR","F":"R","S":"VR"},"CF":{"S":"VR"},"CS":{"S":"VR"},"TF":{"S":"VR"},"TS":{"S":"VR"},"TSF":{"S":"VR"},"TSS":{"S":"VR"}}
+ */
 
 class DND_Monster_Dragon_Green extends DND_Monster_Dragon_Dragon {
 

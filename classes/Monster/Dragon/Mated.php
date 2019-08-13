@@ -23,20 +23,25 @@ trait DND_Monster_Dragon_Mated {
 			} else {
 				$this->determine_mate_stats();
 				if ( $this->mate ) {
-#					for( $i = 3; $i <= $num; $i++ ) {
-#					}
+					$enemy = array( $this->mate );
+					for( $i = 3; $i <= $num; $i++ ) {
+						$enemy[] = $this->determine_young_stats();
+					}
+					return $enemy;
 				}
 			}
 		} else {
 			$num = 1;
 			if ( $this->mate ) {
 				$num = 2;
+				$this->solitary = 0;
 			} else if ( $this->solitary && ( $this->hd_minimum > 4 ) ) {
-				if ( ! $this->check_chance( $this->solitary ) ) {
+				if ( $this->check_chance( $this->solitary ) ) {
+					$this->solitary = 100;
+				} else {
 					$this->determine_mate_stats();
 					$num = 2;
-				} else {
-					$this->solitary = 100;
+					$this->solitary = 0;
 				}
 			} else {
 				$this->solitary = 100;

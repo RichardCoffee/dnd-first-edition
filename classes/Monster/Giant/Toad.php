@@ -1,4 +1,8 @@
 <?php
+/* Name: Toad, Giant
+ * Class: DND_Monster_Giant_Toad
+ * Encounter: {"TC":{"M":"R","H":"R","F":"C","S":"C","P":"C","D":"R"},"TW":{"M":"R","H":"R","F":"C","S":"C","P":"C","D":"R"},"TSC":{"M":"R","H":"R","F":"C","S":"C","D":"R"},"TSW":{"M":"R","H":"R","F":"C","S":"C","P":"C","D":"R"}}
+ */
 
 class DND_Monster_Giant_Toad extends DND_Monster_Monster {
 

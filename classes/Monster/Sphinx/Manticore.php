@@ -1,4 +1,8 @@
 <?php
+/* Name: Manticore
+ * Class: DND_Monster_Sphinx_Manticore
+ * Encounter: {"CW":{"M":"U","H":"VR","F":"U","S":"VR","P":"VR","D":"VR"},"TW":{"M":"U","H":"VR","F":"U","S":"VR","D":"VR"},"TSW":{"M":"U","H":"VR","F":"U","S":"VR","P":"VR","D":"VR"},"CF":{"S":"VR"},"CS":{"S":"VR"},"TF":{"S":"VR"},"TS":{"S":"VR"},"TSF":{"S":"VR"},"TSS":{"S":"VR"}}
+ */
 
 class DND_Monster_Sphinx_Manticore extends DND_Monster_Monster {
 

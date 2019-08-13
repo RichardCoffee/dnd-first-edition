@@ -1,4 +1,8 @@
 <?php
+/* Name: Jermlaine
+ * Class:  DND_Monster_Humanoid_Jermlaine
+ * Encounter: {"CC":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"},"CW":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"},"TC":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"},"TW":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"},"TSC":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"},"TSW":{"M":"R","H":"R","F":"U","S":"U","P:"U","D":"R"}}
+ */
 
 class DND_Monster_Humanoid_Jermlaine extends DND_Monster_Humanoid_Humanoid {
 

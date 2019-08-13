@@ -11,6 +11,7 @@ abstract class DND_Monster_Humanoid_DemiHuman extends DND_Monster_Humanoid_Human
 	protected $extra        = array();
 #	protected $fighter      = null;
 #| protected $frequency    = 'Common';
+#	protected $hit_dice     = 0;
 #| protected $hp_extra     = 0;
 #| protected $in_lair      = 0;
 #| protected $initiative   = 1;
@@ -21,7 +22,7 @@ abstract class DND_Monster_Humanoid_DemiHuman extends DND_Monster_Humanoid_Human
 #| protected $race         = 'Monster';
 #| protected $reference    = 'Monster Manual page';
 #| protected $resistance   = 'Standard';
-#| protected $size         = 'Medium';
+#| protected $size         = "Medium";
 #| protected $specials     = array();
 #| protected $treasure     = 'Nil';
 #| protected $xp_value     = array();

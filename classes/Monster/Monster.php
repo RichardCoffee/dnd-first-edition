@@ -28,7 +28,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $reference    = 'Monster Manual page';
 	protected $resistance   = 'Standard';
 	protected $saving       = array( 'fight' );
-	protected $size         = 'Medium';
+	protected $size         = "Medium";
 	protected $specials     = array();
 	protected $treasure     = 'Nil';
 	protected $xp_value     = array( 0, 0, 0, 0 );
@@ -67,11 +67,11 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( substr( $name, 0, 4 ) === 'move' ) {
 			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && array_key_exists( 'foot', $this->movement ) ) {
 				return $this->movement['foot'];
-			} else if ( ( $name === 'move_air' ) && array_key_exists( 'air', $this->movement ) ) {
+			} else if ( ( $name === 'move_air'  ) && array_key_exists( 'air',  $this->movement ) ) {
 				return $this->movement['air'];
-			} else if ( ( $name === 'move_sea' ) && array_key_exists( 'sea', $this->movement ) ) {
-				return $this->movement['sea'];
-			} else if ( ( $name === 'move_web' ) && array_key_exists( 'web', $this->movement ) ) {
+			} else if ( ( $name === 'move_swim' ) && array_key_exists( 'swim', $this->movement ) ) {
+				return $this->movement['swim'];
+			} else if ( ( $name === 'move_web'  ) && array_key_exists( 'web',  $this->movement ) ) {
 				return $this->movement['web'];
 			}
 		}
@@ -165,43 +165,15 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		return $hit_points;
 	}
 
-	/**
-	 * @param array $chars An array of character objects.
-	 */
-	public function get_to_hit_characters( $chars = array(), $range = 2000 ) {
-		$data = array();
-		if ( defined( 'ABSPATH' ) ) { // intended for website use only
-			foreach( $this->att_types as $key => $attack ) {
-				$data[ $key ] = array();
-				foreach( $chars as $name => $obj ) {
-					$number = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack, $range );
-					$data[ $key ][ $name ] = apply_filters( 'monster_to_hit_character', $number, $this, $obj );
-				}
-			}
-		} else { // intended for command line use
-			foreach( $chars as $name => $obj ) {
-				$hits = array();
-				foreach( $this->att_types as $key => $attack ) {
-					$to_hit = $this->get_to_hit_number( $obj->armor['class'], $obj->armor['type'], $attack, $range );
-					$to_hit = apply_filters( 'monster_to_hit_character', $to_hit, $this, $obj );
-					if ( ! in_array( $to_hit, $hits ) ) $hits[] = $to_hit;
-				}
-				$data[ $name ] = implode( '/', $hits );
-			}
-		}
-		return $data;
-	}
-
 	protected function check_chance( $chance ) {
-		$result = false;
 		$perc = intval( $chance );
 		if ( $perc ) {
 			$roll = mt_rand( 1, 100 );
 			if ( ! ( $roll > $perc ) ) {
-				$result = true;
+				return true;
 			}
 		}
-		return $result;
+		return false;
 	}
 
 	public function check_for_lair() {

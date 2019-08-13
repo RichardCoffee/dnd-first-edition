@@ -22,7 +22,9 @@ $combat->show_party_information();
 $combat->show_notifications();
 
 #print_r($combat->casting);
+#print_r( dnd1e()->logging_reduce_object( $combat->enemy ) );
 #print_r( dnd1e()->logging_reduce_object( $combat->party['Pointer'] ) );
+#print_r( $combat->party['Gaius'] );
 #print_r( $combat->party['Pointer'] );
 #print_r( $combat->party['Trindle'] );
 #print_r( $combat->party['Tula'] );

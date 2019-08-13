@@ -15,7 +15,7 @@ class DND_Monster_Animal_Wolf extends DND_Monster_Monster {
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
-#	protected $hit_dice     = 0;
+	protected $hit_dice     = 2;
 #	protected $hd_minimum   = 1;
 #	protected $hd_value     = 8;
 #	protected $hit_points   = 0;
@@ -29,7 +29,7 @@ class DND_Monster_Animal_Wolf extends DND_Monster_Monster {
 	protected $name         = 'Wolf';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Wolf';
-#	protected $reference    = 'Monster Manual page';
+	protected $reference    = 'Monster Manual page 99';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 	protected $size         = 'Small';
@@ -39,7 +39,6 @@ class DND_Monster_Animal_Wolf extends DND_Monster_Monster {
 
 
 	protected function determine_hit_dice() {
-		$this->hit_dice = 2;
 		$this->description = 'These carnivores are found in wild forests from the arctic to the temperate zones. They always hunt in packs and if hungry (75%) they will not hesitate to follow and attack prey, always seeking to strike at an unguarded moment. Their howling is 50% likely to panic herbivores which are not being held by humans and calmed. They love horsemeat. If encountered in their lair there is a 30% chance that there will be 1-4 cubs per pair of adult wolves. Cubs do not fight and can be trained as war dogs or hunting beasts.';
 	}
 

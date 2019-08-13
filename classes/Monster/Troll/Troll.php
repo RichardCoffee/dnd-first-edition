@@ -1,7 +1,7 @@
 <?php
 /* Name: Troll
  * Class: DND_Monster_Troll
- * Encounter: {
+ * Encounter: {"CC":{"M":"R","H":"R","F":"U","S":"U","P":"R","D":"R"},"CW":{"M":"R","H":"R","F":"U","S":"U","P":"R","D":"R"},"TC":{"M":"R","H":"R","F":"U","S":"U","P":"R","D":"R"},"TW":{"H":"R","F":"U","S":"U","P":"R","D":"R"},"TSC":{"M":"R","H":"R","F":"U","S":"U","P":"R","D":"R"},"TSW":{"M":"R","H":"R","F":"U","S":"U","P":"R","D":"R"}}
  */
 
 class DND_Monster_Troll_Troll extends DND_Monster_Monster {

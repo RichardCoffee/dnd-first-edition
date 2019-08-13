@@ -92,7 +92,7 @@ class DND_Combat implements JsonSerializable, Serializable {
 
 	protected function update_holds() {
 		foreach( $this->holding as $name ) {
-			$this->party[ $name ]->segment = $this->segment;
+			$this->party[ $name ]->segment = max( $this->segment, $this->party[ $name ]->segment );
 		}
 	}
 
@@ -377,10 +377,18 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		return false;
 	}
 
-	protected function add_holding( $name ) {
+	protected function add_holding( $hold ) {
+		$data = explode( ':', $hold );
+		$name = $data[0];
 		if ( array_key_exists( $name, $this->party ) ) {
 			$this->holding[] = $name;
-			$this->party[ $name ]->segment = $this->segment;
+			if ( array_key_exists( 1, $data ) ) {
+				$segment = intval( $data[1], 10 );
+				$segment = max ( $segment, $this->segment );
+				$this->party[ $name ]->segment = $segment;
+			} else {
+				$this->party[ $name ]->segment = $this->segment;
+			}
 		}
 	}
 
@@ -443,15 +451,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	public function get_combat_to_hit_number( $origin, $target, $weapon = '' ) {
 		if ( $origin instanceOf DND_Character_Character ) {
-			if ( $target instanceOf DND_Character_Character ) {
-				$opponent = new StdClass;
-				// TODO: allow for rear facing - thief backstab
-				$opponent->armor_class = $target->armor['class'];
-				$opponent->armor_type  = $target->armor['type'];
-				return $origin->get_to_hit_number( $opponent, $this->range );
-			} else {
-				return $origin->get_to_hit_number( $target, $this->range );
-			}
+			return $origin->get_to_hit_number( $target, $this->range );
 		}
 		if ( $origin instanceOf DND_Monster_Monster ) {
 			if ( $weapon && array_key_exists( $weapon, $origin->att_types ) ) {

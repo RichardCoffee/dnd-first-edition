@@ -4,17 +4,15 @@ let dnd1e = {
 
 jQuery( document ).ready( function( $ ) {
 
+	$('#dnd1e_character_clear_button').prop('disabled', true );
+
 	$('input.assignment').click( function( event ) {
 		if ( this.checked ) {
 			$('#dnd1e_character_assignment_button').prop('disabled', false );
 		} else {
 			var state = false;
-			$("input.assignment:checked").each( function() {
-				state = true;
-			} );
-			if ( ! state ) {
-				$('#dnd1e_character_assignment_button').prop('disabled', true );
-			}
+			$("input.assignment:checked").each( function() { state = true; } );
+			if ( ! state ) { $('#dnd1e_character_assignment_button').prop('disabled', true ); }
 		}
 	} );
 

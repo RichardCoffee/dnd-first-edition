@@ -7,7 +7,7 @@ trait DND_Trait_GetOpts {
 
 
 	protected function getopts() {
-		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
 		if ( $this->opts ) {
 			foreach( $this->opts as $key => $option ) {
 				switch( $key ) {
@@ -23,7 +23,8 @@ trait DND_Trait_GetOpts {
 						$this->increment_segment();
 						break;
 					case 't':
-						dnd1e_show_possible_monster_treasure( $this->enemy, $this->opts['t'] );
+						$t = new DND_Treasure;
+						$t->show_possible_monster_treasure( $this->enemy, $this->opts['t'] );
 						exit;
 						break;
 					case 'add':
@@ -31,6 +32,9 @@ trait DND_Trait_GetOpts {
 						break;
 					case 'att':
 						$this->remove_holding( $this->opts['att'] );
+						break;
+					case 'enc':
+						$this->generate_encounter( $this->opts['enc'] );
 						break;
 					case 'hit':
 						$this->record_damage();
@@ -73,6 +77,9 @@ trait DND_Trait_GetOpts {
 
 	--att=name      Remove character from hold list, because the character is attacking on this segment.
 
+	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
+	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
+
 	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
 	                For monsters, the format is M:<#>:<damage>, where 'M' is the letter M, and '#' is the number of the monster.
 
@@ -91,13 +98,13 @@ trait DND_Trait_GetOpts {
 			$this->party_damage( $name, $damage );
 		} else if ( count( $sitrep ) === 2 ) {
 			$name = $sitrep[0];
-			if ( in_array( $name, $this->enemy ) ) {
+			if ( array_key_exists( $name, $this->enemy ) ) {
 				$damage = intval( $sitrep[1], 10 );
 				$this->enemy_damage( $name, $damage );
 			}
 		} else if ( count( $sitrep ) === 3 ) {
 			$name = sprintf( '%s %u', $name, intval( $sitrep[1], 10 ) - 1 );
-			if ( in_array( $name, $this->enemy ) ) {
+			if ( array_key_exists( $name, $this->enemy ) ) {
 				$damage = intval( $sitrep[2], 10 );
 				$this->enemy_damage( $name, $damage );
 			}

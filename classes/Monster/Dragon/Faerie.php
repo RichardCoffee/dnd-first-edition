@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Faerie
+ * Class: DND_Monster_Dragon_Faerie
+ * Encounter: {"CW":{"F":"VR"},"TW":{"F":"VR"}}
+ */
 
 class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 

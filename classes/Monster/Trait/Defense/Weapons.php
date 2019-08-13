@@ -3,6 +3,7 @@
 trait DND_Monster_Trait_Defense_Weapons {
 
 
+	protected $mtdw_iron   = false;
 	protected $mtdw_limit  = 1;
 	protected $mtdw_silver = false;
 
@@ -14,14 +15,16 @@ trait DND_Monster_Trait_Defense_Weapons {
 
 	public function mtdw_add_weapon_defense_special() {
 		$format  = 'Can only be hit by ';
+		$format .= ( $this->mtdw_iron   ) ? 'cold-wrought iron or ' : '';
 		$format .= ( $this->mtdw_silver ) ? 'silver or ' : '';
 		$format .= 'magical (+%u or better) weapons.';
 		$this->specials['weapon_defense'] = sprintf( $format, $this->mtdw_limit );
 	}
 
 	public function mtdw_verify_to_hit( $number, $to_hit, $character ) {
+		// TODO: apply check for iron weapons
 		// TODO: apply check for silver weapons
-		// FIXME: add check for multiple opponents
+		// TODO: add check for multiple opponents
 		if ( $character->weapon['current'] !== 'Spell' ) {
 			if ( $character->weapon['bonus'] < $this->mtdw_limit ) {
 				return ( $to_hit - 99 );

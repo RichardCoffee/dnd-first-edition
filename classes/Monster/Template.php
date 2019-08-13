@@ -1,4 +1,8 @@
 <?php
+/* Name: Template
+ * Class: DND_Monster_Template
+ * Encounter: {}
+ */
 
 class DND_Monster_Template extends DND_Monster_Monster {
 
@@ -11,9 +15,9 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
-#	protected $hit_dice     = 0;
 #	protected $hd_minimum   = 1;
 #	protected $hd_value     = 8;
+#	protected $hit_dice     = 0;
 #	protected $hit_points   = 0;
 #	protected $hp_extra     = 0;
 #	protected $in_lair      = 0;
@@ -28,7 +32,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $reference    = 'Monster Manual page';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
-#	protected $size         = 'Medium';
+#	protected $size         = "Medium";
 #	protected $specials     = array();
 #	protected $treasure     = 'Nil';
 #	protected $xp_value     = array( 0, 0, 0, 0 );
@@ -36,6 +40,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 
 	protected function determine_hit_dice() {
 		$this->hit_dice = 1;
+		$this->description = 'Monster template.';
 	}
 
 

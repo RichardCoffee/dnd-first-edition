@@ -1,4 +1,8 @@
 <?php
+/* Name: Hydra
+ * Class: DND_Monster_Hydra
+ * Encounter: {"CW":{"M":"VR","F":"VR","S":"U","P":"VR"},"TW":{"M":"VR","F":"VR","S":"U","P":"VR"},"TSW":{"M":"VR","F":"VR","S":"U","P":"VR"}}
+ */
 
 class DND_Monster_Hydra extends DND_Monster_Monster {
 

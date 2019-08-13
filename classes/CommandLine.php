@@ -31,6 +31,18 @@ class DND_CommandLine extends DND_Combat {
 		}
 	}
 
+	public function generate_encounter( $string ) {
+		$options = explode( ':', $string );
+		$terrain = $options[0];
+		$area    = ( array_key_exists( 1, $options ) ) ? $options[1] : false;
+		if ( $terrain && $area ) {
+			$enc  = new DND_Encounters;
+			$roll = ( array_key_exists( 2, $options ) ) ? intval( $options[2] ) : 0;
+			$listing = $enc->get_random_encounter( "$terrain:$area", $roll );
+			print_r($listing);
+			exit;
+		}
+	}
 
 	/**  Display functions  **/
 
@@ -201,16 +213,16 @@ class DND_CommandLine extends DND_Combat {
 
 	protected function get_weapon_text( DND_Character_Character $char ) {
 		$weapon = $char->weapon['current'];
+		$name   = $char->get_name();
 		if ( $weapon === 'Spell' ) {
-			$name = $char->get_name();
 			if ( $this->is_casting( $name ) ) {
 				$spell = $this->find_casting( $name );
 				$weapon .= ':' . $spell['name'];
 			}
 		} else if ( ( substr( $weapon, 0, 3) === 'Bow' ) && ( $this->range < BOW_POINT_BLANK ) ) {
-			$weapon .= ": Damage*2";
+			if ( in_array( $this->party[ $name ]->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": Damage*2";
 		} else if ( ( substr( $weapon, 0, 5) === 'Cross' ) && ( $this->range < CROSSBOW_POINT_BLANK ) ) {
-			$weapon .= ": D*2";
+			if ( in_array( $this->party[ $name ]->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": D*2";
 		}
 		return $weapon;
 	}
@@ -222,6 +234,11 @@ class DND_CommandLine extends DND_Combat {
 			$string = ' Special';
 		} else {
 			$bonus = $char->get_weapon_damage_bonus( $monster, $this->range );
+			$index = strpos( $basic, '+' );
+			if ( $index ) {
+				$bonus += intval( substr( $basic, $index + 1 ), 10 );
+				$basic  = substr( $basic, 0, $index );
+			}
 			if ( $bonus > 0 ) {
 				$string = sprintf( '%5s+%-2u', $basic, $bonus );
 			} else if ( $bonus < 0 ) {
@@ -245,27 +262,29 @@ class DND_CommandLine extends DND_Combat {
 		return $this->get_dual_attack_sequence( $seq, $char );
 	}
 
-	# WARNING: only handles secondary weapons with attacks of 1/1
+	# WARNING: only handles dual weapons with attacks of 2/1 and 5/2 derived from 1/1:1/1 and 3/2:1/1
 	protected function get_dual_attack_sequence( array $seq, DND_Character_Character $char ) {
-#		$com1 = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
-		$sec  = array();
-		$mark = -1;
-		$skip = 0;
-		$was  = false;
+		$sec   = array();
+		$skip  = ( $char->weapon['attacks'][0] % 2 ) ? false : true;
+		$five  = array( [ 4, 2, 4, 2, 4, 2 ], [ 5, 7, 5, 7, 5, 7 ], [ 6, 8, 6, 8, 6, 8 ], [ 7, 5, 7, 5, 7, 5 ], [ 8, 6, 8, 6, 8, 6 ], [ 9, 7, 5, 7, 5, 7 ], [ 0, 8, 6, 8, 6, 8 ], [ 1, 3, 1, 3, 1, 3 ], [ 2, 4, 2, 4, 2, 4 ], [ 3, 1, 3, 1, 3, 1 ] );
+		$index = $seq[0] % 10;
+		$curr  = $five[ $index ];
+		$count = 0;
 		foreach( $seq as $key => $seg ) {
-			$test1 = intval( $seg / 10 );
-			$test2 = $key % 2;
-			if ( $test2 === $skip ) {
-				continue;
+			if ( $skip ) {
+				$test = ( $key % 2 );
+				if ( $test === 0 ) {
+					continue;
+				}
+			} else {
+				$segmt = $seg % 10;
+				if ( $segmt === $curr[ $count ] ) {
+					$count++;
+				} else {
+					continue;
+				}
 			}
-#			if ( $test1 > $mark ) {
-#				$mark = $test1;
-#				$was  = false;
-#				continue;
-#			}
-#			if ( $was ) continue;
 			$sec[] = $seg;
-#			$was = true;
 		}
 		return $sec;
 	}

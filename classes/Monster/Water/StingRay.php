@@ -1,4 +1,8 @@
 <?php
+/* Name: Sting Ray
+ * Class: DND_Monster_Water_StingRay
+ * Encounter: {"TSS":{"D":"C"}}
+ */
 
 class DND_Monster_Water_StingRay extends DND_Monster_Monster {
 

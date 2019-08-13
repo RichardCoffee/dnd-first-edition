@@ -1,4 +1,8 @@
 <?php
+/* Name: Lynx, Giant
+ * Class: DND_Monster_Giant_Lynx
+ * Encounter: {"CW":{"M":"VR","H":"VR","F":"R","P":"VR"}}
+ */
 
 class DND_Monster_Giant_Lynx extends DND_Monster_Monster {
 

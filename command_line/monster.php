@@ -19,18 +19,24 @@ if ( empty( $combat->enemy ) ) {
 
 	if ( isset( $monster ) ) {
 		$combat->add_to_enemy( $monster );
-		$what   = get_class( $monster );
 		$number = $monster->get_number_appearing();
-		if ( $number > 1 ) {
-			$start = 1;
-			$points = $monster->get_appearing_hit_points( $number );
-			if ( ( $monster instanceOf DND_Monster_Dragon_Dragon ) && $monster->mate ) {
-				$combat->add_to_enemy( $monster->mate );
-				$start = 2;
+		if ( is_array( $number ) ) {
+			foreach( $number as $enemy ) {
+				$combat->add_to_enemy( $enemy );
 			}
-			for( $i = $start; $i < $number; $i++ ) {
-				$new = new $what( [ 'current_hp' => $points[ $i ][0], 'hit_points' => $points[ $i ][1] ] );
-				$combat->add_to_enemy( $new );
+		} else {
+			$what = get_class( $monster );
+			if ( $number > 1 ) {
+				$start = 1;
+				$points = $monster->get_appearing_hit_points( $number );
+				if ( ( $monster instanceOf DND_Monster_Dragon_Dragon ) && $monster->mate ) {
+					$combat->add_to_enemy( $monster->mate );
+					$start = 2;
+				}
+				for( $i = $start; $i < $number; $i++ ) {
+					$new = new $what( [ 'current_hp' => $points[ $i ][0], 'hit_points' => $points[ $i ][1] ] );
+					$combat->add_to_enemy( $new );
+				}
 			}
 		}
 	}

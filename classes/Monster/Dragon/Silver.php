@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Silver
+ * Class: DND_Monster_Dragon_Silver
+ * Encounter: {"CW":{"M":"VR"},"TW":{"M":"VR"},"TSW":{"M":"VR"},"CF":{"S":"VR"},"CS":{"S":"VR"},"TF":{"S":"VR"},"TS":{"S":"VR"},"TSF":{"S":"VR"},"TSS":{"S":"VR"}}
+ */
 
 class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 

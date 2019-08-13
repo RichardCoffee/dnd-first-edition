@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, White
+ * Class: DND_Monster_Dragon_White
+ * Encounter: {"CW":{"M":"U","H":"VR","F":"U","S":"VR","P":"U","D":"VR"},"CF":{"S":"VR"},"CS":{"S":"VR"}}
+ */
 
 class DND_Monster_Dragon_White extends DND_Monster_Dragon_Dragon {
 

@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Copper
+ * Class: DND_Monster_Dragon_Copper
+ * Encounter: {"TSW":{"M":"U","H":"R","D":"VR"},"TSF":{"S":"VR"},"TSS":{"S":"VR"}}
+ */
 
 class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 

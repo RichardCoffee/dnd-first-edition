@@ -27,39 +27,17 @@ echo "Total: $total\n"; //*/
 require_once( DND_FIRST_EDITION_DIR . '/command_line/treasure.php' );
 
 $cnt = count( $argv );
+$t = new DND_Treasure;
 if ( $cnt === 1 ) {
-	dnd1e_show_magic_treasure_table();
+	$t->show_treasure_table();
 } else {
 	$roll = intval( $argv[1] );
 	if ( $roll > 0 ) {
-		$main = dnd1e_get_magic_items_table();
-		$next = '';
-		foreach( $main as $item ) {
-			if ( ! is_array( $item ) ) continue;
-			$roll -= $item['chance'];
-			if ( $roll < 1 ) {
-				$next = $item['sub'];
-				break;
-			}
-		}
+		$next = $t->get_sub_table_name( $roll );
 		if ( $cnt === 2 ) {
-			dnd1e_show_magic_treasure_table( $next );
+			$t->show_treasure_table( $next );
 		} else if ( $cnt === 3 ) {
-			$func = dnd1e_get_sub_table_string( $next );
-			$sec  = $func();
-			$roll = intval( $argv[2] );
-			$pick = '';
-			foreach( $sec as $item ) {
-				if ( ! is_array( $item ) ) {
-					echo "    $item\n";
-					continue;
-				}
-				$roll -= $item['chance'];
-				if ( $roll < 1 ) {
-					echo "  {$item['text']}   {$item['xp']}xp  {$item['gp']}gp  {$item['link']}\n";
-					$roll = 1000000;
-				}
-			}
+			$t->show_treasure_item( $next, $argv[2] );
 		}
 	}
 } //*/

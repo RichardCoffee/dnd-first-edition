@@ -7,7 +7,7 @@ if ( empty( $combat->party ) ) {
 		'Derryl'  => array( 'class' => 'Cleric',           'data' => [ 'initiative' => [ 'roll' => 5 ], 'weap_allow' => [ 'Bow,Long' ] ] ),
 #		'Evandur' => array( 'class' => 'Fighter',          'data' => [ 'initiative' => [ 'roll' => 5 ] ] ),
 		'Gaius'   => array( 'class' => 'Druid',            'data' => [ 'initiative' => [ 'roll' => 3 ], 'weap_allow' => [ 'Voulge' ] ] ),
-#		'Ivan'    => array( 'class' => 'Paladin',          'data' => [ 'initiative' => [ 'roll' => 5 ], 'shield' => [ 'type' => 'Large' ], 'has_horse' => true ] ),
+#		'Ivan'    => array( 'class' => 'Paladin',          'data' => [ 'initiative' => [ 'roll' => 5 ], 'shield' => [ 'type' => 'Large' ], 'horse' => 'paladin' ] ),
 #		'Krieg'   => array( 'class' => 'Barbarian',        'data' => [ 'initiative' => [ 'roll' => 1 ] ] ),
 		'Pointer' => array( 'class' => 'RangerThief',      'data' => [ 'initiative' => [ 'roll' => 4 ] ] ),
 #		'Saerwen' => array( 'class' => 'FighterMagicUser', 'data' => [ 'initiative' => [ 'roll' => 5 ] ] ),
@@ -20,10 +20,17 @@ if ( empty( $combat->party ) ) {
 	$combat->import_party( $players );
 } else {
 	echo "Using transient party data\n";
+	$allowed = array(
+		'Derryl' => 'Bow,Long',
+		'Gaius'  => 'Voulge',
+	);
+	foreach( $combat->party as $name => $char ) {
+		if ( array_key_exists( $name, $allowed ) ) {
+			$char->add_to_allowed_weapons( $allowed[ $name ] );
+		}
+	}
+	if ( array_key_exists( 'Trindle', $combat->party ) ) {
+		$combat->party['Trindle']->set_dual_weapons( 'Dagger', 'Dagger,Off-Hand' );
+	}
 }
-/*
-if ( array_key_exists( 'Trindle', $combat->party ) ) {
-	$combat->party['Trindle']->set_dual_weapons( 'Dagger', 'Dagger,Off-Hand' );
-	echo "Trindle dual weapons set\n";
-}//*/
-
+#$combat->add_to_party('Krieg');

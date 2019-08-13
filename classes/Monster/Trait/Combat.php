@@ -38,7 +38,7 @@ trait DND_Monster_Trait_Combat {
 
 	private function get_modified_weapon_type( $type ) {
 		$check = substr( $type, 0, 4 );
-		if ( in_array( $check, [ 'Bite', 'Claw' ] ) ) {
+		if ( in_array( $check, [ 'Bite', 'Claw', 'Horn' ] ) ) {
 			$type = $check;
 		}
 		return $type;

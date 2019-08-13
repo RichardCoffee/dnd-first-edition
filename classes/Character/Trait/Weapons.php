@@ -8,6 +8,7 @@ if ( ! defined( 'BOW_POINT_BLANK' ) ) {
 trait DND_Character_Trait_Weapons {
 
 
+	protected $weap_allow = array();
 	static protected $weapons_table;
 
 
@@ -40,6 +41,31 @@ trait DND_Character_Trait_Weapons {
 		);
 	}
 
+	public function set_current_weapon( $new = '' ) {
+		if ( ! empty ( $new ) && ( empty( $this->weap_allow ) || ( ( ! empty( $this->weap_allow ) ) && in_array( $new, $this->weap_allow ) ) ) ) {
+			if ( ! $this->weapons_check( $new ) ) return false;
+			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
+			if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
+				$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
+			} else {
+				// TODO: show alert for non-proficient weapon use
+			}
+			$data = $this->get_weapon_info( $this->weapon['current'] );
+			$this->weapon = array_merge( $this->weapon, $data );
+			$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
+			if ( $this->weap_dual ) $this->set_current_weapon_dual();
+		}
+		$this->determine_armor_class();
+		return true;
+	}
+
+	private function weapons_check( $weapon = 'Spell' ) {
+		if ( empty( static::$weapons_table ) ) {
+			static::$weapons_table = $this->get_weapons_table();
+		}
+		return array_key_exists( $weapon, static::$weapons_table );
+	}
+
 	private function get_weapon_info( $weapon = 'Spell' ) {
 		if ( empty( static::$weapons_table ) ) {
 			static::$weapons_table = $this->get_weapons_table();
@@ -51,13 +77,6 @@ trait DND_Character_Trait_Weapons {
 			$info = static::$weapons_table['Spell'];
 		}
 		return $info;
-	}
-
-	private function weapons_check( $weapon = 'Spell' ) {
-		if ( empty( static::$weapons_table ) ) {
-			static::$weapons_table = $this->get_weapons_table();
-		}
-		return array_key_exists( $weapon, static::$weapons_table );
 	}
 
 	private function get_weapons_table() {
@@ -101,7 +120,7 @@ trait DND_Character_Trait_Weapons {
 			'Breath' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'damage' => array( 'Spec', 'Spec', 'No' ),
-				'attack' => 'breath'
+				'attack' => 'spell'
 			),
 			'Claw' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
@@ -162,6 +181,12 @@ trait DND_Character_Trait_Weapons {
 				'speed'  => 9,
 				'damage' => array( '2d4', '1d6', 'Yes' ),
 				'attack' => 'two-hand'
+			),
+			'Horn' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 3,
+				'damage' => array( 'Spec', 'Spec', 'Yes' ),
+				'attack' => 'monster'
 			),
 			'Javelin' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, 0, 1, 0, 1 ),
@@ -233,6 +258,12 @@ trait DND_Character_Trait_Weapons {
 				'speed'  => 5,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
+			),
+			'Voice' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'damage' => array( 'Spec', 'Spec', 'No' ),
+				'range'  => array( 10, 20, 30 ),
+				'attack' => 'spell'
 			),
 			'Voulge' => array(
 				'type'   => array( -2, -2, -1, -1, 0, 1, 1, 1, 0, 0, 0 ),
@@ -360,6 +391,14 @@ trait DND_Character_Trait_Weapons {
 			$adjust = -2;
 		}
 		return $adjust;
+	}
+
+	public function add_to_allowed_weapons( $new ) {
+		if ( array_key_exists( $new, static::$weapons_table ) ) {
+			if ( ! in_array( $new, $this->weap_allow ) ) {
+				$this->weap_allow[] = $new;
+			}
+		}
 	}
 
 	/**  Dual Weapon functions  **/

@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Shadow
+ * Class: DND_Monster_Dragon_Shadow
+ * Encounter: {}
+ */
 
 class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 

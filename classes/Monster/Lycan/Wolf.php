@@ -1,4 +1,8 @@
 <?php
+/* Name: Werewolf
+ * Class: DND_Monster_Lycan_Wolf
+ * Encounter: {"CC":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"},"CW":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"},"TC":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"},"TW":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"},"TSC":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"},"TSW":{"M":"R","H":"C","F":"C","S":"R","P":"R","D":"R"}}
+ */
 
 class DND_Monster_Lycan_Wolf extends DND_Monster_Lycan_Lycan {
 

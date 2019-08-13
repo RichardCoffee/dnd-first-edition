@@ -35,9 +35,8 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 	}
 
 	protected function determine_specials() {
-		$this->specials = array(
-			'saving' => 'Saves at 4 levels higher',
-		);
+		parent::determine_specials();
+		$this->specials['saving'] = 'Saves at 4 levels higher';
 	}
 
 	protected function get_saving_throw_level() {

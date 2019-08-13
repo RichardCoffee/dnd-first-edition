@@ -5,7 +5,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 
 	protected $ac_rows    = array( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 );
 	protected $alignment  = 'Neutral';
-	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10 );
+	protected $armor      = array( 'armor' => 'none', 'bonus' => 0, 'type' => 10, 'class' => 10, 'rear' => 10, 'spell' => 10 );
 	protected $armr_allow = array();
 	public    $assigned   = 'Unassigned';
 	protected $base_xp    = 0;
@@ -28,7 +28,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $specials   = array();
 	protected $spells     = array();
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 3, 'chr' => 3 );
-	protected $weap_allow = array();
 	protected $weap_dual  = false;
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
 	protected $weap_reqs  = array();
@@ -166,11 +165,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 		$this->armor['class'] = $this->armor['type'];
 		$this->movement = min( $this->max_move, $this->get_armor_base_movement( $this->armor['armor'], $this->movement ) + $this->armor['bonus'] );
-		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 		$this->armor['class'] -= $this->armor['bonus'];
 		$this->armor['rear']  -= $this->armor['bonus'];
 		$this->armor['class'] -= ( $no_shld ) ? 0 : $this->shield['bonus'];
 		$this->armor['class'] -= apply_filters( 'character_armor_class_adjustments', 0, $this );
+		$this->armor['spell']  = $this->armor['class'];
+		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 		if ( ! ( $this->armor['bonus'] === 0 ) ) {
 			$filter = $this->get_name() . '_all_saving_throws';
 			if ( ! has_filter( $filter ) ) {
@@ -196,82 +196,28 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	protected function add_filters() {
-		if ( $this->race === 'Dwarf' ) {
-			add_filter( "Dwarf_Rod_saving_throws",    [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
-			add_filter( "Dwarf_Staff_saving_throws",  [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
-			add_filter( "Dwarf_Wand_saving_throws",   [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
-			add_filter( "Dwarf_Spells_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
-		}
-		if ( $this->race === 'Gnome' ) {
-			add_filter( "Gnome_Poison_saving_throws", [ $this, 'racial_constitution_saving_throws' ], 10, 2 );
-		}
-		add_filter( 'character_Spells_saving_throws', [ $this, 'mental_wisdom_saving_throws' ], 10, 4 );
-	}
-
-	public function racial_constitution_saving_throws( $num, $target ) {
-		if ( $target === $this ) {
-			$num -= intval( $this['stats']['con'] / 3.5 );
-		}
-		return $num;
-	}
-
-	public function mental_wisdom_saving_throws( $num, $target, $origin, $type ) {
-		if ( $target === $this ) {
-			if ( is_array( $origin ) && array_key_exists( 'type', $origin ) && ( stripos( $origin['type'], 'Charm' ) !== false ) ) {
-				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
-			} else if ( is_string( $type ) && ( $type === 'mental' ) ) {
-				$num -= $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] );
-			}
-		}
-		return $num;
-	}
-
-	public function set_current_weapon( $new = '' ) {
-		if ( ! empty ( $new ) && ( empty( $this->weap_allow ) || ( ( ! empty( $this->weap_allow ) ) && in_array( $new, $this->weap_allow ) ) ) ) {
-			if ( ! $this->weapons_check( $new ) ) {
-				return false;
-			}
-			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
-			if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
-				$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
-			} else {
-				// TODO: show alert for non-proficient weapon use
-			}
-			$data = $this->get_weapon_info( $this->weapon['current'] );
-			$this->weapon = array_merge( $this->weapon, $data );
-			$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
-			if ( $this->weap_dual ) $this->set_current_weapon_dual();
-		}
-		$this->determine_armor_class();
-		return true;
+		$this->add_racial_saving_throw_filters();
+#		$this->add_dexterity_saving_throw_filters();
 	}
 
 	public function get_to_hit_number( $target, $range = -1 ) {
-		$prin = false;
-#		if ( $this->get_name() === 'Ivan' ) $prin = true;
-		if ( $target->armor_class === -11 ) return 100; // error in target class
-		$to_hit  = $this->get_to_hit_base( $target->armor_class );
-		if ( $prin ) printf( 'B%2u ', $to_hit );
-		$target_at = max( $target->armor_class, $target->armor_type, 0 );
-		$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target_at );
-		if ( $prin ) printf( 'T%2u ', $to_hit );
+		if ( property_exists( $target, 'armor' ) ) {
+			$to_hit  = $this->get_to_hit_base( $target->armor['class'] );
+			$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target->armor['type'] );
+		} else {
+			if ( $target->armor_class === -11 ) return 100; // error in target class
+			$to_hit  = $this->get_to_hit_base( $target->armor_class );
+		}
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
 			$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'] );
-			if ( $prin ) printf( 'S%2u ', $to_hit );
 			$to_hit -= $this->get_weapon_proficiency_bonus( $this->weapon['skill'] );
-			if ( $prin ) printf( 'P%2u ', $to_hit );
 		} else if ( in_array( $this->weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
 			$to_hit -= $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
-			if ( $prin ) printf( 'M%2s ', $to_hit );
 			$to_hit -= $this->get_missile_range_adjustment( $this->weapon['range'], $range );
-			if ( $prin ) printf( 'R%2u ', $to_hit );
 			$to_hit -= $this->get_missile_proficiency_bonus( $this->weapon, $range );
-			if ( $prin ) printf( 'P%2s ', $to_hit );
 		}
 		$to_hit -= $this->weapon['bonus'];
-		if ( $prin ) printf( 'W%2s ', $to_hit );
 		$to_hit -= apply_filters( 'character_to_hit_opponent', 0, $to_hit, $this );
-		if ( $prin ) printf( 'F%2s ', $to_hit );
 		return $to_hit;
 	}
 

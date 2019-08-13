@@ -1,4 +1,8 @@
 <?php
+/* Name: Dragon, Gold
+ * Class: DND_Monster_Dragon_Gold
+ * Encounter: {"CC":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"CW":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"TC":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"TW":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"TSC":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"TSW":{"M":"VR","H":"VR","F":"VR","S":"VR","P":"VR","D":"VR"},"CF":{"S":"VR"},"CS":{"S":"VR"},"TF":{"S":"VR"},"TS":{"S":"VR"},"TSF":{"S":"VR"},"TSS":{"S":"VR"}}
+ */
 
 class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 
