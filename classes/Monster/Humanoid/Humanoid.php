@@ -27,8 +27,14 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 
 
 	public function __construct( $args = array() ) {
+		if ( array_key_exists( 'fighter', $args ) ) {
+			$this->fighter = unserialize( $args['fighter'] );
+			unset( $args['fighter'] );
+		}
 		parent::__construct( $args );
-		$this->load_fighter();
+		if ( $this->fighter === null ) {
+			$this->load_fighter();
+		}
 	}
 
 	protected function determine_hit_dice() {
@@ -65,7 +71,6 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		);
 		return apply_filters( 'humanoid_fighter_data', $data, get_class( $this ) );
 	}
-
 
 
 }

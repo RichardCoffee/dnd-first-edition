@@ -6,8 +6,12 @@ trait DND_Trait_GetOpts {
 	protected $opts = array();
 
 
-	protected function getopts() {
+	protected function get_opts() {
 		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$this->process_immediate_opts();
+	}
+
+	protected function process_immediate_opts() {
 		if ( $this->opts ) {
 			foreach( $this->opts as $key => $option ) {
 				switch( $key ) {
@@ -15,18 +19,26 @@ trait DND_Trait_GetOpts {
 					case 'help':
 						$this->show_help();
 						exit;
-						break;
+					default:
+				}
+			}
+		}
+	}
+
+	protected function process_opts() {
+		if ( $this->opts ) {
+			foreach( $this->opts as $key => $option ) {
+				switch( $key ) {
 					case 'r':
 						$this->range = intval( $this->opts['r'], 10 );
 						break;
 					case 's':
-						$this->increment_segment();
+						$this->update_holds();
 						break;
 					case 't':
 						$t = new DND_Treasure;
 						$t->show_possible_monster_treasure( $this->enemy, $this->opts['t'] );
 						exit;
-						break;
 					case 'add':
 						$this->add_to_party( $this->opts['add'] );
 						break;
@@ -73,12 +85,13 @@ trait DND_Trait_GetOpts {
 
 	--add=name      Add a character to the party.  The csv file must exist.  Will overwrite a character already in the party.
 
-	--hold=name     Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
+	--hold=name[:#] Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
+	                Adding a segment value indicates that the character can attack on the specified segment.
 
 	--att=name      Remove character from hold list, because the character is attacking on this segment.
 
 	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
-	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
+	                        For water encounters terrain can bec 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
 
 	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
 	                For monsters, the format is M:<#>:<damage>, where 'M' is the letter M, and '#' is the number of the monster.
@@ -86,6 +99,8 @@ trait DND_Trait_GetOpts {
 	--mi=number     Set the monster's initiative.
 
 	--pre=name:#    Use this when a character casts a spell before combat, where '#' indicates the spell's number, from the numbered spell list.
+
+	--st=name       Show the saving throws for the indicated character.
 
 ";
 	}
@@ -117,7 +132,11 @@ trait DND_Trait_GetOpts {
 			$init = intval( $sitrep[0], 10 );
 			$this->set_monster_initiative_all( $init );
 		} else if ( count( $sitrep ) === 2 ) {
-			$name = $sitrep[0];
+			$name   = $sitrep[0];
+			$number = intval( $name, 10 );
+			if ( $number ) {
+				$name = $this->get_monster_key( $number );
+			}
 			if ( in_array( $name, $this->enemy ) ) {
 				$init = intval( $sitrep[1], 10 );
 				$this->set_monster_initiative( $name, $init );
@@ -141,11 +160,13 @@ trait DND_Trait_GetOpts {
 					$spell = $this->get_numbered_spell( $this->party[ $name ], $number );
 					if ( $spell ) {
 						$target = ( array_key_exists( 2, $sitrep ) ) ? $sitrep[2] : $name;
-						$result = $this->start_casting( $name, $spell['name'], $target );
+						$result = $this->start_casting( $name, $spell, $target );
 						if ( $result ) {
-							$this->finish_casting( $spell['name'] );
-							echo "\n$name has cast {$spell['name']} on $target\n\n";
-							exit;
+							$cast = $this->find_casting( $name );
+							$this->finish_casting( $cast );
+							$this->remove_casting( $name );
+							echo "\n{$cast['caster']} has cast {$cast['name']} on {$cast['target']}\n\n";
+#							exit;
 						}
 					}
 				}
@@ -158,7 +179,7 @@ trait DND_Trait_GetOpts {
 			$count = count( $argv );
 			if ( $count > 1 ) {
 				$name = $argv[1];
-				if ( in_array( $name, $this->party ) ) {
+				if ( array_key_exists( $name, $this->party ) ) {
 					if ( $count > 2 ) {
 						if ( intval( $argv[2] ) ) {
 							$spell = $this->get_numbered_spell( $this->party[ $name ], $argv[2] );

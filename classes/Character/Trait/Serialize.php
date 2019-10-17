@@ -15,14 +15,18 @@ trait DND_Character_Trait_Serialize {
 
 	private function get_serialization_data() {
 		$table = array(
+			'ac_rows'    => $this->ac_rows,  # Humanoid
 			'alignment'  => $this->alignment,
 			'armor'      => $this->armor,
 			'assigned'   => $this->assigned,
 			'current_hp' => $this->current_hp,
 			'experience' => $this->experience,
+			'hit_dice'   => $this->hit_dice, # Humanoid
 			'hit_points' => $this->hit_points,
 			'initiative' => $this->initiative,
 			'level'      => $this->level,
+			'max_move'   => $this->max_move, # Humanoid
+			'movement'   => $this->movement, # Humanoid
 			'name'       => $this->name,
 			'race'       => $this->race,
 			'segment'    => $this->segment,

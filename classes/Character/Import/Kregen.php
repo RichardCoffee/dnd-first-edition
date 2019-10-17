@@ -197,12 +197,14 @@ class DND_Character_Import_Kregen {
 		);
 		foreach( $line as $item ) {
 			$name = $this->parse_name( $item );
-			if ( ( intval( $name, 10 ) > 0 ) || ( in_array( $name, $skip2 ) ) || ( substr( $name, 0, 2 ) === 'UA' ) ) {
-				continue;
-			}
+			if ( intval( $name, 10 ) > 0 )         continue;
+			if ( in_array( $name, $skip2 ) )       continue;
+			if ( substr( $name, 0, 2 ) === 'UA' )  continue;
+			if ( substr( $name, 0, 3 ) === ' PH' ) continue;
 			if ( ( $pos = strpos( $name, ' PH' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			if ( ( $pos = strpos( $name, ' UA' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			$this->data['spell_import'][] = $name;
+echo "Spell: $name\n";
 		}
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /* Name: Spider, Giant
  * Class: DND_Monster_Spider_Giant
- * Encounter: {"TC":{"M":"VR","H":VR","F":"U"},"TW":{"M":"VR","F":"U"},"TSC":{"M":"VR","H":VR","F":"U"},"TSW":{"M":"VR","H":VR","F":"U"}}
+ * Encounter: {"TC":{"M":"VR","H":"VR","F":"U"},"TW":{"M":"VR","F":"U"},"TSC":{"M":"VR","H":"VR","F":"U"},"TSW":{"M":"VR","H":"VR","F":"U"}}
  */
 
 class DND_Monster_Spider_Giant extends DND_Monster_Spider_Spider {

@@ -12,8 +12,14 @@ class DND_CommandLine extends DND_Combat {
 
 
 	protected function __construct( array $args = array() ) {
+		$this->get_opts();
+		if ( array_key_exists( 's', $this->opts ) ) {
+			if ( array_key_exists( 'segment', $args ) ) {
+				$args['segment']++;
+			}
+		}
 		parent::__construct( $args );
-		$this->getopts();
+		$this->process_opts();
 		$this->minus = ( ( ( $this->segment - 1 ) + floor( ( $this->segment - 1 ) / 10 ) ) * 2 );
 	}
 
@@ -28,6 +34,15 @@ class DND_CommandLine extends DND_Combat {
 				$temp = new DND_Character_Import_Kregen( $file, $info );
 				$this->party[ $name ] = $temp->character;
 			}
+		}
+	}
+
+	public function reimport_character( $name ) {
+		$file = CSV_PATH . $name . '.csv';
+		if ( is_readable( $file ) ) {
+#			$info = ( array_key_exists( 'data', $data ) ) ? $data['data'] : array();
+			$temp = new DND_Character_Import_Kregen( $file ); #, $info );
+			$this->party[ $name ] = $temp->character;
 		}
 	}
 
@@ -55,15 +70,17 @@ class DND_CommandLine extends DND_Combat {
 			echo $monster->command_line_display();
 			echo "\n";
 			echo count( $this->enemy ) . " Appearing HP: ";
-			$number = 1;
+			$number = 0;
 			foreach( $this->enemy as $key => $entity ) {
-				echo "  $number: {$entity->current_hp}/{$entity->hit_points}";
+				// TODO: check for regeneration when segment advances
+				if ( $entity->current_hp < 1 ) continue;
+				echo "  $key: {$entity->current_hp}/{$entity->hit_points}";
 				$number++;
 			}
-			echo "\n\n";
+			echo "\nRemaining: $number\n\n";
 			$this->show_enemy_heading();
 			if ( $monster instanceOf DND_Monster_Humanoid_Humanoid ) {
-				$this->show_humanoid_attacks();
+				$this->show_humanoid_attacks( $monster );
 			} else {
 				$this->show_monster_attacks( $monster );
 			}
@@ -83,7 +100,13 @@ class DND_CommandLine extends DND_Combat {
 		echo "$heading\n";
 	}
 
-	protected function show_humanoid_attacks() { }
+	protected function show_humanoid_attacks( $monster ) {
+		$weapons = array();
+		foreach( $this->enemy as $key => $entity ) {
+
+		}
+		$this->show_monster_attacks( $monster );
+	}
 
 	protected function show_monster_attacks( DND_Monster_Monster $monster ) {
 		$att_seq = $this->get_monster_attacks( $monster );
@@ -125,8 +148,26 @@ class DND_CommandLine extends DND_Combat {
 		foreach( $spells as $level => $list ) {
 			echo "\t$level level spells\n";
 			foreach( $list as $name => $info ) {
-				echo "\t\t$index) $name\n";
+				echo "\t\t$index) $name";
+				if ( strlen( $name ) < 13 ) echo "\t";
+				if ( strlen( $name ) < 21 ) echo "\t";
+#				if ( strlen( $name ) < 24 ) echo "\t";
+				echo "\t{$info['page']}";
+				if ( strlen( $info['page'] ) < 8 ) echo "\t";
+				if ( strlen( $info['page'] ) < 16 ) echo "\t";
+				echo "\tC: {$info['cast']}";
+				if ( array_key_exists( 'range', $info ) ) {
+					echo "\tR: {$info['range']}";
+				}
+				if ( array_key_exists( 'duration', $info ) ) {
+					echo "\tD: {$info['duration']}";
+				}
+				if ( array_key_exists( 'special', $info ) ) {
+					echo "\tS: {$info['special']}";
+				}
+				echo "\n";
 				$index++;
+#print_r($info);
 			}
 		}
 		return $index;
@@ -394,10 +435,15 @@ class DND_CommandLine extends DND_Combat {
 		}
 	}
 
-	protected function show_saving_throws( $name ) {
-		if ( in_array( $name, $this->party ) ) {
+	protected function show_saving_throws( $name, $source = null ) {
+echo "\nST Name: $name\n";
+		if ( array_key_exists( $name, $this->party ) ) {
 			$char = $this->party[ $name ];
-			$saving = $char->get_character_saving_throws();
+			if ( ! $source ) {
+				$key = array_key_first( $this->enemy );
+				$source = $this->enemy[ $key ];
+			}
+			$saving = $char->get_character_saving_throws( $source );
 			echo "\n";
 			echo "                  Saving Throws for " . $char->get_name() . "\n";
 			echo "\n";

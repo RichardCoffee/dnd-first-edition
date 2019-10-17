@@ -3,8 +3,8 @@
 trait DND_Character_Trait_SavingThrows {
 
 
-	public function get_character_saving_throws() {
-		return $this->get_saving_throws( $this->level );
+	public function get_character_saving_throws( $source = null, $extra = null ) {
+		return $this->get_saving_throws( $this->level, $source, $extra );
 	}
 
 	public function get_monster_saving_throws() {
@@ -12,20 +12,21 @@ trait DND_Character_Trait_SavingThrows {
 		return $this->get_saving_throws( $level );
 	}
 
-	protected function get_saving_throws( $level ) {
-		$base = $this->get_raw_saving_throws( $level );
+	protected function get_saving_throws( $level, $source = null, $extra = null ) {
+		$base = $this->get_raw_saving_throws( $level, $source, $extra );
 		return $this->get_keyed_saving_throws( $base );
 	}
 
-	protected function get_raw_saving_throws( $level ) {
+	protected function get_raw_saving_throws( $level, $source = null, $extra = null ) {
 		$keys = $this->get_saving_throw_key_table();
 		$base = array();
 		foreach( $keys as $key => $index ) {
 			$base[] = array(
 				'key'  => $key,
-				'roll' => $this->get_base_saving_throw( $key, $this->level ),
+				'roll' => $this->get_base_saving_throw( $key, $this->level, $source, $extra ),
 			);
 		}
+#print_r($base);
 		return $base;
 	}
 
@@ -77,8 +78,10 @@ trait DND_Character_Trait_SavingThrows {
 			$filters[] = "monster_{$type}_saving_throws";
 			$filters[] = 'monster_all_saving_throws';
 		}
+echo "\nBase: $base\n";
 		foreach( $filters as $filter ) {
 			$base = apply_filters( $filter, $base, $this, $origin, $extra );
+echo "Base: $base  Filter:  $filter\n";
 		}
 		return max( $base, 2 );
 	}

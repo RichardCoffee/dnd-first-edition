@@ -79,8 +79,31 @@ trait DND_Character_Trait_Weapons {
 		return $info;
 	}
 
+	protected function get_random_pole_arm() {
+		static $pole_arms = array();
+		if ( empty( static::$weapons_table ) ) {
+			static::$weapons_table = $this->get_weapons_table();
+		}
+		if ( empty( $pole_arms ) ) {
+			foreach( static::$weapons_table as $weapon => $data ) {
+				if ( $data['attack'] === 'pole' ) {
+					$pole_arms[] = $weapon;
+				}
+			}
+		}
+		$cnt  = count( $pole_arms ) - 1;
+		$roll = mt_rand( 0, $cnt );
+		return $pole_arms[ $roll ];
+	}
+
 	private function get_weapons_table() {
 		return array(
+			'Axe,Battle' => array(
+				'type'   => array( -5, -4, -3, -2, -1, -1, 0, 0, 1, 1, 2 ),
+				'speed'  => 7,
+				'damage' => array( '1d8', '1d8', 'Yes' ),
+				'attack' => 'hand'
+			),
 			'Axe,Hand' => array(
 				'type'   => array( -5, -4, -3, -2, -2, -1, 0, 0, 1, 1, 1 ),
 				'speed'  => 4,
@@ -93,11 +116,29 @@ trait DND_Character_Trait_Weapons {
 				'range'  => array( 10, 20, 30 ),
 				'attack' => 'thrown1'
 			),
+			'Bardiche' => array(
+				'type'   => array( -3, -2, -2, -1, 0, 0, 1, 1, 2, 2, 3 ),
+				'speed'  => 9,
+				'damage' => array( '2d4', '3d4', 'Yes' ),
+				'attack' => 'pole'
+			),
 			'Beak' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 2,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
 				'attack' => 'monster'
+			),
+			'Bec de Corbin' => array(
+				'type'   => array( 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, -1 ),
+				'speed'  => 9,
+				'damage' => array( '1d8', '1d6', 'Yes' ),
+				'attack' => 'pole'
+			),
+			'Bill-Guisarme' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ),
+				'speed'  => 10,
+				'damage' => array( '2d4', '1d10', 'Yes' ),
+				'attack' => 'pole'
 			),
 			'Bite' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
@@ -169,6 +210,12 @@ trait DND_Character_Trait_Weapons {
 				'damage' => array( '1d3', '1d2', 'Yes' ),
 				'range'  => array( 15, 30, 45 ),
 				'attack' => 'dart'
+			),
+			'Flail,Foot' => array(
+				'type'   => array( 3, 3, 2, 2, 1, 2, 1, 1, 1, 1, -1 ),
+				'speed'  => 7,
+				'damage' => array( '1d6+1', '2d4', 'Yes' ),
+				'attack' => 'hand',
 			),
 			'Hammer' => array(
 				'type'   => array( 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 ),
@@ -391,6 +438,16 @@ trait DND_Character_Trait_Weapons {
 			$adjust = -2;
 		}
 		return $adjust;
+	}
+
+	protected function get_weapon_damage_array( $weapon, $target = 'SM' ) {
+		$info = $this->get_weapon_info( $weapon );
+		$base = ( $target === 'SM' ) ? $info['damage'][0] : $info['damage'][1];
+		$base = str_replace( [ 'd', '+' ], ',', $base );
+		$dam  = explode( ',', $base );
+		if ( count( $dam ) < 2 ) $dam[] = 0;
+		if ( count( $dam ) < 3 ) $dam[] = 0;
+		return $dam;
 	}
 
 	public function add_to_allowed_weapons( $new ) {

@@ -54,6 +54,8 @@ trait DND_Monster_Trait_Serialize {
 			if ( $this instanceOf DND_Monster_Dragon_Shadow ) {
 				$table['stats'] = $this->stats;
 			}
+		} else if ( $this instanceOf DND_Monster_Humanoid_Humanoid ) {
+			$table['fighter'] = serialize( $this->fighter );
 		} else {
 			if ( $this->spells ) {
 				$table['spell_list'] = array();

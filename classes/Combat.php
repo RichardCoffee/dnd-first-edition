@@ -75,24 +75,27 @@ class DND_Combat implements JsonSerializable, Serializable {
 	protected function integrate_enemy() {
 		foreach( $this->enemy as $key => $monster ) {
 			if ( is_array( $monster ) ) {
-				$create = $monster['what_am_i'];
-				$obj = new $create( $monster );
-				if ( is_string( $key ) ) {
-					$name = $key;
-				} else {
-					$name = $obj->get_name() . " $key";
-				}
-				$this->enemy[ $name ] = $obj;
-				if ( ! is_string( $key ) ) {
-					unset( $this->enemy[ $key ] );
-				}
+				if ( array_key_exists( 'what_am_i', $monster ) ) {
+					$create = $monster['what_am_i'];
+					$obj = new $create( $monster );
+					if ( is_string( $key ) ) {
+						$name = $key;
+					} else {
+						$name = $obj->get_name() . " $key";
+					}
+					$this->enemy[ $name ] = $obj;
+					if ( ! is_string( $key ) ) {
+						unset( $this->enemy[ $key ] );
+					}
+				} else { print_r( $monster ); }
 			}
 		}
 	}
 
 	protected function update_holds() {
 		foreach( $this->holding as $name ) {
-			$this->party[ $name ]->segment = max( $this->segment, $this->party[ $name ]->segment );
+ 			$segment = max( $this->segment, $this->party[ $name ]->segment );
+			$this->party[ $name ]->set_attack_segment( $segment );
 		}
 	}
 
@@ -100,20 +103,20 @@ class DND_Combat implements JsonSerializable, Serializable {
 	/**  Utility functions  **/
 
 	public function increment_segment() {
-		if ( $this->party ) {
+/*		if ( $this->party ) {
 			foreach( $this->party as $name => $obj ) {
 				$sequence = $this->get_attack_sequence( $obj->segment, $obj->weapon['attacks'] );
 				foreach( $sequence as $seggie ) {
 					if ( $seggie === $this->segment ) {
-						if ( ( ( $seggie - $body->segment ) % 10 ) === 0 ) {
-							$obj->segment = $seggie;
+						if ( ( ( $seggie - $obj->segment ) % 10 ) === 0 ) {
+							$obj->set_attack_segment( $seggie );
 							break;
 						}
 					}
 				}
 			}
-		}
-		$this->segment++;
+		} //*/
+#		$this->segment++;
 		$this->update_holds();
 	}
 
@@ -211,6 +214,20 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		return false;
 	}
 
+	protected function get_monster_key( $number ) {
+		$number = intval( $number, 10 );
+		if ( $number ) {
+			$cnt = 1;
+			foreach( $this->monster as $key => $monster ) {
+				if ( $cnt === $number ) {
+					return $key;
+				}
+				$cnt++;
+			}
+		}
+		return "Enemy $number not found.";
+	}
+
 	protected function set_monster_initiative_all( $init ) {
 		$init = intval( $init, 10 );
 		foreach( $this->enemy as $name => $monster ) {
@@ -258,14 +275,14 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	/**  Spells  **/
 
-	protected function pre_cast_spell( $origin, $name, $target = '' ) {
+	protected function pre_cast_spell( $origin, $spell, $target = '' ) {
 		$result = false;
 		if ( $this->segment < 2 ) {
-			$result = $this->start_casting( $origin, $name, $target );
-			if ( $result ) $this->finish_casting( $name );
+			$result = $this->start_casting( $origin, $spell, $target );
+			if ( $result ) $this->finish_casting( $spell );
 		}
 		return $result;
-	}
+	} //*/
 
 	protected function is_casting( $caster ) {
 		return in_array( $caster, array_column( $this->casting, 'caster' ) );
@@ -277,7 +294,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 			return false;
 		} );
 		if ( $spell ) {
-			return $spell[0];
+			return array_shift($spell);
 		}
 		return false;
 	}
@@ -298,6 +315,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 					$spell['target'] = ( $target ) ? $target : $origin;
 					$spell['caster'] = $origin;
 					$spell['when']   = $this->segment + $length;
+print_r($spell);
 					$this->casting[] = $spell;
 					$this->remove_holding( $origin );
 					$result = true;
@@ -310,11 +328,11 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 	protected function finish_casting( $spell ) {
 		if ( array_key_exists( 'filters', $spell ) ) {
 			$spell['segment'] = $this->segment;
-			if ( array_key_exists( 'duration', $spells ) ) {
+			if ( array_key_exists( 'duration', $spell ) ) {
 				$length = ( strpos( $spell['duration'], 'segment' ) ) ? intval( $spell['duration'] ) : intval( $spell['duration'] ) * 10;
 				$length = ( strpos( $spell['duration'], 'turn'    ) ) ? intval( $spell['duration'] ) * 100  : $length;
 				$length = ( strpos( $spell['duration'], 'hour'    ) ) ? intval( $spell['duration'] ) * 1000 : $length;
-				$spell['ends'] = $segment + $length;
+				$spell['ends'] = $this->segment + $length;
 			}
 			$this->add_effect( $spell );
 		}
@@ -322,6 +340,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	protected function add_effect( $spell ) {
 		$this->effects[ $spell['name'] ] = $spell;
+#print_r($this->effects);
 	}
 
 	protected function remove_effect( $effect ) {
@@ -364,7 +383,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	protected function pre_existing_character_update( $name, $data ) {
 		$char = $this->party[ $name ];
-		$char->segment = $data['segment'];
+		$char->set_attack_segment( $data['segment'] );
 		$char->set_current_weapon( $data['weapon'] );
 		$char->current_hp = $data['current'];
 	}
@@ -385,9 +404,9 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 			if ( array_key_exists( 1, $data ) ) {
 				$segment = intval( $data[1], 10 );
 				$segment = max ( $segment, $this->segment );
-				$this->party[ $name ]->segment = $segment;
+				$this->party[ $name ]->set_attack_segment( $segment );
 			} else {
-				$this->party[ $name ]->segment = $this->segment;
+				$this->party[ $name ]->set_attack_segment( $this->segment );
 			}
 		}
 	}
@@ -395,7 +414,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 	protected function remove_holding( $name ) {
 		if ( in_array( $name, $this->holding ) ) {
 			$this->holding = array_diff( $this->holding, [ $name ] );
-			$this->party[ $name ]->segment = $this->segment;
+			$this->party[ $name ]->set_attack_segment( $this->segment );
 		}
 	}
 
@@ -406,13 +425,13 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 			$char->set_current_weapon( $weapon );
 		} else if ( in_array( $this->segment, $sequence ) ) {
 			if ( $char->set_current_weapon( $weapon ) ) {
-				$char->segment = $this->segment;
+				$char->set_attack_segment( $this->segment );
 			}
 		} else {
 			foreach( $sequence as $seggie ) {
 				if ( $seggie > $this->segment ) {
 					if ( $char->set_current_weapon( $weapon ) ) {
-						$char->segment = $seggie;
+						$char->set_attack_segment( $seggie );
 					}
 					break;
 				}
@@ -465,23 +484,6 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		}
 		return 100;
 	}
-/*
-	public function monster_to_hit_characters() {
-		foreach( $this->enemy as $index => $monster ) {
-			$type = get_class( $monster );
-			if ( ! array_key_exists( $type, $this->to_hit ) ) {
-				$data = array();
-				foreach( $monster->att_types as $key => $attack ) {
-					$data[ $key ] = array();
-					foreach( $this->party as $name => $char ) {
-						$number = $monster->get_to_hit_number( $char->armor['class'], $char->armor['type'], $attack, $this->range );
-						$data[ $key ][ $name ] = apply_filters( 'monster_to_hit_character', $number, $monster, $char );
-					}
-				}
-				$this->to_hit[ $index ] = $data;
-			}
-		}
-	} //*/
 
 	protected function party_damage( $name, $damage ) {
 		if ( array_key_exists( $name, $this->party ) ) {
@@ -523,34 +525,6 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 	public function unserialize( $data ) {
 		$args = unserialize( $data );
 		$this->__construct( $args );
-	}
-
-	/**  temporary functions  **/
-
-	public function import_effects( array $new ) {
-		if ( $new ) {
-			foreach( $new as $key => $data ) {
-				$this->effects[ $key ] = $data;
-			}
-		}
-	}
-
-	public function import_enemy( $enemy ) {
-		foreach( $enemy as $monster ) {
-			$count = count( $this->enemy );
-			$name  = $monster->get_name() . " $count";
-			$this->enemy[ $name ] = $monster;
-		}
-	}
-
-	public function import_combat( $combat ) {
-		foreach( $this->party as $name => $object ) {
-			if ( array_key_exists( $name, $combat ) ) {
-				$this->party[ $name ]->segment = $combat[ $name ]['segment'];
-				$this->party[ $name ]->set_current_weapon( $combat[ $name ]['weapon'] );
-				$this->party[ $name ]->current_hp = $combat[ $name ]['current_hp'];
-			}
-		}
 	}
 
 

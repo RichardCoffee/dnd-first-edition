@@ -22,7 +22,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $non_prof   = -100;
 	protected $ongoing    = array();
 	protected $race       = 'Human';
-	public    $segment    = 0;
+	protected $segment    = 0;  # attack segment
 	protected $shield     = array( 'type' => 'none', 'bonus' => 0 );
 	protected $shld_allow = array();
 	protected $specials   = array();
@@ -66,8 +66,11 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 
 	public function initialize_character() {
 		if ( ( $this->level < 2 ) && ( $this->experience > 0 ) ) {
-			$this->level = $this->calculate_level( $this->experience );
-			$this->set_level( $this->level );
+			$new_level = $this->calculate_level( $this->experience );
+			if ( $new_level > $this->level ) {
+				$this->level = $new_level;
+				$this->set_level( $this->level );
+			}
 		} else if ( $this->hit_points === 0 ) {
 			$this->determine_hit_points();
 		}
@@ -192,6 +195,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( $roll ) {
 			$this->initiative['roll'] = $roll;
 			$this->determine_initiative();
+		}
+	}
+
+	public function set_attack_segment( $segment ) {
+		if ( intval( $segment ) > 0 ) {
+			$this->segment = intval( $segment );
 		}
 	}
 

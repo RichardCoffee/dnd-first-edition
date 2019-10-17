@@ -8,7 +8,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $armor_class  = 10;
 	protected $armor_type   = 11;
 	protected $attacks      = array();
-	public    $current_hp   = 0;
+	public    $current_hp   = -10000;
 	protected $description  = '';
 	protected $frequency    = 'Common';
 	protected $hit_dice     = 0;
@@ -60,7 +60,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->determine_specials();
 		$this->determine_saving_throw();
 		$this->determine_xp_value();
-		if ( ! $this->current_hp ) $this->current_hp = $this->hit_points;
+		if ( $this->current_hp === -10000 ) $this->current_hp = $this->hit_points;
 	}
 
 	public function __get( $name ) {
@@ -144,7 +144,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	public function get_name() {
-		return $this->name;
+		return str_replace( ' ', '_', $this->name );
 	}
 
 	public function get_number_appearing() {
@@ -177,7 +177,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	public function check_for_lair() {
-		if ( $this->in_lair) {
+		if ( $this->in_lair && ( $this->in_lair < 100 ) ) {
 			if ( $this->check_chance( $this->in_lair ) ) {
 				$this->in_lair = 100;
 			} else {

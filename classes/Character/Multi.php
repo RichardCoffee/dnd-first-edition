@@ -166,10 +166,10 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
 
-	public function get_character_saving_throws() {
+	public function get_character_saving_throws( $source = null, $extra = null ) {
 		$base = array();
 		foreach( $this->classes as $key => $class ) {
-			$base[ $key ] = $this->$key->get_raw_saving_throws( $this->$key->level );
+			$base[ $key ] = $this->$key->get_raw_saving_throws( $this->$key->level, $source, $extra );
 		}
 		$mixed = array();
 		foreach( $base as $key => $rolls ) {

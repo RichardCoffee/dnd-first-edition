@@ -108,7 +108,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			$hit_dice = $this->calculate_dragon_hit_dice();
 			$hit_points = $this->calculate_dragon_hit_points( $hit_dice );
 		} else {
-			$hit_points = $this->calculate_dragon_hit_points( $this->hit_points );
+			$hit_points = $this->calculate_dragon_hit_points( $this->hit_dice );
 		}
 		return $hit_points;
 	}

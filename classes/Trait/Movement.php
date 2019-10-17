@@ -20,6 +20,7 @@ trait DND_Trait_Movement {
 
 	private function determine_party_movement() {
 		foreach( $this->party as $name => $char ) {
+			if ( $this->is_casting( $name ) ) continue;
 			$this->add_object_movement( $char );
 		}
 	}

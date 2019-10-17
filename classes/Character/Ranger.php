@@ -11,7 +11,7 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected $non_prof   = -2;
 	protected $spell_list = array();
 	protected $stats      = array( 'str' => 13, 'int' => 13, 'wis' => 14, 'dex' => 3, 'con' => 14, 'chr' => 3 );
-	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
+#	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
 	protected $weap_init  = array( 'initial' => 3, 'step' => 3 );
 	protected $weap_reqs  = array( 'Bow/Crossbow,Light', 'Dagger/Knife', 'Spear/Axe', 'Sword' );
 	protected $xp_bonus   = array( 'str' => 16, 'int' => 16, 'wis' => 16 );
@@ -45,8 +45,8 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		$level = parent::calculate_level( $xp );
 		$this->druid->set_level( $level );
 		$this->magic->set_level( $level );
-		if ( ( $level < 8 ) && array_key_exists( 'Spell', $this->weapons ) ) {
-			unset( $this->weapons['Spell'] );
+		if ( ( $level > 7 ) && ( ! array_key_exists( 'Spell', $this->weapons ) ) ) {
+			$this->weapons['Spell'] = array( 'bonus' => 0, 'skill' => 'PF' );
 		}
 		return $level;
 	}

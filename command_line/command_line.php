@@ -22,6 +22,7 @@ $combat->show_party_information();
 $combat->show_notifications();
 
 #print_r($combat->casting);
+#print_r($combat->effects);
 #print_r( dnd1e()->logging_reduce_object( $combat->enemy ) );
 #print_r( dnd1e()->logging_reduce_object( $combat->party['Pointer'] ) );
 #print_r( $combat->party['Gaius'] );

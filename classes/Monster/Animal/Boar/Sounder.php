@@ -22,10 +22,10 @@ class DND_Monster_Animal_Boar_Sounder extends DND_Monster_Animal_Boar_Wild {
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
 #	protected $movement     = array( 'foot' => 15 );
-#	protected $name         = 'Monster';
+	protected $name         = 'Boar Sounder';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Monster';
-#	protected $reference    = 'Monster Manual page';
+#	protected $race         = 'Boar';
+#	protected $reference    = 'Monster Manual page 10';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 	protected $size         = "Small";
