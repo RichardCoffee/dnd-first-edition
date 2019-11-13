@@ -155,7 +155,9 @@ class DND_CommandLine extends DND_Combat {
 				echo "\t{$info['page']}";
 				if ( strlen( $info['page'] ) < 8 ) echo "\t";
 				if ( strlen( $info['page'] ) < 16 ) echo "\t";
-				echo "\tC: {$info['cast']}";
+				if ( array_key_exists( 'cast', $info ) ) {
+					echo "\tC: {$info['cast']}";
+				}
 				if ( array_key_exists( 'range', $info ) ) {
 					echo "\tR: {$info['range']}";
 				}

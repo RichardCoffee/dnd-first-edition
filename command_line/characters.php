@@ -19,7 +19,7 @@ if ( empty( $combat->party ) ) {
 	); //*/
 	$combat->import_party( $players );
 } else {
-/*	echo "Using transient party data\n";
+	echo "Using transient party data\n";
 	$allowed = array(
 		'Derryl' => 'Bow,Long',
 		'Gaius'  => 'Voulge',

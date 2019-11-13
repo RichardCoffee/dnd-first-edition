@@ -2,6 +2,7 @@
 
 define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 define( 'CSV_PATH', '/home/oem/DnD/csv/' );
+define( 'ABSPATH', true );
 define( 'WP_DEBUG', true );
 
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
