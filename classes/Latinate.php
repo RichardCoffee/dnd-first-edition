@@ -14,13 +14,13 @@ class Latinate extends Enum {
 
 
 	protected function __construct( $args = array() ) {
-		$this->set = array( 'Cantrips',
-			'Primary', 'Secondary', 'Tertiary', 'Quaternary', 'Quinary',
-			'Senary', 'Septenary', 'Octonary', 'Nonary', 'Denary',
-			'Undenary', 'Duodenary',        'Thirteenth',    'Fourteenth',    'Fifteenth',
-			'Sixteenth',     'Seventeenth',    'Eighteenth',    'Nineteenth', 'Vigenary',
-			'Twenty-First',  'Twenty-Second',  'Twenty-Third',  'Twenty-Fourth', 'Twenty-Fifth',
-			'Twenty-Sixth',  'Twenty-Seventh', 'Twenty-Eighth', 'Twenty-Ninth',  'Thirtieth',
+		$this->set = array( 'Absence',
+			'Primary',      'Secondary',      'Tertiary',      'Quaternary',     'Quinary',
+			'Senary',       'Septenary',      'Octonary',      'Nonary',         'Denary',
+			'Undenary',     'Duodenary',      'Tredenary',     'Quattuordenary', 'Quindenary',
+			'Sedenary',     'Septendenary',   'Octodenary',    'Novemdenary',    'Vigenary',
+			'Twenty-First', 'Twenty-Second',  'Twenty-Third',  'Twenty-Fourth',  'Twenty-Fifth',
+			'Twenty-Sixth', 'Twenty-Seventh', 'Twenty-Eighth', 'Twenty-Ninth',   'Thirtieth',
 		);
 		if ( $args ) $this->set[0] = (array)$args[0];
 	}
