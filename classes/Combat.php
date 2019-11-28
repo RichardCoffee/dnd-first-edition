@@ -198,6 +198,20 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		} );
 	}
 
+	protected function critical_hit_result( $param ) {
+		$args = explode( ':', $param );
+		$poss = ( count( $args ) > 1 ) ? $args[1] : 's';
+		$dr   = new DND_DieRolls;
+		$crit = $dr->get_crit_result( $args[0], $poss );
+		return $crit;
+	}
+
+	protected function fumble_roll_result( $roll ) {
+		$dr  = new DND_DieRolls;
+		$fum = $dr->get_fumble_result( $roll );
+		return $fum;
+	}
+
 	/**  Monster  **/
 
 	public function add_to_enemy( DND_Monster_Monster $obj ) {

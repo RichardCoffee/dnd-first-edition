@@ -365,6 +365,7 @@ class DND_CommandLine extends DND_Combat {
 			echo "\t$weapon ({$info['skill']})\n";
 		}
 		echo "\n";
+		exit;
 	}
 
 	/**  Notification functions  **/
@@ -456,6 +457,22 @@ echo "\nST Name: $name\n";
 			echo "\n";
 			exit;
 		}
+	}
+
+	protected function critical_hit_result( $param ) {
+		$crit = parent::critical_hit_result( $param );
+		if ( is_array( $crit ) ) {
+			print_r( $crit );
+		} else {
+			echo "\n$crit\n\n";
+		}
+		exit;
+	}
+
+	protected function fumble_roll_result( $roll ) {
+		$fumble = parent::fumble_roll_result( $roll );
+		echo "\n$fumble\n\n";
+		exit;
 	}
 
 

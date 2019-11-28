@@ -7,7 +7,7 @@ trait DND_Trait_GetOpts {
 
 
 	protected function get_opts() {
-		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'crit:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
 		$this->process_immediate_opts();
 	}
 
@@ -44,6 +44,12 @@ trait DND_Trait_GetOpts {
 						break;
 					case 'att':
 						$this->remove_holding( $this->opts['att'] );
+						break;
+					case 'crit':
+						$this->critical_hit_result( $this->opts['crit'] );
+						break;
+					case 'fumble':
+						$this->fumble_roll_result( $this->opts['fumble'] );
 						break;
 					case 'enc':
 						$this->generate_encounter( $this->opts['enc'] );
@@ -85,16 +91,21 @@ trait DND_Trait_GetOpts {
 
 	--add=name      Add a character to the party.  The csv file must exist.  Will overwrite a character already in the party.
 
-	--hold=name[:#] Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
-	                Adding a segment value indicates that the character can attack on the specified segment.
+	--att=name      Remove a character from the hold list, because the character is attacking on this segment.
 
-	--att=name      Remove character from hold list, because the character is attacking on this segment.
+	--crit=#[:b|p]  Display the possible result of a critical hit, where # is the number rolled on percentile dice.
+	                Second parameter of 'b' or 'p' can be added to indicate blunt or piercing damage, otherwise defaults to slashing damage.
+
+	--fumble=#      Display the possible result of a fumble roll, where # is the number rolled on percentile dice.
 
 	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
-	                        For water encounters terrain can bec 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
+	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
 
 	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
 	                For monsters, the format is M:<#>:<damage>, where 'M' is the letter M, and '#' is the number of the monster.
+
+	--hold=name[:#] Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
+	                Adding a segment value indicates that the character can attack on the specified segment.
 
 	--mi=number     Set the monster's initiative.
 
@@ -195,10 +206,8 @@ trait DND_Trait_GetOpts {
 					} else if ( $this->party[ $name ]->weapon['current'] === 'Spell' ) {
 						$this->show_possible_spells( $this->party[ $name ] );
 						$this->show_possible_weapons( $this->party[ $name ] );
-						exit;
 					} else {
 						$this->show_possible_weapons( $this->party[ $name ] );
-						exit;
 					}
 				}
 			}
