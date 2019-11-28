@@ -31,7 +31,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 			'First' => array(
 				'Animal Friendship' => array( 'page' => 'PH 55', 'type' => 'Enchantment/Charm', 'cast' => '6 turns' ),
 				'Detect Magic' => array( 'page' => 'PH 55,45', 'type' => 'Divination', 'cast' => '1 segment', 'duration' => '12 rounds' ),
-				'Entangle' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '3 segments', 'duration' => '1 turn' ),
+				'Entangle' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'range' => '80 feet', 'cast' => '3 segments', 'duration' => '1 turn' ),
 				'Faerie Fire' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '3 segments',
 					'duration' => sprintf( '%u rounds', $this->level * 4 ),
 				),

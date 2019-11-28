@@ -39,7 +39,7 @@ trait DND_Character_Trait_Magic {
 		$info = array();
 		if ( ( ! $type ) || ( $type === 'Single' ) ) {
 			$maybe = explode( '_', get_class( $this ) );
-			$type  = str_replace( 'rU', 'r U', $maybe[2] );
+			$type  = str_replace( 'rU', 'r U', $maybe[2] );  #  Insert space into 'MagicUser' string
 		}
 		foreach( $this->spell_table as $level => $spells ) {
 			foreach( $spells as $name => $data ) {

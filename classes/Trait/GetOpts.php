@@ -183,11 +183,9 @@ trait DND_Trait_GetOpts {
 					if ( $count > 2 ) {
 						if ( intval( $argv[2] ) ) {
 							$spell = $this->get_numbered_spell( $this->party[ $name ], $argv[2] );
-							if ( $spell ) {
-								echo "\n{$argv[1]}\n";
-								$target = ( array_key_exists( 3, $argv ) ) ? $argv[3] : $name;
-								$this->start_casting( $name, $spell, $target );
-							}
+							if ( $spell ) $this->gopa_start_casting( $name, $spell, $argv );
+						} else if ( method_exists( $this->party[ $name ], 'locate_magic_spell' ) && ( $spell = $this->party[ $name ]->locate_magic_spell( $argv[2] ) ) ) {
+							$this->gopa_start_casting( $name, $spell, $argv );
 						} else {
 							if ( ( $count === 4 ) && method_exists( $this->party[ $name ], 'set_dual_weapons' ) ) {
 								$this->party[ $name ]->set_dual_weapons( $argv[2], $argv[3] );
@@ -205,6 +203,12 @@ trait DND_Trait_GetOpts {
 				}
 			}
 		}
+	}
+
+	protected function gopa_start_casting( $name, $spell, $argv ) {
+		echo "\n{$argv[1]}\n";
+		$target = ( array_key_exists( 3, $argv ) ) ? $argv[3] : $name;
+		$this->start_casting( $name, $spell, $target );
 	}
 
 
