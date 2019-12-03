@@ -1,36 +1,23 @@
 <?php
 
-require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
+define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
+define( 'CSV_PATH', '/home/oem/DnD/csv/' );
+define( 'WP_DEBUG', true );
 
-function dnd1e_show_possible_monster_treasure( array $enemy, $possible = '' ) {
-	$monster = array_pop( $enemy );
-	$treasure = $monster->get_treasure( $possible );
-	if ( is_array( $treasure ) ) {
-		foreach( $treasure as $item ) {
-			echo "$item\n";
-		}
-	} else {
-		echo "$treasure\n";
-	}
-	echo "\n";
-}
+require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 
-function dnd1e_show_magic_treasure_table( $table = 'items' ) {
-	$table = strtolower( $table );
-	$func  = dnd1e_get_sub_table_string( $table );
-	$items = $func();
-	$forms = ( in_array( $table , [ 'potions', 'rings', 'armor_shields' ] ) ) ? [ '%03u', '  %1$03u  ' ] : [ '%02u', '  %1$02u ' ];
-	$perc  = 1;
-	foreach( $items as $item ) {
-		if ( ! is_array( $item ) ) {
-			echo "          $item\n";
-			continue;
+$cnt = count( $argv );
+$t = new DND_Treasure;
+if ( $cnt === 1 ) {
+	$t->show_treasure_table();
+} else {
+	$roll = intval( $argv[1] );
+	if ( $roll > 0 ) {
+		$next = $t->get_sub_table_name( $roll );
+		if ( $cnt === 2 ) {
+			$t->show_treasure_table( $next );
+		} else if ( $cnt === 3 ) {
+			$t->show_treasure_item( $next, $argv[2] );
 		}
-		$rg_end  = $perc + $item['chance'] - 1;
-		$format  = ( $perc === $rg_end ) ? $forms[1] : "{$forms[0]}-{$forms[0]}";
-		$format .= ' : %3$-30s';
-		$line = sprintf( $format, $perc, $rg_end, $item['text'] );
-		echo "  $line\n";
-		$perc += $item['chance'];
 	}
 }

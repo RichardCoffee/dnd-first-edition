@@ -204,7 +204,10 @@ class DND_CommandLine extends DND_Combat {
 	public function show_party_information() {
 		if ( $this->party ) {
 			$this->show_party_heading();
+			$separator = 0;
 			foreach( $this->party as $name => $char ) {
+				if ( $separator++ % 3 === 0 ) echo str_repeat( '-', 120 ) . "\n";
+#				$separator++;
 				$seq  = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
 				$line = sprintf( ' %5s ', $this->enemy_to_hit_string( $char ) );
 				$name = sprintf( '%7s(%d/%d)', $char->get_name(), $char->get_hit_points(), $char->hit_points );

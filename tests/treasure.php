@@ -5,7 +5,7 @@ define( 'CSV_PATH', '/home/oem/DnD/csv/' );
 define( 'WP_DEBUG', true );
 
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
-require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
+#require_once( DND_FIRST_EDITION_DIR . '/includes/treasure.php' );
 /*
 $monster = new DND_Monster_Hydra( [ 'heads' => 8 ] );
 
@@ -14,17 +14,19 @@ foreach( $treasure as $item => $data ) {
 	printf( '%10s %s', $item, $data );
 	echo "\n";
 } //*/
-/*
-$table = dnd1e_get_magic_armor_shields_table();
+
+$t = new DND_Treasure;
+$table = $t->get_weapons_table();
 
 $total = 0;
 foreach( $table as $data ) {
-	if ( ! is_array( $data ) ) continue;
-	$total += $data['chance'];
+	if ( is_array( $data ) ) {
+		$total += $data['chance'];
+	}
 }
 echo "Total: $total\n"; //*/
-
-require_once( DND_FIRST_EDITION_DIR . '/command_line/treasure.php' );
+/*
+#require_once( DND_FIRST_EDITION_DIR . '/command_line/treasure.php' );
 
 $cnt = count( $argv );
 $t = new DND_Treasure;

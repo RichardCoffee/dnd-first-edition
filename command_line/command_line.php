@@ -7,7 +7,9 @@ define( 'WP_DEBUG', true );
 
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
 require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
-require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
+require_once( DND_FIRST_EDITION_DIR . '/command_line/transients.php' );
+require_once( DND_FIRST_EDITION_DIR . '/command_line/wordpress/get_file_data.php' );
+require_once( DND_FIRST_EDITION_DIR . '/command_line/wordpress/plugin.php' );
 
 $combat = dnd1e_transient( 'combat' );
 if ( empty( $combat ) ) {
