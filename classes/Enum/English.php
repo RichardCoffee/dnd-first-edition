@@ -1,16 +1,11 @@
 <?php
 
 /*
- *  classes/ordinal.php
+ *  classes/Enum/English.php
  *
  */
 
-require_once('Enum.php');
-
-class English extends Enum {
-
-
-	protected $set = array();
+class DND_Enum_English extends TC_Enum_Enum {
 
 
 	use DND_Trait_Singleton;
@@ -25,7 +20,7 @@ class English extends Enum {
 			'Twenty-One',    'Twenty-Two',   'Twenty-Three', 'Twenty-Four', 'Twenty-Five',
 			'Twenty-Six',    'Twenty-Seven', 'Twenty-Eight', 'Twenty-Nine', 'Thirty',
 		);
-		if ( $args ) $this->set[0] = (array)$args[0];
+		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
 	}
 
 }

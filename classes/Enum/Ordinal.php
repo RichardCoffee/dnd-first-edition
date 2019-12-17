@@ -1,20 +1,18 @@
 <?php
 
 /*
- *  classes/ordinal.php
+ *  classes/Enum/Ordinal.php
  *
  */
 
-require_once('Enum.php');
-
-class Ordinal extends Enum {
+class DND_Enum_Ordinal extends DND_Enum_Enum {
 
 
 	use DND_Trait_Singleton;
 
 
 	protected function __construct( $args = array() ) {
-		$this->set = array( 'Cantrips',
+		$this->set = array( 'Zero',
 			'First',         'Second',         'Third',         'Fourth',        'Fifth',
 			'Sixth',         'Seventh',        'Eighth',        'Ninth',         'Tenth',
 			'Eleventh',      'Twelfth',        'Thirteenth',    'Fourteenth',    'Fifteenth',
@@ -22,7 +20,7 @@ class Ordinal extends Enum {
 			'Twenty-First',  'Twenty-Second',  'Twenty-Third',  'Twenty-Fourth', 'Twenty-Fifth',
 			'Twenty-Sixth',  'Twenty-Seventh', 'Twenty-Eighth', 'Twenty-Ninth',  'Thirtieth',
 		);
-		if ( $args ) $this->set[0] = (array)$args[0];
+		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
 	}
 
 }

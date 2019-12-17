@@ -1,33 +1,35 @@
 <?php
+
 /*
- *  classes/Enum.php
+ *  classes/Enum/Enum.php
  *
  */
 
-abstract class Enum {
+abstract class DND_Enum_Enum {
 
 
 	protected $set = array();
 
+/*
+	protected function __construct( $args = array() ) {
+		$this->set = array();
+		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
+	} //*/
 
 	public function get( $position ) {
-		if ( isset( $this->set[ $position ] ) ) {
+		if ( array_key_exists( $position, $this->set ) ) {
 			return $this->set[ $position ];
 		}
 		return '-undefined-';
 	}
 
 	public function has( $search, $strict = false ) {
-		if ( in_array( $search, $this->set, $strict ) ) {
-			return true;
-		}
-		return false;
+		return in_array( $search, $this->set, $strict );
 	}
 
 	public function position( $search, $strict = false ) {
 		if ( $this->has( $search, $strict ) ) {
-			$location = array_keys( $this->set, $search, $strict );
-			return $location[0];
+			return array_search( $search, $this->set, $strict );
 		}
 		return -1;
 	}

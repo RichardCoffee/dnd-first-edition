@@ -63,7 +63,7 @@ trait DND_Character_Trait_Magic {
 	public function generate_random_spell( $level ) {
 		if ( empty( $this->spell_table ) ) $this->spell_table = $this->get_spell_table();
 		$name = '';
-		if ( is_integer( $level ) ) $level = Ordinal::instance()->get( $level );
+		if ( is_integer( $level ) ) $level = DND_Enum_Ordinal::instance()->get( $level );
 		if ( array_key_exists( $level, $this->spell_table ) ) {
 			$limit = count( $this->spell_table[ $level ] );
 			$index = mt_rand( 1, $limit );

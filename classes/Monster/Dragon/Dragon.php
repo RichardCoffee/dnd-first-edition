@@ -226,8 +226,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	public function sort_spells( $a, $b ) {
-		require_once( DND_FIRST_EDITION_DIR . '/classes/Ordinal.php' );
-		$ord = Ordinal::instance();
+		$ord = DND_Enum_Ordinal::instance();
 		$rel = $ord->compare( $a['level'], $b['level'] );
 		if ( $rel === 0 ) {
 			if ( $a['name'] === $b['name'] ) return 0;

@@ -1,13 +1,11 @@
 <?php
 
 /*
- *  classes/latinate.php
+ *  classes/Enum/Latinate.php
  *
  */
 
-require_once('Enum.php');
-
-class Latinate extends Enum {
+class DND_Enum_Latinate extends DND_Enum_Enum {
 
 
 	use DND_Trait_Singleton;
@@ -19,10 +17,8 @@ class Latinate extends Enum {
 			'Senary',       'Septenary',      'Octonary',      'Nonary',         'Denary',
 			'Undenary',     'Duodenary',      'Tredenary',     'Quattuordenary', 'Quindenary',
 			'Sedenary',     'Septendenary',   'Octodenary',    'Novemdenary',    'Vigenary',
-			'Twenty-First', 'Twenty-Second',  'Twenty-Third',  'Twenty-Fourth',  'Twenty-Fifth',
-			'Twenty-Sixth', 'Twenty-Seventh', 'Twenty-Eighth', 'Twenty-Ninth',   'Thirtieth',
 		);
-		if ( $args ) $this->set[0] = (array)$args[0];
+		if ( $args && is_array( $args ) ) $this->set = array_replace( $this->set, $args );
 	}
 
 }
