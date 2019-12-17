@@ -35,10 +35,10 @@ if ( ! defined('ABSPATH') || ! function_exists( 'is_admin' ) ) {
 	exit();
 } //*/
 
-define( 'DND_FIRST_EDITION_DIR' , plugin_dir_path( __FILE__ ) );
+define( 'DND_FIRST_EDITION_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once( 'functions.php' );
 
-$plugin = DND_Plugin_FirstEdition::get_instance( array( 'file' => __FILE__ ) );
+$myplugin = DND_Plugin_FirstEdition::get_instance( array( 'file' => __FILE__ ) );
 
 register_activation_hook( __FILE__, array( 'DND_Register_Register', 'activate' ) );
