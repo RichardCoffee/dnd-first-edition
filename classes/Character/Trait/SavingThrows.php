@@ -26,7 +26,6 @@ trait DND_Character_Trait_SavingThrows {
 				'roll' => $this->get_base_saving_throw( $key, $this->level, $source, $extra ),
 			);
 		}
-#print_r($base);
 		return $base;
 	}
 
@@ -78,10 +77,8 @@ trait DND_Character_Trait_SavingThrows {
 			$filters[] = "monster_{$type}_saving_throws";
 			$filters[] = 'monster_all_saving_throws';
 		}
-echo "\nBase: $base\n";
 		foreach( $filters as $filter ) {
 			$base = apply_filters( $filter, $base, $this, $origin, $extra );
-echo "Base: $base  Filter:  $filter\n";
 		}
 		return max( $base, 2 );
 	}

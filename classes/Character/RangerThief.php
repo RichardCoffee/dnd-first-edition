@@ -12,11 +12,5 @@ class DND_Character_RangerThief extends DND_Character_FighterMulti {
 		parent::__construct( $args );
 	}
 
-	public function set_current_weapon( $new = '' ) {
-		parent::set_current_weapon( $new );
-		$this->armor  = $this->thief->armor;
-		$this->weapon = $this->fight->weapon;
-	}
-
 
 }

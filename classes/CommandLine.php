@@ -54,6 +54,7 @@ class DND_CommandLine extends DND_Combat {
 			$enc  = new DND_Encounters;
 			$roll = ( array_key_exists( 2, $options ) ) ? intval( $options[2] ) : 0;
 			$listing = $enc->get_random_encounter( "$terrain:$area", $roll );
+			echo "\nCount: " . count( $listing ) . "\n";
 			print_r($listing);
 			exit;
 		}
@@ -121,6 +122,16 @@ class DND_CommandLine extends DND_Combat {
 			echo "$line\n";
 		}
 		echo "\n";
+	}
+
+	protected function show_experience_value() {
+		$xp_total = 0;
+		foreach( $this->enemy as $key => $entity ) {
+			if ( $entity->xp_value ) {
+				$xp_total += $entity->xp_value;
+			}
+		}
+		echo "\nXP Total: $xp_total\n\n";
 	}
 
 	/**  Spells  **/
@@ -378,7 +389,8 @@ class DND_CommandLine extends DND_Combat {
 		echo "---Attacks---\n";
 		$this->show_attackers();
 		echo "---Movement---\n";
-		$this->show_movers();
+		$call = 'show_movement_by_' . $this->show_moves;
+		call_user_func( [ $this, $call ] );
 		echo "\n";
 	}
 
@@ -403,6 +415,8 @@ class DND_CommandLine extends DND_Combat {
 				} else {
 					echo " (casting {$this->segment}/{$spell['when']})";
 				}
+			} else if ( array_key_exists( $name, $this->moves ) ) {
+				$this->movement_when_attacking( $name );
 			}
 			echo "\n";
 		}
@@ -416,15 +430,6 @@ class DND_CommandLine extends DND_Combat {
 		if ( array_key_exists( 'aoe',        $spell ) ) echo "\n\t\tArea of Effect: {$spell['aoe']}";
 		if ( array_key_exists( 'saving',     $spell ) ) echo "\n\t\t  Saving Throw: {$spell['saving']}";
 		if ( array_key_exists( 'special',    $spell ) ) echo "\n\t\t       Special: {$spell['special']}";
-	}
-
-	protected function show_movers() {
-		if ( $this->moves ) {
-			foreach( $this->moves as $moving ) {
-				echo "\t$moving\t";
-			}
-			echo "\n";
-		}
 	}
 
 	protected function check_for_dual_weapon( $char ) {
@@ -442,7 +447,6 @@ class DND_CommandLine extends DND_Combat {
 	}
 
 	protected function show_saving_throws( $name, $source = null ) {
-echo "\nST Name: $name\n";
 		if ( array_key_exists( $name, $this->party ) ) {
 			$char = $this->party[ $name ];
 			if ( ! $source ) {

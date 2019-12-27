@@ -19,11 +19,5 @@ class DND_Character_FighterThief extends DND_Character_FighterMulti {
 		$this->skills = $this->thief->skills;
 	}
 
-	public function set_current_weapon( $new = '' ) {
-		parent::set_current_weapon( $new );
-		$this->armor  = $this->thief->armor;
-		$this->weapon = $this->fight->weapon;
-	}
-
 
 }

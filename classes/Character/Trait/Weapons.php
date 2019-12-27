@@ -42,7 +42,7 @@ trait DND_Character_Trait_Weapons {
 	}
 
 	public function set_current_weapon( $new = '' ) {
-		if ( ( ! empty ( $new ) ) && ( empty( $this->weap_allow ) || ( ( ! empty( $this->weap_allow ) ) && in_array( $new, $this->weap_allow ) ) ) ) {
+		if ( ( ! empty ( $new ) ) && ( empty( $this->weap_allow ) || in_array( $new, $this->weap_allow ) ) ) {
 			if ( ! $this->weapons_check( $new ) ) return false;
 			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
 			if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {

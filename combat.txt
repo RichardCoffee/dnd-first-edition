@@ -10,7 +10,7 @@ Rounds
 			Dexterity
 			Weapon speed
 		Resolve attacks
-			Resolve movement
+			Resolve possible movement
 			Determine opponent
 			Resolve attack
 				Resolve weapon type vs armor type
@@ -18,7 +18,7 @@ Rounds
 					Resolve damage
 			Resolve spell effects
 			Determine next attack segment
-		Resolve movement
+		Resolve any remaining movement
 		if an opponent died
 			Morale check
 	End segment

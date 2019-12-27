@@ -7,7 +7,7 @@ trait DND_Trait_GetOpts {
 
 
 	protected function get_opts() {
-		$this->opts = getopt( 'hr:st::', [ 'add:', 'att:', 'crit:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$this->opts = getopt( 'hr:st::x', [ 'add:', 'att:', 'crit:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
 		$this->process_immediate_opts();
 	}
 
@@ -38,6 +38,9 @@ trait DND_Trait_GetOpts {
 					case 't':
 						$t = new DND_Treasure;
 						$t->show_possible_monster_treasure( $this->enemy, $this->opts['t'] );
+						exit;
+					case 'x':
+						$this->show_experience_value();
 						exit;
 					case 'add':
 						$this->add_to_party( $this->opts['add'] );
@@ -83,11 +86,13 @@ trait DND_Trait_GetOpts {
 
 	-h, --help      Display this help screen.
 
-	-rn             Control missile weapon range, where n = range in feet.
+	-r n            Control missile weapon range, where n = range in feet.
 
 	-s              Increment the combat segment.
 
 	-t              Show possible monster treasure, if any.
+
+	-x              Show monster experience point value.
 
 	--add=name      Add a character to the party.  The csv file must exist.  Will overwrite a character already in the party.
 
@@ -102,10 +107,9 @@ trait DND_Trait_GetOpts {
 	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
 
 	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
-	                For monsters, the format is M:<#>:<damage>, where 'M' is the letter M, and '#' is the number of the monster.
+	                For monsters, the format is 'M<#>':<damage>, where 'M' is the monster name and '#' is the number of the monster.
 
-	--hold=name[:#] Place a character's attack on hold.  Indicate the monster is holding it's attack by using a name value of 'Monster'.
-	                Adding a segment value indicates that the character can attack on the specified segment.
+	--hold=name[:#] Place a character's attack on hold.  Adding a segment value indicates that the character can attack on the specified segment.
 
 	--mi=number     Set the monster's initiative.
 

@@ -214,6 +214,30 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	/**  Monster  **/
 
+	public function initialize_enemy( DND_Monster_Monster $monster ) {
+		$this->add_to_enemy( $monster );
+		$number = $monster->get_number_appearing();
+		if ( is_array( $number ) ) {
+			foreach( $number as $enemy ) {
+				$this->add_to_enemy( $enemy );
+			}
+		} else {
+			$base = get_class( $monster );
+			if ( $number > 1 ) {
+				$start = 1;
+				$points = $monster->get_appearing_hit_points( $number );
+				if ( ( $monster instanceOf DND_Monster_Dragon_Dragon ) && $monster->mate ) {
+					$this->add_to_enemy( $monster->mate );
+					$start = 2;
+				}
+				for( $i = $start; $i < $number; $i++ ) {
+					$new = new $base( [ 'current_hp' => $points[ $i ][0], 'hit_points' => $points[ $i ][1] ] );
+					$this->add_to_enemy( $new );
+				}
+			}
+		}
+	}
+
 	public function add_to_enemy( DND_Monster_Monster $obj ) {
 		$count = count( $this->enemy );
 		$name  = $obj->get_name() . " $count";
@@ -304,6 +328,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	protected function find_casting( $caster ) {
 		$spell = array_filter( $this->casting, function( $a ) use ( $caster ) {
+			if ( ! is_array( $a ) ) return false;
 			if ( $a['caster'] === $caster ) return true;
 			return false;
 		} );
@@ -315,6 +340,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	protected function remove_casting( $caster ) {
 		$this->casting = array_filter( $this->casting, function( $a ) use ( $caster ) {
+			if ( ! is_array( $a ) ) return true;
 			if ( $a['caster'] === $caster ) return false;
 			return true;
 		} );
@@ -354,7 +380,6 @@ print_r($spell);
 
 	protected function add_effect( $spell ) {
 		$this->effects[ $spell['name'] ] = $spell;
-#print_r($this->effects);
 	}
 
 	protected function remove_effect( $effect ) {

@@ -22,5 +22,11 @@ trait DND_Character_Trait_Multi_Thief {
 		return $this->thief->get_to_hit_number( $target, $range );
 	}
 
+	public function set_current_weapon( $new = '' ) {
+		$ret = parent::set_current_weapon( $new );
+		$this->armor  = $this->thief->armor;
+		return $ret;
+	}
+
 
 }

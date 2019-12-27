@@ -14,14 +14,15 @@ class DND_Character_FighterMagicUser extends DND_Character_FighterMulti {
 	protected function initialize_multi() {
 		parent::initialize_multi();
 	}
-
+/*
 	public function set_current_weapon( $new = '' ) {
-		parent::set_current_weapon( $new );
+		$ret = parent::set_current_weapon( $new );
 		if ( $new === 'Spell' ) {
 			$this->magic->set_current_weapon( $new );
 			$this->weapon = $this->magic->weapon;
 		}
-	}
+		return $ret;
+	} //*/
 
 	public function locate_magic_spell( $spell, $type = 'Magic User' ) {
 		return parent::locate_magic_spell( $spell, $type );

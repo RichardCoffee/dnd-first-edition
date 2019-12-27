@@ -24,6 +24,7 @@ trait DND_Trait_Logging {
 
 #	 * @since 20170529
 	public function log() {
+echo "\nlogging_entry\n";
 		call_user_func_array( [ $this, 'logging_entry' ], func_get_args() );
 	}
 
@@ -136,6 +137,7 @@ trait DND_Trait_Logging {
 
 #	 * @since 20170529
 	public function logging_entry() {
+echo "\nlogging_entry\n";
 		if ( ( ! $this->logging_force ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) { return; }
 		if ( $this->logging_debug || $this->logging_force ) {
 			$args  = func_get_args();

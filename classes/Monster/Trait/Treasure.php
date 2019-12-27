@@ -63,6 +63,14 @@ trait DND_Monster_Trait_Treasure {
 				}
 				$treasure[] = sprintf( '%10s %s', $name, $string );
 			}
+		} else {
+			$multi = explode( ',', $type );
+			if ( count( $multi ) > 1 ) {
+				foreach( $multi as $symbol ) {
+					$result = $this->get_treasure_possibilities( $symbol );
+					array_splice( $treasure, -1, 0, $result );
+				}
+			}
 		}
 		return $treasure;
 	}

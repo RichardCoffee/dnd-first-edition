@@ -93,10 +93,13 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 	}
 
 	public function set_current_weapon( $new = '' ) {
-		parent::set_current_weapon( $new );
-		foreach( $this->classes as $key => $class ) {
-			$this->$key->set_current_weapon( $new );
+		$ret = parent::set_current_weapon( $new );
+		if ( $ret ) {
+			foreach( $this->classes as $key => $class ) {
+				$this->$key->set_current_weapon( $new );
+			}
 		}
+		return $ret;
 	}
 
 	public function add_experience( $xp ) {

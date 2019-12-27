@@ -28,7 +28,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $reference    = 'Monster Manual page';
 	protected $resistance   = 'Standard';
 	protected $saving       = array( 'fight' );
-	protected $size         = "Medium";
+	protected $size         = 'Medium';
 	protected $specials     = array();
 	protected $treasure     = 'Nil';
 	protected $xp_value     = array( 0, 0, 0, 0 );
@@ -37,6 +37,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Weapons;
 	use DND_Monster_Trait_Combat;
+	use DND_Monster_Trait_Experience;
 	use DND_Monster_Trait_Treasure;
 	use DND_Monster_Trait_Serialize;
 	use DND_Trait_Logging;
@@ -49,9 +50,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function __construct( $args = array() ) {
 		$this->parse_args( $args );
-#		if ( array_key_exists( 'initiative', $args ) ) {
-#			$this->initiative = mt_rand( 1, 10 );
-#		}
 		$this->determine_hit_dice();
 		$this->determine_hit_points();
 		$this->determine_armor_type();
@@ -59,7 +57,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->determine_attack_types();
 		$this->determine_specials();
 		$this->determine_saving_throw();
-		$this->determine_xp_value();
 		if ( $this->current_hp === -10000 ) $this->current_hp = $this->hit_points;
 	}
 
@@ -73,7 +70,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 				return $this->movement['swim'];
 			} else if ( ( $name === 'move_web'  ) && array_key_exists( 'web',  $this->movement ) ) {
 				return $this->movement['web'];
+			} else {
+				$key = array_key_first( $this->movement );
+				return $this->movement[ $key ];
 			}
+		}
+		if ( ( $name === 'xp_value' ) && ( ( ! $this->xp_value ) || is_array( $this->xp_value ) ) ) {
+			$this->determine_xp_value();
 		}
 		if ( property_exists( $this, $name ) ) {
 			return $this->$name;  #  Allow read access to private/protected variables
@@ -122,21 +125,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	protected function get_saving_throw_table() {
 		return $this->get_combined_saving_throw_table( $this->saving );
-	}
-
-	protected function determine_xp_value() {
-		$xp = 0;
-		if ( $this->xp_value && is_array( $this->xp_value ) ) {
-			$xp  = $this->xp_value[0];
-			$xp += ( $this->xp_value[1] * $this->hit_points );
-			if ( array_key_exists( 2, $this->xp_value ) && array_key_exists( 3, $this->xp_value ) ) {
-				if ( $this->hit_points > $this->xp_value[3] ) {
-					$mod = $this->hit_points - $this->xp_value[3];
-					$xp += ( $this->xp_value[2] * $mod );
-				}
-			}
-		}
-		$this->xp_value = $xp;
 	}
 
 	public function set_initiative( $roll ) {

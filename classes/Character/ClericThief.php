@@ -18,7 +18,7 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 	}
 
 	public function get_to_hit_number( $target, $range = -1 ) {
-		if ( in_array( $this->weapon['current'], $this->thief->weap_allow ) ) {
+		if ( in_array( $this->weapon['current'], $this->thief->weap_allow ) && ( ! in_array( $this->weapon['current'], $this->cleric->weap_allow ) ) ) {
 			return $this->get_thief_to_hit_number( $target, $range );
 		} else {
 			return $this->get_cleric_to_hit_number( $target, $range );

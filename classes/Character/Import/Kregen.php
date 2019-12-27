@@ -204,7 +204,7 @@ class DND_Character_Import_Kregen {
 			if ( ( $pos = strpos( $name, ' PH' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			if ( ( $pos = strpos( $name, ' UA' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			$this->data['spell_import'][] = $name;
-echo "Spell: $name\n";
+#echo "Spell: $name\n";
 		}
 	}
 

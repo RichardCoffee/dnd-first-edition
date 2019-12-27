@@ -18,7 +18,7 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 #	protected $hp_extra     = 0;
 	protected $in_lair      = 35;
 #	protected $initiative   = 1;
-	protected $intelligence = 'Average(low)';
+	protected $intelligence = 'Average (Low)';
 	protected $movement     = array( 'foot' => 9 );
 	protected $name         = 'Orc';
 #	protected $psionic      = 'Nil';

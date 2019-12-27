@@ -17,8 +17,9 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 	}
 
 	public function set_current_weapon( $new = '' ) {
-		$this->set_cleric_weapon( $new );
+		$ret = parent::set_current_weapon( $new );
 		$this->set_cleric_armor();
+		return $ret;
 	}
 
 	public function get_to_hit_number( $target, $range = -1 ) {

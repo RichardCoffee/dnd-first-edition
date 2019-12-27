@@ -127,7 +127,7 @@ class DND_Encounters {
 			'class' => 'Class',
 			'encounter' => 'Encounter',
 		);
-		$path  = DND_FIRST_EDITION_DIR . '/classes/Monster/';
+		$path = ( ( defined('DND_FIRST_EDITION_DIR') ) ? DND_FIRST_EDITION_DIR : DND_Plugin_Paths::get_instance()->dir ) . '/classes/Monster/';
 		$directory = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
 		$filtered  = new RecursiveCallbackFilterIterator( $directory, [ $this, 'monster_directory_filter' ] );
 		foreach ( new RecursiveIteratorIterator( $filtered ) as $file ) {
@@ -146,8 +146,8 @@ class DND_Encounters {
 	}
 
 	public function monster_directory_filter( $file, $key, $iterator ) {
-		$exclude = array('Trait');
-		return ! in_array($file->getFilename(), $exclude);
+		$exclude = array( 'Trait' );
+		return ! in_array( $file->getFilename(), $exclude );
 	}
 
 
