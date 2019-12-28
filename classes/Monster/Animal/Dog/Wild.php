@@ -1,10 +1,10 @@
 <?php
 /* Name: Wild Dog
- * Class: DND_Monster_Dog_Wild
+ * Class: DND_Monster_Animal_Dog_Wild
  * Encounter: {"CW":{"M":"C","H":"C","F":"C","S":"C","P":"C","D":"C"},"TW":{"M":"C","H":"C","F":"C","S":"C","P":"C","D":"C"},"TSW":{"M":"C","H":"C","F":"C","S":"C","P":"C","D":"C"}}
  */
 
-class DND_Monster_Dog_Wild extends DND_Monster_Monster {
+class DND_Monster_Animal_Dog_Wild extends DND_Monster_Monster {
 
 
 #	protected $alignment    = 'Neutral';

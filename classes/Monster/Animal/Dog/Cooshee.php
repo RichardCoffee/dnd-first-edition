@@ -1,10 +1,10 @@
 <?php
 /* Name: Cooshee
- * Class: DND_Monster_Dog_Cooshee
+ * Class: DND_Monster_Animal_Dog_Cooshee
  * Encounter: {"CW":{"H":"VR","F":"R","S":"VR"},"TW":{"H":"VR","F":"R","S":"VR"},"TSW":{"H":"VR","F":"R","S":"VR"}}
  */
 
-class DND_Monster_Dog_Cooshee extends DND_Monster_Monster {
+class DND_Monster_Animal_Dog_Cooshee extends DND_Monster_Monster {
 
 
 #	protected $alignment    = 'Neutral';

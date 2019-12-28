@@ -1,10 +1,10 @@
 <?php
 /* Name: War Dog
- * Class: DND_Monster_Dog_War
+ * Class: DND_Monster_Animal_Dog_War
  * Encounter: {}
  */
 
-class DND_Monster_Dog_War extends DND_Monster_Monster {
+class DND_Monster_Animal_Dog_War extends DND_Monster_Monster {
 
 
 #	protected $alignment    = 'Neutral';

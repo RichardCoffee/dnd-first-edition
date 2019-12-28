@@ -1,10 +1,10 @@
 <?php
 /* Name: Bombardier Beetle
- * Class: DND_Monster_Beetle_Bombardier
+ * Class: DND_Monster_Invertebrates_Beetle_Bombardier
  * Encounter: {"CW":{"H":"R","F":"C","S":"R"},"TW":{"H":"R","F":"C","S":"R"},"TSW":{"H":"R","F":"C","S":"R"}}
  */
 
-class DND_Monster_Beetle_Bombardier extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Bombardier extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

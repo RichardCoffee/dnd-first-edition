@@ -1,6 +1,6 @@
 <?php
 
-abstract class DND_Monster_Beetle_Beetle extends DND_Monster_Monster {
+abstract class DND_Monster_Invertebrates_Beetle_Beetle extends DND_Monster_Monster {
 
 
 #	protected $alignment    = 'Neutral';

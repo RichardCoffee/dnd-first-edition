@@ -1,10 +1,10 @@
 <?php
 /* Name: Boring Beetle
- * Class: DND_Monster_Beetle_Boring
+ * Class: DND_Monster_Invertebrates_Beetle_Boring
  * Encounter: {"TW":{"M":"R","H":"R","F":"C","S":"R"},"TSW":{"M":"R","H":"R","F":"C","S":"R"}}
  */
 
-class DND_Monster_Beetle_Boring extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Boring extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

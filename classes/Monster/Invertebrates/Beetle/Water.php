@@ -1,10 +1,10 @@
 <?php
 /* Name: Water Beetle
- * Class: DND_Monster_Beetle_Water
+ * Class: DND_Monster_Invertebrates_Beetle_Water
  * Encounter: {"TF":{"S":"R","D":"C"},"TSF":{"S":"R","D":"C"}}
  */
 
-class DND_Monster_Beetle_Water extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Water extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

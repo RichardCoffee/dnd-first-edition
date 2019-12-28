@@ -1,10 +1,10 @@
 <?php
 /* Name: Death Watch Beetle
- * Class: DND_Monster_Beetle_DeathWatch
+ * Class: DND_Monster_Invertebrates_Beetle_DeathWatch
  * Encounter: {"TW":{"F":"VR"."S":"VR","P":"VR"}}
  */
 
-class DND_Monster_Beetle_DeathWatch extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_DeathWatch extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

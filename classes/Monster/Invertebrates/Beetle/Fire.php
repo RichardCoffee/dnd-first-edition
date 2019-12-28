@@ -1,10 +1,10 @@
 <?php
 /* Name: Fire Beetle
- * Class: DND_Monster_Beetle_Fire
+ * Class: DND_Monster_Invertebrates_Beetle_Fire
  * Encounter: {"TC":{"M":"R","H":"R","F":"C","S":"R"},"TW":{"M":"R","H":"R","F":"C","S":"R"},"TSC":{"M":"R","H":"R","F":"C","S":"R"}}
  */
 
-class DND_Monster_Beetle_Fire extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Fire extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

@@ -43,5 +43,10 @@ class DND_Monster_Template extends DND_Monster_Monster {
 		$this->description = 'Monster template.';
 	}
 
+	protected function determine_specials() {
+		parent::determine_specials();
+		$this->specials = 'Special Attack';
+	}
+
 
 }

@@ -1,10 +1,10 @@
 <?php
 /* Name: Stag Beetle
- * Class: DND_Monster_Beetle_Stag
+ * Class: DND_Monster_Invertebrates_Beetle_Stag
  * Encounter: {"TC"{"H":"R","F":"C","P":"C"},"TW"{"H":"R","F":"C","P":"C"}}
  */
 
-class DND_Monster_Beetle_Stag extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Stag extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';

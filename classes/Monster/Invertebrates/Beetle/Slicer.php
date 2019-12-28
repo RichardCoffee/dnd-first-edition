@@ -1,10 +1,10 @@
 <?php
 /* Name: Slicer Beetle
- * Class: DND_Monster_Beetle_Slicer
+ * Class: DND_Monster_Invertebrates_Beetle_Slicer
  * Encounter: {"TW":{"H":"VR","F":"R","S":"VR","P":"R"}}
  */
 
-class DND_Monster_Beetle_Slicer extends DND_Monster_Beetle_Beetle {
+class DND_Monster_Invertebrates_Beetle_Slicer extends DND_Monster_Invertebrates_Beetle_Beetle {
 
 
 #	protected $alignment    = 'Neutral';
