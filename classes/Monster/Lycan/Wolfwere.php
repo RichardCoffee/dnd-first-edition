@@ -26,10 +26,10 @@ class DND_Monster_Lycan_Wolfwere extends DND_Monster_Monster {
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 15 );
-#	protected $name         = 'Monster';
+	protected $name         = 'Wolfwere';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Monster';
-#	protected $reference    = 'Monster Manual page';
+	protected $race         = 'Wolf';
+	protected $reference    = 'Monster Manual II page 127';
 	protected $resistance   = 10;
 #	protected $saving       = array( 'fight' );
 #	protected $size         = 'Medium';

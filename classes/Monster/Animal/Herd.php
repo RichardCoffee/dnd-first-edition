@@ -45,7 +45,7 @@ class DND_Monster_Animal_Herd extends DND_Monster_Monster {
 
 	protected function determine_specials() {
 		parent::determine_specials();
-		$this->specials = 'Stampede';
+		$this->specials['stampede'] = 'Stampede';
 	}
 
 
