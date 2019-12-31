@@ -97,9 +97,9 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			'goblin', 'grimlock', 'hobgoblin', 'kobold', 'meazel', 'norker', 'ogre',
 			'ogre mage', 'ogrillon', 'orc', 'quaggoth', 'tasloi', 'troll', 'xvart',
 			'cloud giant', 'fire giant', 'frost giant', 'hill giant', 'stone giant', 'storm giant',
-			'giant,cloud', 'giant,fire', 'giant,frost', 'giant,hill', 'giant,stone', 'giant,storm',
+#			'giant,cloud', 'giant,fire', 'giant,frost', 'giant,hill', 'giant,stone', 'giant,storm',
 			'fog giant', 'mountain giant', 'fomorian giant', 'firbolg giant', 'verbeeg giant',
-			'giant,fog', 'giant,mountain', 'giant,fomorian', 'giant,firbolg', 'giant,verbeeg',
+#			'giant,fog', 'giant,mountain', 'giant,fomorian', 'giant,firbolg', 'giant,verbeeg',
 		);
 	} //*/
 
