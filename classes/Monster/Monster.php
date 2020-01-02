@@ -19,6 +19,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $in_lair      = 0;
 	public    $initiative   = 10;
 	protected $intelligence = 'Animal';
+	protected $level        = 0; # used for saving throws
 	protected $magic_user   = null;
 	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 12 );
@@ -64,11 +65,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( substr( $name, 0, 4 ) === 'move' ) {
 			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && array_key_exists( 'foot', $this->movement ) ) {
 				return $this->movement['foot'];
-			} else if ( ( $name === 'move_air'  ) && array_key_exists( 'air',  $this->movement ) ) {
+			} else if ( ( $name === 'move_air'   ) && array_key_exists( 'air',   $this->movement ) ) {
 				return $this->movement['air'];
-			} else if ( ( $name === 'move_swim' ) && array_key_exists( 'swim', $this->movement ) ) {
+			} else if ( ( $name === 'move_earth' ) && array_key_exists( 'earth', $this->movement ) ) {
+				return $this->movement['earth'];
+			} else if ( ( $name === 'move_swim'  ) && array_key_exists( 'swim',  $this->movement ) ) {
 				return $this->movement['swim'];
-			} else if ( ( $name === 'move_web'  ) && array_key_exists( 'web',  $this->movement ) ) {
+			} else if ( ( $name === 'move_web'   ) && array_key_exists( 'web',   $this->movement ) ) {
 				return $this->movement['web'];
 			} else {
 				$key = array_key_first( $this->movement );
@@ -108,13 +111,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	protected function determine_specials() {
+		$this->specials['reference'] = $this->reference;
 		do_action( 'monster_determine_specials' );
 	}
 
 	protected function determine_saving_throw() {
-		if ( $this->hp_extra > 0 ) {
-			$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
-		}
+		$this->level = $this->get_saving_throw_level();
+		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->level );
 	}
 
 	protected function get_saving_throw_level() {
@@ -205,8 +208,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( $this->hp_extra ) {
 			$line .= "+{$this->hp_extra}";
 		}
-		$line .= ", HP:{$this->current_hp}/{$this->hit_points}, ";
-		$line .= $this->reference . "\n";
+		$line .= ", HP:{$this->current_hp}/{$this->hit_points}\n";
 		if ( intval( $this->resistance ) ) {
 			$this->specials['resistance'] = sprintf( 'Magic Resistance: %u%%', $this->resistance );
 		}

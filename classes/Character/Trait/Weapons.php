@@ -339,7 +339,7 @@ trait DND_Character_Trait_Weapons {
 		return array( 'bow', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
 	}
 
-	private function get_weapon_attacks_per_round( $weapon ) {
+	protected function get_weapon_attacks_per_round( $weapon, $opponent = null ) {
 		$atts  = $this->get_weapon_attacks_array( $weapon['attack'] );
 		$index = $this->get_weapon_attacks_per_round_index( $weapon['skill'] );
 		return $atts[ $index ];

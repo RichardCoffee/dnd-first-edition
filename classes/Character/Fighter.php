@@ -25,6 +25,14 @@ class DND_Character_Fighter extends DND_Character_Character {
 		return false;
 	}
 
+	protected function get_weapon_attacks_per_round( $weapon, $opponent = null ) {
+		$atts = parent::get_weapon_attacks_per_round( $weapon );
+		if ( $opponent && ( $opponent instanceOf DND_Monster_Monster ) && ( $opponent->hd_value < 8 ) ) {
+			$atts = array( $this->level, 1 );
+		}
+		return $atts;
+	}
+
 	protected function get_weapon_attacks_per_round_index( $skill = 'NP' ) {
 		$index = parent::get_weapon_attacks_per_round_index( $skill );
 		if ( $this->level > 6 ) {

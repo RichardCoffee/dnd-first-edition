@@ -70,15 +70,15 @@ class DND_CommandLine extends DND_Combat {
 			echo "\n";
 			echo $monster->command_line_display();
 			echo "\n";
-			echo count( $this->enemy ) . " Appearing HP: ";
 			$number = 0;
 			foreach( $this->enemy as $key => $entity ) {
 				// TODO: check for regeneration when segment advances
 				if ( $entity->current_hp < 1 ) continue;
-				echo "  $key: {$entity->current_hp}/{$entity->hit_points}";
+				echo "\t$key: {$entity->current_hp}/{$entity->hit_points}";
 				$number++;
+				if ( $number % 5 === 0 ) echo "\n";
 			}
-			echo "\nRemaining: $number\n\n";
+			echo "\nRemaining: $number/" . count( $this->enemy ) . "\n\n";
 			$this->show_enemy_heading();
 			if ( $monster instanceOf DND_Monster_Humanoid_Humanoid ) {
 				$this->show_humanoid_attacks( $monster );
@@ -447,23 +447,34 @@ class DND_CommandLine extends DND_Combat {
 	}
 
 	protected function show_saving_throws( $name, $source = null ) {
+		$throws = array();
 		if ( array_key_exists( $name, $this->party ) ) {
-			$char = $this->party[ $name ];
+			$obj = $this->party[ $name ];
 			if ( ! $source ) {
 				$key = array_key_first( $this->enemy );
 				$source = $this->enemy[ $key ];
 			}
-			$saving = $char->get_character_saving_throws( $source );
-			echo "\n";
-			echo "                  Saving Throws for " . $char->get_name() . "\n";
-			echo "\n";
-			foreach( $saving as $key => $roll ) {
-				printf( '%40s: %2d', $key, $roll );
-				echo "\n";
-			}
-			echo "\n";
+			$throws = $obj->get_character_saving_throws( $source );
+		} else if ( array_key_exists( $name, $this->enemy ) ) {
+			$obj = $this->enemy[ $name ];
+			$throws = $obj->get_monster_saving_throws();
+		}
+		if ( ! empty( $throws ) ) {
+			$name = $obj->get_name();
+			$this->display_saving_throws( $name, $throws );
 			exit;
 		}
+	}
+
+	private function display_saving_throws( $name, $table ) {
+		echo "\n";
+		echo "                  Saving Throws for " . $name . "\n";
+		echo "\n";
+		foreach( $table as $key => $roll ) {
+			printf( '%40s: %2d', $key, $roll );
+			echo "\n";
+		}
+		echo "\n";
 	}
 
 	protected function critical_hit_result( $param ) {

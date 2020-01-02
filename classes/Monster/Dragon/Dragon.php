@@ -206,7 +206,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$create = 'DND_Character_' . $this->magic_use;
 		$this->magic_user = new $create( [ 'level' => $level ] );
 		$this->attacks['Spell'] = [ 0, 0, 0 ];
-		if ( count( $this->saving ) === 1 ) $this->saving[] = 'magic';
+		if ( ! in_array( 'magic', $this->saving ) ) $this->saving[] = 'magic';
 	}
 
 	protected function add_magic_spells( $list ) {
