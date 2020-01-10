@@ -26,10 +26,10 @@ class DND_Monster_Animal_Baboon extends DND_Monster_Monster {
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
 #	protected $movement     = array( 'foot' => 12 );
-#	protected $name         = 'Monster';
+	protected $name         = 'Baboon';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Monster';
-#	protected $reference    = 'Monster Manual page';
+	protected $race         = 'Baboon';
+	protected $reference    = 'Monster Manual page 7';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 	protected $size         = "Small (4'+ tall)";

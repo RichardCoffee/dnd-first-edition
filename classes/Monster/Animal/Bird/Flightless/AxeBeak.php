@@ -4,7 +4,7 @@
  * Encounter: {}
  */
 
-class DND_Monster_Animal_Bird_Flightless_AxeBeak extends DND_Monster_Monster {
+class DND_Monster_Animal_Bird_Flightless_AxeBeak extends DND_Monster_Animal_Bird_Flightless_Flightless {
 
 
 #	protected $alignment    = 'Neutral';
@@ -25,11 +25,11 @@ class DND_Monster_Animal_Bird_Flightless_AxeBeak extends DND_Monster_Monster {
 #	protected $intelligence = 'Animal';
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
-	protected $movement     = array( 'foot' => 18 );
-#	protected $name         = 'Monster';
+#	protected $movement     = array( 'foot' => 18 );
+	protected $name         = 'Axe Beak';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Monster';
-#	protected $reference    = 'Monster Manual page';
+#	protected $race         = 'Flightless Bird';
+	protected $reference    = 'Monster Manual page 6';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 	protected $size         = "Large (7'+ tall)";
