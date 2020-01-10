@@ -62,7 +62,7 @@ class DND_Form_Setup {
 
 	public function show_dma_form() {
 		$this->get_available_characters(); ?>
-		<h1 class="centered"><?php _e( 'Dungeon Master Admin Form', 'dnd-first' );?></h1>
+		<h1 class="centered"><?php esc_html_e( 'Dungeon Master Admin Form', 'dnd-first' );?></h1>
 		<form method='post'>
 			<p id="file_status" class="centered"></p>
 			<div id="file_log" class="centered"></div>
@@ -77,7 +77,7 @@ class DND_Form_Setup {
 				</div>
 				<div class="col-lg-6">
 					<div class="row">
-						<h3 class="centered"><?php _e( 'New Combat', 'dnd-first-edition' ); ?></h3>
+						<h3 class="centered"><?php esc_html_e( 'New Combat', 'dnd-first-edition' ); ?></h3>
 						<div id="assignment_buttons"><?php
 							$this->show_assign_button();
 							$this->show_clear_button(); ?>
@@ -133,26 +133,26 @@ class DND_Form_Setup {
 	protected function show_character_listing( $list = array() ) {
 		$display = ( $list ) ? false : true;
 		if ( $display ) { ?>
-			<h3 class="centered"><?php _e( 'Characters', 'dnd-first-edition' ); ?></h3><?php
+			<h3 class="centered"><?php esc_html_e( 'Characters', 'dnd-first-edition' ); ?></h3><?php
 		} ?>
 		<table class="form-table">
 			<thead>
 				<td>
 				</td>
 				<th>
-					<?php _e( 'Name', 'dnd-first-edition' ); ?>
+					<?php esc_html_e( 'Name', 'dnd-first-edition' ); ?>
 				</th>
 				<th>
-					<?php _e( 'Class', 'dnd-first-edition' ); ?>
+					<?php esc_html_e( 'Class', 'dnd-first-edition' ); ?>
 				</th>
 				<th class="centered">
-					<?php _e( 'Level', 'dnd-first-edition' ); ?>
+					<?php esc_html_e( 'Level', 'dnd-first-edition' ); ?>
 				</th>
 				<th class="centered">
-					<?php _e( 'Hit Points', 'dnd-first-edition' ); ?>
+					<?php esc_html_e( 'Hit Points', 'dnd-first-edition' ); ?>
 				</th>
 				<th>
-					<?php _e( 'Location', 'dnd-first-edition' ); ?>
+					<?php esc_html_e( 'Location', 'dnd-first-edition' ); ?>
 				</th>
 			</thead>
 			<tbody><?php

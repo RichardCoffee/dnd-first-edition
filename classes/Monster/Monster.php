@@ -65,11 +65,11 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( substr( $name, 0, 4 ) === 'move' ) {
 			if ( ( ( $name === 'movement' ) || ( $name === 'move_foot' ) ) && array_key_exists( 'foot', $this->movement ) ) {
 				return $this->movement['foot'];
-			} else if ( ( $name === 'move_air'   ) && array_key_exists( 'air',   $this->movement ) ) {
+			} else if ( in_array( $name, [ 'move_air', 'move_fly' ] ) && array_key_exists( 'air',   $this->movement ) ) {
 				return $this->movement['air'];
 			} else if ( ( $name === 'move_earth' ) && array_key_exists( 'earth', $this->movement ) ) {
 				return $this->movement['earth'];
-			} else if ( ( $name === 'move_swim'  ) && array_key_exists( 'swim',  $this->movement ) ) {
+			} else if ( in_array( $name, [ 'move_swim', 'move_water' ] ) && array_key_exists( 'swim',  $this->movement ) ) {
 				return $this->movement['swim'];
 			} else if ( ( $name === 'move_web'   ) && array_key_exists( 'web',   $this->movement ) ) {
 				return $this->movement['web'];
