@@ -2,7 +2,7 @@
 
 if ( empty( $combat->enemy ) ) {
 #	$monster = new DND_Monster_Animal_Boar_Wild();
-	$monster = new DND_Monster_Animal_Wolf();
+#	$monster = new DND_Monster_Animal_Wolf();
 #	$monster = new DND_Monster_Dragon_Bronze();
 #	$monster = new DND_Monster_Dragon_Bronze( [ 'hit_dice' => 9, 'hd_minimum' => 8, 'spell_list' => [ [ 'name' => 'Dancing Lights', 'level' => 'First' ], [ 'name' => 'Ventriloquism', 'level' => 'First' ], [ 'name' => 'Pyrotechnics', 'level' => 'Second' ], [ 'name' => 'Continual Light', 'level' => 'Second' ], [ 'name' => 'Hold Person', 'level' => 'Third' ], [ 'name' => 'Protection From Normal Missiles', 'level' => 'Third' ], [ 'name' => 'Wizard Eye', 'level' => 'Fourth' ], [ 'name' => 'Dispel Illusion', 'level' => 'Fourth' ] ] ] );
 #	$monster = new DND_Monster_Dragon_Faerie();
