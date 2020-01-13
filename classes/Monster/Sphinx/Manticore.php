@@ -41,9 +41,9 @@ Description: The coloration of the manticore is that of its various parts - lion
 		$this->specials['spikes'] = 'Tail spikes: Can fire four volleys of six bolts each.';
 	}
 
-	protected function get_weapon_info( $type ) {
-		$type = ( $type === 'Spikes' ) ? 'Crossbow,Light' : $type;
-		return parent::get_weapon_info( $type );
+	protected function get_weapon_info( $weapon = 'Spell' ) {
+		$weapon = ( $weapon === 'Spikes' ) ? 'Crossbow,Light' : $weapon;
+		return parent::get_weapon_info( $weapon );
 	}
 
 	public function single_attacks( $isolated ) {
