@@ -43,7 +43,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	use DND_Character_Trait_Serialize;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;
-	use DND_Trait_Magic;
+	use DND_Trait_Magic { __get as magic__get; }
 	use DND_Trait_ParseArgs;
 
 	abstract protected function define_specials();
@@ -58,6 +58,15 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( array_key_exists( 'spell_list', $args ) ) {
 			$this->initialize_spell_list( $args['spell_list'] ); // This needs to be done =after= the level has been set.
 		}
+	}
+
+	public function __get( $name ) {
+		if ( $name === 'armor_class' ) {
+			return $this->armor['class'];
+		} else if ( $name === 'armor_type' ) {
+			return $this->armor['type'];
+		}
+		return $this->magic__get( $name );
 	}
 
 	public function __toString() {
@@ -209,8 +218,9 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 #		$this->add_dexterity_saving_throw_filters();
 	}
 
-	public function get_to_hit_number( $target, $range = -1 ) {
-		if ( property_exists( $target, 'armor' ) ) {
+	public function get_to_hit_number( $target, $range = -1, $extra = '' ) {
+		if ( ! is_object( $target ) ) { return -1; }
+		if ( $this->weapons_armor_type_check( $target ) && property_exists( $target, 'armor' ) ) {
 			$to_hit  = $this->get_to_hit_base( $target->armor['class'] );
 			$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target->armor['type'] );
 		} else {

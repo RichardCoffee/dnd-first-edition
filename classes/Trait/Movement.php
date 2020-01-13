@@ -144,8 +144,17 @@ trait DND_Trait_Movement {
 				case 1:
 					$str .= ( $seg === 10 ) ? '0|' : $seg . '|';
 					break;
-				default:
+				case 2:
 					$str .= '@|';
+					break;
+				case 3:
+					$str .= '#|';
+					break;
+				case 4:
+					$str .= '$|';
+					break;
+				default:
+					$str .= '*|';
 			}
 		}
 		return $str;

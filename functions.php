@@ -15,7 +15,7 @@ if ( ! function_exists( 'dnd1e' ) ) {
 	function dnd1e( $force = false ) {
 		static $library;
 		if ( empty( $library ) ) {
-			$library = new DND_Plugin_Library;
+			$library = new DND_Plugin_Primary;
 		}
 		if ( $force ) {
 			#  force log entry during ajax call

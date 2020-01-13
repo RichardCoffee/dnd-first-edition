@@ -5,6 +5,7 @@ trait DND_Monster_Dragon_Mated {
 
 	protected $mate     = null;
 	protected $solitary = 1;
+	protected $young    = array();
 
 
 	private function check_for_existing_mate( &$args ) {
@@ -54,7 +55,7 @@ trait DND_Monster_Dragon_Mated {
 		if ( $this->hd_minimum > 4 ) {
 			$age = mt_rand( 5, 8 );
 			$create = get_class( $this );
-			$this->mate = new $create( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
+			$this->mate = new $create( [ 'hd_minimum' => $age, 'solitary' => 100 ] );
 			$this->solitary = 0;
 			$this->specials_mate();
 		}
@@ -63,7 +64,7 @@ trait DND_Monster_Dragon_Mated {
 	private function determine_young_stats() {
 		$age = mt_rand( 1, 2 );
 		$create = get_class( $this );
-		$young  = new $create( [ 'hd_minimum' => $age, 'solitary' => 0 ] );
+		$young  = new $create( [ 'hd_minimum' => $age, 'solitary' => 100 ] );
 		return $young;
 	}
 

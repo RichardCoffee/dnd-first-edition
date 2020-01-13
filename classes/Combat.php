@@ -29,6 +29,10 @@ class DND_Combat implements JsonSerializable, Serializable {
 		$this->determine_movement();
 	}
 
+	public function __toString() {
+		return 'Plugin version';
+	}
+
 
 	/**  Startup functions  **/
 
@@ -87,16 +91,26 @@ class DND_Combat implements JsonSerializable, Serializable {
 					if ( ! is_string( $key ) ) {
 						unset( $this->enemy[ $key ] );
 					}
-				} else { print_r( $monster ); }
+				} else { echo "\nError importing monster\n";print_r( $monster ); }
 			}
 		}
 	}
 
 	protected function update_holds() {
 		foreach( $this->holding as $name ) {
- 			$segment = max( $this->segment, $this->party[ $name ]->segment );
+			$segment = max( $this->segment, $this->party[ $name ]->segment );
 			$this->party[ $name ]->set_attack_segment( $segment );
 		}
+	}
+
+	protected function reset_combat() {
+		$this->casting = array();
+		$this->effects = array();
+		$this->enemy   = array();
+		$this->holding = array();
+		$this->party   = array();
+		$this->rounds  = 3;
+		$this->segment = 1;
 	}
 
 
@@ -212,24 +226,34 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		return $fum;
 	}
 
+	protected function get_object( $name, $strict = false ) {
+		$obj = null;
+		if ( array_key_exists( $name, $this->party ) ) {
+			$obj = $this->party[ $name ];
+		} else if ( array_key_exists( $name, $this->enemy ) ) {
+			$obj = $this->enemy[ $name ];
+		} else if ( $strict && ( ! is_numeric( $name ) ) ) {
+		} else {
+			$num = intval( $name, 10 );
+			$obj = $this->get_specific_enemy( $num );
+		}
+		return $obj;
+	}
+
 	/**  Monster  **/
 
 	public function initialize_enemy( DND_Monster_Monster $monster ) {
+		$base = get_class( $monster );
 		$this->add_to_enemy( $monster );
 		$number = $monster->get_number_appearing();
 		if ( is_array( $number ) ) {
 			foreach( $number as $enemy ) {
-				$this->add_to_enemy( $enemy );
+				$this->add_to_enemy( ( is_array( $enemy ) ) ? new $base( $enemy ) : $enemy );
 			}
 		} else {
-			$base = get_class( $monster );
 			if ( $number > 1 ) {
 				$start = 1;
 				$points = $monster->get_appearing_hit_points( $number );
-				if ( ( $monster instanceOf DND_Monster_Dragon_Dragon ) && $monster->mate ) {
-					$this->add_to_enemy( $monster->mate );
-					$start = 2;
-				}
 				for( $i = $start; $i < $number; $i++ ) {
 					$new = new $base( [ 'current_hp' => $points[ $i ][0], 'hit_points' => $points[ $i ][1] ] );
 					$this->add_to_enemy( $new );
@@ -252,51 +276,30 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		return false;
 	}
 
-	protected function get_monster_key( $number ) {
-		$number = intval( $number, 10 );
-		if ( $number ) {
-			$cnt = 1;
-			foreach( $this->monster as $key => $monster ) {
-				if ( $cnt === $number ) {
-					return $key;
-				}
-				$cnt++;
-			}
-		}
-		return "Enemy $number not found.";
-	}
-
 	protected function set_monster_initiative_all( $init ) {
 		$init = intval( $init, 10 );
 		foreach( $this->enemy as $name => $monster ) {
-			$this->set_monster_initiative( $name, $init );
+			$monster->set_initiative( $init );
 		}
 	}
-
-	protected function set_monster_initiative( $name, $init ) {
-		$init = intval( $init, 10 );
-		if ( array_key_exists( $name, $this->enemy ) ) {
-			$this->enemy[ $name ]->set_initiative( $init );
-			return true;
-		}
-		return false;
-	}
-
 
 	protected function get_base_monster() {
+		return $this->get_specific_enemy();
+	}
+
+	protected function get_specific_enemy( $num = 0 ) {
 		$list = array_keys( $this->enemy );
-		if ( $list ) {
-			return $this->enemy[ $list[0] ];
-		} else {
-			return false;
+		if ( $list && array_key_exists( $num, $list ) ) {
+			return $this->enemy[ $list[ $num ] ];
 		}
+		return null;
 	}
 
 	protected function get_monster_attacks( DND_Monster_Monster $monster ) {
 		$index  = 0;
 		$seqent = array();
 		$count  = count( $monster->attacks );
-		$other  = [ 'Breath', 'Spell', 'Special' ];
+		$other  = $monster->single_attacks( [ 'Spell', 'Special' ] );
 		foreach( $other as $attack ) {
 			$count -= ( array_key_exists( $attack,  $monster->attacks ) ) ? 1 : 0;
 		}
@@ -490,38 +493,14 @@ print_r($spell);
 	}
 
 	public function get_to_hit_number( $name1, $name2, $weapon = '' ) {
-		if ( array_key_exists( $name1, $this->party ) ) {
-			$origin = $this->party[ $name1 ];
-		} else if ( array_key_exists( $name1, $this->enemy ) ) {
-			$origin = $this->enemy[ $name1 ];
-		} else {
-			return 100;
-		}
-		if ( array_key_exists( $name2, $this->party ) ) {
-			$target = $this->party[ $name2 ];
-		} else if ( array_key_exists( $name2, $this->enemy ) ) {
-			$target = $this->enemy[ $name2 ];
-		} else {
-			return 100;
-		}
+		$origin = $this->get_object( $name1, true );
+		$target = $this->get_object( $name2, true );
+		if ( ! ( $origin && $target ) ) return 100;
 		return $this->get_combat_to_hit_number( $origin, $target, $weapon );
 	}
 
 	public function get_combat_to_hit_number( $origin, $target, $weapon = '' ) {
-		if ( $origin instanceOf DND_Character_Character ) {
-			return $origin->get_to_hit_number( $target, $this->range );
-		}
-		if ( $origin instanceOf DND_Monster_Monster ) {
-			if ( $weapon && array_key_exists( $weapon, $origin->att_types ) ) {
-				if ( $target instanceOf DND_Character_Character ) {
-					// TODO: allow for rear facing
-					return $origin->get_to_hit_number( $target->armor['class'], $target->armor['type'], $origin->att_types[ $weapon ], $this->range );
-				} else {
-					return $origin->get_to_hit_number( $target->armor_class, $target->armor_type, $origin->att_types[ $weapon ], $this->range );
-				}
-			}
-		}
-		return 100;
+		return $origin->get_to_hit_number( $target, $this->range, $weapon );
 	}
 
 	protected function party_damage( $name, $damage ) {

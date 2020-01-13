@@ -155,18 +155,23 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	protected function get_comparative_size() {
-		$size = 'average';
+		$size = 'Average';
 		if ( $this->hit_dice === $this->hd_range[0] ) {
-			$size = 'small';
+			$size = 'Small';
 		} else if ( $this->hit_dice === $this->hd_range[2] ) {
-			$size = 'huge';
+			$size = 'Huge';
 		}
 		return $size;
 	}
 
 	protected function determine_specials() {
 		$this->specials = array(
-			'age'      => sprintf( 'Dragon Age(%u): %s / %s, Size: %s', $this->hd_minimum - $this->hd_extra, $this->get_dragon_age(), $this->get_comparative_size(), $this->size ),
+			'age'      => sprintf(
+				'Dragon Age(%u): %s / %s, Size: %s',
+				$this->hd_minimum - $this->hd_extra,
+				$this->get_dragon_age(),
+				$this->get_comparative_size(),
+				$this->size ),
 			'breath'   => '50% chance of using breath weapon on any given round (max 3/day).',
 			'senses'   => "Infravision 60', Detects hidden or invisible creatures within " . sprintf( '%u feet.', $this->hd_minimum * 10 ),
 			'treasure' => $this->get_treasure_amounts_description(),
@@ -178,6 +183,11 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		}
 		$this->specials_mate();
 		do_action( 'monster_determine_specials' );
+	}
+
+	public function single_attacks( $isolated ) {
+		if ( ! in_array( 'Breath', $isolated ) ) $isolated[] = 'Breath';
+		return $isolated;
 	}
 
 	protected function determine_saving_throw() {
@@ -245,7 +255,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 				$index = 'spell' . $cnt++;
 				$this->specials[ $index ] = sprintf( '%7s: %s', $spell['level'], $spell['name'] );
 			}
-		}
+		}# else { dnd1e()->log('stack'); echo "no spells\n"; }
 	}
 
 	public function get_treasure( $possible = '' ) {

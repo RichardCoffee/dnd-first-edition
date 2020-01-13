@@ -41,6 +41,13 @@ trait DND_Character_Trait_Weapons {
 		);
 	}
 
+	protected function weapons_armor_type_check( $target ) {
+		if ( $target instanceOf DND_Character_Character ) return true;
+		if ( ! ( $target instanceOf DND_Monster_Humanoid_Humanoid ) ) return false;
+		if ( ! ( $target->armor_type === $target->armor_class ) ) return true;
+		return false;
+	}
+
 	public function set_current_weapon( $new = '' ) {
 		if ( ( ! empty ( $new ) ) && ( empty( $this->weap_allow ) || in_array( $new, $this->weap_allow ) ) ) {
 			if ( ! $this->weapons_check( $new ) ) return false;
@@ -68,15 +75,13 @@ trait DND_Character_Trait_Weapons {
 		return array_key_exists( $weapon, static::$weapons_table );
 	}
 
-	private function get_weapon_info( $weapon = 'Spell' ) {
+	protected function get_weapon_info( $weapon = 'Spell' ) {
 		if ( empty( static::$weapons_table ) ) {
 			static::$weapons_table = $this->get_weapons_table();
 		}
-		$info = array();
+		$info = static::$weapons_table['Spell'];
 		if ( array_key_exists( $weapon, static::$weapons_table ) ) {
 			$info = static::$weapons_table[ $weapon ];
-		} else {
-			$info = static::$weapons_table['Spell'];
 		}
 		return $info;
 	}

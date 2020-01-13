@@ -19,11 +19,9 @@ trait DND_Monster_Trait_Combat {
 		foreach( $this->attacks as $key => $damage ) {
 			if ( ! array_key_exists( $key, $this->att_types ) ) {
 				$type = $this->get_modified_weapon_type( $key );
-				if ( $this->weapons_check( $type ) ) {
-					$this->att_types[ $key ] = $this->get_weapon_info( $type );
-					$this->att_types[ $key ]['damage'][0] = $this->get_damage_string( $damage );
-					$this->att_types[ $key ]['damage'][1] = $this->get_damage_string( $damage );
-				}
+				$this->att_types[ $key ] = $this->get_weapon_info( $type );
+				$this->att_types[ $key ]['damage'][0] = $this->get_damage_string( $damage );
+				$this->att_types[ $key ]['damage'][1] = $this->get_damage_string( $damage );
 			}
 		}
 	}
@@ -56,20 +54,21 @@ trait DND_Monster_Trait_Combat {
 
 	/**  Monster Combat functions  **/
 
-	public function get_to_hit_number( $armor_class, $armor_type, $info, $range = 2000 ) {
-		$armor_type = min( max( $armor_class, $armor_type, 0 ), 10 );
+	public function get_to_hit_number( $target, $range = 2000, $weapon = '' ) {
+		$armor_type = min( max( $target->armor_class, $target->armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) $this->determine_to_hit_row();
-		$index  = 10 - $armor_class;
+		$index  = 10 - $target->armor_class;
 		$number = $this->to_hit_row[ $index ];
-		if ( array_key_exists( $armor_type, $info['type'] ) ) {
+		$info   = $this->att_types[ $weapon ];
+		if ( $this->weapons_armor_type_check( $target ) && array_key_exists( $armor_type, $info['type'] ) ) {
 			$number -= $info['type'][ $armor_type ];
 		}
 		if ( in_array( $info['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
 		} else if ( in_array( $info['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
 			$number -= $this->get_missile_range_adjustment( $info['range'], $range );
 		}
-		return apply_filters( 'monster_to_hit_number', $number, $this );
-	}
+		return apply_filters( 'monster_to_hit_number', $number, $this, $target );
+	} //*/
 
 	protected function get_damage_string( $damage ) {
 		$string  = sprintf( '%ud%u', $damage[0], $damage[1] );

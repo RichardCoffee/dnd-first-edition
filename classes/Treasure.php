@@ -3,19 +3,17 @@
 class DND_Treasure {
 
 
+	use DND_Monster_Trait_Accouterments;
+
 
 	public function get_sub_table_name( $roll = 0 ) {
 		$roll = intval( $roll, 10 );
 		$next = '';
 		if ( $roll ) {
 			$main = $this->get_items_table();
-			foreach( $main as $item ) {
-				if ( ! is_array( $item ) ) continue;
-				$roll -= $item['chance'];
-				if ( $roll < 1 ) {
-					$next = $item['sub'];
-					break;
-				}
+			$result = $this->get_table_result( $main, $roll );
+			if ( $result ) {
+				$next = $result['sub'];
 			}
 		}
 		return $next;
@@ -82,6 +80,28 @@ class DND_Treasure {
 			}
 		}
 		echo "\n";
+	}
+
+	protected function get_table_result( $table, $roll ) {
+		foreach( $table as $entry ) {
+			if ( is_array( $entry ) ) {
+				$roll -= $entry['chance'];
+				if ( $roll < 1 ) {
+					return $entry;
+				}
+			}
+		}
+		return array();
+	}
+
+	protected function get_table_total( $table ) {
+		$total = 0;
+		foreach( $table as $entry ) {
+			if ( is_array( $entry ) ) {
+				$total += $entry['chance'];
+			}
+		}
+		return $total;
 	}
 
 	/**  Tables  **/
@@ -378,10 +398,11 @@ class DND_Treasure {
 	protected function get_books_tomes_table() {
 		return array(
 			'title' => 'Books, Librams, Manuals, and Tomes',
-			array( 'chance' => 15, 'text' => "Boccob's Blessed Book (M)",            'xp' => 4500, 'gp' => 35000, 'restrict' => 'M', 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Book of Exalted Deeds (C)',            'xp' => 8000, 'gp' => 40000, 'restrict' => 'C', 'link' => 'DMG 137' ),
+			array( 'chance' => 12, 'text' => "Boccob's Blessed Book (M)",            'xp' => 4500, 'gp' => 35000, 'restrict' => 'M', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Book of Exalted Deeds (C)',            'xp' => 8000, 'gp' => 40000, 'restrict' => 'C:Good', 'link' => 'DMG 137' ),
 			array( 'chance' =>  5, 'text' => 'Book of Infinite Spells',              'xp' => 9000, 'gp' => 50000, 'link' => 'DMG 137-138' ),
-			array( 'chance' =>  5, 'text' => 'Book of Vile Darkness (C)',            'xp' => 8000, 'gp' => 40000, 'restrict' => 'C', 'link' => 'DMG 138' ),
+			array( 'chance' =>  5, 'text' => 'Book of Neutrality (C)',               'xp' => 8000, 'gp' => 40000, 'restrict' => 'C:Neutral', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Book of Vile Darkness (C)',            'xp' => 8000, 'gp' => 40000, 'restrict' => 'C:Evil', 'link' => 'DMG 138' ),
 			array( 'chance' =>  5, 'text' => 'Libram of Gainful Conjuration (M)',    'xp' => 8000, 'gp' => 40000, 'restrict' => 'M', 'link' => 'DMG 148' ),
 			array( 'chance' =>  5, 'text' => 'Libram of Ineffable Damnation (M)',    'xp' => 8000, 'gp' => 40000, 'restrict' => 'M', 'link' => 'DMG 148' ),
 			array( 'chance' =>  5, 'text' => 'Libram of Silver Magic (M)',           'xp' => 8000, 'gp' => 40000, 'restrict' => 'M', 'link' => 'DMG 148' ),
@@ -394,7 +415,7 @@ class DND_Treasure {
 			array( 'chance' =>  5, 'text' => 'Tome of Clear Thought',                'xp' => 8000, 'gp' => 48000, 'link' => 'DMG 154' ),
 			array( 'chance' =>  5, 'text' => 'Tome of Leadership and Influence',     'xp' => 7500, 'gp' => 40000, 'link' => 'DMG 154' ),
 			array( 'chance' =>  5, 'text' => 'Tome of Understanding',                'xp' => 8000, 'gp' => 43500, 'link' => 'DMG 154' ),
-			array( 'chance' => 10, 'text' => 'Vacuous Grimoire',                     'xp' => '~~', 'gp' =>  1000, 'link' => 'DMG 154' ),
+			array( 'chance' =>  8, 'text' => 'Vacuous Grimoire',                     'xp' => '~~', 'gp' =>  1000, 'link' => 'DMG 154' ),
 		);
 	}
 
@@ -434,9 +455,9 @@ class DND_Treasure {
 			array( 'chance' =>  2, 'text' => 'Scarab of Insanity',                         'xp' => 1500, 'gp' => 11000, 'link' => 'DMG 152-153' ),
 			array( 'chance' =>  6, 'text' => 'Scarab of Protection',                       'xp' => 2500, 'gp' => 25000, 'link' => 'DMG 153' ),
 			array( 'chance' =>  1, 'text' => 'Scarab Versus Golems**',                     'xp' => '**', 'gp' => 15000, 'link' => 'http://worldofmor.us/rules/DMG/DD01048.htm' ),
-			array( 'chance' =>  3, 'text' => 'Talisman of Pure Good (C)',                  'xp' => 3500, 'gp' => 27500, 'restrict' => 'C:G', 'link' => 'DMG 154' ),
+			array( 'chance' =>  3, 'text' => 'Talisman of Pure Good (C)',                  'xp' => 3500, 'gp' => 27500, 'restrict' => 'C:Good', 'link' => 'DMG 154' ),
 			array( 'chance' =>  1, 'text' => 'Talisman of the Sphere (M)',                 'xp' =>  100, 'gp' => 10000, 'restrict' => 'M', 'link' => 'DMG 154' ),
-			array( 'chance' =>  2, 'text' => 'Talisman of Ultimate Evil (C)',              'xp' => 3500, 'gp' => 32500, 'restrict' => 'C:E', 'link' => 'DMG 154' ),
+			array( 'chance' =>  2, 'text' => 'Talisman of Ultimate Evil (C)',              'xp' => 3500, 'gp' => 32500, 'restrict' => 'C:Evil', 'link' => 'DMG 154' ),
 			array( 'chance' =>  6, 'text' => 'Talisman of Zagy',                           'xp' => 1000, 'gp' => 10000, 'link' => 'DMG 154' ),
 			'note01' => ' * roll % for effect - see description',
 			'note02' => '** roll 1d20: 1-6 Flesh 400xp, 7-11 Clay 500xp, 12-15 Stone 600xp, 16-17 Iron 800xp, 18-19 Flesh/Clay/Wood 900xp, 20 Any golem 1,250xp',
@@ -623,7 +644,7 @@ class DND_Treasure {
 			array( 'chance' =>  6, 'text' => 'Horn of Bubbles',           'xp' => '~~', 'gp' => '~~~', 'link' => 'DMG 145' ),
 			array( 'chance' =>  3, 'text' => 'Horn of Collapsing',        'xp' => 1500, 'gp' => 25000, 'link' => 'DMG 145-146' ),
 			array( 'chance' =>  1, 'text' => 'Horn of Fog',               'xp' =>  400, 'gp' =>  4000, 'link' => '' ),
-			array( 'chance' =>  1, 'text' => 'Horn of Goodness (Evil)',   'xp' =>  750, 'gp' =>  3250, 'restrict' => ':E', 'link' => '' ),
+			array( 'chance' =>  1, 'text' => 'Horn of Goodness (Evil)',   'xp' =>  750, 'gp' =>  3250, 'restrict' => ':Evil', 'link' => '' ),
 			array( 'chance' => 12, 'text' => 'Horn of the Tritons (C,F)', 'xp' => 2000, 'gp' => 17500, 'restrict' => 'CF', 'link' => 'DMG 146' ),
 			array( 'chance' => 21, 'text' => 'Horn of Valhalla*',         'xp' => 1000, 'gp' => 15000, 'link' => 'DMG 146' ),
 			array( 'chance' =>  3, 'text' => 'Lyre of Building',          'xp' => 5000, 'gp' => 30000, 'link' => 'DMG 148' ),
@@ -675,8 +696,22 @@ class DND_Treasure {
 	}
 
 	protected function get_armor_shields_table() {
+		$combined = array();
+		$combined['title'] = 'Armor and Shields: 1d1000';
+		$armor = $this->get_armor_table();
+		foreach( $armor as $entry ) {
+			$combined[] = $entry;
+		}
+		$shields = $this->get_shields_table();
+		foreach( $shields as $entry ) {
+			$combined[] = $entry;
+		}
+		$combined['note00'] = 'Roll for size: 1d100 - 01-65: Human, 66-85: Elven, 86-95: Dwarven, 96-00: Gnome/Halfling';
+		return $combined;
+	}
+
+	protected function get_armor_table() {
 		return array(
-			'title' => 'Armor and Shields: 1d1000',
 			array( 'chance' => 24, 'text' => 'Banded +1',       'xp' =>  700, 'gp' =>   4000, 'link' => 'DMG' ),
 			array( 'chance' => 18, 'text' => 'Banded +2',       'xp' => 1500, 'gp' =>   8500, 'link' => 'DMG' ),
 			array( 'chance' => 12, 'text' => 'Banded +3',       'xp' => 2250, 'gp' =>  14500, 'link' => 'DMG' ),
@@ -728,6 +763,11 @@ class DND_Treasure {
 			array( 'chance' => 30, 'text' => 'Studded Leather +2', 'xp' =>  400, 'gp' =>  2500, 'link' => 'DMG' ),
 			array( 'chance' => 18, 'text' => 'Studded Leather +3', 'xp' =>  400, 'gp' =>  2500, 'link' => 'DMG' ),
 			array( 'chance' => 24, 'text' => 'Studded Leather +4', 'xp' =>  400, 'gp' =>  2500, 'link' => 'DMG' ),
+		);
+	}
+
+	protected function get_shields_table() {
+		return array(
 			array( 'chance' => 54, 'text' => 'Shield +1',          'xp' =>  250, 'gp' =>  2500, 'link' => 'DMG' ),
 			array( 'chance' => 30, 'text' => 'Shield +2',          'xp' =>  500, 'gp' =>  5000, 'link' => 'DMG' ),
 			array( 'chance' => 24, 'text' => 'Shield +3',          'xp' =>  800, 'gp' =>  8000, 'link' => 'DMG' ),
@@ -735,7 +775,6 @@ class DND_Treasure {
 			array( 'chance' =>  6, 'text' => 'Shield +5',          'xp' => 1750, 'gp' => 17500, 'link' => 'DMG' ),
 			array( 'chance' =>  6, 'text' => 'Shield, large, +1, +4 vs. missiles', 'xp' =>  400, 'gp' => 4000, 'link' => 'DMG' ),
 			array( 'chance' => 18, 'text' => 'Shield +1, missile attractor',       'xp' => '~~', 'gp' =>  750, 'link' => 'DMG' ),
-			'note00' => 'Roll for size: 1d100 - 01-65: Human, 66-85: Elven, 86-95: Dwarven, 96-00: Gnome/Halfling',
 		);
 	}
 
@@ -756,16 +795,16 @@ class DND_Treasure {
 			array( 'chance' =>  4, 'text' => 'Sword +3, Frost Brand',         'xp' =>  1600, 'gp' =>  8000, 'link' => 'DMG 164' ),
 			array( 'chance' =>  2, 'text' => 'Sword +4, Defender',            'xp' =>  3000, 'gp' => 15000, 'link' => 'DMG 164' ),
 			array( 'chance' =>  1, 'text' => 'Sword +5, Defender',            'xp' =>  3600, 'gp' => 18000, 'link' => 'DMG 164' ),
-			array( 'chance' =>  1, 'text' => 'Sword +5, Holy Avenger (LG)',   'xp' =>  4000, 'gp' => 20000, 'link' => 'DMG 164' ),
+			array( 'chance' =>  1, 'text' => 'Sword +5, Holy Avenger (LG)',   'xp' =>  4000, 'gp' => 20000, 'restrict' => ':Lawful Good', 'link' => 'DMG 164' ),
 			array( 'chance' =>  8, 'text' => 'Sword -2, Cursed',              'xp' =>  '~~', 'gp' =>   500, 'link' => 'DMG 165' ),
 			array( 'chance' =>  1, 'text' => 'Sword of Dancing',              'xp' =>  4400, 'gp' => 22000, 'link' => 'DMG 164-165' ),
 			array( 'chance' =>  1, 'text' => 'Sword of Life Stealing',        'xp' =>  5000, 'gp' => 25000, 'link' => 'DMG 164' ),
-			array( 'chance' =>  2, 'text' => 'Sword of Sharpness (Chaotic)',  'xp' =>  7000, 'gp' => 35000, 'link' => 'DMG 164' ),
+			array( 'chance' =>  2, 'text' => 'Sword of Sharpness (Chaotic)',  'xp' =>  7000, 'gp' => 35000, 'restrict' => ':Chaotic', 'link' => 'DMG 164' ),
 			array( 'chance' => 14, 'text' => 'Sword of the Planes',           'xp' =>  2000, 'gp' => 30000, 'link' => '' ),
 			array( 'chance' =>  1, 'text' => 'Sword of Wounding',             'xp' =>  4000, 'gp' => 22000, 'link' => 'DMG 165' ),
 			array( 'chance' =>  6, 'text' => 'Sword, Cursed Berserking',      'xp' =>  '~~', 'gp' =>   500, 'link' => 'DMG 165' ),
 			array( 'chance' =>  5, 'text' => 'Sword, Short, Quickness (+2)',  'xp' =>  1000, 'gp' => 17500, 'link' => '' ),
-			array( 'chance' =>  1, 'text' => 'Sword, Vorpal Weapon (Lawful)', 'xp' => 10000, 'gp' => 50000, 'link' => 'DMG 165' ),
+			array( 'chance' =>  1, 'text' => 'Sword, Vorpal Weapon (Lawful)', 'xp' => 10000, 'gp' => 50000, 'restrict' => ':Lawful', 'link' => 'DMG 165' ),
 			'note00' => 'Use table in DMG 165 to test for unusual swords.',
 	);
 }
@@ -802,7 +841,7 @@ class DND_Treasure {
 			array( 'chance' => 25, 'text' => 'Hammer*',                  'xp' =>  300, 'gp' =>  2500, 'link' => '' ),
 			array( 'chance' =>  5, 'text' => 'Hammer +3, Dwarven Thrower', 'xp' =>1500,'gp' => 15000, 'link' => 'DMG 167' ),
 			array( 'chance' =>  2, 'text' => 'Hammer of Thunderbolts',   'xp' => 2500, 'gp' => 25000, 'link' => 'DMG 167-168' ),
-			array( 'chance' =>  5, 'text' => 'Hornblade	* 	*',          'xp' =>    0, 'gp' =>  5000, 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Hornblade*',               'xp' =>    0, 'gp' =>  5000, 'link' => '' ),
 			array( 'chance' => 25, 'text' => 'Javelin*',                 'xp' =>  375, 'gp' =>  2500, 'link' => '' ),
 			array( 'chance' =>  5, 'text' => 'Javelin of Lightning',     'xp' =>  250, 'gp' =>  3000, 'link' => '' ),
 			array( 'chance' =>  5, 'text' => 'Javelin of Piercing',      'xp' =>  250, 'gp' =>  3000, 'link' => '' ),
@@ -815,7 +854,7 @@ class DND_Treasure {
 			array( 'chance' =>  5, 'text' => 'Mace of Disruption',       'xp' => 1750, 'gp' => 17500, 'link' => 'DMG 168' ),
 			array( 'chance' => 25, 'text' => 'Military Pick*',           'xp' =>  350, 'gp' =>  2500, 'link' => '' ),
 			array( 'chance' => 25, 'text' => 'Morning Star*',            'xp' =>  400, 'gp' =>  3000, 'link' => '' ),
-			array( 'chance' =>  8, 'text' => 'Pole Arm* 	*',             'xp' =>    0, 'gp' =>     0, 'link' => '' ),
+			array( 'chance' =>  8, 'text' => 'Pole Arm*',                'xp' =>    0, 'gp' =>     0, 'link' => '' ),
 			array( 'chance' => 25, 'text' => 'Quarterstaff*',            'xp' =>  250, 'gp' =>  1500, 'link' => '' ),
 			array( 'chance' => 25, 'text' => 'Scimitar*',                'xp' =>  375, 'gp' =>  3000, 'link' => 'DMG 168' ),
 			array( 'chance' =>  5, 'text' => 'Scimitar of Speed*',       'xp' => 2500, 'gp' =>  9000, 'link' => '' ),

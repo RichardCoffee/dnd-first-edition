@@ -3,17 +3,9 @@
 trait DND_Character_Trait_SavingThrows {
 
 
-	public function get_character_saving_throws( $source = null, $extra = null ) {
-		return $this->get_saving_throws( $this->level, $source, $extra );
-	}
-
-	public function get_monster_saving_throws() {
-		$level = $this->get_saving_throw_level();
-		return $this->get_saving_throws( $level );
-	}
-
-	protected function get_saving_throws( $level, $source = null, $extra = null ) {
-		$base = $this->get_raw_saving_throws( $level, $source, $extra );
+	public function get_saving_throws( $source = null, $extra = null ) {
+		$level = ( $this instanceof DND_Monster_Monster ) ? $this->get_saving_throw_level() : $this->level;
+		$base  = $this->get_raw_saving_throws( $level, $source, $extra );
 		return $this->get_keyed_saving_throws( $base );
 	}
 

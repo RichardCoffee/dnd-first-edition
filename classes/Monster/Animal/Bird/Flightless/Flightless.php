@@ -1,8 +1,4 @@
 <?php
-/* Name: Flightless Bird
- * Class: DND_Monster_Animal_Bird_Flightless
- * Encounter: {}
- */
 
 abstract class DND_Monster_Animal_Bird_Flightless_Flightless extends DND_Monster_Monster {
 

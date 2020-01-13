@@ -11,7 +11,7 @@ class DND_Monster_Animal_Bear_Black extends DND_Monster_Monster {
 	protected $appearing    = array( 1, 3, 0 );
 	protected $armor_class  = 7;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Right Claw' => [ 1, 3, 0 ], 'Left Claw' => [ 1, 3, 0 ], 'Bite' => [ 1, 6, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 3, 0 ], 'Claw Left' => [ 1, 3, 0 ], 'Bite' => [ 1, 6, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';

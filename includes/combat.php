@@ -1,10 +1,10 @@
 <?php
 
 function dnd1e_combat() {
-	if ( defined( 'ABSPATH' ) ) {
-		return DND_Combat::instance();
-	} else {
+	if ( defined( 'CSV_PATH' ) ) {
 		return DND_CommandLine::instance();
+	} else {
+		return DND_Combat::instance();
 	}
 }
 

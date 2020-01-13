@@ -11,7 +11,7 @@ class DND_Monster_Animal_Cat_Wild extends DND_Monster_Animal_Cat_Domestic {
 	protected $appearing    = array( 1, 4, 1 );
 	protected $armor_class  = 5;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Bite' => [ 1, 2, 0 ], 'Right Claw' => [ 1, 2, 0 ], 'Left Claw' => [ 1, 2, 0 ] );
+	protected $attacks      = array( 'Bite' => [ 1, 2, 0 ], 'Claw Right' => [ 1, 2, 0 ], 'Claw Left' => [ 1, 2, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 	protected $frequency    = 'Uncommon';

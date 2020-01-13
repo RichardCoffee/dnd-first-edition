@@ -4,9 +4,7 @@ trait DND_Monster_Trait_Serialize {
 
 
 	public function JsonSerialize() {
-		$table = $this->get_serialization_data();
-		$table['what_am_i'] = get_class( $this );
-		return $table;
+		return $this->get_serialization_data();
 	}
 
 	public function serialize() {
@@ -46,7 +44,7 @@ trait DND_Monster_Trait_Serialize {
 				}
 			}
 			if ( property_exists( $this, 'mate' ) && $this->mate ) {
-				$table['mate'] = serialize( $this->mate );
+#				$table['mate'] = serialize( $this->mate );
 			}
 			if ( $this instanceOf DND_Monster_Dragon_Faerie ) {
 				$table['co_druid'] = $this->co_druid;
@@ -67,6 +65,7 @@ trait DND_Monster_Trait_Serialize {
 				}
 			}
 		}
+		$table['what_am_i'] = get_class( $this );
 		return $table;
 	}
 

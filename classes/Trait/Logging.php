@@ -24,7 +24,6 @@ trait DND_Trait_Logging {
 
 #	 * @since 20170529
 	public function log() {
-echo "\nlogging_entry\n";
 		call_user_func_array( [ $this, 'logging_entry' ], func_get_args() );
 	}
 
@@ -137,7 +136,6 @@ echo "\nlogging_entry\n";
 
 #	 * @since 20170529
 	public function logging_entry() {
-echo "\nlogging_entry\n";
 		if ( ( ! $this->logging_force ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) { return; }
 		if ( $this->logging_debug || $this->logging_force ) {
 			$args  = func_get_args();
@@ -182,12 +180,24 @@ echo "\nlogging_entry\n";
 		if ( is_array( $log_me ) || is_object( $log_me ) ) {
 			$message = print_r( $log_me, true ); // PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 33226752 bytes)
 		} else if ( $log_me === 'stack' ) {
-			$message = print_r( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ), true );
+			$backtrace = $this->logging_stack_with_origin( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ) );
+			$message = print_r( $backtrace, true );
+#			$message = print_r( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ), true );
 		} else if ( $log_me === 'full-stack' ) {
 			$message = print_r( debug_backtrace(), true );
 		}
 		$message = date( '[d-M-Y H:i:s e] ' ) . $message . "\n";
 		error_log( $message, 3, $destination );
+	}
+
+	private function logging_stack_with_origin( $backtrace ) {
+		$current = $backtrace[0];
+		foreach( $backtrace as $key => $data ) {
+			if ( $key === 0 ) continue;
+			$backtrace[ $key ]['function'] .= " - {$current['line']}";
+			$current = $data;
+		}
+		return $backtrace;
 	}
 
 /***   Helper functions   ***/

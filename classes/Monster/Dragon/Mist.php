@@ -53,6 +53,11 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 		$this->specials['sleep']   = sprintf( 'Use sleeping (%u%%) to determine if found in gaseous form.', $this->co_sleeping );
 	}
 
+	protected function get_weapon_info( $type ) {
+		$type = ( $type === 'Tail Lash' ) ? 'Voulge' : $type;
+		return parent::get_weapon_info( $type );
+	}
+
 	protected function set_magic_user( $level = 0 ) {
 		parent::set_magic_user();
 		$this->cleric = new DND_Character_Cleric( [ 'level' => $this->hit_dice ] );

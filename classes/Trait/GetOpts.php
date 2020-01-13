@@ -7,7 +7,7 @@ trait DND_Trait_GetOpts {
 
 
 	protected function get_opts() {
-		$this->opts = getopt( 'hr:st::x', [ 'add:', 'att:', 'crit:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$this->opts = getopt( 'hr:st::x', [ 'add:', 'att:', 'crit:', 'desc::', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
 		$this->process_immediate_opts();
 	}
 
@@ -50,6 +50,9 @@ trait DND_Trait_GetOpts {
 						break;
 					case 'crit':
 						$this->critical_hit_result( $this->opts['crit'] );
+						break;
+					case 'desc':
+						$this->change_shown_enemy( $this->opts['desc'] );
 						break;
 					case 'fumble':
 						$this->fumble_roll_result( $this->opts['fumble'] );
@@ -101,6 +104,8 @@ trait DND_Trait_GetOpts {
 	--crit=#[:b|p]  Display the possible result of a critical hit, where # is the number rolled on percentile dice.
 	                Second parameter of 'b' or 'p' can be added to indicate blunt or piercing damage, otherwise defaults to slashing damage.
 
+	--desc=#        Display the description information for the selected enemy.
+
 	--fumble=#      Display the possible result of a fumble roll, where # is the number rolled on percentile dice.
 
 	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
@@ -147,21 +152,10 @@ trait DND_Trait_GetOpts {
 			$init = intval( $sitrep[0], 10 );
 			$this->set_monster_initiative_all( $init );
 		} else if ( count( $sitrep ) === 2 ) {
-			$name   = $sitrep[0];
-			$number = intval( $name, 10 );
-			if ( $number ) {
-				$name = $this->get_monster_key( $number );
-			}
-			if ( in_array( $name, $this->enemy ) ) {
-				$init = intval( $sitrep[1], 10 );
-				$this->set_monster_initiative( $name, $init );
-			}
-		} else if ( count( $sitrep ) === 3 ) {
-			$name = sprintf( '%s %u', $sitrep[0], intval( $sitrep[1], 10 ) - 1 );
-			if ( in_array( $name, $this->enemy ) ) {
-				$init = intval( $sitrep[2], 10 );
-				$this->set_monster_initiative( $name, $init );
-			}
+			$num  = intval( $sitrep[0], 10 );
+			$init = intval( $sitrep[1], 10 );
+			$obj  = $this->get_specific_enemy( $num );
+			$obj->set_initiative( $init );
 		}
 	}
 

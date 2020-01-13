@@ -5,6 +5,7 @@ trait DND_Character_Trait_Magic {
 
 	protected $last_spell  = '';
 	private   $spell_table = array();
+	private   $spell_desc  = array();
 
 
 	public function get_spell_list() {
@@ -26,6 +27,8 @@ trait DND_Character_Trait_Magic {
 		$data = array();
 		if ( isset( $this->spell_table[ $level ][ $spell ] ) ) {
 			$data = $this->spell_table[ $level ][ $spell ];
+			$text = $this->get_spell_description( $level, $spell );
+			if ( $text ) $data['text'] = $text;
 		}
 		return $data;
 	}
@@ -94,11 +97,12 @@ trait DND_Character_Trait_Magic {
 	}
 
 	public function get_spell_description( $level, $name ) {
-		$table = $this->get_description_table();
-		if ( isset( $table[ $level ][ $name ] ) ) {
-			return $table[ $level ][ $name ];
+		if ( empty( $this->spell_desc ) ) $this->spell_desc = $this->get_description_table();
+		$text = '';
+		if ( array_key_exists( $level, $this->spell_desc ) && array_key_exists( $name, $this->spell_desc[ $level ] ) ) {
+			$text = $this->spell_desc[ $level ][ $name ];
 		}
-		return '';
+		return $text;
 	}
 
 

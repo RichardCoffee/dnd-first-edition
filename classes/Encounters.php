@@ -12,9 +12,9 @@ class DND_Encounters {
 		return $this->get_monster_files();
 	}
 
-	public function get_random_encounter( $terrain, $roll = 0 ) {
+	public function get_random_encounter( $terrain, $roll = 0, $creature = 0 ) {
 		list( $type, $area ) = explode( ':', $terrain );
-		$list = $this->get_monster_files( true );
+		$list = $this->get_monster_files();
 		$possibles = array();
 		foreach( $list as $key => $data ) {
 			if ( empty( $data ) ) continue;
@@ -31,17 +31,17 @@ class DND_Encounters {
 				return false;
 			} );
 		}
-/*		$count = count( $possibles );
-		if ( $count ) {
-			$roll = mt_rand( 1, $count );
-			$now  = 1;
-			foreach( $possibles as $class => $data ) {
-				if ( $now === $roll ) return $class;
-				$now++;
+		if ( $creature ) {
+			foreach( $possibles as $key => $data ) {
+				$creature--;
+				if ( $creature === 0 ) {
+					$result = $list[ $key ];
+				}
 			}
+		} else {
+			$result = $possibles;
 		}
-		return 'No Encounter';
-*/		return $possibles;
+		return $result;
 	}
 
 	protected function get_rarity_type( $roll = 0 ) {
@@ -120,7 +120,7 @@ class DND_Encounters {
 		);
 	}
 
-	protected function get_monster_files( $encounter = false ) {
+	protected function get_monster_files() {
 		$files = array();
 		$info  = array(
 			'name' => 'Name',
@@ -134,14 +134,13 @@ class DND_Encounters {
 			$data = get_file_data( $file->getPathname(), $info );
 			if ( ! empty( $data['name'] ) ) {
 				if ( $data['name'] === 'Template' ) continue;
-				if ( $encounter ) {
-					$files[ $data['class'] ] = json_decode( $data['encounter'], true );
-				} else {
-					$files[ $data['class'] ] = $data['name'];
-				}
+				$key = $data['class'];
+				$files[ $key ] = json_decode( $data['encounter'], true );
+				$files[ $key ]['name'] = $data['name'];
+				$files[ $key ]['class'] = $key;
 			}
 		}
-		if ( ! $encounter ) asort( $files, SORT_NATURAL );
+#		if ( ! $encounter ) asort( $files, SORT_NATURAL );
 		return $files;
 	}
 

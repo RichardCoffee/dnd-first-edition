@@ -53,7 +53,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'special'   => '+1 to hit, +1 damage',
 /*					'condition' => 'this_monster_only',             NEEDS TESTING!
 					'filters'   => array(
-						array( 'monster_to_hit_number', 1, 10, 2 ),
+						array( 'monster_to_hit_number', 1, 10, 3 ),
 						array( 'monster_damage_bonus',  1, 10, 2 ),
 					), */
 				),
@@ -104,7 +104,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'special'   => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 4 ) ) ),
 /*					'condition' => 'this_monster_only',             NEEDS TESTING!
 					'filters'   => array(
-						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
 						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
 					), */
 				),
@@ -143,7 +143,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 5 ) ) ),
 /*					'condition' => 'this_monster_only',             NEEDS TESTING!
 					'filters'   => array(
-						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
 						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
 						//  May need mtdw filter as well
 					), */

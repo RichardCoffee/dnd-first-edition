@@ -15,9 +15,9 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
 #	protected $movement     = array( 'foot' => 12 );
-#	protected $name         = 'Monster';
+	protected $name         = 'Humanoid';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Monster';
+	protected $race         = 'Humanoid';
 #	protected $reference    = 'Monster Manual page';
 #	protected $resistance   = 'Standard';
 #	protected $size         = 'Medium';
@@ -45,6 +45,7 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		$data = $this->get_fighter_data( $this->hit_dice );
 		$create = 'DND_Character_' . $new;
 		$this->fighter = new $create( $data );
+		$this->get_character_accouterments( $this->fighter );
 		if ( ! empty( $this->fighter->weapons ) ) {
 			$weapon = array_key_first( $this->fighter->weapons );
 			$this->fighter->set_current_weapon( $weapon );
@@ -70,6 +71,40 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 			),
 		);
 		return apply_filters( 'humanoid_fighter_data', $data, get_class( $this ) );
+	}
+
+	protected function get_character_accouterments( DND_Character_Character $obj, $chance = 0 ) {
+		$treas = new DND_Treasure;
+		$accs  = $treas->acc_get_accouterments( $char, $chance );
+		foreach( $acc as $item ) {
+			switch( $item['type'] ) {
+				case 'armor':
+					
+					break;
+				case 'shields':
+					
+					break;
+				case 'swords':
+					
+					break;
+				case 'weapons':
+					
+					break;
+				case 'potions':
+					
+					break;
+				case 'scrolls':
+					
+					break;
+				case 'rings':
+					
+					break;
+				case 'none':
+					break;
+				default:
+					
+			}
+		}
 	}
 
 

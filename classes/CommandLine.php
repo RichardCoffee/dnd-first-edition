@@ -5,6 +5,7 @@ class DND_CommandLine extends DND_Combat {
 
 	protected $minus = 0;
 	protected $text  = array();
+	protected $show  = 0;
 
 
 	use DND_Trait_GetOpts;
@@ -21,6 +22,10 @@ class DND_CommandLine extends DND_Combat {
 		parent::__construct( $args );
 		$this->process_opts();
 		$this->minus = ( ( ( $this->segment - 1 ) + floor( ( $this->segment - 1 ) / 10 ) ) * 2 );
+	}
+
+	public function __toString() {
+		return 'Commandline version';
 	}
 
 
@@ -53,11 +58,34 @@ class DND_CommandLine extends DND_Combat {
 		if ( $terrain && $area ) {
 			$enc  = new DND_Encounters;
 			$roll = ( array_key_exists( 2, $options ) ) ? intval( $options[2] ) : 0;
-			$listing = $enc->get_random_encounter( "$terrain:$area", $roll );
-			echo "\nCount: " . count( $listing ) . "\n";
-			print_r($listing);
-			exit;
+			$crea = ( array_key_exists( 3, $options ) ) ? intval( $options[3] ) : 0;
+			$listing = $enc->get_random_encounter( "$terrain:$area", $roll, $crea );
+			if ( $crea ) {
+				echo "\n\t{$listing['name']}";
+				echo "\t{$listing['class']}\n\n";
+			} else {
+				echo "\nCount: " . count( $listing ) . "\n";
+				print_r($listing);
+			}
+			if ( $crea ) {
+				$new = $listing['class'];
+				$this->reset_combat();
+				$monster = new $new;
+				$this->initialize_enemy( $monster );
+				$init = mt_rand( 1, 10 );
+				$this->set_monster_initiative_all( $init );
+				return;
+			} else {
+				exit;
+			}
 		}
+		$this->show_help();
+		exit;
+	}
+
+	protected function reset_combat() {
+		parent::reset_combat();
+		$this->show = 0;
 	}
 
 	/**  Display functions  **/
@@ -67,9 +95,7 @@ class DND_CommandLine extends DND_Combat {
 	public function show_enemy_information() {
 		$monster = $this->get_base_monster();
 		if ( $monster ) {
-			echo "\n";
-			echo $monster->command_line_display();
-			echo "\n";
+			$this->show_enemy_description( $this->show );
 			$number = 0;
 			foreach( $this->enemy as $key => $entity ) {
 				// TODO: check for regeneration when segment advances
@@ -87,6 +113,21 @@ class DND_CommandLine extends DND_Combat {
 			}
 		} else {
 			return "No enemy found.";
+		}
+	}
+
+	protected function show_enemy_description( $num ) {
+		$enemy = $this->get_specific_enemy( $num );
+		echo "\n";
+		echo $enemy->command_line_display();
+		echo "\n";
+	}
+
+	protected function change_shown_enemy( $num ) {
+		$num = intval( $num, 10 );
+		$list = array_keys( $this->enemy );
+		if ( array_key_exists( $num, $list ) ) {
+			$this->show = $num;
 		}
 	}
 
@@ -252,19 +293,26 @@ class DND_CommandLine extends DND_Combat {
 
 	protected function enemy_to_hit_string( DND_Character_Character $target ) {
 		$origin = $this->get_base_monster();
-		$to_hit = array();
-		foreach( $origin->att_types as $type => $attack ) {
-			$number = $this->get_combat_to_hit_number( $origin, $target, $type );
-			if ( ! in_array( $number, $to_hit ) ) $to_hit[] = $number;
+		if ( $origin ) {
+			$to_hit = array();
+			foreach( $origin->att_types as $type => $attack ) {
+				$number = $this->get_combat_to_hit_number( $origin, $target, $type );
+				if ( ! in_array( $number, $to_hit ) ) $to_hit[] = $number;
+			}
+			return implode( '/', $to_hit );
 		}
-		return implode( '/', $to_hit );
+		return '-1';
 	}
 
 	protected function get_weapon_string( DND_Character_Character $char ) {
-		$monster = $this->get_base_monster();
 		$string = sprintf( ': %-20s', substr( $this->get_weapon_text( $char ), 0, 19 ) );
-		$string.= sprintf( '%2d  ',   max( 2, $this->get_combat_to_hit_number( $char, $monster ) ) );
-		$string.= $this->get_weapon_damage_string( $char, $monster );
+		$monster = $this->get_base_monster();
+		if ( $monster ) {
+			$string.= sprintf( '%2d  ',   max( 2, $this->get_combat_to_hit_number( $char, $monster ) ) );
+			$string.= $this->get_weapon_damage_string( $char, $monster );
+		} else {
+			$string.= 'No opponent ';
+		}
 		return $string;
 	}
 
@@ -447,34 +495,18 @@ class DND_CommandLine extends DND_Combat {
 	}
 
 	protected function show_saving_throws( $name, $source = null ) {
-		$throws = array();
-		if ( array_key_exists( $name, $this->party ) ) {
-			$obj = $this->party[ $name ];
-			if ( ! $source ) {
-				$key = array_key_first( $this->enemy );
-				$source = $this->enemy[ $key ];
-			}
-			$throws = $obj->get_character_saving_throws( $source );
-		} else if ( array_key_exists( $name, $this->enemy ) ) {
-			$obj = $this->enemy[ $name ];
-			$throws = $obj->get_monster_saving_throws();
-		}
-		if ( ! empty( $throws ) ) {
-			$name = $obj->get_name();
-			$this->display_saving_throws( $name, $throws );
-			exit;
-		}
-	}
-
-	private function display_saving_throws( $name, $table ) {
+		$object = $this->get_object( $name );
+		$source = ( $source ) ? $source : $this->get_base_monster();
+		$throws = $object->get_saving_throws( $source );
 		echo "\n";
-		echo "                  Saving Throws for " . $name . "\n";
+		echo "                  Saving Throws for " . $object->get_name() . "\n";
 		echo "\n";
-		foreach( $table as $key => $roll ) {
+		foreach( $throws as $key => $roll ) {
 			printf( '%40s: %2d', $key, $roll );
 			echo "\n";
 		}
 		echo "\n";
+		exit;
 	}
 
 	protected function critical_hit_result( $param ) {

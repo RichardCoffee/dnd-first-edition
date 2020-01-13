@@ -17,9 +17,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $hit_points   = 0;
 	protected $hp_extra     = 0;
 	protected $in_lair      = 0;
-	public    $initiative   = 10;
+	protected $initiative   = 10;
 	protected $intelligence = 'Animal';
-	protected $level        = 0; # used for saving throws
 	protected $magic_user   = null;
 	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 12 );
@@ -81,10 +80,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		if ( ( $name === 'xp_value' ) && ( ( ! $this->xp_value ) || is_array( $this->xp_value ) ) ) {
 			$this->determine_xp_value();
 		}
-		if ( property_exists( $this, $name ) ) {
-			return $this->$name;  #  Allow read access to private/protected variables
-		}
-		return null;
+		return $this->magic__get( $name );
 	}
 
 	public function __toString() {
@@ -116,8 +112,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	protected function determine_saving_throw() {
-		$this->level = $this->get_saving_throw_level();
-		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->level );
+		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
 	}
 
 	protected function get_saving_throw_level() {
@@ -197,6 +192,10 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 			return true;
 		}
 		return false;
+	}
+
+	public function single_attacks( $isolated ) {
+		return $isolated;
 	}
 
 	/**  Command Line  **/

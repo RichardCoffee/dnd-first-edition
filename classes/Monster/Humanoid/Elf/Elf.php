@@ -8,7 +8,7 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 	protected $armor_class  = 5;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Weapon' => [ 1, 10, 0 ] );
-#	rotected $extra        = array();
+#	protected $extra        = array();
 #	protected $fighter      = null;
 	protected $frequency    = 'Uncommon';
 	protected $hit_dice     = 1;
@@ -34,7 +34,6 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 		$roll   = mt_rand( 0, 2 );
 		$armor  = $opt[ $roll ];
 		$bonus  = 0;
-		$sbonus = 0;
 		if ( $level > 1 ) {
 			$opts[] = 'Elfin Chain';
 			$roll   = mt_rand( $roll, 3 );
@@ -42,12 +41,13 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 			if ( $this->check_chance( $level * 10 ) ) {
 				$bonus = mt_rand( 1, min( 5, ceil( $level / 4 ) ) );
 			}
+		}
+		$weapons = $this->weapon_choices( $level );
+		if ( ( count( $weapons ) > 1 ) || ( ! in_array( 'Bow,Long', $weapons ) ) ) {
+			$sbonus = 0;
 			if ( $this->check_chance( $level * 10 ) ) {
 				$sbonus = mt_rand( 1, min( 5, ceil( $level / 3 ) ) );
 			}
-		}
-		$weapons = $this->weapon_choices( $level );
-		if ( ( count( $weapons ) > 1 ) || ( ! array_key_exists[ 'Bow,Long', $weapons ) ) {
 			$shield = array( 'type' => 'Medium', 'bonus' => $sbonus );
 		} else {
 			$shield = array( 'type' => 'none', 'bonus' => 0 );
@@ -60,7 +60,7 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 			'movement'   => $this->movement['foot'],
 			'name'       => $this->name,
 			'race'       => $this->race,
-			'shield'     => [ 'type' => 'Small', 'bonus' => $shield ],
+			'shield'     => $shield,
 			'stats'      => array(
 				'str' => 12 + mt_rand( 1, 6 ),
 				'int' => 12 + mt_rand( 1, 6 ),
@@ -137,7 +137,7 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 			$extra[] = $opts[ $level ] . ' level fighter / ' . $opts[ $level - 1 ] . ' level magic-user';
 		}
 		if ( $num > 99 ) {
-			$extra[] = '4th level fighter/8th level magic-user';
+		$extra[] = '4th level fighter/8th level magic-user';
 			$extra[] = '4th level fighter/5th level magic-user';
 			$extra[] = '4th level fighter/5th level magic-user';
 			$extra[] = '4th level fighter/4th level magic-user/4th level cleric';

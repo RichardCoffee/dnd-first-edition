@@ -25,7 +25,7 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 	protected $race         = 'Orc';
 	protected $reference    = 'Monster Manual page 75';
 #	protected $resistance   = 'Standard';
-	protected $size         = "Medium(6'+tall)";
+	protected $size         = "Medium(6'+ tall)";
 #	protected $specials     = array();
 	protected $treasure     = 'L,C,O,Q,S';
 #	protected $xp_value     = array();
@@ -100,6 +100,11 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 			$extra[] = 'leader and 3 assistants (8hp each)';
 		}
 		if ( $this->check_for_lair() ) {
+			if ( $this->check_chance( 75 ) ) {
+				$this->in_lair = '100: Underground caves';
+			} else {
+				$this->in_lair = '100: Above ground village';
+			}
 		} else {
 			$stats = 'AC4, 11hp, as 2HD, dam 1d6+1';
 			if ( $this->check_chance( 20 ) ) {

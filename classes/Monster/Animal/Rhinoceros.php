@@ -9,7 +9,8 @@ class DND_Monster_Animal_Rhinoceros extends DND_Monster_Monster {
 
 #	protected $alignment    = 'Neutral';
 	protected $appearing    = array( 1, 6, 0 );
-	protected $armor_class  = 666666ted $armor_type   = 11;
+	protected $armor_class  = 6;
+#	protected $armor_type   = 11;
 	protected $attacks      = array( 'Horn' => [ 2, 4, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';

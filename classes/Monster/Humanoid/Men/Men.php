@@ -1,6 +1,6 @@
 <?php
 
-abstract class DND_Monster_Humanoid_DemiHuman extends DND_Monster_Humanoid_Humanoid {
+abstract class DND_Monster_Humanoid_Men_Men extends DND_Monster_Humanoid_Humanoid {
 
 
 #| protected $alignment    = 'Neutral';
@@ -29,7 +29,7 @@ abstract class DND_Monster_Humanoid_DemiHuman extends DND_Monster_Humanoid_Human
 
 
 	protected function possible_magic_items( DND_Character_Character $obj ) {
-		$this->get_character_accouterments( $obj, $obj->level * 10 );
+		$this->get_character_accouterments( $obj, $obj->level * 5 );
 	}
 
 

@@ -11,10 +11,7 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/transients.php' );
 require_once( DND_FIRST_EDITION_DIR . '/command_line/wordpress/get_file_data.php' );
 require_once( DND_FIRST_EDITION_DIR . '/command_line/wordpress/plugin.php' );
 
-$combat = dnd1e_transient( 'combat' );
-if ( empty( $combat ) ) {
-	$combat = DND_CommandLine::instance();
-}
+$combat = dnd1e()->combat;
 
 include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
