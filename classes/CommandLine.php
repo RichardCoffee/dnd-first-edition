@@ -448,23 +448,23 @@ class DND_CommandLine extends DND_Combat {
 		$rank  = array_merge( $party, $enemy );
 		$this->rank_attackers( $rank );
 		foreach( $rank as $body ) {
-			$name = $body->get_name();
-			echo "\t$name";
-			if ( $this->holding && in_array( $name, $this->holding ) ) {
+			$key = $body->get_key();
+			echo "\t" . $body->get_name();
+			if ( $this->holding && in_array( $key, $this->holding ) ) {
 				echo " (holding)";
 			} else {
 				$this->check_for_dual_weapon( $body );
 			}
-			if ( $this->casting && $this->is_casting( $name ) ) {
-				$spell = $this->find_casting( $name );
+			if ( $this->is_casting( $key ) ) {
+				$spell = $this->find_casting( $key );
 				if ( $this->segment === $spell['when'] ) {
 					$this->show_casting( $spell );
 					$this->finish_casting( $spell );
 				} else {
 					echo " (casting {$this->segment}/{$spell['when']})";
 				}
-			} else if ( array_key_exists( $name, $this->moves ) ) {
-				$this->movement_when_attacking( $name );
+			} else if ( array_key_exists( $key, $this->moves ) ) {
+				$this->movement_when_attacking( $key );
 			}
 			echo "\n";
 		}
@@ -509,8 +509,8 @@ class DND_CommandLine extends DND_Combat {
 		exit;
 	}
 
-	protected function critical_hit_result( $param ) {
-		$crit = parent::critical_hit_result( $param );
+	protected function critical_hit_result( $param, $type = 's' ) {
+		$crit = parent::critical_hit_result( $param, $type );
 		if ( is_array( $crit ) ) {
 			print_r( $crit );
 		} else {

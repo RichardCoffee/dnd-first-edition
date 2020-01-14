@@ -3,17 +3,19 @@
 abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 
+#	protected $ac_rows      = array( 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 14, 15, 15, 15 ); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Neutral';
 	protected $appearing    = array( 1, 1, 0 );
 	protected $armor_class  = 10;
-	protected $armor_type   = 11;
+#	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
+#	protected $att_types    = array(); // DND_Monster_Trait_Combat
 	protected $attacks      = array();
 	public    $current_hp   = -10000;
 	protected $description  = '';
 	protected $frequency    = 'Common';
-	protected $hit_dice     = 0;
 	protected $hd_minimum   = 1;
 	protected $hd_value     = 8;
+	protected $hit_dice     = 0;
 	protected $hit_points   = 0;
 	protected $hp_extra     = 0;
 	protected $in_lair      = 0;
@@ -28,9 +30,12 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $reference    = 'Monster Manual page';
 	protected $resistance   = 'Standard';
 	protected $saving       = array( 'fight' );
+	protected $segment      = 0;
 	protected $size         = 'Medium';
 	protected $specials     = array();
+#	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'Nil';
+#	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
@@ -127,10 +132,16 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	public function set_initiative( $roll ) {
 		$this->initiative = 11 - $roll;
+		$this->segment = max( $this->initiative, $this->segment );
+	}
+
+	public function set_attack_segment( $new ) {
+		$this->segment = max( $this->segment, intval( $new ) );
 	}
 
 	public function get_name() {
-		return str_replace( ' ', '_', $this->name );
+		return $this->name;
+#		return str_replace( ' ', '_', $this->name );
 	}
 
 	public function get_number_appearing() {

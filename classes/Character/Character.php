@@ -20,7 +20,6 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $movement   = 12;
 	protected $name       = 'Character Name';
 	protected $non_prof   = -100;
-	protected $ongoing    = array();
 	protected $race       = 'Human';
 	protected $segment    = 0;  # attack segment
 	protected $shield     = array( 'type' => 'none', 'bonus' => 0 );
@@ -101,6 +100,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$name = explode( ' ', $this->name );
 			return $name[0];
 		}
+	}
+
+	public function get_key() {
+		return $this->get_name();
 	}
 
 	public function get_class() {
@@ -314,22 +317,23 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	public function check_temporary_hit_points( $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
-			$combat = dnd1e_combat();
-			foreach( $combat->effects as $name => $effect ) {
-				if ( $effect['target'] === $this->get_name() ) {
+			$combat = dnd1e()->combat;
+			$name   = $this->get_name();
+			foreach( $combat->effects as $key => $effect ) {
+				if ( $effect['target'] === $name ) {
 					if ( array_key_exists( 'condition', $effect ) ) {
 						// TODO: check for aoe conditions
 						if ( $effect['condition'] === 'this_character_only' ) {
-							foreach( $effect['filters'] as $key => $filter ) {
+							foreach( $effect['filters'] as $index => $filter ) {
 								if ( $filter[0] === 'character_temporary_hit_points' ) {
-									$remaining = $ongoing[ $name ]['filters'][ $key ][1];
+									$remaining = $combat->effects[ $key ]['filters'][ $index ][1];
 									$remaining -= $damage;
 									if ( $remaining > 0 ) {
-										$ongoing[ $name ]['filters'][ $key ][1] -= $remaining;
+										$combat->effects[ $key ]['filters'][ $index ][1] -= $remaining;
 										$damage = 0;
 									} else {
 										$damage = abs( $remaining );
-										$combat->remove_effect( $name );
+										$combat->remove_effect( $key );
 										break;
 									}
 								}

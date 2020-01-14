@@ -4,7 +4,6 @@ define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
 define( 'CSV_PATH', '/home/oem/DnD/csv/' );
 
 require( DND_FIRST_EDITION_DIR . '/functions.php' );
-require( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
 
 $players = array(
 	'David'   => array( 'class' => 'Ranger', 'data' => [ 'shield' => [ 'type' => 'Small' ] ] ),

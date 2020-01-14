@@ -49,7 +49,7 @@ trait DND_Trait_GetOpts {
 						$this->remove_holding( $this->opts['att'] );
 						break;
 					case 'crit':
-						$this->critical_hit_result( $this->opts['crit'] );
+						$this->critical_hit( $this->opts['crit'] );
 						break;
 					case 'desc':
 						$this->change_shown_enemy( $this->opts['desc'] );
@@ -111,39 +111,32 @@ trait DND_Trait_GetOpts {
 	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
 	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
 
-	--hit=name:#    Use to record damage to a character, format is <name>:<damage>.  Use a negative number to indicate healing.
-	                For monsters, the format is 'M<#>':<damage>, where 'M' is the monster name and '#' is the number of the monster.
+	--hit=name:#    Use to record damage to a combatant, format is <name>:<damage>.  Use a negative number to indicate healing.
 
-	--hold=name[:#] Place a character's attack on hold.  Adding a segment value indicates that the character can attack on the specified segment.
+	--hold=name[:#] Place a combatant's attack on hold.  Adding a segment value indicates that the combatant can attack on the specified segment.
 
 	--mi=number     Set the monster's initiative.
 
 	--pre=name:#    Use this when a character casts a spell before combat, where '#' indicates the spell's number, from the numbered spell list.
 
-	--st=name       Show the saving throws for the indicated character.
+	--st=name       Show the saving throws for the indicated combatant.
 
 ";
+	}
+
+	protected function critical_hit( $param ) {
+		$info = explode( ':', $param );
+		$roll = $info[0];
+		$type = ( array_key_exists( 1, $info ) ) ? $info[1] : 's';
+		$type = ( in_array( $type, [ 'b', 'p', 's' ] ) ) ? $type : 's';
+		$this->critical_hit_result( $roll, $type );
 	}
 
 	protected function record_damage() {
 		$sitrep = explode( ':', $this->opts['hit'] );
 		$name   = $sitrep[0];
-		if ( array_key_exists( $name, $this->party ) ) {
-			$damage = intval( $sitrep[1], 10 );
-			$this->party_damage( $name, $damage );
-		} else if ( count( $sitrep ) === 2 ) {
-			$name = $sitrep[0];
-			if ( array_key_exists( $name, $this->enemy ) ) {
-				$damage = intval( $sitrep[1], 10 );
-				$this->enemy_damage( $name, $damage );
-			}
-		} else if ( count( $sitrep ) === 3 ) {
-			$name = sprintf( '%s %u', $name, intval( $sitrep[1], 10 ) - 1 );
-			if ( array_key_exists( $name, $this->enemy ) ) {
-				$damage = intval( $sitrep[2], 10 );
-				$this->enemy_damage( $name, $damage );
-			}
-		}
+		$damage = $sitrep[1];
+		$this->object_damage( $name, $damage );
 	}
 
 	protected function monster_initiative() {

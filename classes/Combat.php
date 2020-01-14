@@ -4,7 +4,7 @@ class DND_Combat implements JsonSerializable, Serializable {
 
 
 	protected $casting = array();
-	protected $effects = array();
+	public    $effects = array();
 	protected $enemy   = array();
 	protected $holding = array();
 	protected $party   = array();
@@ -37,9 +37,9 @@ class DND_Combat implements JsonSerializable, Serializable {
 	/**  Startup functions  **/
 
 	protected function integrate_effects() {
-		foreach( $this->effects as $name => $spell ) {
+		foreach( $this->effects as $key => $spell ) {
 			if ( array_key_exists( 'ends', $spell ) && ( $this->segment > $spell['ends'] ) ) {
-				$this->remove_effect( $name );
+				$this->remove_effect( $key );
 				continue;
 			}
 			$filters = $spell['filters'];
@@ -98,8 +98,9 @@ class DND_Combat implements JsonSerializable, Serializable {
 
 	protected function update_holds() {
 		foreach( $this->holding as $name ) {
-			$segment = max( $this->segment, $this->party[ $name ]->segment );
-			$this->party[ $name ]->set_attack_segment( $segment );
+			$object  = $this->get_object( $name );
+			$segment = max( $this->segment, $object->segment );
+			$object->set_attack_segment( $segment );
 		}
 	}
 
@@ -116,31 +117,13 @@ class DND_Combat implements JsonSerializable, Serializable {
 
 	/**  Utility functions  **/
 
-	public function increment_segment() {
-/*		if ( $this->party ) {
-			foreach( $this->party as $name => $obj ) {
-				$sequence = $this->get_attack_sequence( $obj->segment, $obj->weapon['attacks'] );
-				foreach( $sequence as $seggie ) {
-					if ( $seggie === $this->segment ) {
-						if ( ( ( $seggie - $obj->segment ) % 10 ) === 0 ) {
-							$obj->set_attack_segment( $seggie );
-							break;
-						}
-					}
-				}
-			}
-		} //*/
-#		$this->segment++;
-		$this->update_holds();
-	}
-
 	protected function get_party_attackers() {
 		$party = array();
 		foreach( $this->party as $name => $char ) {
 			$sequence = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
 			if ( in_array( $this->segment, $sequence ) ) {
 				$party[] = $char;
-			} else if ( $this->casting && $this->is_casting( $name ) ) {
+			} else if ( $this->is_casting( $name ) ) {
 				$spell = $this->find_casting( $name );
 				if ( $this->segment > $spell['when'] ) {
 					$this->remove_casting( $name );
@@ -160,13 +143,13 @@ class DND_Combat implements JsonSerializable, Serializable {
 			if ( $monster instanceOf DND_Monster_Humanoid_Humaniod ) {
 /*foreach( $monster->attacks as $type => $damage ) {
 if ( in_array( $segment, $att_seq[ $type ] ) ) {
-$enemy[] = new DND_Monster_Ranking( $monster, $type );
+$enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type );
 }
 } //*/
 			} else {
 				foreach( $sequent as $type => $attack ) {
 					if ( in_array( $this->segment, $attack ) ) {
-						$enemy[] = new DND_Monster_Ranking( $monster, $type );
+						$enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type );
 					}
 				}
 			}
@@ -212,9 +195,9 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 		} );
 	}
 
-	protected function critical_hit_result( $param ) {
+	protected function critical_hit_result( $param, $type = 's' ) {
 		$args = explode( ':', $param );
-		$poss = ( count( $args ) > 1 ) ? $args[1] : 's';
+		$poss = ( count( $args ) > 1 ) ? $args[1] : $type;
 		$dr   = new DND_DieRolls;
 		$crit = $dr->get_crit_result( $args[0], $poss );
 		return $crit;
@@ -326,6 +309,7 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 	} //*/
 
 	protected function is_casting( $caster ) {
+		if ( empty( $this->casting ) ) return false;
 		return in_array( $caster, array_column( $this->casting, 'caster' ) );
 	}
 
@@ -351,19 +335,15 @@ $enemy[] = new DND_Monster_Ranking( $monster, $type );
 
 	protected function start_casting( $origin, $spell, $target = '' ) {
 		$result = false;
-		if ( array_key_exists( $origin, $this->party ) ) {
-			if ( array_key_exists( $origin, $this->party ) ) {
-				if ( $spell ) {
-					$length = ( strpos( $spell['cast'], 'segment' ) ) ? intval( $spell['cast'], 10 ) : intval( $spell['cast'], 10 ) * 10;
-					$spell['target'] = ( $target ) ? $target : $origin;
-					$spell['caster'] = $origin;
-					$spell['when']   = $this->segment + $length;
-print_r($spell);
-					$this->casting[] = $spell;
-					$this->remove_holding( $origin );
-					$result = true;
-				}
-			}
+		if ( $spell && $this->get_object( $origin ) ) {
+			$this->remove_holding( $origin );
+			$length = ( strpos( $spell['cast'], 'segment' ) ) ? intval( $spell['cast'], 10 ) : intval( $spell['cast'], 10 ) * 10;
+			$spell['target'] = ( $target ) ? $target : $origin;
+			$spell['caster'] = $origin;
+			$spell['when']   = $this->segment + $length;
+#print_r($spell);
+			$this->casting[] = $spell;
+			$result = true;
 		}
 		return $result;
 	}
@@ -377,17 +357,14 @@ print_r($spell);
 				$length = ( strpos( $spell['duration'], 'hour'    ) ) ? intval( $spell['duration'] ) * 1000 : $length;
 				$spell['ends'] = $this->segment + $length;
 			}
-			$this->add_effect( $spell );
+			$key = $spell['name'] . $spell['caster'] . $spell['target'];
+			$this->effects[ $key ] = $spell;
 		}
 	}
 
-	protected function add_effect( $spell ) {
-		$this->effects[ $spell['name'] ] = $spell;
-	}
-
-	protected function remove_effect( $effect ) {
-		if ( $effect && array_key_exists( $effect, $this->effects ) ) {
-			unset( $this->effects[ $effect ] );
+	protected function remove_effect( $key ) {
+		if ( $key && array_key_exists( $key, $this->effects ) ) {
+			unset( $this->effects[ $key ] );
 		}
 	}
 
@@ -503,16 +480,16 @@ print_r($spell);
 		return $origin->get_to_hit_number( $target, $this->range, $weapon );
 	}
 
-	protected function party_damage( $name, $damage ) {
-		if ( array_key_exists( $name, $this->party ) ) {
-			$damage = $this->party[ $name ]->check_temporary_hit_points( $damage );
-			$this->party[ $name ]->current_hp -= $damage;
-		}
-	}
-
-	protected function enemy_damage( $name, $damage ) {
-		if ( array_key_exists( $name, $this->enemy ) ) {
-			$this->enemy[ $name ]->current_hp -= $damage;
+	protected function object_damage( $name, $damage ) {
+		$obj = $this->get_object( $name );
+		if ( $obj ) {
+			$damage = intval( $damage );
+			if ( $damage ) {
+				if ( $obj instanceOf DND_Character_Character ) {
+					$damage = $obj->check_temporary_hit_points( $damage );
+				}
+				$obj->current_hp -= $damage;
+			}
 		}
 	}
 

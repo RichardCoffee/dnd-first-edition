@@ -5,8 +5,6 @@ define( 'CSV_PATH', '/home/oem/DnD/csv/' );
 define( 'WP_DEBUG', true );
 
 require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
-require_once( DND_FIRST_EDITION_DIR . '/includes/combat.php' );
-
 require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 
 $trans = dnd1e_transient( 'cast' );
