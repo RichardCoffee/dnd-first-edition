@@ -26,7 +26,7 @@ trait DND_Trait_Movement {
 		}
 	}
 
-#	 * @uses DND_Combat::is_casting()
+#	 * @uses DND_Combat_Combat::is_casting()
 	private function add_object_movement( $obj, $init = 0 ) {
 		$name = $obj->get_name();
 		if ( $this->is_casting( $name ) ) return;

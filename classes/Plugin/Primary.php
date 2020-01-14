@@ -24,9 +24,9 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 			$this->combat = dnd1e_transient( 'combat' );
 			if ( empty( $this->combat ) ) {
 				if ( defined( 'CSV_PATH' ) ) {
-					$this->combat = DND_CommandLine::instance();
+					$this->combat = DND_Combat_CommandLine::instance();
 				} else {
-					$this->combat = DND_Combat::instance();
+					$this->combat = DND_Combat_Plugin::instance();
 				}
 			} else {
 				if ( defined( 'CSV_PATH' ) ) {

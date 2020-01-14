@@ -1,6 +1,6 @@
 <?php
 
-class DND_CommandLine extends DND_Combat {
+class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 
 	protected $minus = 0;
@@ -8,7 +8,7 @@ class DND_CommandLine extends DND_Combat {
 	protected $show  = 0;
 
 
-	use DND_Trait_GetOpts;
+	use DND_Combat_GetOpts;
 	use DND_Trait_Singleton;
 
 

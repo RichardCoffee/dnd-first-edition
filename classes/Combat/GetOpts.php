@@ -1,6 +1,6 @@
 <?php
 
-trait DND_Trait_GetOpts {
+trait DND_Combat_GetOpts {
 
 
 	protected $opts = array();

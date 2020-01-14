@@ -1,6 +1,6 @@
 <?php
 
-class DND_Combat implements JsonSerializable, Serializable {
+class DND_Combat_Combat implements JsonSerializable, Serializable {
 
 
 	protected $casting = array();
@@ -27,10 +27,6 @@ class DND_Combat implements JsonSerializable, Serializable {
 		if ( $this->enemy )   $this->integrate_enemy();
 		if ( $this->holding ) $this->update_holds();
 		$this->determine_movement();
-	}
-
-	public function __toString() {
-		return 'Plugin version';
 	}
 
 
