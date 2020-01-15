@@ -14,6 +14,7 @@ trait DND_Monster_Trait_Serialize {
 	private function get_serialization_data() {
 		$table = array(
 			'attacks'      => $this->attacks,
+			'combat_key'   => $this->get_key(),
 			'current_hp'   => $this->current_hp,
 			'hit_dice'     => $this->hit_dice,
 			'hit_points'   => $this->hit_points,
@@ -21,6 +22,8 @@ trait DND_Monster_Trait_Serialize {
 			'initiative'   => $this->initiative,
 			'intelligence' => $this->intelligence,
 			'name'         => $this->name,
+			'segment'      => $this->segment,
+			'weapon'       => $this->weapon,
 			'xp_value'     => $this->xp_value,
 		);
 		foreach( [ 'extra' ] as $prop ) {

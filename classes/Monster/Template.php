@@ -14,6 +14,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
 #	protected $att_types    = array(); // DND_Monster_Trait_Combat
 	protected $attacks      = array( 'Bite' => [ 1, 8, 0 ] );
+#	private   $combat_key   = '';      // DND_Monster_Trait_Combat
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
@@ -40,6 +41,9 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'Nil';
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
+#	protected $weapon       = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapons      = array(); // DND_Character_Trait_Weapons
 #	protected $xp_value     = array( 0, 0, 0, 0 );
 
 

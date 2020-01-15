@@ -1,6 +1,6 @@
 <?php
 
-class DND_Combat_Combat implements JsonSerializable, Serializable {
+abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 
 
 	protected $casting = array();
@@ -13,7 +13,6 @@ class DND_Combat_Combat implements JsonSerializable, Serializable {
 	protected $segment = 1;
 
 
-	use DND_Trait_Magic;
 	use DND_Trait_Movement;
 	use DND_Trait_ParseArgs;
 	use DND_Trait_Singleton;
@@ -27,6 +26,10 @@ class DND_Combat_Combat implements JsonSerializable, Serializable {
 		if ( $this->enemy )   $this->integrate_enemy();
 		if ( $this->holding ) $this->update_holds();
 		$this->determine_movement();
+	}
+
+	public function __toString() {
+		return 'Combat base class';
 	}
 
 
@@ -115,42 +118,42 @@ class DND_Combat_Combat implements JsonSerializable, Serializable {
 
 	protected function get_party_attackers() {
 		$party = array();
-		foreach( $this->party as $name => $char ) {
-			$sequence = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
-			if ( in_array( $this->segment, $sequence ) ) {
+		foreach( $this->party as $char ) {
+			if ( $this->filter_attacker( $char ) ) {
 				$party[] = $char;
-			} else if ( $this->is_casting( $name ) ) {
-				$spell = $this->find_casting( $name );
-				if ( $this->segment > $spell['when'] ) {
-					$this->remove_casting( $name );
-				} else {
-					$party[] = $char;
-				}
 			}
 		}
 		return $party;
 	}
 
 	protected function get_enemy_attackers() {
-		$enemy   = array();
-		$monster = $this->get_base_monster();
-		if ( $monster ) {
-			$sequent = $this->get_monster_attacks( $monster );
-			if ( $monster instanceOf DND_Monster_Humanoid_Humaniod ) {
-/*foreach( $monster->attacks as $type => $damage ) {
-if ( in_array( $segment, $att_seq[ $type ] ) ) {
-$enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type );
-}
-} //*/
-			} else {
-				foreach( $sequent as $type => $attack ) {
-					if ( in_array( $this->segment, $attack ) ) {
-						$enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type );
-					}
-				}
+		$enemy = array();
+		foreach( $this->enemy as $object ) {
+			if ( $seq = $this->filter_attacker( $object ) ) {
+				$type = ( is_array( $seq ) ) ? $object->get_attack_type( $seq, $this->segment ) : 'casting';
+				$object->set_sequence_weapon( $type );
+				$enemy[] = new DND_Monster_Ranking( $object, $type );
 			}
 		}
 		return $enemy;
+	}
+
+	protected function filter_attacker( $object ) {
+		$sequence = $this->get_attack_sequence( $object->segment, $object->weapon['attacks'] );
+		$key = $object->get_key();
+		if ( in_array( $this->segment, $sequence ) ) {
+			return $sequence;
+		} else if ( $this->is_casting( $key ) ) {
+			$spell = $this->find_casting( $key );
+			if ( $this->segment > $spell['when'] ) {
+				$this->remove_casting( $key );
+			} else {
+				return true;
+			}
+		} else if ( $object instanceOf DND_Monster_Monster ) {
+			$object->set_next_attack( $sequence, $this->segment );
+		}
+		return false;
 	}
 
 	protected function rank_attackers( &$rank ) {
@@ -231,9 +234,8 @@ $enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type
 			}
 		} else {
 			if ( $number > 1 ) {
-				$start = 1;
 				$points = $monster->get_appearing_hit_points( $number );
-				for( $i = $start; $i < $number; $i++ ) {
+				for( $i = 1; $i < $number; $i++ ) {
 					$new = new $base( [ 'current_hp' => $points[ $i ][0], 'hit_points' => $points[ $i ][1] ] );
 					$this->add_to_enemy( $new );
 				}
@@ -242,14 +244,20 @@ $enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type
 	}
 
 	public function add_to_enemy( DND_Monster_Monster $obj ) {
-		$count = count( $this->enemy );
-		$name  = $obj->get_name() . " $count";
-		$this->enemy[ $name ] = $obj;
+		$cnt = count( $this->enemy );
+		$key = $obj->get_name() . " $cnt";
+		while( array_key_exists( $key, $this->enemy ) ) {
+			$cnt++;
+			$key = $obj->get_name() . " $cnt";
+		}
+		$obj->set_key( $key );
+		$obj->set_initiative( mt_rand( 1, 10 ) );
+		$this->enemy[ $key ] = $obj;
 	}
 
-	public function remove_from_enemy( $name ) {
-		if ( array_key_exists( $name, $this->enemy ) ) {
-			unset( $this->enemy[ $name ] );
+	public function remove_from_enemy( $key ) {
+		if ( array_key_exists( $key, $this->enemy ) ) {
+			unset( $this->enemy[ $key ] );
 			return true;
 		}
 		return false;
@@ -413,40 +421,40 @@ $enemy[] = new DND_Monster_Ranking( $monster, 'array entry key goes here', $type
 
 	protected function add_holding( $hold ) {
 		$data = explode( ':', $hold );
-		$name = $data[0];
-		if ( array_key_exists( $name, $this->party ) ) {
-			$this->holding[] = $name;
+		$key  = $data[0];
+		if ( $object = $this->get_object( $key ) ) {
+			$this->holding[] = $key;
 			if ( array_key_exists( 1, $data ) ) {
 				$segment = intval( $data[1], 10 );
 				$segment = max ( $segment, $this->segment );
-				$this->party[ $name ]->set_attack_segment( $segment );
+				$object->set_attack_segment( $segment );
 			} else {
-				$this->party[ $name ]->set_attack_segment( $this->segment );
+				$object->set_attack_segment( $this->segment );
 			}
 		}
 	}
 
-	protected function remove_holding( $name ) {
-		if ( in_array( $name, $this->holding ) ) {
-			$this->holding = array_diff( $this->holding, [ $name ] );
-			$this->party[ $name ]->set_attack_segment( $this->segment );
+	protected function remove_holding( $key ) {
+		if ( in_array( $key, $this->holding ) ) {
+			$this->holding = array_diff( $this->holding, [ $key ] );
+			$object = $this->get_object( $key );
+			$object->set_attack_segment( $this->segment );
 		}
 	}
 
-	protected function change_weapon( DND_Character_Character $char, $weapon ) {
-		$rounds   = intval( $this->segment / 10 ) + 3;
-		$sequence = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
+	protected function change_weapon( $object, $weapon ) {
+		$sequence = $this->get_attack_sequence( $object->segment, $object->weapon['attacks'] );
 		if ( $this->segment === 1 ) {
-			$char->set_current_weapon( $weapon );
+			$object->set_current_weapon( $weapon );
 		} else if ( in_array( $this->segment, $sequence ) ) {
-			if ( $char->set_current_weapon( $weapon ) ) {
-				$char->set_attack_segment( $this->segment );
+			if ( $object->set_current_weapon( $weapon ) ) {
+				$object->set_attack_segment( $this->segment );
 			}
 		} else {
 			foreach( $sequence as $seggie ) {
 				if ( $seggie > $this->segment ) {
-					if ( $char->set_current_weapon( $weapon ) ) {
-						$char->set_attack_segment( $seggie );
+					if ( $object->set_current_weapon( $weapon ) ) {
+						$object->set_attack_segment( $seggie );
 					}
 					break;
 				}

@@ -51,11 +51,11 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'cast'      => '3 segments',
 					'saving'    => 'None',
 					'special'   => '+1 to hit, +1 damage',
-/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'condition' => 'this_monster_only',
 					'filters'   => array(
 						array( 'monster_to_hit_number', 1, 10, 3 ),
 						array( 'monster_damage_bonus',  1, 10, 2 ),
-					), */
+					),
 				),
 				'Predict Weather' => array( 'page' => 'PH 56', 'type' => 'Divination', 'cast' => '1 round',
 					'duration' => sprintf( '%u hours', $this->level * 2 ),
@@ -102,11 +102,11 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'cast'      => '5 segments',
 					'saving'    => 'None',
 					'special'   => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 4 ) ) ),
-/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'condition' => 'this_monster_only',
 					'filters'   => array(
 						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
 						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
-					), */
+					),
 				),
 				'Plant Growth' => array( 'page' => 'PH 58-59', 'type' => 'Alteration', 'cast' => '1 round',
 					'aoe' => sprintf( '%1$u x %1$u square area', $this->level * 20 ),
@@ -141,12 +141,12 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'cast'     => '6 segments',
 					'saving'   => 'None',
 					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 5 ) ) ),
-/*					'condition' => 'this_monster_only',             NEEDS TESTING!
+					'condition' => 'this_monster_only',
 					'filters'   => array(
 						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
 						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
-						//  May need mtdw filter as well
-					), */
+						#  FIXME: May need mtdw filter as well
+					),
 				),
 				'Speak With Plants' => array( 'page' => 'PH 61, PH 50', 'type' => 'Alteration', 'cast' => '1 turn',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),

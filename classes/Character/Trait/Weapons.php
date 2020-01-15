@@ -7,8 +7,14 @@ if ( ! defined( 'BOW_POINT_BLANK' ) ) {
 
 trait DND_Character_Trait_Weapons {
 
+#  Would love to do this, but traits cannot have constants.
+#	private const BOW_POINT_BLANK = 31;
+#	private const CROSSBOW_POINT_BLANK = 61;
 
 	protected $weap_allow = array();
+	protected $weap_dual  = false;
+	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 );
+	protected $weapons    = array();
 	static protected $weapons_table;
 
 
@@ -48,24 +54,26 @@ trait DND_Character_Trait_Weapons {
 		return false;
 	}
 
-	public function set_current_weapon( $new = '' ) {
-		if ( ( ! empty ( $new ) ) && ( empty( $this->weap_allow ) || in_array( $new, $this->weap_allow ) ) ) {
-			if ( ! $this->weapons_check( $new ) ) return false;
-			$this->weapon = array( 'current' => $new, 'skill' => 'NP', 'attacks' => array( 1, 1 ), 'bonus' => 0 );
-			if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
-				$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
-			} else {
-				// TODO: show alert for non-proficient weapon use
-			}
-			$data = $this->get_weapon_info( $this->weapon['current'] );
-			$this->weapon = array_merge( $this->weapon, $data );
-			$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
-			if ( $this->weap_dual ) $this->set_current_weapon_dual();
+	protected function set_character_weapon( $new ) {
+		if ( empty ( $new ) ) return false;
+		if ( ! $this->weapons_check( $new ) ) return false;
+		if ( ! empty( $this->weap_allow ) && ! in_array( $new, $this->weap_allow ) ) return false;
+		$this->weapon = $this->base_weapon_array( $new );
+		if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
+			$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
 		} else {
-			return false;
+			// TODO: show alert for non-proficient weapon use
 		}
+		$data = $this->get_weapon_info( $this->weapon['current'] );
+		$this->weapon = array_merge( $this->weapon, $data );
+		$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
+		if ( $this->weap_dual ) $this->set_current_weapon_dual();
 		$this->determine_armor_class();
 		return true;
+	}
+
+	protected function base_weapon_array( $new, $skill = 'NP' ) {
+		return array( 'current' => $new, 'skill' => $skill, 'attacks' => array( 1, 1 ), 'bonus' => 0 );
 	}
 
 	private function weapons_check( $weapon = 'Spell' ) {

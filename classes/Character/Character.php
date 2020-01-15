@@ -27,11 +27,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $specials   = array();
 	protected $spells     = array();
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 3, 'chr' => 3 );
-	protected $weap_dual  = false;
+#	protected $weap_allow = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual  = false;   // DND_Character_Trait_Weapons
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
 	protected $weap_reqs  = array();
-	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attack' => 'hand', 'bonus' => 0 );
-	protected $weapons    = array();
+#	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapons    = array(); // DND_Character_Trait_Weapons
 	protected $xp_bonus   = array();
 	protected $xp_step    = 1000000;
 	protected $xp_table   = array( 1000000 );
@@ -219,6 +220,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected function add_filters() {
 		$this->add_racial_saving_throw_filters();
 #		$this->add_dexterity_saving_throw_filters();
+	}
+
+	public function set_current_weapon( $new = '' ) {
+		return $this->set_character_weapon( $new );
 	}
 
 	public function get_to_hit_number( $target, $range = -1, $extra = '' ) {

@@ -15,7 +15,7 @@ class DND_Plugin_Library {
 
 	use DND_Trait_Attributes;
 	use DND_Trait_Logging;
-	use DND_Trait_Magic;
+#	use DND_Trait_Magic;
 
 	/**
 	 *  Constructor method.

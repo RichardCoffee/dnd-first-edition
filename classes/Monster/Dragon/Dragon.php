@@ -76,6 +76,9 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return parent::__get( $name );
 	}
 
+
+	/**  Setup functions  **/
+
 	protected function determine_hit_dice() {
 		if ( $this->hit_dice === 0 ) {
 			$this->hit_dice = $this->determine_dragon_hit_dice();
@@ -164,6 +167,9 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $size;
 	}
 
+
+	/**  Override functions  **/
+
 	protected function determine_specials() {
 		$this->specials = array(
 			'age'      => sprintf(
@@ -189,6 +195,14 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		if ( ! in_array( 'Breath', $isolated ) ) $isolated[] = 'Breath';
 		return $isolated;
 	}
+
+	protected function is_sequence_attack( $check ) {
+		if ( $check === 'Breath' ) return false;
+		return true;
+	}
+
+
+	/**  Saving Throw functions  **/
 
 	protected function determine_saving_throw() {
 		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );

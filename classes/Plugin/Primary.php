@@ -14,14 +14,14 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 
 	public function __get( $name ) {
 		if ( $name === 'combat' ) {
-			return $this->initialize_combat();
+			return $this->combat();
 		}
 		return parent::__get( $name );
 	}
 
-	public function initialize_combat() {
+	public function combat( $slug = 'combat' ) {
 		if ( empty( $this->combat ) ) {
-			$this->combat = dnd1e_transient( 'combat' );
+			$this->combat = $this->transient( $slug );
 			if ( empty( $this->combat ) ) {
 				if ( defined( 'CSV_PATH' ) ) {
 					$this->combat = DND_Combat_CommandLine::instance();
@@ -42,6 +42,15 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 			$this->combat = null;
 		}
 		delete_transient( 'combat' );
+	}
+
+	public function transient( $name, $data = null, $expire = YEAR_IN_SECONDS ) {
+		$entry = "dnd1e_$name";
+		if ( $data ) {
+			set_transient( $entry, $data, $expire );
+		} else {
+			return $this->unserialize( get_transient( $entry ), [ 'DND_Combat', 'DND_Monster_Monster', 'DND_Character_Character' ] );
+		}
 	}
 
 

@@ -4,14 +4,14 @@ class DND_Monster_Ranking {
 
 
 	public    $initiative = array();
-	protected $key        = '';
+	protected $combat_key = '';
 	protected $name       = '';
 	public    $stats      = array();
 
 
-	public function __construct( DND_Monster_Monster $monster, $key, $type ) {
-		$this->name = $monster->name . " ($type)";
-		$this->key  = $key;
+	public function __construct( DND_Monster_Monster $monster, $type ) {
+		$this->combat_key = $monster->get_key();
+		$this->name = $this->combat_key . " ({$monster->weapon['current']})";
 		if ( property_exists( $monster, 'stats' ) && array_key_exists( 'dex', $monster->stats ) ) {
 			$this->stats = $monster->stats;
 		} else {
@@ -26,7 +26,7 @@ class DND_Monster_Ranking {
 	}
 
 	public function get_key() {
-		return $this->key;
+		return $this->combat_key;
 	}
 
 

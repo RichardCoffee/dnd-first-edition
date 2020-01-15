@@ -10,6 +10,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 #	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
 #	protected $att_types    = array(); // DND_Monster_Trait_Combat
 	protected $attacks      = array();
+#	private   $combat_key   = '';      // DND_Monster_Trait_Combat
 	public    $current_hp   = -10000;
 	protected $description  = '';
 	protected $frequency    = 'Common';
@@ -36,6 +37,9 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'Nil';
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
+#	protected $weapon       = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapons      = array(); // DND_Character_Trait_Weapons
 	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
@@ -54,14 +58,16 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 
 	public function __construct( $args = array() ) {
+		$this->parse_key( $args ); // DND_Monster_Trait_Combat
 		$this->parse_args( $args );
 		$this->determine_hit_dice();
 		$this->determine_hit_points();
-		$this->determine_armor_type();
+		$this->determine_armor_type(); // DND_Monster_Trait_Combat
 		$this->determine_to_hit_row();
-		$this->determine_attack_types();
+		$this->determine_attack_types(); // DND_Monster_Trait_Combat
 		$this->determine_specials();
 		$this->determine_saving_throw();
+		$this->initialize_sequence_attacks(); // DND_Monster_Trait_Combat
 		if ( $this->current_hp === -10000 ) $this->current_hp = $this->hit_points;
 	}
 
@@ -91,6 +97,9 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	public function __toString() {
 		return $this->name;
 	}
+
+
+	/**  Setup functions  **/
 
 	protected function determine_hit_points() {
 		if ( ( $this->hit_points === 0 ) && ( $this->hit_dice > 0 ) ) {
@@ -126,18 +135,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		return $level;
 	}
 
-	protected function get_saving_throw_table() {
-		return $this->get_combined_saving_throw_table( $this->saving );
-	}
 
-	public function set_initiative( $roll ) {
-		$this->initiative = 11 - $roll;
-		$this->segment = max( $this->initiative, $this->segment );
-	}
-
-	public function set_attack_segment( $new ) {
-		$this->segment = max( $this->segment, intval( $new ) );
-	}
+	/**  Get functions  **/
 
 	public function get_name() {
 		return $this->name;
@@ -161,6 +160,29 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		}
 		return $hit_points;
 	}
+
+	protected function get_saving_throw_table() {
+		return $this->get_combined_saving_throw_table( $this->saving );
+	}
+
+
+	/**  Set functions  **/
+
+	public function set_initiative( $roll ) {
+		$this->initiative = 11 - $roll;
+		$this->segment = max( $this->initiative, $this->segment );
+	}
+
+	public function set_attack_segment( $new ) {
+		$this->segment = max( $this->segment, intval( $new ) );
+	}
+
+	public function set_current_weapon( $new ) {
+		return $this->set_attack_weapon( $new );
+	}
+
+
+	/**  Utility functions  **/
 
 	protected function check_chance( $chance ) {
 		$perc = intval( $chance );
@@ -198,8 +220,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	/**  Filter Conditions  **/
 
-	public function this_monster_only( $purpose, $spell, $monster ) {
-		if ( $monster->get_name() === $spell['target'] ) {
+	public function this_monster_only( $purpose, $spell, $object ) {
+		if ( $this->get_key() === $spell['target'] ) {
 			return true;
 		}
 		return false;
