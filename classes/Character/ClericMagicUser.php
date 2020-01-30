@@ -12,10 +12,6 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 		parent::__construct( $args );
 	}
 
-	protected function initialize_multi() {
-		parent::initialize_multi();
-	}
-
 	public function set_current_weapon( $new = '' ) {
 		$ret = parent::set_current_weapon( $new );
 		$this->set_cleric_armor();
@@ -27,15 +23,14 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 	}
 
 	public function locate_magic_spell( $name, $type = '' ) {
-		$spell  = array();
-		$string = "Spell '$name' not found in {$this->name}'s spell book.";
+		$spell = null;
 		if ( empty( $type ) || ( $type === 'Cleric' ) ) {
 			$spell = $this->locate_cleric_spell( $name );
 		}
-		if ( ! array_key_exists( 'page', $spell ) ) {
+		if ( ! is_object( $spell ) ) {
 			$spell = locate_magic_user_spell( $name );
 		}
-		return ( array_key_exists( 'page', $spell ) ) ? $spell : $string;
+		return $spell;
 	}
 
 

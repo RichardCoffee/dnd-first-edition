@@ -7,7 +7,8 @@ trait DND_Combat_GetOpts {
 
 
 	protected function get_opts() {
-		$this->opts = getopt( 'hr:st::x', [ 'add:', 'att:', 'crit:', 'desc::', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'mi:', 'pre:', 'st:' ] );
+		$opts = [ 'add:', 'att:', 'crit:', 'desc::', 'eff:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'limit:', 'mi:', 'pre:', 'show:', 'spell:', 'st:', 'tar:', 'text' ];
+		$this->opts = getopt( 'hr:stx', $opts );
 		$this->process_immediate_opts();
 	}
 
@@ -25,7 +26,7 @@ trait DND_Combat_GetOpts {
 		}
 	}
 
-	protected function process_opts() {
+	public function process_opts() {
 		if ( $this->opts ) {
 			foreach( $this->opts as $key => $option ) {
 				switch( $key ) {
@@ -36,7 +37,7 @@ trait DND_Combat_GetOpts {
 						$this->update_holds();
 						break;
 					case 't':
-						$t = new DND_Treasure;
+						$t = new DND_Combat_Treasure_Treasure;
 						$t->show_possible_monster_treasure( $this->enemy, $this->opts['t'] );
 						exit;
 					case 'x':
@@ -49,10 +50,13 @@ trait DND_Combat_GetOpts {
 						$this->remove_holding( $this->opts['att'] );
 						break;
 					case 'crit':
-						$this->critical_hit( $this->opts['crit'] );
+						$this->parse_critical();
 						break;
 					case 'desc':
 						$this->change_shown_enemy( $this->opts['desc'] );
+						break;
+					case 'eff':
+						$this->parse_effect();
 						break;
 					case 'fumble':
 						$this->fumble_roll_result( $this->opts['fumble'] );
@@ -61,21 +65,38 @@ trait DND_Combat_GetOpts {
 						$this->generate_encounter( $this->opts['enc'] );
 						break;
 					case 'hit':
-						$this->record_damage();
+						$this->parse_hits();
 						break;
 					case 'hold':
-						$this->add_holding( $this->opts['hold'] );
+						$this->parse_holding();
+						break;
+					case 'limit':
+						$this->parse_limit();
 						break;
 					case 'mi':
 						$this->monster_initiative();
 						break;
 					case 'pre':
-						$this->pre_cast_spell();
+						$this->parse_pre_cast();
+						break;
+					case 'show':
+						$this->show_variable();
+						exit;
+					case 'spell':
+						$this->parse_spell();
 						break;
 					case 'st':
 						$this->show_saving_throws( $this->opts['st'] );
 						break;
+					case 'tar':
+						$this->parse_targets();
+						break;
+					case 'text':
+						$this->show_enemy_text();
+						exit;
 					default:
+						echo "Unknown opt '$key'.\n";
+						exit;
 				}
 			}
 		}
@@ -108,35 +129,31 @@ trait DND_Combat_GetOpts {
 
 	--fumble=#      Display the possible result of a fumble roll, where # is the number rolled on percentile dice.
 
+	--eff=<origin>:<target>:<effect>  Apply an effect from an attack.
+
 	--enc=<terrain>:<area>  Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
 	                        For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'
 
-	--hit=name:#    Use to record damage to a combatant, format is <name>:<damage>.  Use a negative number to indicate healing.
+	--hit=name:#[:effect]   Use to record damage to a combatant, format is <name>:<damage>.  Use a negative number to indicate healing.
+	                        The effect can be used for the type of damage, recognized effects are 'cold', 'fire', and 'electic'.
 
 	--hold=name[:#] Place a combatant's attack on hold.  Adding a segment value indicates that the combatant can attack on the specified segment.
+
+	--limit=#       Limit how many enemies are processed and shown on the screen.
 
 	--mi=number     Set the monster's initiative.
 
 	--pre=name:#    Use this when a character casts a spell before combat, where '#' indicates the spell's number, from the numbered spell list.
 
+	--spell=name:data  Use to pass data to a spell that a combatant is casting.
+
 	--st=name       Show the saving throws for the indicated combatant.
 
+	--tar=#[:#][:#]...  Use to isolate which enemies are shown.  Not inclusive.
+
+	--text          Show the enemy description if available.
+
 ";
-	}
-
-	protected function critical_hit( $param ) {
-		$info = explode( ':', $param );
-		$roll = $info[0];
-		$type = ( array_key_exists( 1, $info ) ) ? $info[1] : 's';
-		$type = ( in_array( $type, [ 'b', 'p', 's' ] ) ) ? $type : 's';
-		$this->critical_hit_result( $roll, $type );
-	}
-
-	protected function record_damage() {
-		$sitrep = explode( ':', $this->opts['hit'] );
-		$name   = $sitrep[0];
-		$damage = $sitrep[1];
-		$this->object_damage( $name, $damage );
 	}
 
 	protected function monster_initiative() {
@@ -152,62 +169,95 @@ trait DND_Combat_GetOpts {
 		}
 	}
 
-	protected function pre_cast_spell( $unused1 = '', $unused2 = '', $unused3 = '' ) {
-		if ( $this->segment < 2 ) {
-			$sitrep = explode( ':', $this->opts['pre'] );
-			$name   = $sitrep[0];
-			if ( array_key_exists( $name, $this->party ) ) {
-				$number = intval( $sitrep[1], 10 );
-				if ( $number ) {
-					$spell = $this->get_numbered_spell( $this->party[ $name ], $number );
-					if ( $spell ) {
-						$target = ( array_key_exists( 2, $sitrep ) ) ? $sitrep[2] : $name;
-						$result = $this->start_casting( $name, $spell, $target );
-						if ( $result ) {
-							$cast = $this->find_casting( $name );
-							$this->finish_casting( $cast );
-							$this->remove_casting( $name );
-							echo "\n{$cast['caster']} has cast {$cast['name']} on {$cast['target']}\n\n";
-#							exit;
-						}
-					}
-				}
-			}
-		}
+	protected function parse_critical() {
+		list( $roll, $type ) = array_pad( explode( ':', $this->opts['crit'] ), 2, 's' );
+		$this->critical_hit_result( $roll, $type );
+	}
+
+	protected function parse_effect() {
+		list( $origin, $target, $effect ) = array_pad( explode( ':', $this->opts['eff'] ), 3, '' );
+		$this->add_hit_effect( $origin, $target, $effect );
+	}
+
+	protected function parse_hits() {
+		list( $target, $damage, $effect ) = array_pad( explode( ':', $this->opts['hit'] ), 3, '' );
+		$this->object_damage( $target, $damage, $effect );
+	}
+
+	protected function parse_holding() {
+		list( $target, $time ) = array_pad( explode( ':', $this->opts['hold'] ), 2, 0 );
+		$this->add_holding( $target, $time );
+	}
+
+	protected function parse_limit() {
+		$limit = intval( $this->opts['limit'] );
+		$this->set_limit( $limit );
+	}
+
+	protected function parse_pre_cast() {
+		list( $origin, $spell, $target ) = array_pad( explode( ':', $this->opts['pre'] ), 3, null );
+		$this->pre_cast_spell( $origin, $spell, $target );
+	}
+
+	protected function parse_spell() {
+		list( $caster, $data ) = explode( ':', $this->opts['spell'] );
+		$this->process_spell_data( $caster, $data );
+	}
+
+	protected function parse_targets() {
+		$targets = explode( ':', $this->opts['tar'] );
+		$this->set_targets( $targets );
 	}
 
 	public function process_arguments( $argv ) {
 		if ( $argv && ! $this->opts ) {
-			$count = count( $argv );
-			if ( $count > 1 ) {
-				$name = $argv[1];
-				if ( array_key_exists( $name, $this->party ) ) {
-					if ( $count > 2 ) {
-						if ( intval( $argv[2] ) ) {
-							$spell = $this->get_numbered_spell( $this->party[ $name ], $argv[2] );
+			list ( $line, $name, $action, $secondary ) = array_pad( $argv, 4, false );
+			if ( strlen( $name ) ) {
+				$object = $this->get_object( $name );
+				if ( $object ) {
+					if ( $action ) {
+						if ( intval( $action ) ) {
+							$spell = $this->get_numbered_spell( $object, $action );
 							if ( $spell ) $this->gopa_start_casting( $name, $spell, $argv );
-						} else if ( method_exists( $this->party[ $name ], 'locate_magic_spell' ) && ( $spell = $this->party[ $name ]->locate_magic_spell( $argv[2] ) ) ) {
-							$this->gopa_start_casting( $name, $spell, $argv );
+						} else if ( method_exists( $object, 'locate_magic_spell' ) && ( $spell = $object->locate_magic_spell( $action ) ) ) {
+							$this->gopa_start_casting( $name, $spell, $secondary );
 						} else {
-							if ( ( $count === 4 ) && method_exists( $this->party[ $name ], 'set_dual_weapons' ) ) {
-								$this->party[ $name ]->set_dual_weapons( $argv[2], $argv[3] );
+							if ( ( $secondary ) && method_exists( $object, 'set_dual_weapons' ) ) {
+								$object->set_dual_weapons( $action, $secondary );
 							}
-							$this->change_weapon( $this->party[ $name ], $argv[2] );
+							$this->change_weapon( $object, $action );
 						}
-					} else if ( $this->party[ $name ]->weapon['current'] === 'Spell' ) {
-						$this->show_possible_spells( $this->party[ $name ] );
-						$this->show_possible_weapons( $this->party[ $name ] );
+					} else if ( $object->weapon['current'] === 'Spell' ) {
+						$this->show_possible_spells( $object );
+						$this->show_possible_weapons( $object );
 					} else {
-						$this->show_possible_weapons( $this->party[ $name ] );
+						$this->show_possible_weapons( $object );
 					}
 				}
 			}
 		}
 	}
 
-	protected function gopa_start_casting( $name, $spell, $argv ) {
-		echo "\n{$argv[1]}\n";
-		$target = ( array_key_exists( 3, $argv ) ) ? $argv[3] : $name;
+	protected function show_variable() {
+		$var = $this->opts['show'];
+		if ( property_exists( $this, $var ) ) {
+			if ( is_array( $this->{$var} ) || is_object( $this->{$var} ) ) {
+				print_r( $this->{$var} );
+			} else {
+				echo "$var: {$this->$var}\n";
+			}
+		} else {
+			if ( $var === 'base' ) {
+				print_r( $this->get_base_monster() );
+			} else {
+				$show = $this->get_object( $var );
+				if ( $show ) print_r( $show );
+			}
+		}
+	}
+
+	protected function gopa_start_casting( $name, $spell, $target = false ) {
+		echo "\n$name\n";
 		$this->start_casting( $name, $spell, $target );
 	}
 

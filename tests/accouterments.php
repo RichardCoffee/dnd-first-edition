@@ -19,7 +19,7 @@ function get_character( $name ) {
 
 $char = get_character( 'Evandur' );
 if ( $char ) {
-	$treas = new DND_Treasure;
+	$treas = new DND_Combat_Treasure_Treasure;
 	$accs  = $treas->acc_get_accouterments( $char );
 	print_r( $accs );
 }

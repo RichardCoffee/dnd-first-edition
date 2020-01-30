@@ -40,16 +40,13 @@ class DND_Monster_Giant_Toad extends DND_Monster_Monster {
 	public function __construct( $args = array() ) {
 		add_action( 'monster_determine_specials', [ $this, 'toad_determine_specials' ] );
 		parent::__construct( $args );
-		$this->description = 'Giant toads are found in most regions. Although their smaller cousins are beneficial insect eaters, the large toads are prone to';
-		$this->description = ' devour any creature which appears edible. All toads are capable of hopping their movement distance. This hop clears objects up';
-		$this->description = ' to one-third the linear distance in height, and it requires but a single melee round to accomplish, and they can attack in mid-air';
-		$this->description = ' or at the end of their leap.';
+		$this->description = 'Giant toads are found in most regions. Although their smaller cousins are beneficial insect eaters, the large toads are prone to devour any creature which appears edible. All toads are capable of hopping their movement distance. This hop clears objects up to one-third the linear distance in height, and it requires but a single melee round to accomplish, and they can attack in mid-air or at the end of their leap.';
 	}
 
 	protected function determine_hit_dice() { }
 
-	protected function toad_determine_specials() {
-		$this->specials['hop'] => "one 60' hop per round, in addition to normal movement.";
+	public function toad_determine_specials() {
+		$this->specials['hop'] = "one 60' hop per round, in addition to normal movement.";
 	}
 
 

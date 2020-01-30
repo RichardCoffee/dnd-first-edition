@@ -1,6 +1,6 @@
 <?php
 
-trait DND_Trait_Movement {
+trait DND_Combat_Movement {
 
 
 	protected $moves = array();
@@ -20,22 +20,26 @@ trait DND_Trait_Movement {
 	}
 
 	private function determine_party_movement() {
-		foreach( $this->party as $name => $char ) {
-			if ( $this->is_casting( $name ) ) continue;
+		foreach( $this->party as $key => $char ) {
+			if ( $this->is_casting( $key ) ) continue;
 			$this->add_object_movement( $char, $char->initiative['actual'] );
 		}
 	}
 
-#	 * @uses DND_Combat_Combat::is_casting()
 	private function add_object_movement( $obj, $init = 0 ) {
-		$name = $obj->get_name();
-		if ( $this->is_casting( $name ) ) return;
+		$key = $obj->get_key();
+		if ( $this->is_casting( $key ) ) return;
 		$sequence = $this->get_movement_sequence( $obj->movement );
 		$seg = $this->segment % 10;
 		$seg = ( $seg === 0 ) ? 10 : $seg;
 		$cnt = count( array_keys( $sequence, $seg ) );
 		if ( $cnt ) {
-			$this->moves[ $name ] = [ 'cnt' => $cnt, 'init' => $init ];
+			$this->moves[ $key ] = array(
+				'cnt'  => $cnt,
+				'init' => $init,
+				'name' => $obj->get_name(),
+				'keep' => ( $obj instanceOf DND_Monster_Monster ),
+			);
 		}
 	}
 
@@ -110,6 +114,9 @@ trait DND_Trait_Movement {
 			case '18':
 				$segs = array( 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10 );
 				break;
+			case '21':
+				$segs = array( 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10 );
+				break;
 			case '24':
 				$segs = array( 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 10, 10 );
 				break;
@@ -160,16 +167,18 @@ trait DND_Trait_Movement {
 		return $str;
 	}
 
-	protected function movement_when_attacking( $name ) {
+	protected function movement_when_attacking( $key ) {
 		if ( $this->show_moves === 'init' ) {
-			echo " [{$this->moves[ $name ]['cnt']}]";
-			unset( $this->moves[ $name ] );
+			echo " [{$this->moves[ $key ]['cnt']}]";
+			if ( ! $this->moves[ $key ]['keep'] ) unset( $this->moves[ $key ] );
 		} else if ( $this->show_moves === 'count' ) {
 			echo " [1]";
-			if ( $this->moves[ $name ]['cnt'] === 1 ) {
-				unset( $this->moves[ $name ] );
+			if ( $this->moves[ $key ]['keep'] ) {
+				// retain monster classes
+			} else if ( $this->moves[ $key ]['cnt'] === 1 ) {
+				unset( $this->moves[ $key ] );
 			} else {
-				$this->moves[ $name ]['cnt']--;
+				$this->moves[ $key ]['cnt']--;
 			}
 		}
 	}
@@ -191,12 +200,12 @@ trait DND_Trait_Movement {
 			uasort( $this->moves, [ $this, 'movement_sort_by_count' ] );
 			echo "\t";
 			while( $this->moves ) {
-				$name    = array_key_first( $this->moves );
-				$current = array_shift( $this->moves );
-				echo "$name  ";
-				if ( $current['cnt'] > 1 ) {
-					$current['cnt']--;
-					$this->moves[ $name ] = $current;
+				$key  = array_key_first( $this->moves );
+				$curr = array_shift( $this->moves );
+				echo "{$curr['name']}  ";
+				if ( $curr['cnt'] > 1 ) {
+					$curr['cnt']--;
+					$this->moves[ $key ] = $curr;
 				}
 			}
 			echo "\n";

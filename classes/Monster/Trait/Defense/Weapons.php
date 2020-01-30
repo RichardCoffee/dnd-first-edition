@@ -10,7 +10,7 @@ trait DND_Monster_Trait_Defense_Weapons {
 
 	private function mtdw_setup() {
 		add_action( 'monster_determine_specials', [ $this, 'mtdw_add_weapon_defense_special' ] );
-		add_filter( 'character_to_hit_opponent',  [ $this, 'mtdw_verify_to_hit' ], 10, 3 );
+		add_filter( 'object_to_hit_opponent',  [ $this, 'mtdw_verify_to_hit' ], 10, 3 );
 	}
 
 	public function mtdw_add_weapon_defense_special() {
@@ -21,12 +21,12 @@ trait DND_Monster_Trait_Defense_Weapons {
 		$this->specials['weapon_defense'] = sprintf( $format, $this->mtdw_limit );
 	}
 
-	public function mtdw_verify_to_hit( $number, $to_hit, $character ) {
+	public function mtdw_verify_to_hit( $number, $to_hit, $object ) {
 		// TODO: apply check for iron weapons
 		// TODO: apply check for silver weapons
 		// TODO: add check for multiple opponents
-		if ( $character->weapon['current'] !== 'Spell' ) {
-			if ( $character->weapon['bonus'] < $this->mtdw_limit ) {
+		if ( $object->weapon['current'] !== 'Spell' ) {
+			if ( $object->weapon['bonus'] < $this->mtdw_limit ) {
 				return ( $to_hit - 99 );
 			}
 		}

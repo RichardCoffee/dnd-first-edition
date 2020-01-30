@@ -7,7 +7,7 @@ abstract class DND_Monster_Animal_Bird_Flightless_Flightless extends DND_Monster
 	protected $appearing    = array( 2, 10, 0 );
 	protected $armor_class  = 7;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Beak' => [ 1, 4, 0 ], 'Claws' => [ 2, 4, 0 ] );
+	protected $attacks      = array( 'Peck' => [ 1, 4, 0 ], 'Kick' => [ 2, 4, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
@@ -41,6 +41,10 @@ abstract class DND_Monster_Animal_Bird_Flightless_Flightless extends DND_Monster
 	protected function determine_specials() {
 		parent::determine_specials();
 		$this->specials['attacks'] = 'Attacks are either/or, not both';
+	}
+
+	protected function non_sequence_chance( $segment ) {
+		return 100;
 	}
 
 

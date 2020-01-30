@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Green extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 40;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Average to Very';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Green Dragon';

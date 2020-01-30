@@ -21,7 +21,7 @@ class DND_Monster_Dragon_White extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 20;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Average (Low)';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 30 );
 	protected $name         = 'White Dragon';

@@ -12,10 +12,6 @@ class DND_Character_MagicUserThief extends DND_Character_Multi {
 		parent::__construct( $args );
 	}
 
-	protected function initialize_multi() {
-		parent::initialize_multi();
-	}
-
 	public function get_to_hit_number( $target, $range = -1 ) {
 		if ( in_array( $this->weapon['current'], $this->thief->weap_allow ) ) {
 			return $this->get_thief_to_hit_number( $target, $range );

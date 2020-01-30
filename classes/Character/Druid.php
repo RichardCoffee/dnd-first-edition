@@ -32,8 +32,20 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				'Animal Friendship' => array( 'page' => 'PH 55', 'type' => 'Enchantment/Charm', 'cast' => '6 turns' ),
 				'Detect Magic' => array( 'page' => 'PH 55,45', 'type' => 'Divination', 'cast' => '1 segment', 'duration' => '12 rounds' ),
 				'Entangle' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'range' => '80 feet', 'cast' => '3 segments', 'duration' => '1 turn' ),
-				'Faerie Fire' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '3 segments',
-					'duration' => sprintf( '%u rounds', $this->level * 4 ),
+				'Faerie Fire' => array(
+					'page'      => 'PH 55',
+					'type'      => 'Alteration',
+					'range'     => '80 feet',
+					'duration'  => sprintf( '%u rounds', $this->level * 4 ),
+					'aoe'       => sprintf( '%u linear feet within a 40 foot radius', $this->level * 12 ),
+					'comps'     => 'V',
+					'cast'      => '3 segments',
+					'saving'    => 'None',
+					'special'   => 'Party gets +2 to hit target',
+					'condition' => 'this_target_only',
+					'filters'   => array(
+						array( 'opponent_to_hit_object', -2, 10, 3 ),
+					),
 				),
 				'Invisibility to Animals' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '4 segments',
 					'duration' => sprintf( '%3.1u turns', ( $this->level * 0.1 ) + 10 ),
@@ -51,10 +63,10 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'cast'      => '3 segments',
 					'saving'    => 'None',
 					'special'   => '+1 to hit, +1 damage',
-					'condition' => 'this_monster_only',
+					'condition' => 'this_target_only',
 					'filters'   => array(
-						array( 'monster_to_hit_number', 1, 10, 3 ),
-						array( 'monster_damage_bonus',  1, 10, 2 ),
+						array( 'object_to_hit_opponent', 1, 10, 3 ),
+						array( 'weapon_damage_bonus',    1, 10, 2 ),
 					),
 				),
 				'Predict Weather' => array( 'page' => 'PH 56', 'type' => 'Divination', 'cast' => '1 round',
@@ -95,17 +107,17 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				),
 				'Magic Fang II' => array( 'page' => 'spec',
 					'type'      => 'Alteration',
-					'range'     => sprintf( '%u feet', ( $this->level *2.5 ) + 25 ),
-					'duration'  => sprintf( '%3.1f turns', $this->level * 0.5 ),
+					'range'     => sprintf( '%u feet', round( $this->level * 2.5 ) + 25 ),
+					'duration'  => sprintf( '%u rounds', $this->level * 2 ),
 					'aoe'       => 'One targeted creature',
 					'comps'     => 'V,S,M',
 					'cast'      => '5 segments',
 					'saving'    => 'None',
 					'special'   => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 4 ) ) ),
-					'condition' => 'this_monster_only',
+					'condition' => 'this_target_only',
 					'filters'   => array(
-						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
-						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'object_to_hit_opponent', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
+						array( 'weapon_damage_bonus',    min( 5, floor( $this->level / 4 ) ), 10, 2 ),
 					),
 				),
 				'Plant Growth' => array( 'page' => 'PH 58-59', 'type' => 'Alteration', 'cast' => '1 round',
@@ -134,17 +146,17 @@ class DND_Character_Druid extends DND_Character_Cleric {
 				),
 				'Magic Fang III' => array( 'page' => 'spec',
 					'type'     => 'Alteration',
-					'range'    => sprintf( '%u feet', ( $this->level *2.5 ) + 25 ),
-					'duration' => sprintf( '%u turns', $this->level ),
+					'range'    => sprintf( '%u feet', round( $this->level * 2.5 ) + 25 ),
+					'duration' => sprintf( '%u rounds', $this->level ),
 					'aoe'      => 'One targeted creature',
 					'comps'    => 'V,S,M',
 					'cast'     => '6 segments',
 					'saving'   => 'None',
 					'special'  => sprintf( '+%1$u to hit, +%1$u damage', min( 5, floor( $this->level / 5 ) ) ),
-					'condition' => 'this_monster_only',
+					'condition' => 'this_target_only',
 					'filters'   => array(
-						array( 'monster_to_hit_number', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
-						array( 'monster_damage_bonus',  min( 5, floor( $this->level / 4 ) ), 10, 2 ),
+						array( 'object_to_hit_opponent', min( 5, floor( $this->level / 4 ) ), 10, 3 ),
+						array( 'weapon_damage_bonus',    min( 5, floor( $this->level / 4 ) ), 10, 2 ),
 						#  FIXME: May need mtdw filter as well
 					),
 				),
@@ -201,6 +213,29 @@ class DND_Character_Druid extends DND_Character_Cleric {
 	}
 
 	public function special_defense_lightning() {
+	}
+
+
+	/**  Manna functions  **/
+
+	protected function spells_usable_table() {
+		return array(
+			array(),
+			array( 2 ),          // 1
+			array( 2, 1 ),       // 2
+			array( 3, 2, 1 ),    // 3
+			array( 4, 2, 2 ),    // 4
+			array( 4, 3, 2 ),    // 5
+			array( 4, 3, 2, 1 ), // 6
+			array( 4, 4, 3, 1 ), // 7
+			array( 4, 4, 3, 2 ), // 8
+			array( 5, 4, 3, 2, 1 ),       //  9
+			array( 5, 4, 3, 3, 2 ),       // 10
+			array( 5, 5, 3, 3, 2, 1 ),    // 11
+			array( 5, 5, 4, 4, 3, 2, 1 ), // 12
+			array( 6, 5, 5, 5, 4, 3, 2 ), // 13
+			array( 6, 6, 6, 6, 5, 4, 3 ), // 14
+		);
 	}
 
 

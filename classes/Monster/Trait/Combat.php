@@ -5,10 +5,10 @@ trait DND_Monster_Trait_Combat {
 
 	protected $ac_rows      = array( 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 14, 15, 15, 15 );
 	protected $armor_type   = 11;
-	protected $att_types    = array();
 	private   $combat_key   = '';
 	protected $to_hit_row   = array();
-#	protected $weapon       = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+	private   $weap_flag    = true;
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
 #	protected $weapons      = array(); // DND_Character_Trait_Weapons
 
 
@@ -21,7 +21,9 @@ trait DND_Monster_Trait_Combat {
 		}
 	}
 
-	public function get_key() {
+	public function get_key( $under = false ) {
+		if ( empty( $this->key ) ) $this->set_key( $this->name ); // needed for testing outside combat environment
+		if ( $under ) return str_replace( ' ', '_', $this->combat_key );
 		return $this->combat_key;
 	}
 
@@ -33,50 +35,10 @@ trait DND_Monster_Trait_Combat {
 	/**  Setup functions  **/
 
 	protected function determine_armor_type() {
+		$this->determine_armor_class();
 		if ( $this->armor_type === 11 ) {
 			$this->armor_type = max( 0, $this->armor_class );
 		}
-	}
-
-	protected function determine_attack_types() {
-		foreach( $this->attacks as $key => $damage ) {
-			if ( ! array_key_exists( $key, $this->att_types ) ) {
-				$type = $this->get_modified_weapon_type( $key );
-				$this->att_types[ $key ] = $this->get_weapon_info( $type );
-				$this->att_types[ $key ]['damage'][0] = $this->get_damage_string( $damage );
-				$this->att_types[ $key ]['damage'][1] = $this->get_damage_string( $damage );
-			}
-		}
-	}
-
-	protected function initialize_sequence_attacks() {
-		$this->weapons['sequence'] = array();
-		foreach( $this->attacks as $name => $damage ) {
-			if ( $this->is_sequence_attack( $name ) ) {
-				$this->weapons['sequence'][] = $name;
-			} else {
-				$this->weapons[ $name ] = $damage;
-			}
-		}
-		if ( $this->weapon['current'] === 'none' ) {
-			$this->set_attack_weapon( $this->weapons['sequence'][0] );
-		}
-	}
-
-	public function get_attack_info() {
-		$info = array();
-		foreach( $this->att_types as $key => $data ) {
-			$info[] = array( 'type' => $key, 'damage' => $data['damage'][0] );
-		}
-		return $info;
-	}
-
-	private function get_modified_weapon_type( $type ) {
-		$check = substr( $type, 0, 4 );
-		if ( in_array( $check, [ 'Bite', 'Claw', 'Horn' ] ) ) {
-			$type = $check;
-		}
-		return $type;
 	}
 
 	protected function determine_to_hit_row() {
@@ -89,80 +51,120 @@ trait DND_Monster_Trait_Combat {
 		$this->to_hit_row = $table[ $this->ac_rows[ $index ] ];
 	}
 
+	protected function initialize_sequence_attacks() {
+		$this->weapons['sequence'] = array();
+		foreach( $this->attacks as $name => $damage ) {
+			if ( $this->is_sequence_attack( $name ) ) {
+				$this->weapons['sequence'][] = $name;
+			} else {
+				$this->weapons[ $name ] = $damage;
+			}
+		}
+		if ( empty( $this->weapon ) || $this->weapon['current'] === 'none' ) {
+			$this->determine_attack_weapon();
+		}
+	}
+
 
 	/**  Weapon functions  **/
 
-	protected function set_attack_weapon( $new ) {
-		if ( empty( $new ) ) return false;
-		if ( ! array_key_exists( $new, $this->attacks ) ) return false;
-		$this->weapon = $this->base_weapon_array( $new, 'PF' );
-		$search = $this->get_modified_weapon_type( $this->weapon['current'] );
-		$data   = $this->get_weapon_info( $search );
-		$this->weapon = array_merge( $this->weapon, $data );
-		$this->weapon['damage'] = $this->attacks[ $new ];
-		if ( $this->in_sequence( $new ) ) $this->weapon['attacks'][0] = count( $this->weapons['sequence'] );
-		return true;
-	}
-
-#	public function set_next_attack(
-
-	protected function get_attack_type( $seq, $segment ) {
-		$count = count( $this->weapons['sequence'] );
-		$index = array_search( $segment, $seq );
-		$spot  = $index % $count;
-		return $this->weapons['sequence'][ $spot ];
-	}
-
-	public function set_sequence_weapon( $new ) {
-		if ( $this->in_sequence( $new ) ) {
-			$search = $this->get_modified_weapon_type( $new );
-			$data   = $this->get_weapon_info( $search );
-			$this->weapon = array_merge( $this->weapon, $data );
-			$this->weapon['damage']  = $this->attacks[ $new ];
-			$this->weapon['current'] = $new;
+	public function determine_attack_weapon( $segment = 0 ) {
+		$count   = count( $this->weapons );
+		$current = $this->weapon['current'];
+		if ( empty( $this->weapons['sequence'] ) || ( ( $count > 1 ) && $this->check_chance( $this->non_sequence_chance( $segment ) ) ) ) {
+			$this->set_non_sequence_weapon();
+		} else {
+			$this->set_sequence_weapon( $this->weapons['sequence'][0] );
 		}
+		if ( ! ( $current === $this->weapon['current'] ) ) {
+			if ( $segment && ! ( $this->is_sequence_attack( $current ) && $this->is_sequence_attack( $this->weapon['current'] ) ) ) {
+				$this->segment = $segment;
+			}
+		}
+	}
+
+	protected function set_sequence_weapon( $new ) {
+		if ( $this->is_sequence_attack( $new ) ) {
+			$this->weapon = $this->get_attack_info( $new );
+		}
+	}
+
+	protected function set_non_sequence_weapon() {
+		$count = count( $this->weapons );
+		if ( ( $count > 2 ) || ( ( $count > 1 ) && ( ! array_key_exists( 'sequence', $this->weapons ) ) ) ) {
+			$list = array_keys( array_filter( $this->weapons, function( $a ) { if ( empty( $a ) ) return false; return true; } ) );
+			$cnt  = count( $list );
+			$spot = mt_rand( 1, $cnt ) - 1;
+			$weapon = $list[ $spot ];
+		} else {
+			$weapon = array_key_last( $this->weapons );
+		}
+		$this->weapon = $this->get_attack_info( $weapon );
+	}
+
+	protected function get_attack_info( $new ) {
+		if ( empty( $new ) ) return null;
+		if ( ! array_key_exists( $new, $this->attacks ) ) return null;
+		$info = $this->base_weapon_array( $new, 'PF' );
+		$data = $this->get_weapon_info( $info['current'] );
+		$info = array_merge( $info, $data );
+		$info['damage'] = $this->attacks[ $new ];
+		if ( $this->is_sequence_attack( $new ) ) $info['attacks'][0] = count( $this->weapons['sequence'] );
+		return $info;
 	}
 
 	protected function is_sequence_attack( $check ) {
 		return true;
+		return in_array( $check, $this->weapons['sequence'] );
 	}
 
-	protected function in_sequence( $check ) {
-		return in_array( $check, $this->weapons['sequence'] );
+	protected function non_sequence_chance( $segment ) {
+		return 50;
+	}
+
+	public function check_for_weapon_change( $seg ) {
+		if ( ( ( $seg - $this->segment ) % 10 ) === 0 ) {
+			$this->determine_attack_weapon( $seg );
+		}
+	}
+
+	public function check_weapon_sequence( $seq, $segment ) {
+		if ( apply_filters( 'dnd1e_check_weapon_sequence', false ) ) {
+			if ( $this->is_sequence_attack( $this->weapon['current'] ) ) {
+				if ( in_array( $segment - 1, $seq ) ) {
+					$this->cycle_weapon_sequence( $segment );
+				}
+			}
+		}
+	}
+
+	protected function cycle_weapon_sequence( $segment ) {
+		$key = array_search( $this->weapon['current'], $this->weapons['sequence'] );
+		$key = ( $key + 1 === count( $this->weapons['sequence'] ) ) ? 0: $key + 1;
+		$this->weapon['current'] = $this->weapons['sequence'][ $key ];
+		$this->weapon['damage']  = $this->attacks[ $this->weapon['current'] ];
 	}
 
 
 	/**  Attack functions  **/
 
-	public function get_to_hit_number( $target, $range = 2000, $weapon = '' ) {
-		$armor_type = min( max( $target->armor_class, $target->armor_type, 0 ), 10 );
+	public function get_to_hit_number( $target, $range = 2000 ) {
+		$target_armor = ( $this->weapon['current'] === 'Spell' ) ? $target->armor_spell : $target->armor_class;
+		$armor_type = min( max( $target_armor, $target->armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) $this->determine_to_hit_row();
-		$index  = 10 - $target->armor_class;
-		$number = $this->to_hit_row[ $index ];
-		$info   = $this->att_types[ $weapon ];
-		if ( $this->weapons_armor_type_check( $target ) && array_key_exists( $armor_type, $info['type'] ) ) {
-			$number -= $info['type'][ $armor_type ];
+		$index  = 10 - $target_armor;
+		$to_hit = $this->to_hit_row[ $index ];
+		if ( $this->weapons_armor_type_check( $target ) && array_key_exists( $armor_type, $this->weapon['type'] ) ) {
+			$to_hit -= $this->weapon['type'][ $armor_type ];
 		}
-		if ( in_array( $info['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
-		} else if ( in_array( $info['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
-			$number -= $this->get_missile_range_adjustment( $info['range'], $range );
+		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
+			$to_hit -= $this->get_missile_range_adjustment( $this->weapon['range'], $range );
 		}
-		return apply_filters( 'monster_to_hit_number', $number, $this, $target );
+		return apply_filters( 'opponent_to_hit_object', $to_hit, $target, $this );
 	} //*/
 
-	protected function get_damage_string( $damage ) {
-		$string  = sprintf( '%ud%u', $damage[0], $damage[1] );
-		$bonus   = apply_filters( 'monster_damage_bonus', $damage[2], $this );
-		$string .= ( $bonus > 0 ) ? sprintf( '+%u', $bonus ) : '';
-		return $string;
-	}
-
-	public function get_possible_damage( $type = 'Bite' ) {
-		$dam = 'special';
-		if ( array_key_exists( $type, $this->attacks ) ) {
-			$dam = $this->get_damage_string( $this->attacks[ $type ] );
-		}
-		return $dam;
+	public function determine_armor_class() {
+		$this->armor_class -= apply_filters( 'armor_class_adjustments', 0, $this );
 	}
 
 

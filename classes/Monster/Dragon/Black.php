@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Black extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 30;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Average';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 24 );
 	protected $name         = 'Black Dragon';
@@ -48,14 +48,7 @@ class DND_Monster_Dragon_Black extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function determine_magic_spells() {
-		return true;
-	}
-
-	protected function add_magic_spells ( $list ) {
-		for( $i = 1; $i <= $this->hd_minimum; $i++ ) {
-			$spell = $this->magic_user->generate_random_spell( 'First' );
-			$this->spells[ 'First' ][ $spell ] = $this->magic_user->get_magic_spell_info( 'First', $spell );
-		}
+		return array_pad( array(), $this->hd_minimum, 'First' );
 	}
 
 

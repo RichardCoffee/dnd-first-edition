@@ -27,7 +27,7 @@ class DND_Character_Import_Kregen {
 			ksort( $this->time_line );
 			$last = array_pop( $this->time_line );
 			$this->character->add_experience( $last[1] );
-			$key = 'dnd1e_' . $class . '_' . $this->character->get_name();
+			$key = 'dnd1e_' . $class . '_' . $this->character->get_key(1);
 			$this->save_character( $key );
 			$this->import_status = 'success';
 			$this->import_message = "{$this->name} imported as $class.";

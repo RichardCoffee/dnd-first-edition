@@ -23,16 +23,16 @@ class DND_Character_Cleric extends DND_Character_Character {
 		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spell_list( $args['spell_import'] );
 		}
+		$this->calculate_manna_points();
 	}
 
-	public function initialize_character() {
+	protected function initialize_character() {
 		parent::initialize_character();
 		$this->undead = $this->get_undead_caps();
 	}
 
 	public function set_level( $level ) {
 		parent::set_level( $level );
-		$this->undead = $this->get_undead_caps();
 	}
 
 	protected function define_specials() {
@@ -44,7 +44,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 	public function special_string_undead( $type, $level = 0 ) {
 		$response = 'Unknown';
 		$type   = ucfirst( $type );
-		$level  = ( $level === 0 ) ? $this->level : $level;
+		$level  = ( ( $level === 0 ) ? $this->level : $level ) + apply_filters( 'object_level_bonus', 0 );
 		$undead = $this->get_undead_table();
 		if ( array_key_exists( $type, $undead ) ) {
 			$foe = $undead[ $type];
@@ -101,18 +101,42 @@ class DND_Character_Cleric extends DND_Character_Character {
 		return $string;
 	}
 
+	protected function get_saving_throw_table() {
+		return $this->get_cleric_saving_throw_table();
+	}
+
 	protected function get_spell_table() {
 		return array(
 			'First' => array(
-				'Bless' => array( 'page' => 'PH 44', 'cast' => '1 round', 'duration' => '6 rounds',
-					'special' => 'To hit: +1, morale: +5%',
-					'filters' => array(
-						array( 'character_to_hit_opponent', 1, 10, 2 ),
-						array( 'character_morale_check',    5, 10, 2 ),
+				'Bless' => array( 'page' => 'PH 44',
+					'type'       => 'Conjuration/Summoning',
+					'reversible' => true,
+					'range'      => '60 feet',
+					'duration'   => '6 rounds',
+					'aoe'        => '50 feet X 50 feet',
+					'comps'      => 'V,S,M',
+					'cast'       => '1 round',
+					'saving'     => 'None',
+					'special'    => 'To hit: +1, morale: +5%',
+					'condition'  => 'this_group_only',
+					'filters'    => array(
+						array( 'object_to_hit_opponent', 1, 10, 3 ),
+						array( 'object_morale_check',    5, 10, 3 ),
 					),
+					'target' => 'party',
 				),
 				'Ceremony' => array( 'page' => 'UA 32', 'cast' => '1 hour' ),
-				'Combine' => array( 'page' => 'UA 32', 'cast' => '1 round' ),
+				'Combine' => array( 'page' => 'UA 32',
+					'duration'  => '3 turns',
+					'cast'      => '1 round',
+					'condition' => 'this_group_only',
+					'filters'   => array(
+						array( 'opponent_to_hit_group', -4, 10, 2 ),
+#						array( 'group_ac_dex_bonus',     0, 10, 2 ), # replacement filter
+#						array( 'object_level_bonus', max( 4, count( $group ) ), 10, 2 ),
+					),
+					'target'    => 'origin'
+				),
 				'Command' => array( 'page' => 'PH 44', 'cast' => '1 segment', 'duration' => '1 round' ),
 				'Create Water' => array( 'page' => 'PH 44', 'type' => 'Alteration', 'cast' => '1 round', 'reversible' => true,
 					'aoe' => sprintf( '%u gallons', $this->level * 4 ),
@@ -136,11 +160,11 @@ class DND_Character_Cleric extends DND_Character_Character {
 				'Penetrate Disguise' => array( 'page' => 'UA 33', 'cast' => '2 rounds', 'duration' => '1 round' ),
 				'Protection from Evil' => array( 'page' => 'PH 45', 'cast' => '4 segments',
 					'duration'  => sprintf( '%u rounds', $this->level * 3 ),
-					'condition' => 'this_character_only',
+					'condition' => 'this_origin_only',
 					'filters' => array(
-						array( 'character_to_hit_opponent',   2, 10, 2 ),
+						array( 'object_to_hit_opponent',      2, 10, 3 ),
 						array( 'character_all_saving_throws', 2, 10, 2 ),
-						array( 'monster_to_hit_character',   -2, 10, 3 ),
+						array( 'opponent_to_hit_object',      2, 10, 3 ),
 					),
 				),
 				'Purify Food & Drink' => array( 'page' => 'PH 45', 'type' => 'Alteration', 'cast' => '1 round' ),
@@ -156,12 +180,14 @@ class DND_Character_Cleric extends DND_Character_Character {
 				'Chant' => array( 'page' => 'PH 46', 'cast' => '1 turn',
 					'aoe'     => "30' radius",
 					'special' => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
+					'condition' => 'this_group_only',
 					'filters' => array(
-						array( 'character_to_hit_opponent',     1, 10, 2 ),
-						array( 'character_weapon_damage_bonus', 1, 10, 2 ),
-						array( 'character_all_saving_throws',   1, 10, 2 ),
-						array( 'monster_to_hit_character',      1, 10, 3 ),
+						array( 'object_to_hit_opponent',      1, 10, 3 ),
+						array( 'weapon_damage_bonus',         1, 10, 2 ),
+						array( 'character_all_saving_throws', 1, 10, 2 ),
+						array( 'opponent_to_hit_object',      1, 10, 3 ),
 					),
+					'target' => 'party',
 				),
 				'Detect Charm' => array( 'page' => 'PH 46', 'cast' => '1 round', 'reversible' => true, 'duration' => '1 turn' ),
 				'Detect Life' => array( 'page' => 'UA 34', 'cast' => '1 round', 'duration' => '5 rounds' ),
@@ -212,15 +238,17 @@ class DND_Character_Cleric extends DND_Character_Character {
 				),
 				'Meld into Stone' => array( 'page' => 'UA 36', 'cast' => '7 segments' ),
 				'Prayer' => array( 'page' => 'PH 48', 'cast' => '6 segments',
-					'duration' => sprintf( '%u rounds', $this->level ),
-					'aoe'      => "60' radius",
-					'special'  => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
-					'filters'  => array(
-						array( 'character_to_hit_opponent',     1, 10, 2 ),
-						array( 'character_weapon_damage_bonus', 1, 10, 2 ),
-						array( 'character_all_saving_throws',   1, 10, 2 ),
-						array( 'monster_to_hit_character',      1, 10, 3 ),
+					'duration'  => sprintf( '%u rounds', $this->level ),
+					'aoe'       => "60' radius",
+					'special'   => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
+					'condition' => 'this_group_only',
+					'filters'   => array(
+						array( 'object_to_hit_opponent',      1, 10, 3 ),
+						array( 'weapon_damage_bonus',         1, 10, 2 ),
+						array( 'character_all_saving_throws', 1, 10, 2 ),
+						array( 'opponent_to_hit_object',      1, 10, 3 ),
 					),
+					'target' => 'party',
 				),
 				'Remove Curse' => array( 'page' => 'PH4 8', 'cast' => '6 segments', 'reversible' => true ),
 			),
@@ -280,14 +308,49 @@ class DND_Character_Cleric extends DND_Character_Character {
 		static $table = null;
 		if ( $table ) return $table;
 		$table = array(
+			'First' => array(
+				'Bless' => 'Upon uttering the bless spell, the caster raises the Furthermore, it raises their "to hit" morale of friendly creatures by +1.  Furthermore, i t raises their "to hit" dice rolls by +1.  A blessing, however, will affect only those not already engaged in melee combat. This spell can be reversed by the cleric to a curse upon enemies which lowers morale and "to hit" by -1. The caster determines at what range (up to 6") he or she will cast the spell, and it then affects all creatures in an area 5" square centered on the point the spell was cast upon. In addition to the verbal and somatic gesture components, the bless requires holy water, while the curse requires the sprinkling of specially polluted water.',
+			),
 		);
 		return $table;
 	}
 
-	protected function get_saving_throw_table() {
-		return $this->get_cleric_saving_throw_table();
-	}
+	/**  Manna functions  **/
 
+	protected function spells_usable_table() {
+		return array(
+			array(),
+			array( 1 ),       // 1
+			array( 2 ),       // 2
+			array( 2, 1 ),    // 3
+			array( 3, 2 ),    // 4
+			array( 3, 3, 1 ), // 5
+			array( 3, 3, 2 ), // 6
+			array( 3, 3, 2, 1 ),    //  7
+			array( 3, 3, 3, 1 ),    //  8
+			array( 4, 4, 3, 2, 1 ), //  9
+			array( 4, 4, 3, 3, 2 ), // 10
+			array( 5, 4, 4, 3, 2, 1 ),    // 11
+			array( 6, 5, 5, 3, 2, 2 ),    // 12
+			array( 6, 6, 6, 4, 2, 2 ),    // 13
+			array( 6, 6, 6, 5, 3, 2 ),    // 14
+			array( 7, 7, 7, 5, 4, 2 ),    // 15
+			array( 7, 7, 7, 6, 5, 3, 1 ), // 16
+			array( 8, 8, 8, 6, 5, 3, 1 ), // 17
+			array( 8, 8, 8, 7, 6, 4, 1 ), // 18
+			array( 9, 9, 9, 7, 6, 4, 2 ), // 19
+			array( 9, 9, 9, 8, 7, 5, 2 ), // 20
+			array( 9, 9, 9, 9, 8, 6, 2 ), // 21
+			array( 9, 9, 9, 9, 9, 6, 3 ), // 22
+			array( 9, 9, 9, 9, 9, 7, 3 ), // 23
+			array( 9, 9, 9, 9, 9, 8, 3 ), // 24
+			array( 9, 9, 9, 9, 9, 8, 4 ), // 25
+			array( 9, 9, 9, 9, 9, 9, 4 ), // 26
+			array( 9, 9, 9, 9, 9, 9, 5 ), // 27
+			array( 9, 9, 9, 9, 9, 9, 6 ), // 28
+			array( 9, 9, 9, 9, 9, 9, 7 ), // 29
+		);
+	}
 
 
 }

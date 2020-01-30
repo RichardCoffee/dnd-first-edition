@@ -4,12 +4,12 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 
 
 	private $combat   = null;
-	private $treasure = null;
+#	private $treasure = null;
 
 
 	public function __construct() {
 		parent::__construct();
-		$this->treasure = new DND_Treasure;
+#		$this->treasure = new DND_Combat_Treasure_Treasure;
 	}
 
 	public function __get( $name ) {
@@ -30,7 +30,7 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 				}
 			} else {
 				if ( defined( 'CSV_PATH' ) ) {
-					echo "\nusing transient data\n";
+					echo "using transient data\n";
 				}
 			}
 		}

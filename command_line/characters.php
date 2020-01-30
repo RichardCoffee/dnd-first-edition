@@ -1,10 +1,9 @@
 <?php
-
 if ( empty( $combat->party ) ) {
 	$players = array(
 		'Evandur' => array( 'class' => 'Fighter',          'data' => [ 'initiative' => [ 'roll' => 2 ] ] ),
-#		'Ivan'    => array( 'class' => 'Paladin',          'data' => [ 'initiative' => [ 'roll' => 2 ], 'shield' => [ 'type' => 'Large' ], 'horse' => 'paladin' ] ),
-#		'Saerwen' => array( 'class' => 'FighterMagicUser', 'data' => [ 'initiative' => [ 'roll' => 3 ] ] ),
+		'Ivan'    => array( 'class' => 'Paladin',          'data' => [ 'initiative' => [ 'roll' => 2 ], 'shield' => [ 'type' => 'Large' ], 'horse' => 'paladin' ] ),
+		'Saerwen' => array( 'class' => 'FighterMagicUser', 'data' => [ 'initiative' => [ 'roll' => 3 ] ] ),
 		'Tank'    => array( 'class' => 'Fighter',          'data' => [ 'initiative' => [ 'roll' => 1 ] ] ),
 #		'Dayna'   => array( 'class' => 'ClericMagicUser',  'data' => [ 'initiative' => [ 'roll' => 1 ] ] ),
 		'Derryl'  => array( 'class' => 'Cleric',           'data' => [ 'initiative' => [ 'roll' => 4 ], 'weap_allow' => [ 'Bow,Long' ] ] ),

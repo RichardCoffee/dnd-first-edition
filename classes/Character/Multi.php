@@ -3,7 +3,42 @@
 abstract class DND_Character_Multi extends DND_Character_Character {
 
 
-	protected $classes = array();
+#	protected $ac_rows    = array();
+#	protected $alignment  = 'Neutral';
+#	protected $armor      = array();
+#	protected $armr_allow = array();
+#	public    $assigned   = 'Unassigned';
+#	protected $base_xp    = 0;
+	protected $classes    = array();
+#	public    $current_hp = -100;
+#	protected $experience = 0;
+#	protected $hit_die    = array();
+#	protected $hit_points = 0;
+#	protected $horse      = '';
+#	protected $initiative = array();
+#	protected $level      = 0;
+	protected $manna      = 0;
+	protected $manna_init = 0;
+#	protected $max_move   = 12;
+#	protected $movement   = 12;
+#	protected $name       = 'Character Name';
+#	protected $non_prof   = -100;
+#	protected $race       = 'Human';
+#	protected $segment    = 0;  # attack segment
+#	protected $shield     = array();
+#	protected $shld_allow = array();
+#	protected $specials   = array();
+#	protected $spells     = array();
+#	protected $stats      = array();
+#	protected $weap_allow = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual  = false;   // DND_Character_Trait_Weapons
+#	protected $weap_init  = array();
+#	protected $weap_reqs  = array();
+#	protected $weapon     = array(); // DND_Character_Trait_Weapons
+#	protected $weapons    = array(); // DND_Character_Trait_Weapons
+#	protected $xp_bonus   = array();
+#	protected $xp_step    = 1000000;
+#	protected $xp_table   = array();
 
 
 	public function __construct( $args = array() ) {
@@ -12,8 +47,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 				$this->$key = unserialize( $args[ $key ] );
 				unset( $args[ $key ] );
 			} else {
-				$name   = str_replace( ' ', '', $class );
-				$actual = 'DND_Character_' . $name;
+				$actual = 'DND_Character_' . str_replace( ' ', '', $class );
 				if ( class_exists( $actual ) ) {
 					$this->$key = new $actual( $args );
 				}
@@ -21,26 +55,10 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		parent::__construct( $args );
-		$this->initialize_multi();
+		$this->calculate_manna_points();
 	}
 
-	public function initialize_character() { }
-
-	public function get_class() {
-		return implode( '/', $this->classes );
-	}
-
-	public function get_level() {
-		$arr = array();
-		foreach( $this->classes as $key => $class ) {
-			$arr[] = $this->$key->get_level();
-		}
-		return implode( '/', $arr );
-	}
-
-	protected function define_specials() { }
-
-	protected function initialize_multi() {
+	protected function initialize_character() {
 		$number     = count( $this->classes );
 		$initial    = '';
 #		$experience = 0;
@@ -52,7 +70,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		foreach( $this->classes as $key => $class ) {
 			if ( empty( $initial ) ) $initial = $key;
 #			$this->$key->weap_dual = $this->weap_dual;
-			$this->$key->initialize_character();
+#			$this->$key->initialize_character();
 			$hit_points += $this->$key->hit_points;
 			$level      += $this->$key->level;
 			$non_prof   += $this->$key->non_prof;
@@ -74,6 +92,20 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		}
 		$this->determine_initiative();
 	}
+
+	public function get_class() {
+		return implode( '/', $this->classes );
+	}
+
+	public function get_level() {
+		$arr = array();
+		foreach( $this->classes as $key => $class ) {
+			$arr[] = $this->$key->get_level();
+		}
+		return implode( '/', $arr );
+	}
+
+	protected function define_specials() { }
 
 	public function set_level( $level ) {
 		$this->level = 0;
@@ -108,9 +140,12 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		foreach( $this->classes as $key => $class ) {
 			$this->$key->add_experience( $new );
 		}
-		$this->initialize_multi();
+		$this->initialize_character();
 		$this->current_hp = $this->hit_points;
 	}
+
+
+	/**  Spell functions  **/
 
 	protected function initialize_spell_list( $spells ) {
 		if ( $spells ) {
@@ -138,36 +173,59 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		return $spells;
 	}
 
-	public function get_magic_spell_info( $level, $spell, $type = "" ) {
-		if ( $type ) {
-			$which = array_keys( $this->classes, $type );
-			if ( $which ) {
-				$key = $which[0];
-				return $this->$key->get_magic_spell_info( $level, $spell, $type );
-			}
-		}
+	public function get_listed_spell( $name ) {
 		foreach( $this->classes as $key => $class ) {
-			if ( method_exists( $this->$key, 'get_magic_spell_info' ) ) {
-				$info = $this->$key->get_magic_spell_info( $spell, $type );
-				if ( array_key_exists( 'page', $info ) ) {
-					return $info;
-				}
+			if ( method_exists( $this->$key, 'get_listed_spell' ) ) {
+				$spell = $this->$key->get_listed_spell( $name );
+				if ( $spell ) return $spell;
 			}
 		}
-		return "Spell '$spell' not found in {$this->name}'s spell book.";
+		return false;
 	}
 
-	public function locate_magic_spell( $spell, $type = '' ) {
+	public function locate_magic_spell( $name, $type = '' ) {
+		if ( $type ) {
+			if ( array_key_exists( $type, $this->classes ) ) {
+				$spell = $this->$type->locate_magic_spell( $name, $type );
+				if ( is_object( $spell ) ) return $spell;
+			}
+		}
 		foreach( $this->classes as $key => $class ) {
 			if ( method_exists( $this->$key, 'locate_magic_spell' ) ) {
-				$data = $this->$key->locate_magic_spell( $spell, $type );
-				if ( array_key_exists( 'page', $data ) ) {
-					return $data;
+				$spell = $this->$key->locate_magic_spell( $name, $type );
+				if ( is_object( $spell ) ) return $spell;
+			}
+		}
+		return "Spell '$name' not found in {$this->name}'s spell book.";
+	}
+
+	public function calculate_manna_points() {
+		if ( $this->manna_init === 0 ) {
+			foreach( $this->classes as $key => $class ) {
+				if ( method_exists( $this->$key, 'calculate_manna_points' ) ) {
+					$this->$key->calculate_manna_points();
+					$this->manna_init += $this->$key->manna_init;
+					$this->manna += $this->$key->manna;
 				}
 			}
 		}
-		return "Spell '$spell' not found in {$this->name}'s spell book.";
 	}
+
+	public function spend_manna( $spell ) {
+		$cost = $spell->manna_cost();
+		if ( $cost > 0 ) {
+			$this->manna -= $cost;
+			foreach( $this->classes as $key => $class ) {
+				if ( $this->$key->is_listed_spell( $spell ) ) {
+					$this->$key->spend_manna( $spell );
+					break;
+				}
+			}
+		}
+	}
+
+
+	/**  Saving Throws  **/
 
 	public function get_saving_throws( $source = null, $extra = null ) {
 		$base = array();

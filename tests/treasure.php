@@ -15,7 +15,7 @@ foreach( $treasure as $item => $data ) {
 	echo "\n";
 } //*/
 
-$t = new DND_Treasure;
+$t = new DND_Combat_Treasure_Treasure;
 $table = $t->get_weapons_table();
 
 $total = 0;
@@ -29,7 +29,7 @@ echo "Total: $total\n"; //*/
 #require_once( DND_FIRST_EDITION_DIR . '/command_line/treasure.php' );
 
 $cnt = count( $argv );
-$t = new DND_Treasure;
+$t = new DND_Combat_Treasure_Treasure;
 if ( $cnt === 1 ) {
 	$t->show_treasure_table();
 } else {

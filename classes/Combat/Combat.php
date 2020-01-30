@@ -1,5 +1,16 @@
 <?php
 
+/*
+  Implement notes:
+
+target stunned, prone, motionless - no ac dex bonus, opponent gets +4 to hit
+target flank - no shield bonus
+target rear - no shield or ac dex bonus, opponent gets +2 to hit
+target invisible - opponent gets -4 to hit, no flank or rear attacks
+
+
+*/
+
 abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 
 
@@ -8,12 +19,13 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 	protected $enemy   = array();
 	protected $holding = array();
 	protected $party   = array();
-	public    $range   = 2000;
+	protected $range   = 2000;
 	protected $rounds  = 3;
 	protected $segment = 1;
 
 
-	use DND_Trait_Movement;
+	use DND_Combat_Movement;
+	use DND_Trait_Magic;
 	use DND_Trait_ParseArgs;
 	use DND_Trait_Singleton;
 
@@ -26,6 +38,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		if ( $this->enemy )   $this->integrate_enemy();
 		if ( $this->holding ) $this->update_holds();
 		$this->determine_movement();
+		do_action( 'dnd1e_combat_init', $this );
 	}
 
 	public function __toString() {
@@ -36,33 +49,57 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 	/**  Startup functions  **/
 
 	protected function integrate_effects() {
-		foreach( $this->effects as $key => $spell ) {
-			if ( array_key_exists( 'ends', $spell ) && ( $this->segment > $spell['ends'] ) ) {
+		foreach( $this->effects as $key => $effect ) {
+			if ( $effect->has_ended( $this->segment ) ) {
 				$this->remove_effect( $key );
 				continue;
 			}
-			$filters = $spell['filters'];
-			// TODO: take aoe into account
-			foreach( $filters as $filter ) {
-				add_filter( $filter[0], function( $value, $b = null, $c = null, $d = null ) use ( $filter, $spell ) {
-					if ( array_key_exists( 'condition', $spell ) ) {
-						$condition = $spell['condition'];
-						foreach( [ $b, $c, $d ] as $obj ) {
-							if ( ( gettype( $obj ) === 'object' ) && method_exists( $obj, $condition ) ) {
-								if ( $obj->$condition( $filter[0], $spell, $obj ) ) {
-									$replace = apply_filters( 'dnd1e_replacement_filters', array() );
-									if ( in_array( $filter[0], $replace ) ) {
-										return $filter[1];
-									}
-								} else {
-									return $value;
-								}
+			$this->process_effect_filters( $effect );
+		}
+	}
+
+	protected function process_effect_filters( $effect ) {
+		if ( $effect->rewrite ) {
+			$origin = $this->get_object( $effect->get_caster() );
+			$effect->activate_filters( $origin );
+			return;
+		}
+#echo $effect->get_name()." 1\n";
+		if ( $effect->get_when() > $this->segment ) return;
+#echo $effect->get_name()." 2\n";
+		$filters = $effect->get_filters();
+		$replace = apply_filters( 'dnd1e_replacement_filters', array() ); //
+		// TODO: take aoe into account
+		foreach( $filters as $filter ) {
+			list ( $name, $delta, $priority, $argn ) = $filter;
+#print_r($filter);
+			add_filter( $name, function( $value, $b = null, $c = null, $d = null ) use ( $filter, $effect, $replace ) {
+static $cnt = 0;
+				list ( $name, $delta, $priority, $argn ) = $filter;
+				if ( $effect->has_condition() ) {
+					foreach( [ $b, $c, $d, $this ] as $object ) {
+						if ( $object === null ) continue;
+						if ( $effect->condition_applies( $object ) ) {
+/*
+echo $obj->get_name()."\n";
+echo "condition: ".$effect->get_condition()."\n";
+echo "  purpose: $name\n";
+echo "prior: $value  new: $delta cnt: $cnt\n";
+#if ( $cnt > 1 ) trigger_error( 'effect filters', E_ERROR );
+$cnt++;
+//*/
+							if ( in_array( $name, $replace ) ) {
+								return $delta;
+							} else {
+								return $value + $delta;
 							}
+						} else {
+							return $value;
 						}
 					}
-					return $value + $filter[1];
-				}, $filter[2], $filter[3] );
-			}
+				}
+				return $value + $delta;
+			}, $priority, $argn );
 		}
 	}
 
@@ -71,6 +108,11 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 			if ( is_array( $char ) ) {
 				$create = $char['what_am_i'];
 				$this->party[ $name ] = new $create( $char );
+			}
+			if ( $char->is_stunned() ) {
+				$char->set_current_weapon( 'Stunned' );
+			} else if ( $char->weapon['current'] === 'Stunned' ) {
+				$char->set_current_weapon( array_key_first( $char->weapons ) );
 			}
 		}
 	}
@@ -103,6 +145,14 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		}
 	}
 
+	public function new_segment_housekeeping( $unused = null ) {
+		foreach( $this->enemy as $key => $object ) {
+			$object->check_for_weapon_change( $this->segment );
+			do_action( 'dnd1e_new_seg_enemy', $this, $object );
+		}
+		add_filter( 'dnd1e_check_weapon_sequence', function( $arg ) { return true; } );
+	}
+
 	protected function reset_combat() {
 		$this->casting = array();
 		$this->effects = array();
@@ -112,9 +162,6 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		$this->rounds  = 3;
 		$this->segment = 1;
 	}
-
-
-	/**  Utility functions  **/
 
 	protected function get_party_attackers() {
 		$party = array();
@@ -129,37 +176,34 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 	protected function get_enemy_attackers() {
 		$enemy = array();
 		foreach( $this->enemy as $object ) {
-			if ( $seq = $this->filter_attacker( $object ) ) {
-				$type = ( is_array( $seq ) ) ? $object->get_attack_type( $seq, $this->segment ) : 'casting';
-				$object->set_sequence_weapon( $type );
-				$enemy[] = new DND_Monster_Ranking( $object, $type );
+			if ( $object->current_hp < 1 ) continue;
+			if ( $this->filter_attacker( $object ) ) {
+				$enemy[] = new DND_Monster_Ranking( $object );
 			}
 		}
 		return $enemy;
 	}
 
 	protected function filter_attacker( $object ) {
-		$sequence = $this->get_attack_sequence( $object->segment, $object->weapon['attacks'] );
+		$sequence = $this->get_attack_sequence( $object );
 		$key = $object->get_key();
 		if ( in_array( $this->segment, $sequence ) ) {
-			return $sequence;
+			return true;
 		} else if ( $this->is_casting( $key ) ) {
 			$spell = $this->find_casting( $key );
-			if ( $this->segment > $spell['when'] ) {
-				$this->remove_casting( $key );
+			if ( $this->segment > $spell->get_when() ) {
+				$this->remove_casting( $key ); # FIXME?
 			} else {
 				return true;
 			}
-		} else if ( $object instanceOf DND_Monster_Monster ) {
-			$object->set_next_attack( $sequence, $this->segment );
 		}
 		return false;
 	}
 
 	protected function rank_attackers( &$rank ) {
 		usort( $rank, function( $a, $b ) {
-			$aname = $a->get_name();
-			$bname = $b->get_name();
+			$aname = $a->get_key();
+			$bname = $b->get_key();
 			if ( $this->holding ) {
 				if ( in_array( $aname, $this->holding ) && in_array( $bname, $this->holding ) ) {
 				} else if ( in_array( $aname, $this->holding ) ) {
@@ -172,55 +216,73 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 				$aspell = $this->find_casting( $aname );
 				$bspell = $this->find_casting( $bname );
 				if ( $aspell && $bspell ) {
-				} else if ( $aspell && ( ! ( $aspell['when'] === $this->segment ) ) ) {
+				} else if ( $aspell && ( ! ( $aspell->get_when() === $this->segment ) ) ) {
 					return -1;
-				} else if ( $bspell && ( ! ( $bspell['when'] === $this->segment ) ) ) {
+				} else if ( $bspell && ( ! ( $bspell->get_when() === $this->segment ) ) ) {
 					return 1;
 				}
 			}
 			if ( $a->stats['dex'] === $b->stats['dex'] ) {
-				if ( $a->initiative['actual'] === $b->initiative['actual'] ) {
-					return 0;
-				} else if ( $a->initiative['actual'] > $b->initiative['actual'] ) {
-					return -1;
-				} else {
-					return 1;
-				}
-			} else if ( $a->stats['dex'] > $b->stats['dex'] ) {
-				return -1;
+				return ( $b->initiative['actual'] - $a->initiative['actual'] );
 			} else {
-				return 1;
+				return ( $b->stats['dex'] - $a->stats['dex'] );
 			}
 		} );
 	}
 
-	protected function critical_hit_result( $param, $type = 's' ) {
-		$args = explode( ':', $param );
-		$poss = ( count( $args ) > 1 ) ? $args[1] : $type;
-		$dr   = new DND_DieRolls;
-		$crit = $dr->get_crit_result( $args[0], $poss );
-		return $crit;
+
+	/**  Utility functions  **/
+
+	protected function add_holding( $target, $segment = 0 ) {
+		if ( $object = $this->get_object( $target ) ) {
+			$this->holding[] = $object->get_key();
+			$segment = ( $segment > 0 ) ? max ( $segment, $this->segment ) : $this->segment;
+			$object->set_attack_segment( $segment );
+		}
+	}
+
+	protected function critical_hit_result( $roll, $type ) {
+		$dr = new DND_DieRolls;
+		return $dr->get_crit_result( $roll, $type );
 	}
 
 	protected function fumble_roll_result( $roll ) {
-		$dr  = new DND_DieRolls;
-		$fum = $dr->get_fumble_result( $roll );
-		return $fum;
+		$dr = new DND_DieRolls;
+		return $dr->get_fumble_result( $roll );
+	}
+
+	protected function get_attack_sequence( $object ) {
+		return $object->get_attack_sequence( $this->rounds );
+	}
+
+	public function get_key() {
+		return $this->__toString();
 	}
 
 	protected function get_object( $name, $strict = false ) {
-		$obj = null;
+		if ( is_object( $name ) ) return $name;
 		if ( array_key_exists( $name, $this->party ) ) {
-			$obj = $this->party[ $name ];
+			return $this->party[ $name ];
 		} else if ( array_key_exists( $name, $this->enemy ) ) {
-			$obj = $this->enemy[ $name ];
-		} else if ( $strict && ( ! is_numeric( $name ) ) ) {
+			return $this->enemy[ $name ];
+		} else if ( $strict && ! is_numeric( $name ) ) {
 		} else {
-			$num = intval( $name, 10 );
-			$obj = $this->get_specific_enemy( $num );
+			return $this->get_specific_enemy( intval( $name ) );
 		}
-		return $obj;
+		return null;
 	}
+
+	protected function remove_holding( $one ) {
+		$object = $this->get_object( $one );
+		if ( $object ) {
+			$key = $object->get_key();
+			if ( in_array( $key, $this->holding ) ) {
+				$this->holding = array_diff( $this->holding, [ $key ] );
+				$object->set_attack_segment( $this->segment );
+			}
+		}
+	}
+
 
 	/**  Monster  **/
 
@@ -241,18 +303,24 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 				}
 			}
 		}
+		$adds = apply_filters( 'dnd1e_additional_appearing', array() );
+		if ( ! empty( $adds ) ) {
+			foreach( $adds as $object ) {
+				$this->add_to_enemy( $object );
+			}
+		}
 	}
 
-	public function add_to_enemy( DND_Monster_Monster $obj ) {
+	public function add_to_enemy( DND_Monster_Monster $object ) {
 		$cnt = count( $this->enemy );
-		$key = $obj->get_name() . " $cnt";
+		$key = $object->get_name() . " $cnt";
 		while( array_key_exists( $key, $this->enemy ) ) {
 			$cnt++;
-			$key = $obj->get_name() . " $cnt";
+			$key = $object->get_name() . " $cnt";
 		}
 		$obj->set_key( $key );
 		$obj->set_initiative( mt_rand( 1, 10 ) );
-		$this->enemy[ $key ] = $obj;
+		$this->enemy[ $key ] = $object;
 	}
 
 	public function remove_from_enemy( $key ) {
@@ -282,88 +350,100 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		return null;
 	}
 
-	protected function get_monster_attacks( DND_Monster_Monster $monster ) {
-		$index  = 0;
-		$seqent = array();
-		$count  = count( $monster->attacks );
-		$other  = $monster->single_attacks( [ 'Spell', 'Special' ] );
-		foreach( $other as $attack ) {
-			$count -= ( array_key_exists( $attack,  $monster->attacks ) ) ? 1 : 0;
+	protected function get_enemy_morale() {
+		$base = count( $this->enemy );
+		$cnt  = 0;
+		foreach( $this->enemy as $obj ) {
+			if ( $obj->current_hp > 0 ) $cnt++;
 		}
-		$multi = $this->get_attack_sequence( $monster->initiative, [ $count, 1 ] );
-		foreach( $monster->att_types as $type => $attack ) {
-			if ( in_array( $type, $other ) ) {
-				$seqent[ $type ] = $this->get_attack_sequence( $monster->initiative, [ 1, 1 ] );
-			} else {
-				$seqent[ $type ] = $this->get_attack_sequence( $multi[ $index++ ], [ 1, 1 ] );
-			}
-		}
-		return $seqent;
+		return round( $cnt / $base * 100 );
 	}
+
 
 	/**  Spells  **/
 
-	protected function pre_cast_spell( $origin, $spell, $target = '' ) {
-		$result = false;
+	protected function pre_cast_spell( $origin, $object, $target = '' ) {
 		if ( $this->segment < 2 ) {
-			$result = $this->start_casting( $origin, $spell, $target );
-			if ( $result ) $this->finish_casting( $spell );
-		}
-		return $result;
-	} //*/
-
-	protected function is_casting( $caster ) {
-		if ( empty( $this->casting ) ) return false;
-		return in_array( $caster, array_column( $this->casting, 'caster' ) );
-	}
-
-	protected function find_casting( $caster ) {
-		$spell = array_filter( $this->casting, function( $a ) use ( $caster ) {
-			if ( ! is_array( $a ) ) return false;
-			if ( $a['caster'] === $caster ) return true;
-			return false;
-		} );
-		if ( $spell ) {
-			return array_shift($spell);
+			if ( $effect = $this->start_casting( $origin, $object, $target ) ) {
+				$effect->set_pre_cast();
+				$this->finish_casting( $effect );
+				$this->remove_casting( $effect->get_caster() );
+				return $effect;
+			}
 		}
 		return false;
 	}
 
-	protected function remove_casting( $caster ) {
-		$this->casting = array_filter( $this->casting, function( $a ) use ( $caster ) {
-			if ( ! is_array( $a ) ) return true;
-			if ( $a['caster'] === $caster ) return false;
-			return true;
-		} );
+	protected function start_casting( $origin, $spell, $target = false ) {
+		$object = $this->get_object( $origin );
+		if ( $object && $spell ) {
+			$this->remove_holding( $object->get_key() );
+			$spell->set_target( ( $target ) ? $target : $origin );
+			$spell->set_when( $this->segment );
+			$this->casting[] = $spell;
+			return $spell;
+		}
+		return false;
 	}
 
-	protected function start_casting( $origin, $spell, $target = '' ) {
-		$result = false;
-		if ( $spell && $this->get_object( $origin ) ) {
-			$this->remove_holding( $origin );
-			$length = ( strpos( $spell['cast'], 'segment' ) ) ? intval( $spell['cast'], 10 ) : intval( $spell['cast'], 10 ) * 10;
-			$spell['target'] = ( $target ) ? $target : $origin;
-			$spell['caster'] = $origin;
-			$spell['when']   = $this->segment + $length;
-#print_r($spell);
-			$this->casting[] = $spell;
-			$result = true;
+	protected function is_casting( $caster ) {
+		if ( empty( $this->casting ) ) return false;
+		return $this->find_casting( $caster );
+	}
+
+	protected function find_casting( $caster ) {
+		foreach( $this->casting as $spell ) {
+			if ( $spell->get_caster() === $caster ) {
+				return $spell;
+			}
 		}
-		return $result;
+		return false;
+	}
+
+	protected function process_spell_data( $caster, $data ) {
+		$origin = $this->get_object( $caster );
+		$spell  = $this->find_casting( $origin->get_key() );
+		$spell->process_apply( $origin, $data );
+		$this->finish_casting( $spell );
+	}
+
+	protected function remove_casting( $caster ) {
+		$this->casting = array_filter(
+			$this->casting,
+			function( $a ) use ( $caster ) {
+				if ( $a->get_caster() === $caster ) return false;
+				return true;
+			}
+		);
 	}
 
 	protected function finish_casting( $spell ) {
-		if ( array_key_exists( 'filters', $spell ) ) {
-			$spell['segment'] = $this->segment;
-			if ( array_key_exists( 'duration', $spell ) ) {
-				$length = ( strpos( $spell['duration'], 'segment' ) ) ? intval( $spell['duration'] ) : intval( $spell['duration'] ) * 10;
-				$length = ( strpos( $spell['duration'], 'turn'    ) ) ? intval( $spell['duration'] ) * 100  : $length;
-				$length = ( strpos( $spell['duration'], 'hour'    ) ) ? intval( $spell['duration'] ) * 1000 : $length;
-				$spell['ends'] = $this->segment + $length;
-			}
-			$key = $spell['name'] . $spell['caster'] . $spell['target'];
-			$this->effects[ $key ] = $spell;
+		$caster = $this->get_object( $spell->get_caster() );
+		$target = $this->get_object( $spell->get_target() );
+		$spell->process_apply( $caster, $target );
+		if ( count( $spell->get_filters() ) > 0 ) {
+			$this->add_effect( $spell );
 		}
+		$caster->spend_manna( $spell );
+		$this->remove_casting( $caster->get_key() );
+	}
+
+	protected function abort_casting( $origin ) {
+		$obj = $this->get_object( $origin );
+		$key = $obj->get_key();
+		if ( $this->is_casting( $key ) ) {
+			$this->remove_casting( $key );
+			$obj->spend_manna( $this->find_casting( $key ) );
+		}
+	}
+
+	protected function add_effect( $effect ) {
+		$key = $effect->get_key();
+		$this->effects[ $key ] = $effect;
+		$this->process_effect_filters( $effect );
+	}
+
+	protected function find_effect() {
 	}
 
 	protected function remove_effect( $key ) {
@@ -376,7 +456,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 
 	public function add_to_party( $obj, $data = array() ) {
 		if ( is_object( $obj ) ) {
-			$key = $obj->get_name();
+			$key = $obj->get_key();
 			$this->party[ $key ] = $obj;
 			return true;
 		} else if ( is_string( $obj ) && defined( 'CSV_PATH' ) ) {
@@ -384,7 +464,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 			if ( is_readable( $file ) ) {
 				$save = $this->pre_existing_character_check( $obj, $data );
 				$temp = new DND_Character_Import_Kregen( $file, $data );
-				$name = $temp->character->get_name();
+				$name = $temp->character->get_key();
 				$this->party[ $name ] = $temp->character;
 				if ( $save ) $this->pre_existing_character_update( $name, $save );
 				return true;
@@ -419,31 +499,53 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		return false;
 	}
 
-	protected function add_holding( $hold ) {
-		$data = explode( ':', $hold );
-		$key  = $data[0];
-		if ( $object = $this->get_object( $key ) ) {
-			$this->holding[] = $key;
-			if ( array_key_exists( 1, $data ) ) {
-				$segment = intval( $data[1], 10 );
-				$segment = max ( $segment, $this->segment );
-				$object->set_attack_segment( $segment );
-			} else {
-				$object->set_attack_segment( $this->segment );
+	protected function temporary_hit_points( $object, $damage ) {
+		$damage = intval( $damage );
+		if ( $damage > 0 ) {
+			$target  = $object->get_key();
+			$applies = array_filter(
+				$this->effects,
+				function( $a ) use ( $target ) {
+					if ( $a->condition_applies( $target ) ) {
+						foreach( $a->get_filters() as $filter ) {
+							if ( $filter[0] === 'temporary_hit_points' )   return true; // Ill: Phantom Armor
+							if ( $filter[0] === 'dissipation_hit_points' ) return true; // MU: Armor
+						}
+					}
+					return false;
+				}
+			);
+			foreach( $applies as $key => $effect ) {
+				foreach( $effect->get_filters() as $index => $filter ) {
+					if ( $filter[0] === 'temporary_hit_points' ) {
+						$remaining = $filter[1];
+						$remaining -= $damage;
+						if ( $remaining > 0 ) {
+							$effect->set_filter_delta( $index, $remaining, true );
+							$damage = 0;
+						} else {
+							$damage = abs( $remaining );
+							$this->remove_effect( $key );
+							break;
+						}
+					}
+					if ( $filter[0] === 'dissipation_hit_points' ) {
+						if ( $effect->set_filter_delta( $index, $damage ) < 1 ) {
+							$this->remove_effect( $key );
+							break;
+						}
+					}
+				}
 			}
 		}
+		return $damage;
 	}
 
-	protected function remove_holding( $key ) {
-		if ( in_array( $key, $this->holding ) ) {
-			$this->holding = array_diff( $this->holding, [ $key ] );
-			$object = $this->get_object( $key );
-			$object->set_attack_segment( $this->segment );
-		}
-	}
+
+	/**  Combat functions  **/
 
 	protected function change_weapon( $object, $weapon ) {
-		$sequence = $this->get_attack_sequence( $object->segment, $object->weapon['attacks'] );
+		$sequence = $this->get_attack_sequence( $object );
 		if ( $this->segment === 1 ) {
 			$object->set_current_weapon( $weapon );
 		} else if ( in_array( $this->segment, $sequence ) ) {
@@ -462,46 +564,60 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		}
 	}
 
-	protected function get_attack_sequence( $segment, $attacks = array( 1, 1 ) ) {
-		$segment  = intval( $segment, 10 );
-		$seqent   = array();
-		$interval = 10 / ( $attacks[0] / $attacks[1] );
-		do {
-			$seqent[] = round( $segment );
-			$segment += $interval;
-		} while( $segment < ( ( $this->rounds * 10 ) + 1 ) );
-		return $seqent;
-	}
-
-	public function get_to_hit_number( $name1, $name2, $weapon = '' ) {
+	public function get_to_hit_number( $name1, $name2 ) {
 		$origin = $this->get_object( $name1, true );
+		if ( ( ! $origin ) || $origin->is_stunned() ) return 100;
 		$target = $this->get_object( $name2, true );
-		if ( ! ( $origin && $target ) ) return 100;
-		return $this->get_combat_to_hit_number( $origin, $target, $weapon );
+		if ( ! $target ) return 100;
+		$target->determine_armor_class();
+		$to_hit = $origin->get_to_hit_number( $target, $this->range );
+		$to_hit-= ( $target->is_down() ) ? 4 : 0;
+		return apply_filters( 'opponent_to_hit_opponent', $to_hit, $origin, $target );
 	}
 
-	public function get_combat_to_hit_number( $origin, $target, $weapon = '' ) {
-		return $origin->get_to_hit_number( $target, $this->range, $weapon );
-	}
-
-	protected function object_damage( $name, $damage ) {
-		$obj = $this->get_object( $name );
-		if ( $obj ) {
-			$damage = intval( $damage );
+	protected function object_damage( $name, $damage, $type = '' ) {
+		$target = $this->get_object( $name );
+		if ( $target ) {
+			$damage = intval( apply_filters( 'dnd1e_damage_to_target', $damage, $target, $type ) );
 			if ( $damage ) {
-				if ( $obj instanceOf DND_Character_Character ) {
-					$damage = $obj->check_temporary_hit_points( $damage );
+				if ( $target instanceOf DND_Character_Character ) {
+					$damage = $this->temporary_hit_points( $target, $damage );
 				}
-				$obj->current_hp -= $damage;
+				$target->assign_damage( $damage, $this->segment, $type );
+				$this->abort_casting( $target );
 			}
 		}
 	}
+
+	protected function add_hit_effect( $from, $to, $type ) {
+		$origin = $this->get_object( $from );
+		$target = $this->get_object( $to );
+		if ( $origin && $target ) {
+			$func = $origin->get_name(1) . "_{$type}_effect";
+			if ( method_exists( $origin, $func ) ) {
+				$effect = $origin->$func( $target, $this->segment );
+				if ( $effect ) {
+					$this->add_effect( $effect );
+					$filters = array_column( $effect['filters'], 0 );
+					if ( $effect->has_filter( 'target_prone' ) ) {
+						$adj = 10 + $target->get_armor_class_dexterity_adjustment( $target->stats['dex'] );
+						$effect->set_ends( $this->segment + $adj );
+						$this->add_holding( $target, max( $this->segment + $adj, $target->segment ) );
+					}
+					if ( $effect->has_secondary() ) {
+						list( $f, $t, $y ) = $effect->get_secondary();
+						$this->add_hit_effect( $f, $t, $y );
+					}
+				}
+			} else { $this->show_message( "Function '$func' not found!" ); }
+		}
+	}
+
 
 	/**  JsonSerializable and Serializable functions  **/
 
 	public function JsonSerialize() {
 		$table = $this->get_serialization_data();
-		$table['what_am_i'] = get_class( $this );
 		return $table;
 	}
 
@@ -509,7 +625,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		return serialize( $this->get_serialization_data() );
 	}
 
-	private function get_serialization_data() {
+	protected function get_serialization_data() {
 		$table = array(
 			'casting' => $this->casting,
 			'effects' => $this->effects,
@@ -518,6 +634,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 			'party'   => $this->party,
 			'segment' => $this->segment,
 		);
+		$table['what_am_i'] = get_class( $this );
 		return $table;
 	}
 

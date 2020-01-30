@@ -48,5 +48,13 @@ class DND_Monster_Animal_Bull extends DND_Monster_Animal_Cattle {
 		$this->specials['charge'] = 'Charge - see description';
 	}
 
+	protected function is_sequence_attack( $check ) {
+		return false;
+	}
+
+	protected function non_sequence_chance( $segment ) {
+		return 100;
+	}
+
 
 }

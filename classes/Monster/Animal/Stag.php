@@ -11,7 +11,7 @@ class DND_Monster_Animal_Stag extends DND_Monster_Monster {
 	protected $appearing    = array( 1, 4, 0 );
 	protected $armor_class  = 7;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Antlers' => [ 2, 4, 0 ], 'Right Forehoove' => [ 1, 3, 0 ], 'Left Forehoove' => [ 1, 3, 0 ] );
+	protected $attacks      = array( 'Right Forehoove' => [ 1, 3, 0 ], 'Left Forehoove' => [ 1, 3, 0 ], 'Antlers' => [ 2, 4, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
@@ -46,6 +46,11 @@ class DND_Monster_Animal_Stag extends DND_Monster_Monster {
 	protected function determine_specials() {
 		parent::determine_specials();
 		$this->specials['attacks'] = 'Attack will be either Antlers or Forehooves, not both.';
+	}
+
+	protected function is_sequence_attack( $check ) {
+		if ( $check === 'Antlers' ) return false;
+		return true;
 	}
 
 

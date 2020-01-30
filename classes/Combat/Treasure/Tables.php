@@ -1,110 +1,7 @@
 <?php
 
-class DND_Treasure {
+trait DND_Combat_Treasure_Tables {
 
-
-	use DND_Monster_Trait_Accouterments;
-
-
-	public function get_sub_table_name( $roll = 0 ) {
-		$roll = intval( $roll, 10 );
-		$next = '';
-		if ( $roll ) {
-			$main = $this->get_items_table();
-			$result = $this->get_table_result( $main, $roll );
-			if ( $result ) {
-				$next = $result['sub'];
-			}
-		}
-		return $next;
-	}
-
-	/**  Command Line  **/
-
-	public function show_possible_monster_treasure( $enemy, $possible = '' ) {
-		$monster = null;
-		if ( is_array( $enemy ) ) {
-			$monster = array_pop( $enemy );
-		} else if ( is_object( $enemy ) ) {
-			$monster = $enemy;
-		}
-		$treasure = $monster->get_treasure( $possible );
-		echo "\n";
-		if ( is_array( $treasure ) ) {
-			foreach( $treasure as $item ) {
-				echo "$item\n";
-			}
-		} else {
-			echo "$treasure\n";
-		}
-		echo "\n";
-	}
-
-	public function show_treasure_table( $table = 'items' ) {
-		$table = strtolower( $table );
-		$func  = $this->get_sub_table_string( $table );
-		$items = $this->$func();
-		$forms = ( in_array( $table , [ 'potions', 'rings', 'armor_shields' ] ) ) ? [ '%03u', '  %1$03u  ' ] : [ '%02u', '  %1$02u ' ];
-		$perc  = 1;
-		foreach( $items as $key => $item ) {
-			if ( ! is_array( $item ) ) {
-				if ( $key === 'title' ) echo "\n";
-				echo "\t$item\n";
-				continue;
-			}
-			$rg_end  = $perc + $item['chance'] - 1;
-			$format  = ( $perc === $rg_end ) ? $forms[1] : "{$forms[0]}-{$forms[0]}";
-			$format .= ' : %3$-30s';
-			$line = sprintf( $format, $perc, $rg_end, $item['text'] );
-			echo "  $line\n";
-			$perc += $item['chance'];
-		}
-		echo "\n";
-	}
-
-	public function show_treasure_item( $table, $roll ) {
-		$func = $this->get_sub_table_string( $table );
-		$sec  = $this->$func();
-		$roll = intval( $roll );
-		$pick = '';
-		foreach( $sec as $key => $item ) {
-			if ( ! is_array( $item ) ) {
-				if ( $key === 'title' ) echo "\n";
-				echo "\t$item\n";
-				continue;
-			}
-			$roll -= $item['chance'];
-			if ( $roll < 1 ) {
-				echo "  {$item['text']}   {$item['xp']}xp  {$item['gp']}gp  {$item['link']}\n\n";
-				$roll = 1000000;
-			}
-		}
-		echo "\n";
-	}
-
-	protected function get_table_result( $table, $roll ) {
-		foreach( $table as $entry ) {
-			if ( is_array( $entry ) ) {
-				$roll -= $entry['chance'];
-				if ( $roll < 1 ) {
-					return $entry;
-				}
-			}
-		}
-		return array();
-	}
-
-	protected function get_table_total( $table ) {
-		$total = 0;
-		foreach( $table as $entry ) {
-			if ( is_array( $entry ) ) {
-				$total += $entry['chance'];
-			}
-		}
-		return $total;
-	}
-
-	/**  Tables  **/
 
 	public function get_items_table() {
 		return array(
@@ -129,10 +26,6 @@ class DND_Treasure {
 			array( 'chance' => 11, 'text' => 'Swords',                     'sub' => 'swords' ),
 			array( 'chance' => 14, 'text' => 'Miscellaneous Weapons (d1000)', 'sub' => 'weapons' ),
 		);
-	}
-
-	protected function get_sub_table_string( $sub ) {
-		return "get_{$sub}_table";
 	}
 
 	protected function get_potions_table() {
@@ -196,7 +89,7 @@ class DND_Treasure {
 			array( 'chance' => 30, 'text' => 'Neutralize Poison',        'xp' => 300, 'gp' =>   500, 'link' => '' ),
 			array( 'chance' => 10, 'text' => 'Oil of Acid Resistance',   'xp' => 500, 'gp' =>  5000, 'link' => '' ),
 			array( 'chance' => 10, 'text' => 'Oil of Disenchantment',    'xp' => 750, 'gp' =>  3500, 'link' => '' ),
-			array( 'chance' => 20, 'text' => 'Oil of Elemental Invulnerability*', 'xp' => 500, 'gp' => 5000, 'link' => '' ),
+			array( 'chance' => 20, 'text' => 'Oil of Elemental Invulnerability', 'xp' => 500, 'gp' => 5000, 'link' => 'http://www.mountnevermind.de/Dokumente/DMG/DD00732.htm' ),
 			array( 'chance' => 20, 'text' => 'Oil of Etherealness',       'xp' => 600, 'gp' =>  1500, 'link' => 'DMG 125' ),
 			array( 'chance' => 10, 'text' => 'Oil of Fiery Burning',      'xp' => 500, 'gp' =>  4000, 'link' => '' ),
 			array( 'chance' => 10, 'text' => 'Oil of Fumbling**',         'xp' => '~', 'gp' =>  1000, 'link' => '' ),
@@ -231,25 +124,34 @@ class DND_Treasure {
 		);
 	}
 
+	protected function get_elemental_type_table() {
+		return array(
+			array( 'chance' => 25, 'element' => 'Air' ),
+			array( 'chance' => 25, 'element' => 'Earth' ),
+			array( 'chance' => 25, 'element' => 'Fire' ),
+			array( 'chance' => 25, 'element' => 'Water' ),
+		);
+	}
+
 	protected function get_scrolls_table() {
 		return array(
-			'title' => 'Scrolls:  1d100 - 01-63 M, 64-70 I / 71-93 C, 94-00 D',
-			array( 'chance' => 10, 'text' => '1 spell -- 1d4' ),
-			array( 'chance' =>  6, 'text' => '1 spell -- 1d6' ),
-			array( 'chance' =>  3, 'text' => '1 spell -- (1d8/1d6)+1' ),
-			array( 'chance' =>  5, 'text' => '2 spells - 1d4' ),
-			array( 'chance' =>  3, 'text' => '2 spells - 1d8/1d6' ),
-			array( 'chance' =>  5, 'text' => '3 spells - 1d4' ),
-			array( 'chance' =>  3, 'text' => '3 spells - 1d8/1d6' ),
-			array( 'chance' =>  4, 'text' => '4 spells - 1d6' ),
-			array( 'chance' =>  3, 'text' => '4 spells - 1d8/1d6' ),
-			array( 'chance' =>  4, 'text' => '5 spells - 1d6' ),
-			array( 'chance' =>  3, 'text' => '5 spells - 1d8/1d6' ),
-			array( 'chance' =>  3, 'text' => '6 spells - 1d6' ),
-			array( 'chance' =>  2, 'text' => '6 spells - (1d6/1d4)+2' ),
-			array( 'chance' =>  3, 'text' => '7 spells - 1d8/1d6' ),
-			array( 'chance' =>  2, 'text' => '7 spells - (1d8/1d6)+1' ),
-			array( 'chance' =>  1, 'text' => '7 spells - (1d6/1d4)+3' ),
+			'title' => 'Scrolls:  1d100 - M:01-63, I:64-70, C:71-93, D:94-00',
+			array( 'chance' => 10, 'text' => '1 spell -- 1d4',         'cdi' => [ 1, 1, 4 ] ),
+			array( 'chance' =>  6, 'text' => '1 spell -- 1d6',         'cdi' => [ 1, 1, 6 ] ),
+			array( 'chance' =>  3, 'text' => '1 spell -- (1d8/1d6)+1', 'cdi' => [ 1, 2, 7 ], 'm' => [ 1, 2, 9 ] ),
+			array( 'chance' =>  5, 'text' => '2 spells - 1d4',         'cdi' => [ 2, 1, 4 ] ),
+			array( 'chance' =>  3, 'text' => '2 spells - 1d8/1d6',     'cdi' => [ 2, 1, 6 ], 'm' => [ 2, 1, 8 ] ),
+			array( 'chance' =>  5, 'text' => '3 spells - 1d4',         'cdi' => [ 3, 1, 4 ] ),
+			array( 'chance' =>  3, 'text' => '3 spells - 1d8/1d6',     'cdi' => [ 3, 1, 6 ], 'm' => [ 3, 1, 8 ] ),
+			array( 'chance' =>  4, 'text' => '4 spells - 1d6',         'cdi' => [ 4, 1, 6 ] ),
+			array( 'chance' =>  3, 'text' => '4 spells - 1d8/1d6',     'cdi' => [ 4, 1, 6 ], 'm' => [ 4, 1, 8 ] ),
+			array( 'chance' =>  4, 'text' => '5 spells - 1d6',         'cdi' => [ 5, 1, 6 ] ),
+			array( 'chance' =>  3, 'text' => '5 spells - 1d8/1d6',     'cdi' => [ 5, 1, 6 ], 'm' => [ 5, 1, 8 ] ),
+			array( 'chance' =>  3, 'text' => '6 spells - 1d6',         'cdi' => [ 6, 1, 6 ] ),
+			array( 'chance' =>  2, 'text' => '6 spells - (1d6/1d4)+2', 'cdi' => [ 6, 3, 6 ], 'm' => [ 6, 3, 8 ] ),
+			array( 'chance' =>  3, 'text' => '7 spells - 1d8/1d6',     'cdi' => [ 7, 1, 6 ], 'm' => [ 7, 1, 8 ] ),
+			array( 'chance' =>  2, 'text' => '7 spells - (1d8/1d6)+1', 'cdi' => [ 7, 2, 7 ], 'm' => [ 7, 2, 9 ] ),
+			array( 'chance' =>  1, 'text' => '7 spells - (1d6/1d4)+3', 'cdi' => [ 7, 4, 7 ], 'm' => [ 7, 4, 9 ] ),
 			array( 'chance' =>  2, 'text' => 'Protection - Acid',          'xp' => 2500, 'link' => '' ),
 			array( 'chance' =>  2, 'text' => 'Protection - Cold',          'xp' => 2000, 'link' => '' ),
 			array( 'chance' =>  2, 'text' => 'Protection - Demons',        'xp' => 2500, 'link' => 'DMG 127' ),
@@ -268,6 +170,15 @@ class DND_Treasure {
 			array( 'chance' =>  2, 'text' => 'Protection - Undead',        'xp' => 1500, 'link' => 'DMG 127' ),
 			array( 'chance' =>  2, 'text' => 'Protection - Water',         'xp' => 1500, 'link' => '' ),
 			array( 'chance' =>  2, 'text' => 'Curse**' ),
+		);
+	}
+
+	protected function get_scrolls_type_table() {
+		return array(
+			array( 'chance' => 63, 'type' => 'M', 'class' => 'DND_Character_MagicUser' ),
+			array( 'chance' =>  7, 'type' => 'I', 'class' => 'DND_Character_Illusionist' ),
+			array( 'chance' => 23, 'type' => 'C', 'class' => 'DND_Character_Cleric' ),
+			array( 'chance' =>  7, 'type' => 'D', 'class' => 'DND_Character_Druid' ),
 		);
 	}
 
@@ -423,6 +334,7 @@ class DND_Treasure {
 		return array(
 			'title' => 'Jewels, Jewelry, and Phylacteries',
 			array( 'chance' =>  2, 'text' => 'Amulet of Inescapable Location',             'xp' => '~~', 'gp' =>  1000, 'link' => 'DMG 136' ),
+			array( 'chance' =>  1, 'text' => 'Amulet of Health',                           'xp' => 7000, 'gp' => 30000, 'link' => 'https://roll20.net/compendium/dnd5e/Amulet of Health' ),
 			array( 'chance' =>  1, 'text' => 'Amulet of Life Protection',                  'xp' => 5000, 'gp' => 20000, 'link' => 'DMG 136' ),
 			array( 'chance' =>  2, 'text' => 'Amulet of the Planes',                       'xp' => 6000, 'gp' => 30000, 'link' => 'DMG 136' ),
 			array( 'chance' =>  3, 'text' => 'Amulet of Proof Against Detection/Location', 'xp' => 4000, 'gp' => 15000, 'link' => 'DMG 136' ),
@@ -458,7 +370,7 @@ class DND_Treasure {
 			array( 'chance' =>  3, 'text' => 'Talisman of Pure Good (C)',                  'xp' => 3500, 'gp' => 27500, 'restrict' => 'C:Good', 'link' => 'DMG 154' ),
 			array( 'chance' =>  1, 'text' => 'Talisman of the Sphere (M)',                 'xp' =>  100, 'gp' => 10000, 'restrict' => 'M', 'link' => 'DMG 154' ),
 			array( 'chance' =>  2, 'text' => 'Talisman of Ultimate Evil (C)',              'xp' => 3500, 'gp' => 32500, 'restrict' => 'C:Evil', 'link' => 'DMG 154' ),
-			array( 'chance' =>  6, 'text' => 'Talisman of Zagy',                           'xp' => 1000, 'gp' => 10000, 'link' => 'DMG 154' ),
+			array( 'chance' =>  5, 'text' => 'Talisman of Zagy',                           'xp' => 1000, 'gp' => 10000, 'link' => 'DMG 154' ),
 			'note01' => ' * roll % for effect - see description',
 			'note02' => '** roll 1d20: 1-6 Flesh 400xp, 7-11 Clay 500xp, 12-15 Stone 600xp, 16-17 Iron 800xp, 18-19 Flesh/Clay/Wood 900xp, 20 Any golem 1,250xp',
 		);
@@ -511,7 +423,7 @@ class DND_Treasure {
 			array( 'chance' =>  5, 'text' => 'Bracers of Defense AC 2',                'xp' => 3500, 'gp' => 21000, 'link' => 'DMG 138' ),
 			array( 'chance' =>  4, 'text' => 'Bracers of Defenselessness',             'xp' => '~~', 'gp' =>  2000, 'link' => 'DMG 138-139' ),
 			array( 'chance' =>  4, 'text' => 'Gauntlets of Dexterity',                 'xp' => 1000, 'gp' => 10000, 'link' => 'DMG 144' ),
-			array( 'chance' =>  3, 'text' => 'Gauntets of Fumbling',                   'xp' => '~~', 'gp' =>  1000, 'link' => 'DMG 144' ),
+			array( 'chance' =>  3, 'text' => 'Gauntlets of Fumbling',                  'xp' => '~~', 'gp' =>  1000, 'link' => 'DMG 144' ),
 			array( 'chance' =>  4, 'text' => 'Gauntlets of Ogre Power (C,T,F)',        'xp' => 1000, 'gp' => 15000, 'restrict' => 'CTF', 'link' => 'DMG 144' ),
 			array( 'chance' =>  5, 'text' => 'Gauntlets of Swimming/Climbing (C,T,F)', 'xp' => 1000, 'gp' => 10000, 'restrict' => 'CTF', 'link' => 'DMG 144' ),
 			array( 'chance' =>  1, 'text' => 'Gloves of Missile Snaring',              'xp' => 1500, 'gp' => 10000, 'link' => '' ),
@@ -733,7 +645,7 @@ class DND_Treasure {
 			array( 'chance' => 10, 'text' => 'Field Plate +2',  'xp' => 1800, 'gp' =>  30000, 'link' => 'UA' ),
 			array( 'chance' =>  8, 'text' => 'Field Plate +3',  'xp' => 2700, 'gp' =>  50000, 'link' => 'UA' ),
 			array( 'chance' =>  4, 'text' => 'Field Plate +4',  'xp' => 3600, 'gp' =>  80000, 'link' => 'UA' ),
-			array( 'chance' =>  2, 'text' => 'Field Plate +5',  'xp' => 4800, 'gp' => 120000, 'link' => 'UA' ),
+			array( 'chance' =>  2, 'text' => 'Fuield Plate +5',  'xp' => 4800, 'gp' => 120000, 'link' => 'UA' ),
 			array( 'chance' =>  6, 'text' => 'Full Plate +1',   'xp' => 1000, 'gp' =>  30000, 'link' => 'UA' ),
 			array( 'chance' =>  5, 'text' => 'Full Plate +2',   'xp' => 2000, 'gp' =>  50000, 'link' => 'UA' ),
 			array( 'chance' =>  4, 'text' => 'Full Plate +3',   'xp' => 3000, 'gp' =>  80000, 'link' => 'UA' ),
@@ -766,22 +678,40 @@ class DND_Treasure {
 		);
 	}
 
+	protected function get_armor_size_table() {
+		return array(
+			array( 'chance' => 65, 'size' => 'Human' ),
+			array( 'chance' => 20, 'size' => 'Elf' ),
+			array( 'chance' => 10, 'size' => 'Dwarf' ),
+			array( 'chance' =>  5, 'size' => 'Gnome/Halfling' ),
+		);
+	}
+
 	protected function get_shields_table() {
 		return array(
-			array( 'chance' => 54, 'text' => 'Shield +1',          'xp' =>  250, 'gp' =>  2500, 'link' => 'DMG' ),
-			array( 'chance' => 30, 'text' => 'Shield +2',          'xp' =>  500, 'gp' =>  5000, 'link' => 'DMG' ),
-			array( 'chance' => 24, 'text' => 'Shield +3',          'xp' =>  800, 'gp' =>  8000, 'link' => 'DMG' ),
-			array( 'chance' => 12, 'text' => 'Shield +4',          'xp' => 1200, 'gp' => 12000, 'link' => 'DMG' ),
-			array( 'chance' =>  6, 'text' => 'Shield +5',          'xp' => 1750, 'gp' => 17500, 'link' => 'DMG' ),
+			array( 'chance' => 54, 'text' => 'Shield +1', 'xp' =>  250, 'gp' =>  2500, 'link' => 'DMG' ),
+			array( 'chance' => 30, 'text' => 'Shield +2', 'xp' =>  500, 'gp' =>  5000, 'link' => 'DMG' ),
+			array( 'chance' => 24, 'text' => 'Shield +3', 'xp' =>  800, 'gp' =>  8000, 'link' => 'DMG' ),
+			array( 'chance' => 12, 'text' => 'Shield +4', 'xp' => 1200, 'gp' => 12000, 'link' => 'DMG' ),
+			array( 'chance' =>  6, 'text' => 'Shield +5', 'xp' => 1750, 'gp' => 17500, 'link' => 'DMG' ),
 			array( 'chance' =>  6, 'text' => 'Shield, large, +1, +4 vs. missiles', 'xp' =>  400, 'gp' => 4000, 'link' => 'DMG' ),
 			array( 'chance' => 18, 'text' => 'Shield +1, missile attractor',       'xp' => '~~', 'gp' =>  750, 'link' => 'DMG' ),
+		);
+	}
+
+	protected function get_shields_size_table() {
+		return array(
+			array( 'chance' => 25, 'size' => 'Large' ),
+			array( 'chance' => 50, 'size' => 'Medium' ),
+			array( 'chance' => 15, 'size' => 'Small' ),
+			array( 'chance' => 10, 'size' => 'Wooden' ),
 		);
 	}
 
 	protected function get_swords_table() {
 		return array(
 			'title' => 'Swords',
-			array( 'chance' =>  1, 'text' => 'Sun Blade', 'xp' => 3000, 'gp' => 20000, 'link' => 'DMG' ),
+			array( 'chance' =>  1, 'text' => 'Sun Blade', 'xp' => 3000, 'gp' => 20000, 'restrict' => ':Good', 'link' => 'https://www.d20pfsrd.com/magic-items/magic-weapons/specific-magic-weapons/sun-blade/' ),
 			array( 'chance' =>  7, 'text' => 'Sword +1, +2 vs. magic-using & enchanted creatures', 'xp' => 600, 'gp' => 3000, 'link' => 'DMG 164' ),
 			array( 'chance' =>  7, 'text' => 'Sword +1, +3 vs. lycanthropes & shape-changers',     'xp' => 700, 'gp' => 3500, 'link' => 'DMG 164' ),
 			array( 'chance' =>  7, 'text' => 'Sword +1, +3 vs. regenerating creatures',            'xp' => 800, 'gp' => 4000, 'link' => 'DMG 164' ),
@@ -800,82 +730,159 @@ class DND_Treasure {
 			array( 'chance' =>  1, 'text' => 'Sword of Dancing',              'xp' =>  4400, 'gp' => 22000, 'link' => 'DMG 164-165' ),
 			array( 'chance' =>  1, 'text' => 'Sword of Life Stealing',        'xp' =>  5000, 'gp' => 25000, 'link' => 'DMG 164' ),
 			array( 'chance' =>  2, 'text' => 'Sword of Sharpness (Chaotic)',  'xp' =>  7000, 'gp' => 35000, 'restrict' => ':Chaotic', 'link' => 'DMG 164' ),
-			array( 'chance' => 14, 'text' => 'Sword of the Planes',           'xp' =>  2000, 'gp' => 30000, 'link' => '' ),
+			array( 'chance' => 14, 'text' => 'Sword of the Planes',           'xp' =>  2000, 'gp' => 30000, 'link' => 'https://www.d20pfsrd.com/magic-items/magic-weapons/specific-magic-weapons/sword-of-the-planes/' ),
 			array( 'chance' =>  1, 'text' => 'Sword of Wounding',             'xp' =>  4000, 'gp' => 22000, 'link' => 'DMG 165' ),
 			array( 'chance' =>  6, 'text' => 'Sword, Cursed Berserking',      'xp' =>  '~~', 'gp' =>   500, 'link' => 'DMG 165' ),
 			array( 'chance' =>  5, 'text' => 'Sword, Short, Quickness (+2)',  'xp' =>  1000, 'gp' => 17500, 'link' => '' ),
 			array( 'chance' =>  1, 'text' => 'Sword, Vorpal Weapon (Lawful)', 'xp' => 10000, 'gp' => 50000, 'restrict' => ':Lawful', 'link' => 'DMG 165' ),
 			'note00' => 'Use table in DMG 165 to test for unusual swords.',
-	);
-}
+		);
+	}
 
-	public function get_weapons_table() {
-#	protected function get_weapons_table() {
+	protected function get_swords_type_table() {
+		return array(
+			array( 'chance' => 70, 'text' => 'Long' ),
+			array( 'chance' => 20, 'text' => 'Broad' ),
+			array( 'chance' =>  5, 'text' => 'Short' ),
+			array( 'chance' =>  4, 'text' => 'Bastard' ),
+			array( 'chance' =>  1, 'text' => 'Two-handed' ),
+		);
+	}
+
+	protected function get_swords_alignment_table() {
+		return array(
+			array( 'chance' =>  5, 'align' => 'Chaotic Good' ),
+			array( 'chance' => 10, 'align' => 'Chaotic Neutral' ),
+			array( 'chance' =>  5, 'align' => 'Chaotic Evil' ),
+			array( 'chance' =>  5, 'align' => 'Neutral Evil' ),
+			array( 'chance' =>  5, 'align' => 'Lawful Evil' ),
+			array( 'chance' => 25, 'align' => 'Lawful Good' ),
+			array( 'chance' => 15, 'align' => 'Lawful Neutral' ),
+			array( 'chance' => 20, 'align' => 'Neutral' ),
+			array( 'chance' => 20, 'align' => 'Neutral Good' ),
+		);
+	}
+
+	protected function get_swords_primary_ability_table() {
+		return array(
+			array( 'chance' => 11, 'ability' => 'detect elevator/shifting rooms/walls in a 10 foot radius' ),
+			array( 'chance' => 11, 'ability' => 'detect sloping passages in a 10 foot radius' ),
+			array( 'chance' => 11, 'ability' => 'detect traps of large size in a 10 foot radius' ),
+			array( 'chance' => 11, 'ability' => 'detect evil/good in a 10 foot  radius' ),
+			array( 'chance' => 11, 'ability' => 'detect precious metals, kind, and amount in a 20 foot radius' ),
+			array( 'chance' => 11, 'ability' => 'detect gems, kind, and number in a 5 foot radius' ),
+			array( 'chance' => 11, 'ability' => 'detect magic in a 10 foot radius' ),
+			array( 'chance' =>  5, 'ability' => 'detect secret doors in a 5 foot radius' ),
+			array( 'chance' =>  5, 'ability' => 'detect invisible objects in a 10 foot radius' ),
+			array( 'chance' =>  5, 'ability' => 'locate object in a 120 foot radius' ),
+		);
+	}
+
+	protected function get_swords_extra_ability_table() {
+		return array(
+			array( 'chance' => 7, 'ability' => 'charm person on contact - 3 times/day' ),
+			array( 'chance' => 8, 'ability' => 'clairoudience, 30 foot range-3 times/day 1 round per use' ),
+			array( 'chance' => 7, 'ability' => 'clairvoyance, 30 foot range - 3 times/day, 1 round per use' ),
+			array( 'chance' => 6, 'ability' => 'determine directions and depth - 2 times/day' ),
+			array( 'chance' => 6, 'ability' => 'ESP, 30 foot ronge - 3 times/day 1 round per use' ),
+			array( 'chance' => 7, 'ability' => 'flying, 120 feet/turn - 1 hour/day' ),
+			array( 'chance' => 6, 'ability' => 'heal - 1 time/day' ),
+			array( 'chance' => 7, 'ability' => 'illusion, 120 foot range - 2 times/day, as the wand' ),
+			array( 'chance' => 7, 'ability' => 'levitation, 1 turn duration - 3 times/day ot 6th level of magic use ability' ),
+			array( 'chance' => 6, 'ability' => 'strength - 1 time/day (upon wielder only)' ),
+			array( 'chance' => 8, 'ability' => 'telekinesis, 2,500 g.p. wt. maximum - 2 times/day, 1 round each use' ),
+			array( 'chance' => 6, 'ability' => 'telepathy, 60 foot range - 2 times/day' ),
+			array( 'chance' => 7, 'ability' => 'teleportation - 1 time/day 6,000 g.p. wt. maximum, 2 segments to activate' ),
+			array( 'chance' => 6, 'ability' => 'X-ray vision, 40 foot range - 2 times/day 1 turn per use' ),
+		);
+	}
+
+	protected function get_weapons_table() {
 		return array(
 			'title' => 'Miscellaneous Weapons: 1d1000',
-			array( 'chance' => 60, 'text' => 'Arrow**, 2d12 in number',  'xp' =>   20, 'gp' =>   120, 'link' => 'DMG 167' ),
-			array( 'chance' => 30, 'text' => 'Arrow**, 2d8 in number',   'xp' =>   20, 'gp' =>   120, 'link' => 'DMG 167' ),
-			array( 'chance' => 15, 'text' => 'Arrow**, 2d6 in number',   'xp' =>   20, 'gp' =>   120, 'link' => 'DMG 167' ),
-			array( 'chance' =>  5, 'text' => 'Arrow of Direction',       'xp' => 2500, 'gp' => 17500, 'link' => '' ),
-			array( 'chance' =>  3, 'text' => 'Arrow of Slaying',         'xp' =>  250, 'gp' =>  2500, 'link' => 'DMG 167' ),
-			array( 'chance' => 60, 'text' => 'Axe*',                     'xp' =>  300, 'gp' =>  1750, 'link' => 'DMG 167' ),
-			array( 'chance' =>  5, 'text' => 'Axe +2, Throwing',         'xp' =>  750, 'gp' =>  4500, 'link' => 'DMG 167' ),
-			array( 'chance' =>  5, 'text' => 'Axe of Hurling*',          'xp' => 1500, 'gp' => 15000, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Battle Axe*',              'xp' =>  400, 'gp' =>  2500, 'link' => 'DMG' ),
-			array( 'chance' => 60, 'text' => 'Bolt**, 2d10 in number',   'xp' =>   50, 'gp' =>   300, 'link' => 'DMG 167' ),
-			array( 'chance' => 30, 'text' => 'Bolt**, 2d8 in number',    'xp' =>   50, 'gp' =>   300, 'link' => 'DMG 167' ),
-			array( 'chance' => 15, 'text' => 'Bolt**, 2d6 in number',    'xp' =>   50, 'gp' =>   300, 'link' => 'DMG 167' ),
-			array( 'chance' => 25, 'text' => 'Bow*',                     'xp' =>  500, 'gp' =>  3500, 'link' => 'DMG 167' ),
-			array( 'chance' => 30, 'text' => 'Bullet, Sling**',          'xp' =>    0, 'gp' =>     0, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Crossbow of Accuracy, +3', 'xp' => 2000, 'gp' => 12000, 'link' => 'DMG 167' ),
-			array( 'chance' =>  5, 'text' => 'Crossbow of Distance',     'xp' => 1500, 'gp' =>  7500, 'link' => 'DMG 167' ),
-			array( 'chance' =>  5, 'text' => 'Crossbow of Speed',        'xp' => 1500, 'gp' =>  7500, 'link' => 'DMG 167' ),
-			array( 'chance' => 60, 'text' => 'Dagger +1, +2 vs. S',      'xp' =>  100, 'gp' =>   750, 'link' => '' ),
-			array( 'chance' => 30, 'text' => 'Dagger +2, +3 vs. L',      'xp' =>  250, 'gp' =>  2000, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Dagger +2, Longtooth',     'xp' =>  300, 'gp' =>  2500, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Dagger of Throwing*',      'xp' =>  250, 'gp' =>  2500, 'link' => '' ),
-			array( 'chance' =>  3, 'text' => 'Dagger of Venom',          'xp' =>  350, 'gp' =>  3000, 'link' => 'DMG 167' ),
-			array( 'chance' =>  8, 'text' => 'Dart** (3d4)',             'xp' =>    0, 'gp' =>     0, 'link' => '' ),
-			array( 'chance' =>  3, 'text' => 'Dart of Homing',           'xp' =>  450, 'gp' =>  4500, 'link' => '' ),
-			array( 'chance' => 40, 'text' => 'Flail*',                   'xp' =>  450, 'gp' =>  4000, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Hammer*',                  'xp' =>  300, 'gp' =>  2500, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Hammer +3, Dwarven Thrower', 'xp' =>1500,'gp' => 15000, 'link' => 'DMG 167' ),
-			array( 'chance' =>  2, 'text' => 'Hammer of Thunderbolts',   'xp' => 2500, 'gp' => 25000, 'link' => 'DMG 167-168' ),
-			array( 'chance' =>  5, 'text' => 'Hornblade*',               'xp' =>    0, 'gp' =>  5000, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Javelin*',                 'xp' =>  375, 'gp' =>  2500, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Javelin of Lightning',     'xp' =>  250, 'gp' =>  3000, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Javelin of Piercing',      'xp' =>  250, 'gp' =>  3000, 'link' => '' ),
-			array( 'chance' => 40, 'text' => 'Knife*',                   'xp' =>    0, 'gp' =>     0, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Knife, Buckle*',           'xp' =>  100, 'gp' =>  1000, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Lance*',                   'xp' =>    0, 'gp' =>     0, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Net of Entrapment',        'xp' => 1000, 'gp' =>  7500, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Net of Snaring',           'xp' => 1000, 'gp' =>  6000, 'link' => '' ),
-			array( 'chance' => 30, 'text' => 'Mace*',                    'xp' =>  350, 'gp' =>  3000, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Mace of Disruption',       'xp' => 1750, 'gp' => 17500, 'link' => 'DMG 168' ),
-			array( 'chance' => 25, 'text' => 'Military Pick*',           'xp' =>  350, 'gp' =>  2500, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Morning Star*',            'xp' =>  400, 'gp' =>  3000, 'link' => '' ),
-			array( 'chance' =>  8, 'text' => 'Pole Arm*',                'xp' =>    0, 'gp' =>     0, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Quarterstaff*',            'xp' =>  250, 'gp' =>  1500, 'link' => '' ),
-			array( 'chance' => 25, 'text' => 'Scimitar*',                'xp' =>  375, 'gp' =>  3000, 'link' => 'DMG 168' ),
-			array( 'chance' =>  5, 'text' => 'Scimitar of Speed*',       'xp' => 2500, 'gp' =>  9000, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Sling of Seeking +2',      'xp' =>  700, 'gp' =>  7000, 'link' => 'DMG 168' ),
-			array( 'chance' => 50, 'text' => 'Spear*',                   'xp' =>  500, 'gp' =>  3000, 'link' => 'DMG 168' ),
-			array( 'chance' => 15, 'text' => 'Spear, Cursed Backbiter',  'xp' =>    0, 'gp' =>  1000, 'link' => 'DMG 168' ),
-			array( 'chance' => 34, 'text' => 'Sword, Long*',             'xp' =>    0, 'gp' =>     0, 'link' => 'DMG' ),
-			array( 'chance' => 10, 'text' => 'Sword, Broad*',            'xp' =>    0, 'gp' =>     0, 'link' => 'DMG' ),
-			array( 'chance' =>  3, 'text' => 'Sword, Short*',            'xp' =>    0, 'gp' =>     0, 'link' => 'DMG' ),
-			array( 'chance' =>  2, 'text' => 'Sword, Bastard*',          'xp' =>    0, 'gp' =>     0, 'link' => 'DMG' ),
-			array( 'chance' =>  1, 'text' => 'Sword, Two-Handed*',       'xp' =>    0, 'gp' =>     0, 'link' => 'DMG' ),
-			array( 'chance' =>  5, 'text' => 'Trident (Military Fork)*', 'xp' => 1500, 'gp' => 12500, 'link' => 'DMG 168' ),
-			array( 'chance' =>  5, 'text' => 'Trident of Fish Command',  'xp' =>  500, 'gp' =>  4000, 'link' => '' ),
-			array( 'chance' =>  4, 'text' => 'Trident of Submission',    'xp' => 1500, 'gp' => 12500, 'link' => '' ),
-			array( 'chance' =>  5, 'text' => 'Trident of Warning',       'xp' => 1000, 'gp' => 10000, 'link' => '' ),
-			array( 'chance' =>  4, 'text' => 'Trident of Yearning',      'xp' =>    0, 'gp' =>  1000, 'link' => '' ),
+			array( 'chance' => 60, 'text' => 'Arrow**, 2d12 in number',  'xp' =>   20, 'gp' =>   120, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' => 30, 'text' => 'Arrow**, 2d8 in number',   'xp' =>   20, 'gp' =>   120, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' => 15, 'text' => 'Arrow**, 2d6 in number',   'xp' =>   20, 'gp' =>   120, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' =>  5, 'text' => 'Arrow of Direction',       'xp' => 2500, 'gp' => 17500, 'ex' => 'N:0', 'link' => '' ),
+			array( 'chance' =>  3, 'text' => 'Arrow of Slaying',         'xp' =>  250, 'gp' =>  2500, 'ex' => 'N:0', 'link' => 'DMG 167' ),
+			array( 'chance' => 60, 'text' => 'Axe*',                     'xp' =>  300, 'gp' =>  1750, 'ex' => 'Y:1', 'link' => 'DMG 167' ),
+			array( 'chance' =>  5, 'text' => 'Axe +2, Throwing',         'xp' =>  750, 'gp' =>  4500, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' =>  5, 'text' => 'Axe of Hurling*',          'xp' => 1500, 'gp' => 15000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Battle Axe*',              'xp' =>  400, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' => 60, 'text' => 'Bolt**, 2d10 in number',   'xp' =>   50, 'gp' =>   300, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' => 30, 'text' => 'Bolt**, 2d8 in number',    'xp' =>   50, 'gp' =>   300, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' => 15, 'text' => 'Bolt**, 2d6 in number',    'xp' =>   50, 'gp' =>   300, 'ex' => 'N:2', 'link' => 'DMG 167' ),
+			array( 'chance' => 25, 'text' => 'Bow*',                     'xp' =>  500, 'gp' =>  3500, 'ex' => 'Y:1', 'link' => 'DMG 167' ),
+			array( 'chance' => 30, 'text' => 'Bullet, Sling**',          'xp' =>   10, 'gp' =>    10, 'ex' => 'N:2', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Crossbow of Accuracy, +3', 'xp' => 2000, 'gp' => 12000, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' =>  5, 'text' => 'Crossbow of Distance',     'xp' => 1500, 'gp' =>  7500, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' =>  5, 'text' => 'Crossbow of Speed',        'xp' => 1500, 'gp' =>  7500, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' => 60, 'text' => 'Dagger +1, +2 vs. S',      'xp' =>  100, 'gp' =>   750, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' => 30, 'text' => 'Dagger +2, +3 vs. L',      'xp' =>  250, 'gp' =>  2000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Dagger +2, Longtooth',     'xp' =>  300, 'gp' =>  2500, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Dagger of Throwing*',      'xp' =>  250, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  3, 'text' => 'Dagger of Venom',          'xp' =>  350, 'gp' =>  3000, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' =>  8, 'text' => 'Dart** (3d4)',             'xp' =>   50, 'gp' =>   300, 'ex' => 'N:2', 'link' => '' ),
+			array( 'chance' =>  3, 'text' => 'Dart of Homing',           'xp' =>  450, 'gp' =>  4500, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' => 40, 'text' => 'Flail*',                   'xp' =>  450, 'gp' =>  4000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Hammer*',                  'xp' =>  300, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Hammer +3, Dwarven Thrower', 'xp' =>1500,'gp' => 15000, 'ex' => 'Y:0', 'link' => 'DMG 167' ),
+			array( 'chance' =>  2, 'text' => 'Hammer of Thunderbolts',   'xp' => 2500, 'gp' => 25000, 'ex' => 'Y:0', 'link' => 'DMG 167-168' ),
+			array( 'chance' =>  5, 'text' => 'Hornblade*',               'xp' =>  500, 'gp' =>  5000, 'ex' => 'Y:1', 'link' => 'http://www.mountnevermind.de/Dokumente/DMG/DD01099.htm' ),
+			array( 'chance' => 25, 'text' => 'Javelin*',                 'xp' =>  375, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Javelin of Lightning',     'xp' =>  250, 'gp' =>  3000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Javelin of Piercing',      'xp' =>  250, 'gp' =>  3000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' => 40, 'text' => 'Knife*',                   'xp' =>  100, 'gp' =>   750, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Knife, Buckle*',           'xp' =>  100, 'gp' =>  1000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Lance*',                   'xp' =>    0, 'gp' =>     0, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Net of Entrapment',        'xp' => 1000, 'gp' =>  7500, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Net of Snaring',           'xp' => 1000, 'gp' =>  6000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' => 30, 'text' => 'Mace*',                    'xp' =>  350, 'gp' =>  3000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Mace of Disruption',       'xp' => 1750, 'gp' => 17500, 'ex' => 'Y:0', 'link' => 'DMG 168' ),
+			array( 'chance' => 25, 'text' => 'Military Pick*',           'xp' =>  350, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Morning Star*',            'xp' =>  400, 'gp' =>  3000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  8, 'text' => 'Pole Arm*',                'xp' =>    0, 'gp' =>     0, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Quarterstaff*',            'xp' =>  250, 'gp' =>  1500, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' => 25, 'text' => 'Scimitar*',                'xp' =>  375, 'gp' =>  3000, 'ex' => 'Y:1', 'link' => 'DMG 168' ),
+			array( 'chance' =>  5, 'text' => 'Scimitar of Speed*',       'xp' => 2500, 'gp' =>  9000, 'ex' => 'Y:1', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Sling of Seeking +2',      'xp' =>  700, 'gp' =>  7000, 'ex' => 'Y:0', 'link' => 'DMG 168' ),
+			array( 'chance' => 50, 'text' => 'Spear*',                   'xp' =>  500, 'gp' =>  3000, 'ex' => 'Y:1', 'link' => 'DMG 168' ),
+			array( 'chance' => 15, 'text' => 'Spear, Cursed Backbiter',  'xp' =>    0, 'gp' =>  1000, 'ex' => 'N:0', 'link' => 'DMG 168' ),
+			array( 'chance' => 34, 'text' => 'Sword, Long*',             'xp' =>  500, 'gp' =>  2500, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' => 10, 'text' => 'Sword, Broad*',            'xp' =>  350, 'gp' =>  1600, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' =>  3, 'text' => 'Sword, Short*',            'xp' =>  250, 'gp' =>  1250, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' =>  2, 'text' => 'Sword, Bastard*',          'xp' =>  850, 'gp' =>  4100, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' =>  1, 'text' => 'Sword, Two-Handed*',       'xp' => 1000, 'gp' =>  5000, 'ex' => 'Y:1', 'link' => 'DMG' ),
+			array( 'chance' =>  5, 'text' => 'Trident (Military Fork)*', 'xp' => 1500, 'gp' => 12500, 'ex' => 'Y:1', 'link' => 'DMG 168' ),
+			array( 'chance' =>  5, 'text' => 'Trident of Fish Command',  'xp' =>  500, 'gp' =>  4000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  4, 'text' => 'Trident of Submission',    'xp' => 1500, 'gp' => 12500, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  5, 'text' => 'Trident of Warning',       'xp' => 1000, 'gp' => 10000, 'ex' => 'Y:0', 'link' => '' ),
+			array( 'chance' =>  4, 'text' => 'Trident of Yearning',      'xp' =>    0, 'gp' =>  1000, 'ex' => 'N:0', 'link' => '' ),
 			# TODO:  Use info in DND_Character_Trait_Weapons to modify base values
 #			'note00' => 'If the max damage for a weapon is below 4, reduce the price by 60%, otherwise, if the max damage is below 6, reduce the price by 30%.  If the min damage for a weapon is above 1, increase the price by 25%.  If the max damage for a weapon is above 8, increase the price by 35%.',
 			'note00' => 'Use table in DMG 165 to test for unusual weapons. d100: 01-75) no result, 76-00) see table',
 			'note01' => ' * d20: 1-2) -1;x0.25, 3-10) +1, 11-14) +2;x2, 15-17) +3;x4, 18-19) +4;x5, 20) +5;x7',
 			'note02' => '** d20: 1-2) -1;x0.25, 3-14) +1, 15-19) +2;x3, 20) +3;x5',
+		);
+	}
+
+	protected function get_weapons_adjustment_table() {
+		return array(
+			array( 'chance' => 10, 'plus' => -1, 'gp' => 0.25 ),
+			array( 'chance' => 40, 'plus' =>  1, 'gp' => 1 ),
+			array( 'chance' => 20, 'plus' =>  2, 'gp' => 2 ),
+			array( 'chance' => 15, 'plus' =>  3, 'gp' => 4 ),
+			array( 'chance' => 10, 'plus' =>  4, 'gp' => 5 ),
+			array( 'chance' =>  5, 'plus' =>  5, 'gp' => 7 ),
+		);
+	}
+
+	protected function get_missile_adjustment_table() {
+		return array(
+			array( 'chance' => 10, 'plus' => -1, 'gp' => 0.25 ),
+			array( 'chance' => 60, 'plus' =>  1, 'gp' => 1 ),
+			array( 'chance' => 25, 'plus' =>  2, 'gp' => 3 ),
+			array( 'chance' =>  5, 'plus' =>  3, 'gp' => 5 ),
 		);
 	}
 

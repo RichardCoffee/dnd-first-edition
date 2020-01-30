@@ -21,10 +21,9 @@ class DND_Monster_Lycan_Wolfwere extends DND_Monster_Monster {
 #	protected $hit_points   = 0;
 	protected $hp_extra     = 1;
 	protected $in_lair      = 35;
-#	public    $initiative   = 10;
+#	protected $initiative   = 10;
 	protected $intelligence = 'High to Exceptional';
 #	protected $magic_user   = null;
-#	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 15 );
 	protected $name         = 'Wolfwere';
 #	protected $psionic      = 'Nil';
@@ -59,12 +58,35 @@ class DND_Monster_Lycan_Wolfwere extends DND_Monster_Monster {
 		$this->specials['boolean_treasure'] = '50% of also having treasure types S and T.';
 	}
 
-	public function specials_boolean_pack() {
+	public function special_boolean_pack() {
 		return $this->check_chance( 75 );
 	}
 
-	public function specials_boolean_treasure() {
+	public function special_boolean_treasure() {
 		return $this->check_chance( 50 );
+	}
+
+	public function get_number_appearing() {
+		add_filter( 'dnd1e_additional_appearing', [ $this, 'possible_wolfpack' ] );
+		return parent::get_number_appearing();
+	}
+
+	public function possible_wolfpack( $adds ) {
+		if ( $this->special_boolean_pack() ) {
+			if ( $this->check_chance( 30 ) ) {
+				$base = new DND_Monster_Wolf_Wolf;
+			} else {
+				$base = new DND_Monster_Wolf_Worg;
+			}
+			$more = $this->generate_additionals( $base );
+			$adds = array_merge( $adds, $more );
+		}
+		return $adds;
+	}
+
+	protected function is_sequence_attack( $check ) {
+		if ( $check === 'Voice' ) return false;
+		return true;
 	}
 
 	public function command_line_display() {

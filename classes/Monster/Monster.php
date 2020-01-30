@@ -3,12 +3,11 @@
 abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 
-#	protected $ac_rows      = array( 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 14, 15, 15, 15 ); // DND_Monster_Trait_Combat
+#	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Neutral';
 	protected $appearing    = array( 1, 1, 0 );
 	protected $armor_class  = 10;
 #	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
-#	protected $att_types    = array(); // DND_Monster_Trait_Combat
 	protected $attacks      = array();
 #	private   $combat_key   = '';      // DND_Monster_Trait_Combat
 	public    $current_hp   = -10000;
@@ -23,7 +22,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $initiative   = 10;
 	protected $intelligence = 'Animal';
 	protected $magic_user   = null;
-	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Monster';
 	protected $psionic      = 'Nil';
@@ -38,12 +36,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $treasure     = 'Nil';
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
-#	protected $weapon       = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
 #	protected $weapons      = array(); // DND_Character_Trait_Weapons
 	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
 	use DND_Character_Trait_SavingThrows;
+	use DND_Character_Trait_Utilities;
 	use DND_Character_Trait_Weapons;
 	use DND_Monster_Trait_Combat;
 	use DND_Monster_Trait_Experience;
@@ -64,7 +63,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->determine_hit_points();
 		$this->determine_armor_type(); // DND_Monster_Trait_Combat
 		$this->determine_to_hit_row();
-		$this->determine_attack_types(); // DND_Monster_Trait_Combat
 		$this->determine_specials();
 		$this->determine_saving_throw();
 		$this->initialize_sequence_attacks(); // DND_Monster_Trait_Combat
@@ -87,6 +85,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 				$key = array_key_first( $this->movement );
 				return $this->movement[ $key ];
 			}
+		} else if ( $name === 'armor_spell' ) {
+			return $this->armor_class;
 		}
 		if ( ( $name === 'xp_value' ) && ( ( ! $this->xp_value ) || is_array( $this->xp_value ) ) ) {
 			$this->determine_xp_value();
@@ -109,14 +109,10 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	protected function calculate_hit_points( $appearing = false ) {
 		$hit_points = 0;
-		if ( $this->maximum_hp ) {
-			$hit_points = ( $this->hit_dice * $this->hd_value ) + $this->hp_extra;
-		} else {
-			for( $i = 1; $i <= $this->hit_dice; $i++ ) {
-				$hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
-			}
-			$hit_points += $this->hp_extra;
+		for( $i = 1; $i <= $this->hit_dice; $i++ ) {
+			$hit_points += mt_rand( $this->hd_minimum, $this->hd_value );
 		}
+		$hit_points += $this->hp_extra;
 		return $hit_points;
 	}
 
@@ -138,9 +134,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	/**  Get functions  **/
 
-	public function get_name() {
+	public function get_class() {
+		return substr( get_class( $this ), 12 );
+	}
+
+	public function get_name( $underscore = false ) {
+		if ( $underscore ) return str_replace( ' ', '_', $this->name );
 		return $this->name;
-#		return str_replace( ' ', '_', $this->name );
 	}
 
 	public function get_number_appearing() {
@@ -161,6 +161,16 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		return $hit_points;
 	}
 
+	protected function generate_additionals( $base, $number = 0 ) {
+		$adds   = array( $base );
+		$class  = get_class( $base );
+		$number = ( $number ) ? $number : $base->get_number_appearing();
+		for( $i = 2; $i <= $number; $i++ ) {
+			$adds[] = new $class;
+		}
+		return $adds;
+	}
+
 	protected function get_saving_throw_table() {
 		return $this->get_combined_saving_throw_table( $this->saving );
 	}
@@ -178,7 +188,13 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	}
 
 	public function set_current_weapon( $new ) {
-		return $this->set_attack_weapon( $new );
+		$info = $this->get_attack_info( $new );
+		if ( $info ) {
+			$this->weapon = $info;
+			$this->weapon['bonus'] = apply_filters( 'weapon_damage_bonus', $this->weapon['bonus'], $this );
+			return true;
+		}
+		return false;
 	}
 
 
@@ -218,18 +234,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		return $response;
 	}
 
-	/**  Filter Conditions  **/
+	public function spend_manna( $spell ) { }
 
-	public function this_monster_only( $purpose, $spell, $object ) {
-		if ( $this->get_key() === $spell['target'] ) {
-			return true;
-		}
-		return false;
-	}
-
-	public function single_attacks( $isolated ) {
-		return $isolated;
-	}
 
 	/**  Command Line  **/
 

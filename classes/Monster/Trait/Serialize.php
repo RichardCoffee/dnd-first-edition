@@ -13,7 +13,7 @@ trait DND_Monster_Trait_Serialize {
 
 	private function get_serialization_data() {
 		$table = array(
-			'attacks'      => $this->attacks,
+#			'attacks'      => $this->attacks,
 			'combat_key'   => $this->get_key(),
 			'current_hp'   => $this->current_hp,
 			'hit_dice'     => $this->hit_dice,
@@ -22,11 +22,12 @@ trait DND_Monster_Trait_Serialize {
 			'initiative'   => $this->initiative,
 			'intelligence' => $this->intelligence,
 			'name'         => $this->name,
+			'saving'       => $this->saving,
 			'segment'      => $this->segment,
 			'weapon'       => $this->weapon,
 			'xp_value'     => $this->xp_value,
 		);
-		foreach( [ 'extra' ] as $prop ) {
+		foreach( [ 'extra', 'misc' ] as $prop ) {
 			if ( property_exists( $this, $prop ) ) {
 				$table[ $prop ] = $this->$prop;
 			}
@@ -38,16 +39,14 @@ trait DND_Monster_Trait_Serialize {
 			$table['co_magic_use'] = $this->co_magic_use;
 			$table['co_sleeping']  = $this->co_sleeping;
 			$table['speaking']     = $this->speaking;
+			$table['mate']         = $this->mate;
 			$table['magic_use']    = $this->magic_use;
 			$table['sleeping']     = $this->sleeping;
 			if ( $this->spells ) {
 				$table['spell_list'] = array();
 				foreach( $this->spells as $spell ) {
-					$table['spell_list'][] = array( 'name' => $spell['name'], 'level' => $spell['level'] );
+					$table['spell_list'][] = $spell->get_name();
 				}
-			}
-			if ( property_exists( $this, 'mate' ) && $this->mate ) {
-#				$table['mate'] = serialize( $this->mate );
 			}
 			if ( $this instanceOf DND_Monster_Dragon_Faerie ) {
 				$table['co_druid'] = $this->co_druid;

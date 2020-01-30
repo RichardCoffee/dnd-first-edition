@@ -32,10 +32,14 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		}
 	}
 
-	public function initialize_character() {
+	protected function initialize_character() {
 		if ( empty( $this->druid ) ) {
-			$this->druid = new DND_Character_Druid( [ 'level' => $this->level ] );
-			$this->magic = new DND_Character_MagicUser( [ 'level' => $this->level ] );
+			$data = array(
+				'level' => $this->level,
+				'name'  => $this->name,
+			);
+			$this->druid = new DND_Character_Druid( $data );
+			$this->magic = new DND_Character_MagicUser( $data );
 		}
 		parent::initialize_character();
 		$this->initialize_spell_list( $this->spell_list );
@@ -55,29 +59,6 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		parent::determine_hit_points();
 		$this->hit_points+= $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
 		$this->current_hp = $this->hit_points;
-	}
-
-	protected function initialize_spell_list( $book ) {
-		if ( $book ) {
-			foreach( $book as $class => $list ) {
-				$key = array_search( $class, [ 'druid' => 'Druid', 'magic' => 'Magic User' ] );
-				$this->spells[ $class ] = array();
-				foreach( $list as $level => $spells ) {
-					$this->spells[ $class ][ $level ] = array();
-					foreach( $spells as $spell ) {
-						$this->spells[ $class ][ $level ][ $spell ] = $this->$key->get_spell_data( $level, $spell );
-					}
-				}
-			}
-		}
-	}
-
-	protected function import_spells( $spells ) {
-		foreach( $spells as $spell ) {
-			$new = $this->locate_magic_spell( $spell );
-			if ( ! array_key_exists( 'page', $new ) ) return;
-			$this->add_spell( $new );
-		}
 	}
 
 	protected function define_specials() {
@@ -130,24 +111,30 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		return 'opponents 50% (3 in 6), self 16% (1 in 6)';
 	}
 
-	public function get_spell_data( $level, $name, $caster ) {
-		$key = array_keys( $this->classes, $caster )[0];
-		return $this->$key->get_spell_data( $level, $name );
+
+	/**  Spell functions  **/
+
+	protected function initialize_spell_list( $book ) {
+		if ( $book ) {
+			foreach( $book as $class => $list ) {
+				$key = array_search( $class, [ 'druid' => 'Druid', 'magic' => 'Magic User' ] );
+				$this->spells[ $class ] = array();
+				foreach( $list as $level => $spells ) {
+					$this->spells[ $class ][ $level ] = array();
+					foreach( $spells as $name ) {
+						$this->spells[ $class ][ $level ][ $name ] = $this->$key->locate_magic_spell( $name );
+					}
+				}
+			}
+		}
 	}
 
-	public function get_spell_list() {
-		return $this->spells;
-	}
-
-	public function locate_magic_spell( $spell, $type = '' ) {
-		$info = array();
-		if ( empty( $type ) || ( $type === 'Druid' ) ) {
-			$info = $this->druid->locate_magic_spell( $spell, 'Druid' );
+	protected function import_spells( $spells ) {
+		foreach( $spells as $spell ) {
+			$new = $this->locate_magic_spell( $spell );
+			if ( ! array_key_exists( 'page', $new ) ) return;
+			$this->add_spell( $new );
 		}
-		if ( ! array_key_exists( 'page', $info ) ) {
-			$info = $this->magic->locate_magic_spell( $spell, 'Magic User' );
-		}
-		return $info;
 	}
 
 	protected function add_spell( $data ) {
@@ -155,8 +142,24 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 		$level  = $data['level'];
 		$name   = $data['name'];
 		if ( ! isset( $this->spells[ $caster ][ $level ][ $name ] ) ) {
-			$this->spells[ $caster ][ $level ][ $name ] = $this->get_spell_data( $level, $name, $caster );
+			$key = array_keys( $this->classes, $caster )[0];
+			$this->spells[ $caster ][ $level ][ $name ] = $this->$key->locate_magic_spell( $name, $this->classes[ $key ] );
 		}
+	}
+
+	public function get_spell_list() {
+		return $this->spells;
+	}
+
+	public function locate_magic_spell( $name, $type = '' ) {
+		$spell = null;
+		if ( empty( $type ) || ( $type === 'Druid' ) ) {
+			$spell = $this->druid->locate_magic_spell( $name, 'Druid' );
+		}
+		if ( ! is_object( $spell ) ) {
+			$spell = $this->magic->locate_magic_spell( $name, 'Magic User' );
+		}
+		return $spell;
 	}
 
 

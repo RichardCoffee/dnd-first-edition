@@ -62,9 +62,9 @@ trait DND_Trait_Logging {
 	 * @return string
 	 */
 	public function logging_calling_location( $depth = 1 ) {
-		#	This is not intended to be an exhaustive list
+		#  This is not intended to be an exhaustive list
 		static $skip_list = array(
-#			'__call',
+			'__call',
 			'apply_filters',
 			'call_user_func',
 			'call_user_func_array',
@@ -82,9 +82,9 @@ trait DND_Trait_Logging {
 		do {
 			$file = ( array_key_exists( 'file', $call_trace[ $depth ] ) )     ? $call_trace[ $depth ]['file']     : $default;
 			$line = ( array_key_exists( 'line', $call_trace[ $depth ] ) )     ? $call_trace[ $depth ]['line']     : $default;
-			$depth++;
+			if ( ! array_key_exists( ++$depth, $call_trace ) ) break;
 			$func = ( array_key_exists( 'function', $call_trace[ $depth ] ) ) ? $call_trace[ $depth ]['function'] : $default;
-		} while( in_array( $func, $skip_list, true ) && ( $total_cnt > $depth ) );
+		} while( in_array( $func, $skip_list ) );
 		return "$file, $func, $line : $total_cnt/$depth";
 	}
 
@@ -96,11 +96,17 @@ trait DND_Trait_Logging {
 		}
 	}
 
-#	 * @since 20180410
-	public function logging_get_calling_function_name( $depth = 4 ) {
-		$result = $this->logging_calling_location( max( $depth, 4 ) );
+	/**
+	 *  Determines the name of the function which called the function from where this function was called.
+	 *
+	 * @since 20180410
+	 * @param int starting depth for stack search
+	 * @return string function name
+	 */
+	public function logging_get_calling_function_name( $depth = 1 ) {
+		$result = $this->logging_calling_location( max( $depth, 1 ) );
 		$trace  = array_map( 'trim', explode( '/', $result ) );
-		$result = $this->logging_calling_location( $trace[1] );
+		$result = $this->logging_calling_location( end( $trace ) );
 		$trace  = array_map( 'trim', explode( ',', $result ) );
 		return $trace[1];
 	}
@@ -108,7 +114,7 @@ trait DND_Trait_Logging {
 	/**
 	 * locates a function name in the stack
 	 *
-#	 * @since 20180410
+	 * @since 20180410
 	 * @param string $func
 	 * @return bool|numeric false or stack level
 	 */
@@ -164,13 +170,17 @@ trait DND_Trait_Logging {
 			// accept as is
 		} else if ( is_dir( '../logs' ) && is_writable( '../logs' ) ) {
 			$destination = '../logs/' . $this->logging_prefix . '-' . date( 'Ymd' ) . '.log';
-#		} else {
-#			$destination = 'error_log';
 		}
 		return $destination; // apply_filters( 'logging_write_destination', $destination );
 	}
 
-#	 * @since 20170529
+	/**
+	 *  Write the message out to the log file
+	 *
+	 * @since 20170529
+	 * @param mixed data to write to log file
+	 * @param string name of log file
+	 */
 	public function logging_write_entry( $log_me, $log_file = 'error_log' ) {
 		static $destination = '';
 		if ( empty( $destination ) ) {
@@ -182,7 +192,6 @@ trait DND_Trait_Logging {
 		} else if ( $log_me === 'stack' ) {
 			$backtrace = $this->logging_stack_with_origin( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ) );
 			$message = print_r( $backtrace, true );
-#			$message = print_r( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ), true );
 		} else if ( $log_me === 'full-stack' ) {
 			$message = print_r( debug_backtrace(), true );
 		}
@@ -190,17 +199,26 @@ trait DND_Trait_Logging {
 		error_log( $message, 3, $destination );
 	}
 
+	/**
+	 *  Adds the line number of the calling function to the 'function' string
+	 *
+	 * @since 20200116
+	 * @param array the debug backtrace array
+	 * @return array the modified array
+	 */
 	private function logging_stack_with_origin( $backtrace ) {
 		$current = $backtrace[0];
 		foreach( $backtrace as $key => $data ) {
 			if ( $key === 0 ) continue;
-			$backtrace[ $key ]['function'] .= " - {$current['line']}";
+			if ( array_key_exists( 'line', $current ) ) {
+				$backtrace[ $key ]['function'] .= " - {$current['line']}";
+			}
 			$current = $data;
 		}
 		return $backtrace;
 	}
 
-/***   Helper functions   ***/
+	/**  Helper functions  **/
 
 	/**
 	 *  Remove object references on an object, object is returned as an array.

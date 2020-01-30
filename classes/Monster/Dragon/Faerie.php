@@ -24,7 +24,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 25;
 #	protected $initiative   = 1;
 	protected $intelligence = 'High to Genius';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 24 );
 	protected $name         = 'Faerie Dragon';
@@ -86,6 +86,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 
 	protected function determine_specials() {
 		parent::determine_specials();
+		$this->specials['color']   = "Faerie Dragon is {$this->faerie[ $this->hd_minimum ]['color']}";
 		$this->specials['breath1'] = "BW: Euphoria gas - 2 foot diameter cloud";
 		$this->specials['defense'] = 'Invisibility at will, AC: 1';
 	}

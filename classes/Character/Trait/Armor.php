@@ -61,7 +61,7 @@ trait DND_Character_Trait_Armor {
 
 	private function get_armor_ac_value( $armor ) {
 		$ac = $this->get_armor_trait_value( $armor, 'ac' );
-		add_filter( 'dnd1e_replacement_filters', function( $filters ) { $filters[] = 'character_armor_type'; return $filters; } );
+		$this->add_replacement_filter( 'character_armor_type' );
 		return apply_filters( 'character_armor_type', $ac, $this );
 	}
 

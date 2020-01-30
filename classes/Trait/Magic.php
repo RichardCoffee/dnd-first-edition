@@ -51,9 +51,7 @@ trait DND_Trait_Magic {
 		}
 		$message = "non-callable function '$string'";
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-#			$trace  = debug_backtrace();
-#			$caller = next( $trace );
-			$caller = @next( debug_backtrace() );
+			$caller = @next( debug_backtrace() ); // without '@', this line produces "PHP Notice:  Only variables should be passed by reference"
 			$message .= " called from {$caller['file']} on line {$caller['line']}";
 		}
 		trigger_error( $message, E_USER_ERROR );

@@ -41,11 +41,11 @@ trait DND_Monster_Trait_Accouterments {
 	}
 
 	protected function acc_types_cleric() {
-		return array( 'C', 'armor', 'shields', 'weapons', 'potions', 'scrolls', 'rods/staves/wands', 'books_tomes/jewels_jewelry/cloaks_robes/boots_gloves/girdles_helms/bags_bottles/dusts_stones/items_tools/instruments/weird_stuff' );
+		return array( 'C', 'armor_shields', 'weapons', 'potions', 'scrolls', 'rods/staves/wands', 'books_tomes/jewels_jewelry/cloaks_robes/boots_gloves/girdles_helms/bags_bottles/dusts_stones/items_tools/instruments/weird_stuff' );
 	}
 
 	protected function acc_types_fighter() {
-		return array( 'F', 'armor', 'shields', 'swords', 'weapons', 'potions' );
+		return array( 'F', 'armor_shields', 'swords', 'weapons', 'potions' );
 	}
 
 	protected function acc_types_magicuser() {
@@ -58,7 +58,7 @@ trait DND_Monster_Trait_Accouterments {
 
 	public function acc_get_accouterment_list( $types, $chance ) {
 		$acc = array();
-		$restrict = array_shift( $types );
+		$restrict='';#$restrict = array_shift( $types );
 		foreach( $types as $type ) {
 			$accouter = '';
 			$possible = mt_rand( 1, 100 );
@@ -72,7 +72,7 @@ trait DND_Monster_Trait_Accouterments {
 		return $acc;
 	}
 
-	protected function acc_determine_accouterment( $type, $restrict ) {
+	protected function acc_determine_accouterment( $type, $restrict  = '' ) {
 		$acc = array();
 		if ( strpos( $type, '/' ) ) {
 			$acc = $this->acc_get_multi_table_accouterment( $type, $restrict );
@@ -80,7 +80,7 @@ trait DND_Monster_Trait_Accouterments {
 			$acc = $this->acc_get_table_accouterment( $type, $restrict );
 		}
 		if ( array_key_exists( 'restrict', $acc ) && ( strpos( $restrict, $acc['restrict'] ) === false ) ) {
-			$acc = $this->acc_determine_accouterment( $type );
+			$acc = $this->acc_determine_accouterment( $type, $restrict );
 		}
 		return $acc;
 	}
@@ -94,15 +94,13 @@ trait DND_Monster_Trait_Accouterments {
 
 	protected function acc_get_table_accouterment( $type ) {
 		$item = array( 'type' => 'none' );
-		$func = "get_{$type}_table";
+		$func = $this->get_sub_table_string( $type );
 		if ( method_exists( $this, $func ) ) {
 			$table = $this->$func();
-			$total = $this->get_table_total( $table );
-			$roll  = mt_rand( 1, $total );
-			$item  = $this->get_table_result( $table, $roll );
+			$item  = $this->generate_random_result( $table );
 			$item['type'] = $type;
 		}
-		return $item;
+		return $this->check_for_specials( $item );
 	}
 
 }

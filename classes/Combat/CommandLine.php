@@ -3,9 +3,18 @@
 class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 
-	protected $minus = 0;
-	protected $text  = array();
-	protected $show  = 0;
+#	protected $casting = array(); // DND_Combat_Combat
+#	public    $effects = array(); // DND_Combat_Combat
+#	protected $enemy   = array(); // DND_Combat_Combat
+#	protected $holding = array(); // DND_Combat_Combat
+	protected $limit   = 1000;
+	protected $minus   = 0;
+#	protected $party   = array(); // DND_Combat_Combat
+#	protected $range   = 2000;    // DND_Combat_Combat
+#	protected $rounds  = 3;       // DND_Combat_Combat
+#	protected $segment = 1;       // DND_Combat_Combat
+	protected $show    = 0;
+	protected $targets = array();
 
 
 	use DND_Combat_GetOpts;
@@ -18,9 +27,10 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			if ( array_key_exists( 'segment', $args ) ) {
 				$args['segment']++;
 			}
+			add_action( 'dnd1e_combat_init', [ $this, 'new_segment_housekeeping' ], 5 );
 		}
 		parent::__construct( $args );
-		$this->process_opts();
+#		$this->process_opts();
 		$this->minus = ( ( ( $this->segment - 1 ) + floor( ( $this->segment - 1 ) / 10 ) ) * 2 );
 	}
 
@@ -37,7 +47,8 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			if ( is_readable( $file ) ) {
 				$info = ( array_key_exists( 'data', $data ) ) ? $data['data'] : array();
 				$temp = new DND_Character_Import_Kregen( $file, $info );
-				$this->party[ $name ] = $temp->character;
+				$data = serialize( $temp->character );
+				$this->party[ $name ] = unserialize( $data );
 			}
 		}
 	}
@@ -45,8 +56,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	public function reimport_character( $name ) {
 		$file = CSV_PATH . $name . '.csv';
 		if ( is_readable( $file ) ) {
-#			$info = ( array_key_exists( 'data', $data ) ) ? $data['data'] : array();
-			$temp = new DND_Character_Import_Kregen( $file ); #, $info );
+			$temp = new DND_Character_Import_Kregen( $file );
 			$this->party[ $name ] = $temp->character;
 		}
 	}
@@ -56,7 +66,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$terrain = $options[0];
 		$area    = ( array_key_exists( 1, $options ) ) ? $options[1] : false;
 		if ( $terrain && $area ) {
-			$enc  = new DND_Encounters;
+			$enc  = new DND_Combat_Encounters;
 			$roll = ( array_key_exists( 2, $options ) ) ? intval( $options[2] ) : 0;
 			$crea = ( array_key_exists( 3, $options ) ) ? intval( $options[3] ) : 0;
 			$listing = $enc->get_random_encounter( "$terrain:$area", $roll, $crea );
@@ -64,16 +74,15 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				echo "\n\t{$listing['name']}";
 				echo "\t{$listing['class']}\n\n";
 			} else {
-				echo "\nCount: " . count( $listing ) . "\n";
 				print_r($listing);
+				echo "Count: " . count( $listing ) . "\n";
 			}
 			if ( $crea ) {
 				$new = $listing['class'];
 				$this->reset_combat();
 				$monster = new $new;
 				$this->initialize_enemy( $monster );
-				$init = mt_rand( 1, 10 );
-				$this->set_monster_initiative_all( $init );
+				$this->new_segment_housekeeping();
 				return;
 			} else {
 				exit;
@@ -85,40 +94,69 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function reset_combat() {
 		parent::reset_combat();
-		$this->show = 0;
+		$this->limit   = 1000;
+		$this->show    = 0;
+		$this->targets = array();
 	}
 
-	/**  Display functions  **/
 
-	/**  Monsters  **/
+	/**  Set functions  **/
 
-	public function show_enemy_information() {
-		$monster = $this->get_base_monster();
-		if ( $monster ) {
-			$this->show_enemy_description( $this->show );
-			$number = 0;
-			foreach( $this->enemy as $key => $entity ) {
-				// TODO: check for regeneration when segment advances
-				if ( $entity->current_hp < 1 ) continue;
-				echo "\t$key: {$entity->current_hp}/{$entity->hit_points}";
-				$number++;
-				if ( $number % 5 === 0 ) echo "\n";
+	protected function set_limit( $limit ) {
+		$this->limit = $limit;
+	}
+
+	protected function set_targets( $targets ) {
+		if ( count( $targets ) === 1 ) {
+			$param = $targets[0];
+			if ( $param === 'reset' ) {
+				$this->targets = array();
 			}
-			echo "\nRemaining: $number/" . count( $this->enemy ) . "\n\n";
-			$this->show_enemy_heading();
-			if ( $monster instanceOf DND_Monster_Humanoid_Humanoid ) {
-				$this->show_humanoid_attacks( $monster );
-			} else {
-				$this->show_monster_attacks( $monster );
+			if ( ! is_numeric( $param ) ) {
+				foreach( $this->enemy as $key => $object ) {
+					if ( $object->weapon['current'] === $param ) {
+						$this->targets[] = $key;
+					}
+				}
 			}
-		} else {
-			return "No enemy found.";
+		}
+		foreach( $targets as $target ) {
+			$object = $this->get_object( $target );
+			if ( $object && is_object( $object ) ) {
+				$key = $object->get_key();
+				if ( ! in_array( $key, $this->targets ) ) {
+					$this->targets[] = $key;
+				}
+			}
 		}
 	}
 
+
+	/**  Monsters  **/
+
+	protected function show_enemy_text() {
+		$object = $this->get_base_monster();
+		$text = explode( "\n", $object->description );
+		echo "\n";
+		foreach( $text as $line ) {
+			echo wordwrap( $line );
+			echo "\n\n";
+		}
+		echo "\n";
+	}
+
+	public function show_enemy_information() {
+		$this->show_enemy_description( $this->show );
+		$this->show_enemy_heading();
+		$this->show_enemy_attacks();
+	}
+
 	protected function show_enemy_description( $num ) {
+		if ( empty( $this->enemy ) ) return;
 		$enemy = $this->get_specific_enemy( $num );
 		echo "\n";
+		echo "Appearing: " . count( $this->enemy );
+		echo "   Morale: " . $this->get_enemy_morale() . "%\n";
 		echo $enemy->command_line_display();
 		echo "\n";
 	}
@@ -132,9 +170,9 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	}
 
 	protected function show_enemy_heading() {
-		$heading = '            ';
+		$heading = '           ';
 		$heading.= 'Name                ';
-		$heading.= 'Weapon             ';
+		$heading.= 'Weapon              ';
 		$heading.= 'Dam   ';
 		$heading.= 'Atts          ';
 		$heading.= 'Movement           ';
@@ -142,26 +180,27 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		echo "$heading\n";
 	}
 
-	protected function show_humanoid_attacks( $monster ) {
-		$weapons = array();
-		foreach( $this->enemy as $key => $entity ) {
-
-		}
-		$this->show_monster_attacks( $monster );
-	}
-
-	protected function show_monster_attacks( DND_Monster_Monster $monster ) {
-		$att_seq = $this->get_monster_attacks( $monster );
-		foreach( $monster->att_types as $type => $attack ) {
-			$line = '   '         . sprintf( '%14s', substr( $monster->name, 0, 13 ) );
-			$line.= '        '    . sprintf( '%15s', $type );
-			$line.= '           ' . sprintf( '%-5s', $monster->get_possible_damage( $type ) );
-			$line.= '     ';
-			$line.= '      '      . $this->get_mapped_movement_sequence( $monster->movement );
-			$line.= '  '          . sprintf( '%2d', ( $att_seq[ $type ][0] ) );//% 10 ) );
-			$line.= '  '          . substr( $this->get_mapped_attack_sequence( $att_seq[ $type ] ), $this->minus );
+	protected function show_enemy_attacks() {
+		$win   = true;
+		$limit = 1;
+		foreach( $this->enemy as $key => $object ) {
+			if ( $this->skip_object( $object, $limit ) ) continue;
+			$seq  = $this->get_attack_sequence( $object );
+			$object->check_weapon_sequence( $seq, $this->segment );
+			$str  = sprintf( '%s (%d/%d)', substr( $object->get_key(), -16 ), $object->current_hp, $object->hit_points );
+			$line = ' '   . sprintf( '%26s', $str );
+			$line.= '  '  . sprintf( '%-18s', $object->weapon['current'] );
+			$line.= ''    . sprintf( '%7s', $this->format_damage_string( $object->weapon['damage'] ) );
+			$line.= '   ' . sprintf( '%2u/%u', $object->weapon['attacks'][0], $object->weapon['attacks'][1] );
+			$line.= '  '  . sprintf( '%2u"', $object->movement );
+			$line.= ' '   . $this->get_mapped_movement_sequence( $object->movement );
+			$line.= '  '  . sprintf( '%2d', $object->segment );
+			$line.= '  '  . substr( $this->get_mapped_attack_sequence( $seq ), $this->minus );
 			echo "$line\n";
+			$win = false;
+			$limit++;
 		}
+		if ( $win ) echo "                   YOU WIN!!\n";
 		echo "\n";
 	}
 
@@ -175,14 +214,30 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		echo "\nXP Total: $xp_total\n\n";
 	}
 
+	protected function skip_object( $object, $limit ) {
+			$key = $object->get_key();
+			if ( $object->current_hp < 1 ) {
+				if ( $this->targets ) {
+					if ( in_array( $key, $this->targets ) ) {
+						$this->targets = array_diff( $this->targets, [ $key ] );
+					}
+				}
+				return true;
+			}
+			if ( $object->segment === $this->segment ) return false;
+			if ( $limit > $this->limit ) return true;
+			if ( $this->targets && ! in_array( $key, $this->targets ) ) return true;
+		return false;
+	}
+
 	/**  Spells  **/
 
-	protected function show_possible_spells( DND_Character_Character $char ) {
-		$list = $char->get_spell_list();
+	protected function show_possible_spells( $object ) {
+		$list = $object->get_spell_list();
 		if ( empty( $list ) ) {
-			echo "\n{$char->name} has NO spells!\n\n";
+			echo "\n" . $object->get_name() . " has NO spells!\n\n";
 		} else {
-			echo "\n{$char->name} has Spells!\n\n";
+			echo "\n" . $object->get_name() . " has Spells!\n\n";
 			if ( isset( $list['multi'] ) ) {
 				$index = 1;
 				foreach( $list as $key => $spells ) {
@@ -199,38 +254,20 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected function show_numbered_spell_list( $spells, $index = 1 ) {
 		foreach( $spells as $level => $list ) {
 			echo "\t$level level spells\n";
-			foreach( $list as $name => $info ) {
-				echo "\t\t$index) $name";
-				if ( strlen( $name ) < 13 ) echo "\t";
-				if ( strlen( $name ) < 21 ) echo "\t";
-#				if ( strlen( $name ) < 24 ) echo "\t";
-				echo "\t{$info['page']}";
-				if ( strlen( $info['page'] ) < 8 ) echo "\t";
-				if ( strlen( $info['page'] ) < 16 ) echo "\t";
-				if ( array_key_exists( 'cast', $info ) ) {
-					echo "\tC: {$info['cast']}";
-				}
-				if ( array_key_exists( 'range', $info ) ) {
-					echo "\tR: {$info['range']}";
-				}
-				if ( array_key_exists( 'duration', $info ) ) {
-					echo "\tD: {$info['duration']}";
-				}
-				if ( array_key_exists( 'special', $info ) ) {
-					echo "\tS: {$info['special']}";
-				}
-				echo "\n";
+			foreach( $list as $name => $spell ) {
+				$line = sprintf( "\t\t%3u) %-22s", $index, $name );
+				$line.= $spell->get_listing_line();
+				echo "$line\n";
 				$index++;
-#print_r($info);
 			}
 		}
 		return $index;
 	}
 
-	protected function get_numbered_spell( DND_Character_Character $char, $number ) {
+	protected function get_numbered_spell( $object, $number ) {
 		$number = intval( $number );
 		if ( $number ) {
-			$list = $char->get_spell_list();
+			$list = $object->get_spell_list();
 			if ( $list ) {
 				$index = 1;
 				if ( ! isset( $list['multi'] ) ) {
@@ -238,9 +275,9 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				}
 				foreach( $list as $type => $listing ) {
 					foreach( $listing as $level => $spells ) {
-						foreach( $spells as $spell => $data ) {
+						foreach( $spells as $name => $spell ) {
 							if ( $index === $number ) {
-								return $char->get_magic_spell_info( $level, $spell, $type );
+								return $object->locate_magic_spell( $name, $type );
 							}
 							$index++;
 						}
@@ -251,30 +288,48 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		return false;
 	}
 
+	protected function pre_cast_spell( $origin, $number, $target = '' ) {
+		if ( is_numeric( $number ) ) {
+			$spell = $this->get_numbered_spell( $origin, $number );
+		} else {
+			$object = $this->get_object( $origin );
+			if ( ! $object ) {
+				echo "\nUnable to locate $origin\n\n";
+				exit;
+			}
+			$spell = $object->get_listed_spell( $number );
+		}
+		if ( ! is_object( $spell ) ) {
+			if ( is_string( $spell ) ) {
+				echo "$spell\n";
+			} else {
+				echo "\nUnable to locate spell $number for $origin\n\n";
+			}
+			exit;
+		}
+		if ( $this->insufficent_manna( $spell ) ) {
+			echo "\n" . $spell->get_caster() . " cannot cast " . $spell->get_name() . " due to insufficent manna points.\n\n";
+			exit;
+		}
+		if ( $cast = parent::pre_cast_spell( $origin, $spell, $target ) ) {
+			echo "\n" . $cast->get_caster() . " has cast " . $cast->get_name() . " on " . $cast->get_target() . "\n\n";
+			if ( $cast->has_special() ) echo $cast->get_special() . "\n\n";
+		} else { echo "\npre cast bombed!\n\n"; exit; }
+	}
+
+	protected function insufficent_manna( $spell ) {
+		$caster = $this->get_object( $spell->get_caster() );
+		if ( $spell->manna_cost() > $caster->manna ) return true;
+		return false;
+	}
+
+
 	/**  Party  **/
 
 	public function show_party_information() {
 		if ( $this->party ) {
 			$this->show_party_heading();
-			$separator = 0;
-			foreach( $this->party as $name => $char ) {
-				if ( $separator++ % 3 === 0 ) echo str_repeat( '-', 120 ) . "\n";
-#				$separator++;
-				$seq  = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
-				$line = sprintf( ' %5s ', $this->enemy_to_hit_string( $char ) );
-				$name = sprintf( '%7s(%d/%d)', $char->get_name(), $char->get_hit_points(), $char->hit_points );
-				$line.= sprintf( '%16s',  $name );
-				$line.= sprintf( '%s ',   $this->get_weapon_string( $char ) );
-				if ( $char->is_off_hand_weapon() ) {
-					$seq = $this->show_primary_dual_weapon( $char, $name );
-				}
-				$line.= sprintf( '%u/%u  ', $char->weapon['attacks'][0], $char->weapon['attacks'][1] );
-				$line.= sprintf( '%2u" ',   $char->movement );
-				$line.= sprintf( '%s  ',    $this->get_mapped_movement_sequence( $char->movement ) );
-				$line.= sprintf( '%2d  ',   ( $char->segment ));//% 10 ) );
-				$line.= substr( $this->get_mapped_attack_sequence( $seq ), $this->minus );
-				echo "$line\n";
-			}
+			$this->show_party_attacks();
 		}
 	}
 
@@ -282,34 +337,72 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$heading = '  ';
 		$heading.= 'Att      ';
 		$heading.= 'Name           ';
-		$heading.= 'Weapon          ';
-		$heading.= 'To Hit   ';
+		$heading.= 'Weapon             ';
+		$heading.= 'Hit   ';
 		$heading.= 'Dam   ';
 		$heading.= 'Atts          ';
 		$heading.= 'Movement           ';
 		$heading.= 'Seg   Attack Sequence';
 		echo "$heading\n";
+}
+
+	protected function show_party_attacks() {
+		$separator = 0;
+		foreach( $this->party as $name => $char ) {
+			if ( $separator++ % 3 === 0 ) echo str_repeat( '-', 120 ) . "\n";
+			$seq  = $this->get_attack_sequence( $char );
+			$line = sprintf( ' %5s ', $this->enemy_to_hit_string( $char ) );
+			$name = $char->get_name() . $this->status_letter( $char );
+			$info = sprintf( '%7s(%d/%d)', $name, $char->get_hit_points(), $char->hit_points );
+			$line.= sprintf( '%16s',  $info );
+			$line.= sprintf( '%-34s ',   $this->get_weapon_string( $char ) );
+			if ( $char->is_off_hand_weapon() ) {
+				$seq = $this->show_primary_dual_weapon( $char, $info );
+			}
+			$line.= sprintf( '%u/%u  ', $char->weapon['attacks'][0], $char->weapon['attacks'][1] );
+			$line.= sprintf( '%2u" ',   $char->movement );
+			$line.= sprintf( '%s  ',    $this->get_mapped_movement_sequence( $char->movement ) );
+			$line.= sprintf( '%2d  ',   ( $char->segment ));//% 10 ) );
+			$line.= substr( $this->get_mapped_attack_sequence( $seq ), $this->minus );
+			echo "$line\n";
+		}
+	}
+
+	protected function status_letter( $obj ) {
+		$state = apply_filters( 'dnd1e_object_status', '', $obj );
+		if ( $obj->is_immobilized() ) return $state .= 'I';
+		if ( $obj->is_prone() )       return $state .= 'P';
+		if ( $obj->is_deaf() )        return $state .= 'D';
+		return $state;
 	}
 
 	protected function enemy_to_hit_string( DND_Character_Character $target ) {
-		$origin = $this->get_base_monster();
-		if ( $origin ) {
-			$to_hit = array();
-			foreach( $origin->att_types as $type => $attack ) {
-				$number = $this->get_combat_to_hit_number( $origin, $target, $type );
-				if ( ! in_array( $number, $to_hit ) ) $to_hit[] = $number;
+		$list   = array();
+		$to_hit = array();
+		$limit  = 1;
+		foreach( $this->enemy as $key => $object ) {
+			if ( $this->skip_object( $object, $limit ) ) continue;
+			$weapon = $object->weapon['current'];
+			if ( ! array_key_exists( $weapon, $list ) ) {
+				$list[ $weapon ] = $object;
 			}
-			return implode( '/', $to_hit );
+			$limit++;
 		}
-		return '-1';
+		foreach( $list as $weapon => $object ) {
+			$number = $this->get_to_hit_number( $object, $target );
+			if ( ! in_array( $number, $to_hit ) ) $to_hit[] = $number;
+		}
+#		$to_hit = apply_filters( 'enemy_to_hit_array', $to_hit, $target );
+		return ( empty( $to_hit ) ) ? '-1/-1' : implode( '/', $to_hit );
 	}
 
 	protected function get_weapon_string( DND_Character_Character $char ) {
 		$string = sprintf( ': %-20s', substr( $this->get_weapon_text( $char ), 0, 19 ) );
 		$monster = $this->get_base_monster();
 		if ( $monster ) {
-			$string.= sprintf( '%2d  ',   max( 2, $this->get_combat_to_hit_number( $char, $monster ) ) );
-			$string.= $this->get_weapon_damage_string( $char, $monster );
+			$to_hit = max( 2, $this->get_to_hit_number( $char, $monster ) );
+			$damage = $this->get_weapon_damage_string( $char, $monster );
+			$string.= sprintf( '%2d %6s', $to_hit, $damage );
 		} else {
 			$string.= 'No opponent ';
 		}
@@ -318,11 +411,13 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function get_weapon_text( DND_Character_Character $char ) {
 		$weapon = $char->weapon['current'];
-		$name   = $char->get_name();
+		$key    = $char->get_key();
 		if ( $weapon === 'Spell' ) {
-			if ( $this->is_casting( $name ) ) {
-				$spell = $this->find_casting( $name );
-				$weapon .= ':' . $spell['name'];
+			if ( $this->is_casting( $key ) ) {
+				$spell = $this->find_casting( $key );
+				$weapon .= ':' . $spell->get_name();
+			} else {
+				$weapon .= "({$char->manna}/{$char->manna_init})";
 			}
 		} else if ( ( substr( $weapon, 0, 3) === 'Bow' ) && ( $this->range < BOW_POINT_BLANK ) ) {
 			if ( in_array( $this->party[ $name ]->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": Damage*2";
@@ -336,7 +431,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$string = '        ';
 		$basic = $char->get_weapon_damage( $monster->size );
 		if ( $basic === 'spec' ) {
-			$string = ' Special';
+			$string = 'Special';
 		} else {
 			$bonus = $char->get_weapon_damage_bonus( $monster, $this->range );
 			$index = strpos( $basic, '+' );
@@ -344,12 +439,29 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				$bonus += intval( substr( $basic, $index + 1 ), 10 );
 				$basic  = substr( $basic, 0, $index );
 			}
+			$arr = explode( 'd', $basic );
+			$string = $this->format_damage_string( $arr[0], $arr[1], $bonus );
+		}
+		return $string;
+	}
+
+	protected function format_damage_string( $num, $die = 1, $bonus = 0 ) {
+		if ( is_array( $num ) ) {
+			list( $num, $die, $bonus ) = $num;
+		} else if ( is_string( $num ) && ! is_numeric( $num ) ) {
+			return $num;
+		}
+		if ( $die === 1 ) {
+			$hp = $num + $bonus;
+			$string = sprintf( '%dhp', $hp );
+		} else {
+			$basic = sprintf( '%dd%d', $num, $die );
 			if ( $bonus > 0 ) {
-				$string = sprintf( '%5s+%-2u', $basic, $bonus );
+				$string = sprintf( '%s+%u', $basic, $bonus );
 			} else if ( $bonus < 0 ) {
-				$string = sprintf( '%5s-%-2u', $basic, $bonus );
+				$string = sprintf( '%s-%u', $basic, $bonus );
 			} else {
-				$string = sprintf( '%5s   ', $basic );
+				$string = $basic;
 			}
 		}
 		return $string;
@@ -361,7 +473,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		printf( '%u/%u  ', $char->weapon['attacks'][0], $char->weapon['attacks'][1] );
 		printf( '                           %2d  ', ( $char->segment ));//% 10 ) );
 		$char->set_dual_weapon();
-		$seq = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
+		$seq = $this->get_attack_sequence( $char );
 		echo substr( $this->get_mapped_attack_sequence( $seq ), $this->minus );
 		echo "\n";
 		return $this->get_dual_attack_sequence( $seq, $char );
@@ -421,10 +533,20 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		return $map;
 	}
 
-	protected function show_possible_weapons( DND_Character_Character $char ) {
-		echo "\n{$char->name} has these weapons available:\n\n";
-		foreach( $char->weapons as $weapon => $info ) {
-			echo "\t$weapon ({$info['skill']})\n";
+	protected function show_possible_weapons( $object ) {
+		echo "\n{$object->name} has these weapons available:\n\n";
+		if ( $object instanceOf DND_Monster_Monster ) {
+			foreach( $object->weapons as $attack => $data ) {
+				if ( $attack === 'sequence' ) {
+					echo "\t{$data[0]}\n";
+				} else {
+					echo "\t$attack\n";
+				}
+			}
+		} else {
+			foreach( $object->weapons as $weapon => $info ) {
+				echo "\t$weapon ({$info['skill']})\n";
+			}
 		}
 		echo "\n";
 		exit;
@@ -449,7 +571,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$this->rank_attackers( $rank );
 		foreach( $rank as $body ) {
 			$key = $body->get_key();
-			echo "\t" . $body->get_name();
+			echo "\t" . $body->get_name('w');
 			if ( $this->holding && in_array( $key, $this->holding ) ) {
 				echo " (holding)";
 			} else {
@@ -457,11 +579,10 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			}
 			if ( $this->is_casting( $key ) ) {
 				$spell = $this->find_casting( $key );
-				if ( $this->segment === $spell['when'] ) {
-					$this->show_casting( $spell );
-					$this->finish_casting( $spell );
+				if ( $this->segment === $spell->get_when() ) {
+					$spell->show_casting();
 				} else {
-					echo " (casting {$this->segment}/{$spell['when']})";
+					echo " (casting {$this->segment}/" . $spell->get_when() . ")";
 				}
 			} else if ( array_key_exists( $key, $this->moves ) ) {
 				$this->movement_when_attacking( $key );
@@ -470,20 +591,10 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		}
 	}
 
-	protected function show_casting( $spell ) {
-		echo " casting {$spell['name']} {$spell['page']}";
-		if ( array_key_exists( 'reversible', $spell ) ) echo " Reversible";
-		if ( array_key_exists( 'range',      $spell ) ) echo "\n\t\t         Range: {$spell['range']}";
-		if ( array_key_exists( 'duration',   $spell ) ) echo "\n\t\t      Duration: {$spell['duration']}";
-		if ( array_key_exists( 'aoe',        $spell ) ) echo "\n\t\tArea of Effect: {$spell['aoe']}";
-		if ( array_key_exists( 'saving',     $spell ) ) echo "\n\t\t  Saving Throw: {$spell['saving']}";
-		if ( array_key_exists( 'special',    $spell ) ) echo "\n\t\t       Special: {$spell['special']}";
-	}
-
 	protected function check_for_dual_weapon( $char ) {
 		if ( $char instanceOf DND_Character_Character ) {
 			if ( $char->weap_dual && stripos( $char->weapon['current'], 'off-hand' ) ) {
-				$sequence  = $this->get_attack_sequence( $char->segment, $char->weapon['attacks'] );
+				$sequence  = $this->get_attack_sequence( $char );
 				$secondary = $this->get_dual_attack_sequence( $sequence, $char );
 				if ( in_array( $this->segment, $secondary ) ) {
 					echo " {$char->weap_dual[1]}";
@@ -494,12 +605,17 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		}
 	}
 
-	protected function show_saving_throws( $name, $source = null ) {
+	protected function show_message( $text ) {
+		echo "\n$text\n\n";
+		exit;
+	}
+
+	protected function show_saving_throws( $name, $source = 0 ) {
 		$object = $this->get_object( $name );
-		$source = ( $source ) ? $source : $this->get_base_monster();
+		$source = $this->get_object( $source );
 		$throws = $object->get_saving_throws( $source );
 		echo "\n";
-		echo "                  Saving Throws for " . $object->get_name() . "\n";
+		echo "                  Saving Throws for {$object->name}\n";
 		echo "\n";
 		foreach( $throws as $key => $roll ) {
 			printf( '%40s: %2d', $key, $roll );
@@ -509,7 +625,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		exit;
 	}
 
-	protected function critical_hit_result( $param, $type = 's' ) {
+	protected function critical_hit_result( $param, $type ) {
 		$crit = parent::critical_hit_result( $param, $type );
 		if ( is_array( $crit ) ) {
 			print_r( $crit );
@@ -523,6 +639,14 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$fumble = parent::fumble_roll_result( $roll );
 		echo "\n$fumble\n\n";
 		exit;
+	}
+
+	protected function get_serialization_data() {
+		$table = parent::get_serialization_data();
+		$table['limit']   = $this->limit;
+		$table['show']    = $this->show;
+		$table['targets'] = $this->targets;
+		return $table;
 	}
 
 

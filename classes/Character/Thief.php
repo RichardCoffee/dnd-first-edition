@@ -17,7 +17,7 @@ class DND_Character_Thief extends DND_Character_Character {
 	protected $xp_table   = array( 0, 1250, 2500, 5000, 10000, 20000, 42500, 70000, 110000, 160000, 220000 );
 
 
-	public function initialize_character() {
+	protected function initialize_character() {
 		parent::initialize_character();
 		$this->determine_thief_skills();
 	}

@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Blue extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 50;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Very';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Blue Dragon';

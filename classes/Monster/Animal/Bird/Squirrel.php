@@ -28,8 +28,8 @@ class DND_Monster_Animal_Bird_Squirrel extends DND_Monster_Animal_Squirrel {
 	protected $movement     = array( 'foot' => 9, 'air' => 15 );
 	protected $name         = 'Carnivorous Flying Squirrel';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Squirrel';
-#	protected $reference    = 'Monster Manual II page 114';
+	protected $race         = 'Squirrel';
+	protected $reference    = 'Monster Manual II page 114';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 	protected $size         = "Small (1/2' long)";

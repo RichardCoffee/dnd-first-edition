@@ -47,9 +47,11 @@ trait DND_Character_Trait_Serialize {
 					$list[ $class ] = $this->convert_spell_list( $spells );
 				}
 				$table['spell_list'] = $list;
+				$table['manna']      = $this->manna;
 			}
 		} else if ( $this->spells ) {
 			$table['spell_list'] = $this->convert_spell_list( $this->spells );
+			$table['manna']      = $this->manna;
 		}
 		return $table;
 	}
@@ -66,8 +68,7 @@ trait DND_Character_Trait_Serialize {
 	}
 
 	public function unserialize( $data ) {
-		$args = unserialize( $data );
-		$this->__construct( $args );
+		$this->__construct( unserialize( $data ) );
 	}
 
 

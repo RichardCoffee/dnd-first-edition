@@ -26,7 +26,7 @@ class DND_Monster_Animal_Herd extends DND_Monster_Monster {
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
 	protected $movement     = array( 'foot' => 15, 'stampede' => 24 );
-#	protected $name         = 'Monster';
+	protected $name         = 'Herd Animal';
 #	protected $psionic      = 'Nil';
 #	protected $race         = 'Monster';
 #	protected $reference    = 'Monster Manual page';
@@ -40,12 +40,12 @@ class DND_Monster_Animal_Herd extends DND_Monster_Monster {
 
 	protected function determine_hit_dice() {
 		$this->hit_dice = mt_rand( 1, 5 );
-		$this->description = "Herd animals live in all climes - musk oxen and reindeer at the North Pole, giraffe and antelopes at the equator. The smallest will have but 1 hit die, the largest will have 5. Attacks are simply a matter of the animals' in question modes of defense (horns, butting, hooves, flight). Damage is a factor of defense (attack) mode and size/strength. As herd animalsore not aggressive, they will stampede away from what they perceive to be the greatest threat to their safety. Humans or humanoids of about man-size or less, will be trampled to death if caught in the path of a stampede.";
+		$this->description = "Herd animals live in all climes - musk oxen and reindeer at the North Pole, giraffe and antelopes at the equator. The smallest will have but 1 hit die, the largest will have 5. Attacks are simply a matter of the animals' in question modes of defense (horns, butting, hooves, flight). Damage is a factor of defense (attack) mode and size/strength. As herd animals are not aggressive, they will stampede away from what they perceive to be the greatest threat to their safety. Humans or humanoids of about man-size or less, will be trampled to death if caught in the path of a stampede.";
 	}
 
 	protected function determine_specials() {
 		parent::determine_specials();
-		$this->specials['stampede'] = 'Stampede';
+		$this->specials['stampede'] = 'Stampede, 2d4 per segment';
 	}
 
 

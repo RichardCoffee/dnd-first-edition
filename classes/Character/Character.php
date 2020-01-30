@@ -31,7 +31,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 #	protected $weap_dual  = false;   // DND_Character_Trait_Weapons
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
 	protected $weap_reqs  = array();
-#	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapon     = array(); // DND_Character_Trait_Weapons
 #	protected $weapons    = array(); // DND_Character_Trait_Weapons
 	protected $xp_bonus   = array();
 	protected $xp_step    = 1000000;
@@ -41,12 +41,14 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	use DND_Character_Trait_Attributes;
 	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Serialize;
+	use DND_Character_Trait_Utilities;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;
 	use DND_Trait_Magic { __get as magic__get; }
 	use DND_Trait_ParseArgs;
 
 	abstract protected function define_specials();
+
 
 	public function __construct( $args = array() ) {
 		if ( array_key_exists( 'ac_rows', $args ) ) {
@@ -65,6 +67,8 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			return $this->armor['class'];
 		} else if ( $name === 'armor_type' ) {
 			return $this->armor['type'];
+		} else if ( $name === 'armor_spell' ) {
+			return $this->armor['spell'];
 		}
 		return $this->magic__get( $name );
 	}
@@ -73,8 +77,9 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->name;
 	}
 
-	public function initialize_character() {
+	protected function initialize_character() {
 		if ( ( $this->level < 2 ) && ( $this->experience > 0 ) ) {
+			# FIXME: this section may be either unnecessary or need to be rewritten
 			$new_level = $this->calculate_level( $this->experience );
 			if ( $new_level > $this->level ) {
 				$this->level = $new_level;
@@ -83,28 +88,29 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		} else if ( $this->hit_points === 0 ) {
 			$this->determine_hit_points();
 		}
-		if ( $this->weapon['current'] === 'none' ) {
-			$list = array_keys( $this->weapons );
-			if ( $list ) $this->set_current_weapon( $list[0] );
-		} else {
-			$this->set_current_weapon( $this->weapon['current'] );
-		}
+		$weapon = ( $this->weapon['current'] === 'none' ) ? array_key_first( $this->weapons ) : $this->weapon['current'];
+		$this->set_current_weapon( $weapon );
 		$this->define_specials();
 		$this->determine_initiative();
 		$this->add_filters();
 	}
 
 	public function get_name( $full = false ) {
-		if ( $full ) {
-			return $this->name;
-		} else {
-			$name = explode( ' ', $this->name );
-			return $name[0];
-		}
+		if ( $full ) return $this->name;
+		$name = explode( ' ', $this->name );
+		return $name[0];
 	}
 
-	public function get_key() {
+	public function get_key( $underscore = false ) {
+		if ( $underscore ) return str_replace( ' ', '_', $this->get_name( true ) );
 		return $this->get_name();
+	}
+
+	// Compatibility function
+	public function set_key( $new ) {
+		if ( $this->name === 'Character Name' ) {
+			$this->name = $new;
+		}
 	}
 
 	public function get_class() {
@@ -169,30 +175,42 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	public function get_hit_points() {
-		return $this->current_hp + apply_filters( 'character_temporary_hit_points', 0, $this );
+		return $this->current_hp + apply_filters( 'temporary_hit_points', 0, $this );
 	}
 
-	protected function determine_armor_class() {
+	public function determine_armor_class() {
 		$no_shld = in_array( $this->weapon['attack'], $this->get_weapons_not_allowed_shield() );
-		$this->armor['type'] = $this->get_armor_ac_value( $this->armor['armor'] );
-		$this->armor['rear'] = $this->armor['type'];
+		$armor_type = $this->get_armor_ac_value( $this->armor['armor'] );
+		$this->armor['type']  = apply_filters( 'armor_type_replacement', $armor_type, $this );
+		$this->armor['flank'] = $this->armor['type'];
+		$this->armor['rear']  = $this->armor['type'];
 		if ( ! ( ( $this->shield['type'] === 'none' ) || $no_shld ) ) {
 			$this->armor['type']--;
 		}
 		$this->armor['class'] = $this->armor['type'];
 		$this->movement = min( $this->max_move, $this->get_armor_base_movement( $this->armor['armor'], $this->movement ) + $this->armor['bonus'] );
 		$this->armor['class'] -= $this->armor['bonus'];
+		$this->armor['flank'] -= $this->armor['bonus'];
 		$this->armor['rear']  -= $this->armor['bonus'];
 		$this->armor['class'] -= ( $no_shld ) ? 0 : $this->shield['bonus'];
-		$this->armor['class'] -= apply_filters( 'character_armor_class_adjustments', 0, $this );
+		$this->armor['class'] -= apply_filters( 'armor_class_adjustments', 0, $this );
 		$this->armor['spell']  = $this->armor['class'];
-		$this->armor['class'] += $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
+		$dex_bonus = $this->get_ac_dex_bonus();
+		$this->armor['class'] += $dex_bonus;
+		$this->armor['flank'] += $dex_bonus;
 		if ( ! ( $this->armor['bonus'] === 0 ) ) {
-			$filter = $this->get_name() . '_all_saving_throws';
+			$filter = $this->get_key(1) . '_all_saving_throws';
 			if ( ! has_filter( $filter ) ) {
 				add_filter( $filter, function( $num ) { return $num - $this->armor['bonus']; } );
 			}
 		}
+	}
+
+	protected function get_ac_dex_bonus() {
+		if ( $this->is_immobilized() ) return 0;
+		if ( $this->is_prone() )       return 0;
+		if ( $this->is_stunned() )     return 0;
+		return $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 	}
 
 	protected function determine_initiative() {
@@ -226,14 +244,13 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->set_character_weapon( $new );
 	}
 
-	public function get_to_hit_number( $target, $range = -1, $extra = '' ) {
+	public function get_to_hit_number( $target, $range = -1 ) {
 		if ( ! is_object( $target ) ) { return -1; }
-		if ( $this->weapons_armor_type_check( $target ) && property_exists( $target, 'armor' ) ) {
-			$to_hit  = $this->get_to_hit_base( $target->armor['class'] );
-			$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target->armor['type'] );
-		} else {
-			if ( $target->armor_class === -11 ) return 100; // error in target class
-			$to_hit  = $this->get_to_hit_base( $target->armor_class );
+		$target_armor = ( $this->weapon['current'] == 'Spell' ) ? $target->armor_spell : $target->armor_class;
+		if ( $target_armor < -10 ) return 100; // error in target class
+		$to_hit = $this->get_to_hit_base( $target_armor );
+		if ( $this->weapons_armor_type_check( $target ) ) {
+			$to_hit -= $this->get_weapon_type_adjustment( $this->weapon['current'], $target->armor_type );
 		}
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
 			$to_hit -= $this->get_strength_to_hit_bonus( $this->stats['str'] );
@@ -244,7 +261,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$to_hit -= $this->get_missile_proficiency_bonus( $this->weapon, $range );
 		}
 		$to_hit -= $this->weapon['bonus'];
-		$to_hit -= apply_filters( 'character_to_hit_opponent', 0, $to_hit, $this );
+		$to_hit -= apply_filters( 'object_to_hit_opponent', 0, $this );
 		return $to_hit;
 	}
 
@@ -259,6 +276,9 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 		return 10000;
 	}
+
+
+	/**  Weapon functions  **/
 
 	public function get_weapon_damage( $size ) {
 		$string = "Size passed: $size, can only be 'Small', 'Medium', or 'Large'";
@@ -279,7 +299,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
 		}
 		$bonus += $this->weapon['bonus'];
-		return apply_filters( 'character_weapon_damage_bonus', $bonus, $this, $target );
+		return apply_filters( 'weapon_damage_bonus', $bonus, $this );
 	}
 
 	protected function get_weapon_proficiencies_total() {
@@ -310,27 +330,26 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $total - $current;
 	}
 
-	/** Filters Effects **/
 
-	public function this_character_only( $purpose, $spell, $char ) {
-		if ( $char->get_name() === $spell['target'] ) {
-			return true;
-		}
-		return false;
-	}
+	/**  Spell functions  **/
+
+	public function is_listed_spell( $spell ) { return false; }
+
+
+	/**  Combat functions  **/
 
 	public function check_temporary_hit_points( $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
 			$combat = dnd1e()->combat;
-			$name   = $this->get_name();
+			$target = $this->get_key();
 			foreach( $combat->effects as $key => $effect ) {
-				if ( $effect['target'] === $name ) {
+				if ( $effect['target'] === $target ) {
 					if ( array_key_exists( 'condition', $effect ) ) {
 						// TODO: check for aoe conditions
-						if ( $effect['condition'] === 'this_character_only' ) {
+						if ( $effect['condition'] === 'this_target_only' ) {
 							foreach( $effect['filters'] as $index => $filter ) {
-								if ( $filter[0] === 'character_temporary_hit_points' ) {
+								if ( $filter[0] === 'temporary_hit_points' ) {
 									$remaining = $combat->effects[ $key ]['filters'][ $index ][1];
 									$remaining -= $damage;
 									if ( $remaining > 0 ) {

@@ -11,7 +11,6 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;
 #	protected $attacks      = array( 'Weapon' => [ 1, 8, 0 ] );
-	protected $extra        = array();
 #	protected $fighter      = null;
 #	protected $frequency    = 'Common';
 	protected $hit_dice     = 1;
@@ -74,7 +73,9 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 		unset( $this->attacks['Weapon'] );
 		foreach( $carry as $weapon ) {
 			if ( $weapon === 'Pole-Arm' ) $weapon = $this->get_random_pole_arm();
+#echo "carry: $weapon\n";
 			$this->attacks[ $weapon ] = $this->get_weapon_damage_array( $weapon );
+#print_r($this->attacks[$weapon]);
 		}
 	}
 

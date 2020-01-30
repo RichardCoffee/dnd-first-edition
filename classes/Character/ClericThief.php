@@ -10,10 +10,6 @@ class DND_Character_ClericThief extends DND_Character_Multi {
 	public function __construct( $args = array() ) {
 		$this->classes = array( 'cleric' => 'Cleric', 'thief' => 'Thief' );
 		parent::__construct( $args );
-	}
-
-	protected function initialize_multi() {
-		parent::initialize_multi();
 		$this->set_cleric_armor();
 	}
 

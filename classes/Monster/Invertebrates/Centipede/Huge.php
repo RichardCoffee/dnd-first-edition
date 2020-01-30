@@ -1,14 +1,7 @@
 <?php
 /* Name: Huge Centipede
  * Class: DND_Monster_Invertebrates_Centipede_Huge
- * Encounter: {
-"CC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},
-"CW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},
-"TC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},
-"TW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},
-"TSC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},
-"TSW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"}
-}
+ * Encounter: {"CC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},"CW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},"TC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},"TW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},"TSC":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"},"TSW":{"M":"U","H":"U","F":"C","S":"C","P":"C","D":"U"}}
  */
 
 class DND_Monster_Invertebrates_Centipede_Huge extends DND_Monster_Invertebrates_Centipede_Giant {

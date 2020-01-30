@@ -11,7 +11,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 	protected $appearing    = array( 1, 3, 0 );
 	protected $armor_class  = -2;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right' => [ 1, 8, 0 ], 'Claw Left' => [ 1, 8, 0 ], 'Bite' => [ 6, 6, 0 ], 'Breath' => [ 1, 1, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 8, 0 ], 'Claw Left' => [ 1, 8, 0 ], 'Bite' => [ 6, 6, 0 ], 'BW: Cone of Fire' => [ 1, 1, 0 ], 'BW: Chlorine' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 90;
 	protected $co_magic_use = 100;
 	protected $co_sleeping  = 10;
@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 65;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Genius';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 30 );
 	protected $name         = 'Gold Dragon';
@@ -35,6 +35,7 @@ class DND_Monster_Dragon_Gold extends DND_Monster_Dragon_Dragon {
 #	protected $spells       = array();
 	protected $treasure     = 'H,R,S,T';
 #	protected $xp_value     = array();
+	protected $extra        = array( 'BW: Cone of Fire' => 0, 'BW: Chlorine' => 0 );
 
 
 	public function __construct( $args = array() ) {

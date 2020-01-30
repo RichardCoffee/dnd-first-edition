@@ -13,7 +13,7 @@ class DND_Character_FighterMulti extends DND_Character_Multi {
 		return $ret;
 	}
 
-	public function get_to_hit_number( $target, $range = -1, $extra = '' ) {
+	public function get_to_hit_number( $target, $range = -1 ) {
 		return $this->fight->get_to_hit_number( $target, $range );
 	}
 

@@ -25,7 +25,7 @@ class DND_Monster_Wolf_Worg extends DND_Monster_Wolf_Dire {
 #	protected $magic_user   = null;
 #	protected $maximum_hp   = false;
 #	protected $movement     = array( 'foot' => 18 );
-#	protected $name         = 'Worg';
+	protected $name         = 'Worg';
 #	protected $psionic      = 'Nil';
 #	protected $race         = 'Wolf';
 #	protected $reference    = 'Monster Manual page 99';
@@ -45,8 +45,20 @@ class DND_Monster_Wolf_Worg extends DND_Monster_Wolf_Dire {
 		$this->specials['boolean_wolfwere'] = '53% chance of being accompanied by a wolfwere.';
 	}
 
-	public function specials_boolean_wolfwere() {
+	public function special_boolean_wolfwere() {
 		return $this->check_chance( 52.5 );
+	}
+
+	public function get_number_appearing() {
+		add_filter( 'dnd1e_additional_appearing', [ $this, 'possible_wolfwere' ] );
+		return parent::get_number_appearing();
+	}
+
+	public function possible_wolfwere( $adds = array() ) {
+		if ( $this->special_boolean_wolfwere() ) {
+			$adds[] = new DND_Monster_Lycan_Wolfwere;
+		}
+		return $adds;
 	}
 
 }

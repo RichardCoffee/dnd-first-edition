@@ -11,7 +11,7 @@ class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 #	protected $appearing    = array( 1, 4, 0 );
 	protected $armor_class  = 1;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 5, 4, 0 ], 'Breath' => [ 1, 1, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 5, 4, 0 ], 'BW: Lightning Bolt' => [ 1, 1, 0 ], 'BW: Slow' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 45;
 	protected $co_magic_use = 40;
 	protected $co_sleeping  = 40;
@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 35;
 #	protected $initiative   = 1;
 	protected $intelligence = 'High';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Copper Dragon';
@@ -35,7 +35,7 @@ class DND_Monster_Dragon_Copper extends DND_Monster_Dragon_Dragon {
 #	protected $spells       = array();
 	protected $treasure     = 'H,S';
 #	protected $xp_value     = array();
-
+	protected $extra        = array( 'BW: Lightning Bolt' => 0, 'BW: Slow' => 0 );
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );

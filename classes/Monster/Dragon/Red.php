@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Red extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 60;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Red Dragon';
@@ -38,6 +38,7 @@ class DND_Monster_Dragon_Red extends DND_Monster_Dragon_Dragon {
 
 
 	public function __construct( $args = array() ) {
+		add_filter( 'dnd1e_rejected_spells', [ $this, 'rejected_spells' ], 10, 2 );
 		parent::__construct( $args );
 		$this->description = 'The red dragon is usually found dwelling in great hills or mountainous regions. As with most others of this species, they make their lairs in subterranean coves and similar places. They are very greedy and avaricious. Of all evil dragons, this sort is the worst, save for Tiamat herself.';
 	}
@@ -57,6 +58,16 @@ class DND_Monster_Dragon_Red extends DND_Monster_Dragon_Dragon {
 		if ( $this->hd_minimum > 6 ) $needed[] = 'Fourth';
 		if ( $this->hd_minimum > 7 ) $needed[] = 'Fourth';
 		return $needed;
+	}
+
+	public function rejected_spells( $rejects, $object ) {
+		if ( $this === $object ) {
+			$mine = array( 'Hold Portal', 'Jump', "Tenser's Floating Disc", 'Write' );
+			foreach( $mine as $reject ) {
+				if ( ! in_array( $reject, $rejects ) ) $rejects[] = $reject;
+			}
+		}
+		return $rejects;
 	}
 
 

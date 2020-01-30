@@ -3,7 +3,7 @@
 #	 * @link https://www.geekality.net/2014/04/20/php-simple-directory-recursion/
 #	 * @link https://www.php.net/manual/en/class.recursivecallbackfilteriterator.php
 
-class DND_Encounters {
+class DND_Combat_Encounters {
 
 
 	public function __construct() { }

@@ -18,12 +18,12 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		add_filter( 'monster_to_hit_character', [ $this, 'protection_from_evil_to_hit' ], 10, 3 );
-		$filter = $this->get_name() . '_all_saving_throws';
+		add_filter( 'opponent_to_hit_object', [ $this, 'protection_from_evil_to_hit' ], 10, 3 );
+		$filter = $this->get_key(1) . '_all_saving_throws';
 		add_filter( $filter, [ $this, 'protection_from_evil_saving_throw' ], 10, 3 );
 	}
 
-	public function initialize_character() {
+	protected function initialize_character() {
 		if ( empty( $this->cleric ) ) {
 			$this->cleric = new DND_Character_Cleric( [ 'level' => $this->level ] );
 		}
@@ -84,8 +84,8 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 		return $this->cleric->get_undead_caps( $this->level - 2 );
 	}
 
-	public function protection_from_evil_to_hit( $number, $monster, $target ) {
-		if ( $this->protection_from_evil_judgement( $monster, $target ) ) {
+	public function protection_from_evil_to_hit( $number, $target, $origin ) {
+		if ( $this->protection_from_evil_judgement( $origin, $target ) ) {
 			$number += 2;
 		}
 		return $number;
@@ -99,13 +99,32 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 	}
 
 	private function protection_from_evil_judgement( $monster, $target ) {
-		$judgement = false;
-		if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
-			if ( $this->name === $target->name ) {
-				$judgement = true;
+		if ( $this === $target ) {
+			if ( ! ( strpos( $monster->alignment, 'Evil' ) === false ) ) {
+				return true;
 			}
 		}
-		return $judgement;
+		return false;
+	}
+
+
+/**  Manna functions  **/
+
+	protected function spells_usable_table() {
+		return array(
+			array( 1 ),    //  9
+			array( 2 ),    // 10
+			array( 2, 1 ), // 11
+			array( 2, 2 ), // 12
+			array( 2, 2, 1 ),    // 13
+			array( 3, 2, 1 ),    // 14
+			array( 3, 2, 1, 1 ), // 15
+			array( 3, 3, 1, 1 ), // 16
+			array( 3, 3, 2, 1 ), // 17
+			array( 3, 3, 3, 1 ), // 18
+			array( 3, 3, 3, 2 ), // 19
+			array( 3, 3, 3, 3 ), // 20
+		);
 	}
 
 

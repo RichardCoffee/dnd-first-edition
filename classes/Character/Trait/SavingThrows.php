@@ -15,7 +15,7 @@ trait DND_Character_Trait_SavingThrows {
 		foreach( $keys as $key => $index ) {
 			$base[] = array(
 				'key'  => $key,
-				'roll' => $this->get_base_saving_throw( $key, $this->level, $source, $extra ),
+				'roll' => $this->get_base_saving_throw( $key, $level, $source, $extra ),
 			);
 		}
 		return $base;
@@ -38,10 +38,12 @@ trait DND_Character_Trait_SavingThrows {
 		return $table;
 	}
 
-#	 * @param string $type An index from the saving throw key table
-#	 * @param integer $index Level of character/monster
-#	 * @param mixed $origin May be an object (Character/Monster) or an array (spell)
-#	 * @param mixed $extra parameter passed on to filter
+	/**
+	 * @param string $type An index from the saving throw key table
+	 * @param integer $index Level of character/monster
+	 * @param mixed $origin May be an object (Character/Monster) or an array (spell)
+	 * @param mixed $extra parameter passed on to filter
+	 */
 	public function get_base_saving_throw( $type = 'Spells', $index = 0, $origin = null, $extra = null ) {
 		if ( ( $row = $this->get_saving_throw_table_row( $type ) ) === false ) {
 			return 100;
@@ -56,8 +58,8 @@ trait DND_Character_Trait_SavingThrows {
 		$base  = $table[ $row ][ $index ];
 		$type  = str_replace( ' ', '', $type );
 		$filters = array(
-			$this->get_name() . "_{$type}_saving_throws",
-			$this->get_name() . '_all_saving_throws',
+			$this->get_key(1) . "_{$type}_saving_throws",
+			$this->get_key(1) . '_all_saving_throws',
 			"{$this->race}_{$type}_saving_throws",
 			"{$this->race}_all_saving_throws",
 		);

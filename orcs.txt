@@ -1,0 +1,326 @@
+
+        Orc     DND_Monster_Humanoid_Orc
+
+Array
+(
+    [chance] => 20
+    [text] => Plant Control
+    [xp] => 250
+    [gp] => 300
+    [link] => DMG 126
+    [type] => potions
+)
+Array
+(
+    [chance] => 5
+    [text] => Short Sword +2, Dragon Slayer
+    [xp] => 900
+    [gp] => 4500
+    [link] => DMG 164
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 40
+    [text] => Knife +2
+    [xp] => 200
+    [gp] => 1500
+    [ex] => Y:1
+    [link] => 
+    [type] => weapons
+    [powers] => none
+)
+Array
+(
+    [chance] => 20
+    [text] => Polymorph Self
+    [xp] => 200
+    [gp] => 350
+    [link] => DMG 126
+    [type] => potions
+)
+Array
+(
+    [chance] => 25
+    [text] => Hammer +2
+    [xp] => 600
+    [gp] => 5000
+    [ex] => Y:1
+    [link] => 
+    [type] => weapons
+    [powers] => none
+)
+Array
+(
+    [chance] => 14
+    [text] => Bastard Sword of the Planes
+    [xp] => 2000
+    [gp] => 30000
+    [link] => 
+    [type] => swords
+    [powers] => Array
+        (
+            [align] => Lawful Neutral
+            [int] => 13
+            [primary] => Array
+                (
+                    [0] => detect gems, kind, and number in a 5 foot radius
+                    [1] => detect evil/good in a 10 foot  radius
+                )
+
+            [extra] => Array
+                (
+                )
+
+            [comm] => empathy
+        )
+
+)
+Array
+(
+    [chance] => 30
+    [text] => Neutralize Poison
+    [xp] => 300
+    [gp] => 500
+    [link] => 
+    [type] => potions
+)
+Array
+(
+    [chance] => 54
+    [text] => Shield +1
+    [xp] => 250
+    [gp] => 2500
+    [link] => DMG
+    [type] => shields
+)
+Array
+(
+    [chance] => 60
+    [text] => Bolt +1, 2d10 in number
+    [xp] => 50
+    [gp] => 300
+    [ex] => N:2
+    [link] => DMG 167
+    [type] => weapons
+)
+Array
+(
+    [chance] => 10
+    [text] => Sword, Broad +5
+    [xp] => 0
+    [gp] => 0
+    [ex] => Y:1
+    [link] => DMG
+    [type] => weapons
+    [powers] => Array
+        (
+            [align] => Lawful Evil
+            [int] => 12
+            [primary] => Array
+                (
+                    [0] => detect gems, kind, and number in a 5 foot radius
+                )
+
+            [extra] => Array
+                (
+                )
+
+            [comm] => semi-empathy
+        )
+
+)
+Array
+(
+    [chance] => 14
+    [text] => Long Sword of the Planes
+    [xp] => 2000
+    [gp] => 30000
+    [link] => 
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 10
+    [text] => Oil of Timelessness
+    [xp] => 500
+    [gp] => 2000
+    [link] => 
+    [type] => potions
+)
+Array
+(
+    [chance] => 5
+    [text] => Long Sword +2, Dragon Slayer
+    [xp] => 900
+    [gp] => 4500
+    [link] => DMG 164
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 6
+    [text] => Long Sword, Cursed Berserking
+    [xp] => ~~
+    [gp] => 500
+    [link] => DMG 165
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 8
+    [text] => Long Sword -2, Cursed
+    [xp] => ~~
+    [gp] => 500
+    [link] => DMG 165
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 20
+    [text] => Philtre of Love
+    [xp] => 200
+    [gp] => 300
+    [link] => DMG 126
+    [type] => potions
+)
+Array
+(
+    [chance] => 50
+    [text] => Spear +1
+    [xp] => 500
+    [gp] => 3000
+    [ex] => Y:1
+    [link] => DMG 168
+    [type] => weapons
+    [powers] => none
+)
+Array
+(
+    [chance] => 10
+    [text] => Oil of Acid Resistance
+    [xp] => 500
+    [gp] => 5000
+    [link] => 
+    [type] => potions
+)
+Array
+(
+    [chance] => 30
+    [text] => Bullet, Sling +1
+    [xp] => 10
+    [gp] => 10
+    [ex] => N:2
+    [link] => 
+    [type] => weapons
+)
+Array
+(
+    [chance] => 10
+    [text] => Rainbow Hues
+    [xp] => 200
+    [gp] => 800
+    [link] => 
+    [type] => potions
+)
+Array
+(
+    [chance] => 5
+    [text] => Dagger of Throwing +4
+    [xp] => 1250
+    [gp] => 12500
+    [ex] => Y:1
+    [link] => 
+    [type] => weapons
+    [powers] => none
+)
+Array
+(
+    [chance] => 7
+    [text] => Broad Sword +1, +3 vs. lycanthropes & shape-changers
+    [xp] => 700
+    [gp] => 3500
+    [link] => DMG 164
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 7
+    [text] => Long Sword +1, +2 vs. magic-using & enchanted creatures
+    [xp] => 600
+    [gp] => 3000
+    [link] => DMG 164
+    [type] => swords
+    [powers] => none
+)
+Array
+(
+    [chance] => 30
+    [text] => Shield +2
+    [xp] => 500
+    [gp] => 5000
+    [link] => DMG
+    [type] => shields
+)
+Array
+(
+    [chance] => 20
+    [text] => Flying
+    [xp] => 500
+    [gp] => 750
+    [link] => DMG 125
+    [type] => potions
+)
+Array
+(
+    [chance] => 20
+    [text] => Elixir of Madness
+    [xp] => ~
+    [gp] => ~~~
+    [link] => 
+    [type] => potions
+    [fake] => Array
+        (
+            [chance] => 10
+            [text] => Oil of Acid Resistance
+            [xp] => 500
+            [gp] => 5000
+            [link] => 
+        )
+
+)
+Array
+(
+    [chance] => 60
+    [text] => Axe +1
+    [xp] => 300
+    [gp] => 1750
+    [ex] => Y:1
+    [link] => DMG 167
+    [type] => weapons
+    [powers] => none
+)
+Array
+(
+    [chance] => 10
+    [text] => Rainbow Hues
+    [xp] => 200
+    [gp] => 800
+    [link] => 
+    [type] => potions
+)
+Array
+(
+    [chance] => 30
+    [text] => Shield +2
+    [xp] => 500
+    [gp] => 5000
+    [link] => DMG
+    [type] => shields
+)

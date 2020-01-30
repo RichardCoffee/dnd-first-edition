@@ -1,0 +1,30 @@
+1	Bronze Dragon MM 31, 9HD, 8hp/die (ancient), disguised as forest animal
+	1) Dancing Lights, Ventriloquism
+	2) Pyrotechnics, Continual Light
+	3) Hold Person, Protection From Normal Missiles
+	4) Wizard Eye, Dispel Illusion
+	
+2	Birds, Pair
+	
+3	Cat, Wild MM2 22
+	
+4	Dog, Wild MM 28
+	
+5	Lycanthrope, Werewolf MM 62, 6, AC 5, 15", 4+3HD, TT B, bite 2d4, size M, surprise 1-3
+	as per encounter 7 - same group
+	4 males, 2 females, with 1 pair mated, 1 male adolescent
+	female attacked: male hit+2, full damage, cubs attacked: female hit+3, full damage
+	
+6	Lynx, Giant MM 63, 4, AC 6, 12", 2+2HD, claw 1-2/claw 1-2/bite 1d4, size M
+	surprise 1-5
+	
+7	Lycanthrope, Werewolf MM 62, 6, AC 5, 15", 4+3HD, TT B, bite 2d4, size M, surprise 1-3
+	as per encounter 5 - same group
+	4 males, 2 females, with 1 pair mated, 1 male adolescent
+	female attacked: male hit+2, full damage, cubs attacked: female hit+3, full damage
+	
+8	Sting Ray MM 80, 1-3, AC 7, 9", 1HD, sting 1-3+poison, size S
+	
+9	Spider, Large* MM 88
+	
+10	Crane, Giant MM2 26, 1d20, AC 5, 9"/18", 3HD, beak 1d10, size M

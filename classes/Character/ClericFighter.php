@@ -11,14 +11,11 @@ class DND_Character_ClericFighter extends DND_Character_FighterMulti {
 		parent::__construct( $args );
 	}
 
-	protected function initialize_multi() {
-		parent::initialize_multi();
-	}
 
 	/**  Cleric Abilities **/
 
-	public function locate_magic_spell( $spell, $type = '' ) {
-		return $this->locate_cleric_spell( $spell );
+	public function locate_magic_spell( $name, $type = '' ) {
+		return $this->locate_cleric_spell( $name );
 	}
 
 

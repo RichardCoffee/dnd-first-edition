@@ -23,7 +23,7 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 35;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 33 );
 	protected $name         = 'Mist Dragon';
@@ -58,10 +58,17 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 		return parent::get_weapon_info( $weapon );
 	}
 
+	public function set_key( $new ) {
+		parent::set_key( $new );
+		$this->cleric->set_key( $new );
+		$this->druid->set_key( $new );
+	}
+
 	protected function set_magic_user( $level = 0 ) {
 		parent::set_magic_user();
 		$this->cleric = new DND_Character_Cleric( [ 'level' => $this->hit_dice ] );
 		$this->druid  = new DND_Character_Druid(  [ 'level' => $this->hit_dice ] );
+		if ( ! in_array( 'cleric', $this->saving ) ) $this->saving[] = 'cleric';
 	}
 
 	protected function determine_magic_spells() {
@@ -69,14 +76,14 @@ class DND_Monster_Dragon_Mist extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function add_magic_spells( $list ) {
-		$this->spells[ 'V. Young' ] = $this->magic_user->get_magic_spell_info( 'First', 'Precipitation' );
-		if ( $this->hd_minimum > 1 ) $this->spells['Young']     = $this->cleric->get_magic_spell_info(     'First',  'Create Water' );
-		if ( $this->hd_minimum > 2 ) $this->spells['Sub-Adult'] = $this->magic_user->get_magic_spell_info( 'Third',  'Water Breathing' );
-		if ( $this->hd_minimum > 3 ) $this->spells['Yng Adult'] = $this->magic_user->get_magic_spell_info( 'Second', 'Zephyr' );
-		if ( $this->hd_minimum > 4 ) $this->spells['Adult']     = $this->druid->get_magic_spell_info(      'First',  'Predict Weather' );
-		if ( $this->hd_minimum > 5 ) $this->spells['Old']       = $this->druid->get_magic_spell_info(      'Third',  'Cloudburst' );
-		if ( $this->hd_minimum > 6 ) $this->spells['Very Old']  = $this->magic_user->get_magic_spell_info( 'Third',  'Gust of Wind' );
-		if ( $this->hd_minimum > 7 ) $this->spells['Ancient']   = $this->magic_user->get_magic_spell_info( 'Fifth',  'Airy Water' );
+		$this->spells[ 'V. Young' ] = $this->magic_user->locate_magic_spell_info( 'Precipitation' );
+		if ( $this->hd_minimum > 1 ) $this->spells['Young']     = $this->cleric->locate_magic_spell(     'Create Water' );
+		if ( $this->hd_minimum > 2 ) $this->spells['Sub-Adult'] = $this->magic_user->locate_magic_spell( 'Water Breathing' );
+		if ( $this->hd_minimum > 3 ) $this->spells['Yng Adult'] = $this->magic_user->locate_magic_spell( 'Zephyr' );
+		if ( $this->hd_minimum > 4 ) $this->spells['Adult']     = $this->druid->locate_magic_spell(      'Predict Weather' );
+		if ( $this->hd_minimum > 5 ) $this->spells['Old']       = $this->druid->locate_magic_spell(      'Cloudburst' );
+		if ( $this->hd_minimum > 6 ) $this->spells['Very Old']  = $this->magic_user->locate_magic_spell( 'Gust of Wind' );
+		if ( $this->hd_minimum > 7 ) $this->spells['Ancient']   = $this->magic_user->locate_magic_spell( 'Airy Water' );
 	}
 
 

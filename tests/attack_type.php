@@ -11,13 +11,9 @@ class Attack_Type extends DND_Combat_CommandLine {
 	}
 
 	public function test_one() {
-#		print_r( $this->enemy );
-#		$obj = $this->get_base_monster();
-		$this->set_monster_initiative_all(4);
 		foreach( $this->enemy as $key => $object ) {
-#			DND_Force::force_set( $object, 'segment', mt_rand(1,10) );
 			echo "$key";
-			$sequence = $this->get_attack_sequence( $object->segment, $object->weapon['attacks'] );
+			$sequence = $this->get_attack_sequence( $object );
 			echo "\t{$object->segment}";
 			echo "\t".$this->get_mapped_attack_sequence($sequence);
 			echo "\t".$object->weapon['current'];

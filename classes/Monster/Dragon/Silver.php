@@ -11,7 +11,7 @@ class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 #	protected $appearing    = array( 1, 4, 0 );
 	protected $armor_class  = -1;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right' => [ 1, 6, 0 ], 'Claw Left' => [ 1, 6, 0 ], 'Bite' => [ 5, 6, 0 ], 'Breath' => [ 1, 1, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 6, 0 ], 'Claw Left' => [ 1, 6, 0 ], 'Bite' => [ 5, 6, 0 ], 'BW: Cone of Frost' => [ 1, 1, 0 ], 'BW: Paralyzing' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 75;
 	protected $co_magic_use = 75;
 	protected $co_sleeping  = 15;
@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 55;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Exceptional';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 #	protected $movement     = array( 'foot' => 9, 'air' => 24 );
 	protected $name         = 'Silver Dragon';
@@ -35,6 +35,7 @@ class DND_Monster_Dragon_Silver extends DND_Monster_Dragon_Dragon {
 #	protected $spells       = array();
 	protected $treasure     = 'H,T';
 #	protected $xp_value     = array();
+	protected $extra        = array( 'BW: Cone of Frost' => 0, 'BW: Paralyzing' => 0 );
 
 
 	public function __construct( $args = array() ) {

@@ -41,10 +41,28 @@ if ( ! function_exists( 'array_column' ) ) {
 /** array_key_first() introduced in PHP 7.3.0  **/
 if ( ! function_exists( 'array_key_first' ) ) {
 	function array_key_first( array $arr ) {
-		foreach( $arr as $key => $unused ) {
-			return $key;
-		}
-		return NULL;
+		foreach( $arr as $key => $unused ) return $key;
+		return null;
+	}
+}
+
+/** array_key_last() introduced in PHP 7.3.0  **/
+if ( ! function_exists( 'array_key_last' ) ) {
+	function array_key_last( $array ) {
+		return array_key_first( array_reverse( $array, true ) );
+	}
+}
+
+if ( ! function_exists( 'array_key_next' ) ) {
+	function array_key_next( $needle, $search, $strict = false ) {
+		if ( empty( $needle ) ) return false;
+		if ( empty( $search ) ) return false;
+		if ( ! is_array( $search ) ) return false;
+		$keys = array_keys( $search );
+		$spot = array_search( $needle, $keys, $strict );
+		if ( $spot === false ) return false;
+		$spot = ( $spot + 1 === count( $keys ) ) ? 0 : $spot + 1;
+		return $keys[ $spot ];
 	}
 }
 

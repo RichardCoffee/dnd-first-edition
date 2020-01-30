@@ -46,10 +46,10 @@ class DND_Character_Illusionist extends DND_Character_MagicUser {
 				),
 				'Phantom Armor' => array( 'page' => 'UA 67', 'type' => 'Alteration', 'cast' => '1 round',
 					'special'   => sprintf( 'absorbs %u points of damage', $this->level ),
-					'condition' => 'this_character_only',
+					'condition' => 'this_origin_only',
 					'filters'   => array(
 						array( 'character_armor_type', 3, 10, 2 ),
-						array( 'character_temporary_hit_points', $this->level, 10, 2 ),
+						array( 'temporary_hit_points', $this->level, 10, 2 ),
 						array( 'character_all_saving_throws', 1, 10, 2 ),
 					),
 				),
@@ -120,6 +120,41 @@ class DND_Character_Illusionist extends DND_Character_MagicUser {
 			),
 		);
 		return $table;
+	}
+
+
+/**  Manna functions  **/
+
+	protected function spells_usable_table() {
+		return array(
+			array(),
+			array( 1 ),       // 1
+			array( 2 ),       // 2
+			array( 2, 1 ),    // 3
+			array( 3, 2 ),    // 4
+			array( 4, 2, 1 ), // 5
+			array( 4, 3, 1 ), // 6
+			array( 4, 3, 2 ), // 7
+			array( 4, 3, 2, 1 ),    //  8
+			array( 5, 3, 3, 2 ),    //  9
+			array( 5, 4, 3, 2, 1 ), // 10
+			array( 5, 4, 3, 3, 2 ), // 11
+			array( 5, 5, 4, 3, 2, 1 ),    // 12
+			array( 5, 5, 4, 3, 2, 2 ),    // 13
+			array( 5, 5, 4, 3, 2, 2, 1 ), // 14
+			array( 5, 5, 4, 4, 2, 2, 2 ), // 15
+			array( 5, 5, 5, 4, 3, 2, 2 ), // 16
+			array( 5, 5, 5, 5, 3, 2, 2 ), // 17
+			array( 5, 5, 5, 5, 3, 3, 2 ), // 18
+			array( 5, 5, 5, 5, 4, 3, 2 ), // 19
+			array( 5, 5, 5, 5, 4, 3, 2 ), // 20
+			array( 5, 5, 5, 5, 5, 4, 3 ), // 21
+			array( 5, 5, 5, 5, 5, 5, 4 ), // 22
+			array( 5, 5, 5, 5, 5, 5, 5 ), // 23
+			array( 6, 6, 6, 6, 5, 5, 5 ), // 24
+			array( 6, 6, 6, 6, 6, 6, 6 ), // 25
+			array( 7, 7, 7, 7, 6, 6, 6 ), // 26
+		);
 	}
 
 

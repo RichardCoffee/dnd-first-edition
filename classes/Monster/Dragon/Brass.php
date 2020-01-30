@@ -11,7 +11,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $appearing    = array( 1, 4, 0 );
 	protected $armor_class  = 2;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 4, 4, 0 ], 'Breath' => [ 1, 1, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 4, 4, 0 ], 'BW: Cone of Sleep' => [ 1, 1, 0 ], 'BW: Fear' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 30;
 	protected $co_magic_use = 30;
 	protected $co_sleeping  = 50;
@@ -21,7 +21,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 25;
 #	protected $initiative   = 1;
 	protected $intelligence = 'High';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 12, 'air' => 24 );
 	protected $name         = 'Brass Dragon';
@@ -35,6 +35,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $spells       = array();
 	protected $treasure     = 'H';
 #	protected $xp_value     = array();
+	protected $extra        = array( 'BW: Cone of Sleep' => 0, 'BW: Fear' => 0 );
 
 
 
@@ -60,7 +61,6 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		if ( $this->hd_minimum > 6 ) $needed[] = 'First';
 		if ( $this->hd_minimum > 7 ) $needed[] = 'Second';
 		return $needed;
-		}
 	}
 
 	public function brass_dragon_breath_weapon_saving_throw( $num, $target, $dragon ) {

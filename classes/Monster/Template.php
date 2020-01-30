@@ -7,15 +7,14 @@
 class DND_Monster_Template extends DND_Monster_Monster {
 
 
-#	protected $ac_rows      = array( 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 14, 15, 15, 15 ); // DND_Monster_Trait_Combat
+#	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 #	protected $alignment    = 'Neutral';
 #	protected $appearing    = array( 1, 1, 0 );
 #	protected $armor_class  = 10;
 #	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
-#	protected $att_types    = array(); // DND_Monster_Trait_Combat
 	protected $attacks      = array( 'Bite' => [ 1, 8, 0 ] );
 #	private   $combat_key   = '';      // DND_Monster_Trait_Combat
-#	public    $current_hp   = 0;
+#	public    $current_hp   = -10000;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';
 #	protected $hd_minimum   = 1;
@@ -27,7 +26,6 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
 #	protected $magic_user   = null;
-#	protected $maximum_hp   = false;
 #	protected $movement     = array( 'foot' => 12 );
 #	protected $name         = 'Monster';
 #	protected $psionic      = 'Nil';
@@ -42,7 +40,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $treasure     = 'Nil';
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
-#	protected $weapon       = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 ); // DND_Character_Trait_Weapons
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
 #	protected $weapons      = array(); // DND_Character_Trait_Weapons
 #	protected $xp_value     = array( 0, 0, 0, 0 );
 
@@ -56,6 +54,15 @@ class DND_Monster_Template extends DND_Monster_Monster {
 		parent::determine_specials();
 #		$this->specials['index'] = 'Special Attack';
 	}
+
+/*	protected function is_sequence_attack( $check ) {
+		if ( $check === '' ) return false;
+		return true;
+	} //*/
+
+/*	protected function non_sequence_chance( $segment ) {
+		return 50;
+	} //*/
 
 
 }

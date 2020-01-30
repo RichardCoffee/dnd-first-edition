@@ -7,6 +7,7 @@
 class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 
 
+#	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Neutral Evil';
 	protected $appearing    = array( 1, 2, 0 );
 	protected $armor_class  = -2;
@@ -15,14 +16,21 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 	protected $co_speaking  = 100;
 	protected $co_magic_use = 100;
 	protected $co_sleeping  = 5;
+#	private   $combat_key   = '';      // DND_Monster_Trait_Combat
+#	public    $current_hp   = -10000;
+#	protected $description  = '';
 	protected $frequency    = 'Very Rare';
 	protected $hd_extra     = 1;
 #	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 4, 5, 6 );
+#	protected $hd_value     = 8;
+#	protected $hit_dice     = 0;
+#	protected $hit_points   = 0;
+#	protected $hp_extra     = 0;
 	protected $in_lair      = 40;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Very to Genius';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 	protected $magic_use    = 'Illusionist';
 	protected $movement     = array( 'foot' => 18, 'air' => 24 );
 	protected $name         = 'Shadow Dragon';
@@ -30,13 +38,21 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 	protected $race         = 'Dragon';
 	protected $reference    = 'Monster Manual II page 55-56, 58';
 	protected $resistance   = 20;
+#	protected $saving       = array( 'fight' );
+#	protected $segment      = 0;
 	protected $size         = "Large, 20' to 30' long";
 #	protected $sleeping     = false;
 #	protected $speaking     = false;
+#	protected $specials     = array();
 #	protected $spells       = array();
 	protected $stats        = array( 'dex' => 14 );
 	private   $thief        = null;
+#	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'U';
+#	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
+#	protected $weapons      = array(); // DND_Character_Trait_Weapons
 	protected $xp_value     = array( 3450, 5, 50, 36 );
 
 

@@ -11,7 +11,7 @@ class DND_Monster_Animal_Bird_Flightless_Ostrich extends DND_Monster_Animal_Bird
 #	protected $appearing    = array( 2, 10, 0 );
 #	protected $armor_class  = 7;
 #	protected $armor_type   = 11;
-#	protected $attacks      = array( 'Beak' => [ 1, 4, 0 ], 'Claws' => [ 2, 4, 0 ] );
+#	protected $attacks      = array( 'Peck' => [ 1, 4, 0 ], 'Kick' => [ 2, 4, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 #	protected $frequency    = 'Common';

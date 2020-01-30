@@ -24,7 +24,7 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 	protected $in_lair      = 25;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Genius';
-#| protected $magic_user   = null;
+#	protected $magic_user   = null;
 #	protected $magic_use    = 'MagicUser';
 	protected $movement     = array( 'foot' => 6, 'air' => 39 );
 	protected $name         = 'Cloud Dragon';
@@ -55,11 +55,19 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 		$this->specials['sleep']   = sprintf( 'Use sleeping (%u%%) to determine if found in gaseous form.', $this->co_sleeping );
 	}
 
+	public function set_key( $new ) {
+		parent::set_key( $new );
+		$this->cleric->set_key( $new );
+		$this->druid->set_key( $new );
+		$this->illusionist->set_key( $new );
+	}
+
 	protected function set_magic_user( $level = 0 ) {
 		parent::set_magic_user();
 		$this->cleric      = new DND_Character_Cleric(      [ 'level' => $this->hit_dice ] );
 		$this->druid       = new DND_Character_Druid(       [ 'level' => $this->hit_dice ] );
 		$this->illusionist = new DND_Character_Illusionist( [ 'level' => $this->hit_dice ] );
+		if ( ! in_array( 'cleric', $this->saving ) ) $this->saving[] = 'cleric';
 	}
 
 	protected function determine_magic_spells() {
@@ -67,14 +75,14 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function add_magic_spells( $list ) {
-		$this->spells[ 'V. Young' ] = $this->illusionist->get_magic_spell_info( 'Second', 'Fog Cloud' );
-		if ( $this->hd_minimum > 1 ) $this->spells['Young']     = $this->magic_user->get_magic_spell_info( 'First',   'Precipitation' );
-		if ( $this->hd_minimum > 2 ) $this->spells['Sub-Adult'] = $this->magic_user->get_magic_spell_info( 'Second',  'Stinking Cloud' );
-		if ( $this->hd_minimum > 3 ) $this->spells['Yng Adult'] = $this->magic_user->get_magic_spell_info( 'Third',   'Cloudburst' );
-		if ( $this->hd_minimum > 4 ) $this->spells['Adult']     = $this->druid->get_magic_spell_info(      'Third',   'Call Lightning' );
-		if ( $this->hd_minimum > 5 ) $this->spells['Old']       = $this->druid->get_magic_spell_info(      'Sixth',   'Weather Summoning' );
-		if ( $this->hd_minimum > 6 ) $this->spells['Very Old']  = $this->cleric->get_magic_spell_info(     'Seventh', 'Control Weather' );
-		if ( $this->hd_minimum > 7 ) $this->spells['Ancient']   = $this->druid->get_magic_spell_info(      'Fifth',   'Control Winds' );
+		$this->spells[ 'V. Young' ] = $this->illusionist->locate_magic_spell( 'Fog Cloud' );
+		if ( $this->hd_minimum > 1 ) $this->spells['Young']     = $this->magic_user->locate_magic_spell( 'Precipitation' );
+		if ( $this->hd_minimum > 2 ) $this->spells['Sub-Adult'] = $this->magic_user->locate_magic_spell( 'Stinking Cloud' );
+		if ( $this->hd_minimum > 3 ) $this->spells['Yng Adult'] = $this->magic_user->locate_magic_spell( 'Cloudburst' );
+		if ( $this->hd_minimum > 4 ) $this->spells['Adult']     = $this->druid->locate_magic_spell(      'Call Lightning' );
+		if ( $this->hd_minimum > 5 ) $this->spells['Old']       = $this->druid->locate_magic_spell(      'Weather Summoning' );
+		if ( $this->hd_minimum > 6 ) $this->spells['Very Old']  = $this->cleric->locate_magic_spell(     'Control Weather' );
+		if ( $this->hd_minimum > 7 ) $this->spells['Ancient']   = $this->druid->locate_magic_spell(      'Control Winds' );
 	}
 
 

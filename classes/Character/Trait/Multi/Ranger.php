@@ -27,8 +27,8 @@ trait DND_Character_Trait_Multi_Ranger {
 		return $this->fight->special_string_surprise();
 	}
 
-	public function locate_magic_spell( $spell, $type = '' ) {
-		return $this->fight->locate_magic_spell( $spell, $type );
+	public function locate_magic_spell( $name, $type = '' ) {
+		return $this->fight->locate_magic_spell( $name, $type );
 	}
 
 

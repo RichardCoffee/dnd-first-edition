@@ -194,7 +194,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function get_armor_class_dexterity_adjustment( $dex ) {
+	public function get_armor_class_dexterity_adjustment( $dex ) {
 		$bonus = 0;
 		switch( $dex ) {
 			case 3:

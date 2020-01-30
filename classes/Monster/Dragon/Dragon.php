@@ -3,6 +3,7 @@
 abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 
+#	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 #	protected $alignment    = 'Neutral';
 	protected $appearing    = array( 1, 4, 0 );
 #	protected $armor_class  = 10;
@@ -11,12 +12,17 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $co_speaking  = 0;
 	protected $co_magic_use = 0;
 	protected $co_sleeping  = 0;
+#	private   $combat_key   = '';      // DND_Monster_Trait_Combat
+#	public    $current_hp   = -10000;
+#	protected $description  = '';
 	protected $frequency    = 'Rare';
-	protected $hd_extra     = 0; // Only used by shadow dragon
+	protected $hd_extra     = 0;       // used by DND_Monster_Dragon_Shadow because it gets an extra point per HD
 	protected $hd_minimum   = 0;
 	protected $hd_range     = array( 8, 9, 10 );
 #	protected $hd_value     = 8;
+#	protected $hit_dice     = 0;
 #	protected $hit_points   = 0;
+#	protected $hp_extra     = 0;
 #	protected $in_lair      = 0;
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
@@ -29,12 +35,20 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $reference    = 'Monster Manual page 29-34';
 #	protected $resistance   = 'Standard';
 	protected $saving       = array( 'fight' );
+#	protected $segment      = 0;
 	protected $size         = 'Large';
 	protected $sleeping     = false;
-	protected $spells       = array();
 	protected $speaking     = false;
+#	protected $specials     = array();
+	protected $spells       = array();
+#	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'Nil';
+#	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
+#	protected $weapons      = array(); // DND_Character_Trait_Weapons
 #	protected $xp_value     = array();
+	protected $extra        = array( 'Breath' => 0 );
 
 
 	use DND_Monster_Dragon_Mated;
@@ -44,16 +58,18 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 	public function __construct( $args = array() ) {
 		$this->check_for_existing_mate( $args );
+		if ( array_key_exists( 'spell_list', $args ) ) {
+			$this->attacks['Spell'] = 'Special';
+		}
 		parent::__construct( $args );
-		$this->attacks['Breath'][0] = $this->hit_points;
 		if ( array_key_exists( 'spell_list', $args ) ) {
 			$this->set_magic_user();
 			$this->import_spell_list( $args['spell_list'] );
 		} else if ( $this->co_magic_use ) {
 			if ( $this->check_chance( $this->co_magic_use ) ) {
 				$this->set_magic_user();
-				$spells = $this->determine_magic_spells();
-				$this->add_magic_spells( $spells );
+				$list = $this->determine_magic_spells();
+				$this->add_magic_spells( $list );
 				$this->add_magic_spells_to_specials();
 				$this->co_magic_use = 100;
 			} else {
@@ -67,6 +83,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 				$this->co_speaking = 0;
 			}
 		}
+		if ( $this->hd_minimum === 0 ) trigger_error( 'invalid hd_minimum', E_USER_ERROR );
 	}
 
 	public function __get( $name ) {
@@ -82,6 +99,9 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected function determine_hit_dice() {
 		if ( $this->hit_dice === 0 ) {
 			$this->hit_dice = $this->determine_dragon_hit_dice();
+		}
+		foreach( $this->extra as $key => $value ) {
+			if ( $value > 2 ) unset( $this->attacks[ $key ] );
 		}
 	}
 
@@ -106,9 +126,14 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $hit_dice;
 	}
 
+	protected function determine_hit_points() {
+		parent::determine_hit_points();
+		$this->set_breath_damage();
+	}
+
 	protected function calculate_hit_points( $appearing = false ) {
 		if ( $appearing ) {
-			$hit_dice = $this->calculate_dragon_hit_dice();
+			$hit_dice = $this->determine_dragon_hit_dice();
 			$hit_points = $this->calculate_dragon_hit_points( $hit_dice );
 		} else {
 			$hit_points = $this->calculate_dragon_hit_points( $this->hit_dice );
@@ -167,8 +192,23 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $size;
 	}
 
+	protected function set_breath_damage() {
+		foreach( $this->attacks as $weapon => $damage ) {
+			if ( in_array( substr( $weapon, 0, 4 ), [ 'Brea', 'BW: ' ] ) ) {
+				$this->attacks[ $weapon ][0] = $this->hit_points;
+			}
+		}
+	}
+
 
 	/**  Override functions  **/
+
+	public function set_key( $new ) {
+		parent::set_key( $new );
+		if ( $this->magic_user ) {
+			$this->magic_user->set_key( $new );
+		}
+	}
 
 	protected function determine_specials() {
 		$this->specials = array(
@@ -191,14 +231,18 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		do_action( 'monster_determine_specials' );
 	}
 
-	public function single_attacks( $isolated ) {
-		if ( ! in_array( 'Breath', $isolated ) ) $isolated[] = 'Breath';
-		return $isolated;
+	public function determine_attack_weapon( $seg = 0 ) {
+		parent::determine_attack_weapon( $seg );
+#		if ( in_array( substr( $this->weapon['current'], 0, 4 ), [ 'Brea', 'BW: ' ] ) ) $this->weapon['damage'][0] = $this->hit_points;
+		if ( ( $seg === $this->segment ) && ( array_key_exists( $this->weapon['current'], $this->extra ) ) ) {
+			$this->extra[ $this->weapon['current'] ]++;
+		}
 	}
 
 	protected function is_sequence_attack( $check ) {
-		if ( $check === 'Breath' ) return false;
-		return true;
+		if ( array_key_exists( $check, $this->extra ) ) return false;
+		if ( $check === 'Spell' )  return false;
+		return parent::is_sequence_attack( $check );
 	}
 
 
@@ -225,6 +269,9 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		return $num;
 	}
 
+
+	/**  Magic functions  **/
+
 	protected function set_magic_user( $level = 0 ) {
 		$level = ( $level ) ? $level : $this->hit_dice;
 		$create = 'DND_Character_' . $this->magic_use;
@@ -234,32 +281,45 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	protected function add_magic_spells( $list ) {
+		$rejects = apply_filters( 'dnd1e_rejected_spells', array(), $this );
 		foreach( $list as $level ) {
-			$spell = $this->magic_user->generate_random_spell( $level );
-			$this->spells[] = $this->magic_user->get_magic_spell_info( $level, $spell );
+			do {
+				$name = $this->magic_user->generate_random_spell( $level );
+			} while( in_array( $name, $rejects ) );
+			$this->spells[] = $this->magic_user->locate_magic_spell( $name );
 		}
-		usort( $this->spells, [ $this, 'sort_spells' ] );
+		$this->sort_spells();
 	}
 
 	protected function import_spell_list( $list ) {
 		foreach( $list as $spell ) {
-			$this->spells[] = $this->magic_user->get_magic_spell_info( $spell['level'], $spell['name'] );
+			$this->spells[] = $this->magic_user->locate_magic_spell( $spell );
 		}
-		usort( $this->spells, [ $this, 'sort_spells' ] );
+		$this->sort_spells();
+	}
+
+	private function sort_spells() {
+		$ord = DND_Enum_Ordinal::instance();
+		usort(
+			$this->spells,
+			function( $a, $b ) use ( $ord ) {
+				$rel = $ord->compare( $a->get_level(), $b->get_level() );
+				if ( $rel === 0 ) $rel = strcmp( $a->get_name(), $b->get_name() );
+				return $rel;
+			}
+		);
 		$this->add_magic_spells_to_specials();
 	}
 
-	public function sort_spells( $a, $b ) {
-		$ord = DND_Enum_Ordinal::instance();
-		$rel = $ord->compare( $a['level'], $b['level'] );
-		if ( $rel === 0 ) {
-			if ( $a['name'] === $b['name'] ) return 0;
-			$names = array( $a['name'], $b['name'] );
-			sort( $names );
-			if ( $names[0] === $a['name'] ) return -1;
-			return 1;
+	public function get_spell_list() {
+		$list = array();
+		foreach( $this->spells as $spell ) {
+			$key  = $spell->get_level();
+			$name = $spell->get_name();
+			if ( ! array_key_exists( $key, $list ) ) $list[ $key ] = array();
+			$list[ $key ][ $name ] = $spell;
 		}
-		return $rel;
+		return $list;
 	}
 
 	protected function add_magic_spells_to_specials() {
@@ -267,10 +327,24 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 			$cnt = 1;
 			foreach( $this->spells as $spell ) {
 				$index = 'spell' . $cnt++;
-				$this->specials[ $index ] = sprintf( '%7s: %s', $spell['level'], $spell['name'] );
+				$this->specials[ $index ] = sprintf( '%7s: %s', $spell->get_level(), $spell->get_name() );
 			}
 		}# else { dnd1e()->log('stack'); echo "no spells\n"; }
 	}
+
+	public function spend_manna( $spell ) {
+		$name = $spell->get_name();
+		$this->spells = array_filter(
+			$this->spells,
+			function( $a ) use ( $name ) {
+				if ( $a->get_name() === $name ) return false;
+				return true;
+			}
+		);
+	}
+
+
+	/**  Treasure functions  **/
 
 	public function get_treasure( $possible = '' ) {
 		$treasure = array();
