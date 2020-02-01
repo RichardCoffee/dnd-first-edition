@@ -179,13 +179,11 @@ print_r($fake);
 				}
 				break;
 			case 'swords':
-				$item = $this->generate_swords_type( $item );
 				$item = $this->generate_special_swords( $item );
 				break;
 			case 'weapons':
 				list( $spec, $tab ) = explode( ':', $item['ex'] );
 				if ( $tab == 1 ) {
-					$item = $this->generate_random_weapons_pluses( $item );
 					if ( substr( $item['text'], 0, 3 ) === 'Bow' ) {
 						$prefix = ( mt_rand( 1, 100 ) > 60 ) ? 'Short ' : 'Long ';
 						$item['text'] = $prefix . $item['text'];
@@ -195,8 +193,13 @@ print_r($fake);
 						$prefix = ( mt_rand( 1, 100 ) > 65 ) ? 'Light ' : $prefix;
 						$item['text'] = $prefix . $item['text'];
 					}
-				} else if ( $tab == 2 ) {
-					$item = $this->generate_random_missile_pluses( $item );
+				}
+				if ( $item['bonus'] === 0 ) {
+					if ( $tab == 1 ) {
+						$item = $this->generate_random_weapons_pluses( $item );
+					} else if ( $tab == 2 ) {
+						$item = $this->generate_random_missile_pluses( $item );
+					}
 				}
 				if ( $spec === 'Y' ) $item = $this->generate_special_swords( $item );
 				break;

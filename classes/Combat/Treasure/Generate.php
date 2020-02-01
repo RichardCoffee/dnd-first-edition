@@ -59,17 +59,6 @@ trait DND_Combat_Treasure_Generate {
 		return $item;
 	}
 
-	protected function generate_swords_type( $item, $roll = 0 ) {
-#		if ( ! in_array( $item['text'], [ 'Sword, Short, Quickness (+2)' ] ) ) {
-		if ( ( stripos( $item['text'], 'Sun Blade'    ) === false )
-		  && ( stripos( $item['text'], 'Sword, Short' ) === false ) ) {
-			$table = $this->get_swords_type_table();
-			$type  = $this->generate_random_result( $table, $roll );
-			$item['text'] = "{$type['text']} {$item['text']}";
-		}
-		return $item;
-	}
-
 	protected function generate_special_swords( $item, $roll = 0 ) {
 		if ( $roll === 0 ) $roll = mt_rand( 1, 100 );
 		$powers = 'none';
@@ -153,6 +142,7 @@ trait DND_Combat_Treasure_Generate {
 
 	protected function generate_random_pluses( $table, $item, $roll, $search ) {
 		$plus  = $this->generate_random_result( $table, $roll );
+		$item['bonus'] = $plus['plus'];
 		$item['xp'] = intval( $item['xp'] * $plus['gp'] );
 		$item['gp'] = intval( $item['gp'] * $plus['gp'] );
 		$string  = ( $plus['plus'] > 0 ) ? ' +%d' : ' %d, Cursed';

@@ -8,7 +8,7 @@ trait DND_Combat_GetOpts {
 
 	protected function get_opts() {
 		$opts = [ 'add:', 'att:', 'crit:', 'desc::', 'eff:', 'fumble:', 'enc:', 'help', 'hit:', 'hold:', 'limit:', 'mi:', 'pre:', 'show:', 'spell:', 'st:', 'tar:', 'text' ];
-		$this->opts = getopt( 'hr:stx', $opts );
+		$this->opts = getopt( 'aghr:stx', $opts );
 		$this->process_immediate_opts();
 	}
 
@@ -30,8 +30,16 @@ trait DND_Combat_GetOpts {
 		if ( $this->opts ) {
 			foreach( $this->opts as $key => $option ) {
 				switch( $key ) {
+					case 'a':
+						$this->show_active_effects();
+					case 'g':
+						break;
 					case 'r':
-						$this->range = intval( $this->opts['r'], 10 );
+						$this->rng_svd = 0;
+						$this->range   = intval( $this->opts['r'] );
+						if ( array_key_exists( 'g', $this->opts ) ) {
+							$this->rng_svd = $this->range;
+						}
 						break;
 					case 's':
 						$this->update_holds();
@@ -107,10 +115,11 @@ trait DND_Combat_GetOpts {
 
 	php command_line.php [OPTIONS] [NAME [WEAPON|SPELL#]]
 
+	-a              Display all active effects
 
 	-h, --help      Display this help screen.
 
-	-r n            Control missile weapon range, where n = range in feet.
+	-r n            Control missile weapon range, where n = range in feet.  Use -g for sticky range.
 
 	-s              Increment the combat segment.
 
@@ -200,7 +209,7 @@ trait DND_Combat_GetOpts {
 	}
 
 	protected function parse_spell() {
-		list( $caster, $data ) = explode( ':', $this->opts['spell'] );
+		list( $caster, $data ) = array_pad( explode( ':', $this->opts['spell'] ), 2, false );
 		$this->process_spell_data( $caster, $data );
 	}
 
@@ -211,14 +220,14 @@ trait DND_Combat_GetOpts {
 
 	public function process_arguments( $argv ) {
 		if ( $argv && ! $this->opts ) {
-			list ( $line, $name, $action, $secondary ) = array_pad( $argv, 4, false );
+			list ( $command, $name, $action, $secondary ) = array_pad( $argv, 4, false );
 			if ( strlen( $name ) ) {
 				$object = $this->get_object( $name );
 				if ( $object ) {
 					if ( $action ) {
 						if ( intval( $action ) ) {
 							$spell = $this->get_numbered_spell( $object, $action );
-							if ( $spell ) $this->gopa_start_casting( $name, $spell, $argv );
+							if ( $spell ) $this->gopa_start_casting( $name, $spell, $secondary );
 						} else if ( method_exists( $object, 'locate_magic_spell' ) && ( $spell = $object->locate_magic_spell( $action ) ) ) {
 							$this->gopa_start_casting( $name, $spell, $secondary );
 						} else {
@@ -258,7 +267,12 @@ trait DND_Combat_GetOpts {
 
 	protected function gopa_start_casting( $name, $spell, $target = false ) {
 		echo "\n$name\n";
-		$this->start_casting( $name, $spell, $target );
+		$result = $this->start_casting( $name, $spell, $target );
+		if ( $result === false ) {
+			if ( $this->error ) $this->show_message( $this->error );
+			echo "Exiting!\n\n";
+			exit;
+		}
 	}
 
 

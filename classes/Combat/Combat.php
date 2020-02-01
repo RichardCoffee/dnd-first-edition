@@ -17,6 +17,7 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 	protected $casting = array();
 	public    $effects = array();
 	protected $enemy   = array();
+	protected $error   = '';
 	protected $holding = array();
 	protected $party   = array();
 	protected $range   = 2000;
@@ -81,8 +82,9 @@ static $cnt = 0;
 						if ( $object === null ) continue;
 						if ( $effect->condition_applies( $object ) ) {
 /*
-echo $obj->get_name()."\n";
+echo $object->get_key()."\n";
 echo "condition: ".$effect->get_condition()."\n";
+echo $effect->get_target()."\n";
 echo "  purpose: $name\n";
 echo "prior: $value  new: $delta cnt: $cnt\n";
 #if ( $cnt > 1 ) trigger_error( 'effect filters', E_ERROR );
@@ -114,6 +116,7 @@ $cnt++;
 			} else if ( $char->weapon['current'] === 'Stunned' ) {
 				$char->set_current_weapon( array_key_first( $char->weapons ) );
 			}
+			$this->check_casting( $char );
 		}
 	}
 
@@ -134,6 +137,7 @@ $cnt++;
 					}
 				} else { echo "\nError importing monster\n";print_r( $monster ); }
 			}
+			$this->check_casting( $monster );
 		}
 	}
 
@@ -186,17 +190,9 @@ $cnt++;
 
 	protected function filter_attacker( $object ) {
 		$sequence = $this->get_attack_sequence( $object );
+		if ( in_array( $this->segment, $sequence ) ) return true;
 		$key = $object->get_key();
-		if ( in_array( $this->segment, $sequence ) ) {
-			return true;
-		} else if ( $this->is_casting( $key ) ) {
-			$spell = $this->find_casting( $key );
-			if ( $this->segment > $spell->get_when() ) {
-				$this->remove_casting( $key ); # FIXME?
-			} else {
-				return true;
-			}
-		}
+		if ( $this->is_casting( $key ) ) return true;
 		return false;
 	}
 
@@ -318,8 +314,8 @@ $cnt++;
 			$cnt++;
 			$key = $object->get_name() . " $cnt";
 		}
-		$obj->set_key( $key );
-		$obj->set_initiative( mt_rand( 1, 10 ) );
+		$object->set_key( $key );
+		$object->set_initiative( mt_rand( 1, 10 ) );
 		$this->enemy[ $key ] = $object;
 	}
 
@@ -378,10 +374,15 @@ $cnt++;
 		$object = $this->get_object( $origin );
 		if ( $object && $spell ) {
 			$this->remove_holding( $object->get_key() );
-			$spell->set_target( ( $target ) ? $target : $origin );
-			$spell->set_when( $this->segment );
-			$this->casting[] = $spell;
-			return $spell;
+			if ( ( $target === false ) && ( $spell->get_target() === 'required' ) ) {
+				$this->error = "Spell '" . $spell->get_name() . "' missing required target.";
+			} else {
+				$target = $this->get_object( $target );
+				$spell->set_target( ( $target ) ? $target : $origin );
+				$spell->set_when( $this->segment );
+				$this->casting[] = $spell;
+				return $spell;
+			}
 		}
 		return false;
 	}
@@ -432,8 +433,18 @@ $cnt++;
 		$obj = $this->get_object( $origin );
 		$key = $obj->get_key();
 		if ( $this->is_casting( $key ) ) {
-			$this->remove_casting( $key );
 			$obj->spend_manna( $this->find_casting( $key ) );
+			$this->remove_casting( $key );
+		}
+	}
+
+	protected function check_casting( $object ) {
+		$key = $object->get_key();
+		if ( $this->is_casting( $key ) ) {
+			$spell = $this->find_casting( $key );
+			if ( $this->segment > $spell->get_when() ) {
+				$this->finish_casting( $spell );
+			}
 		}
 	}
 
@@ -502,11 +513,10 @@ $cnt++;
 	protected function temporary_hit_points( $object, $damage ) {
 		$damage = intval( $damage );
 		if ( $damage > 0 ) {
-			$target  = $object->get_key();
 			$applies = array_filter(
 				$this->effects,
-				function( $a ) use ( $target ) {
-					if ( $a->condition_applies( $target ) ) {
+				function( $a ) use ( $object ) {
+					if ( $a->condition_applies( $object ) ) {
 						foreach( $a->get_filters() as $filter ) {
 							if ( $filter[0] === 'temporary_hit_points' )   return true; // Ill: Phantom Armor
 							if ( $filter[0] === 'dissipation_hit_points' ) return true; // MU: Armor
@@ -519,7 +529,7 @@ $cnt++;
 				foreach( $effect->get_filters() as $index => $filter ) {
 					if ( $filter[0] === 'temporary_hit_points' ) {
 						$remaining = $filter[1];
-						$remaining -= $damage;
+						$remaining-= $damage;
 						if ( $remaining > 0 ) {
 							$effect->set_filter_delta( $index, $remaining, true );
 							$damage = 0;
@@ -572,6 +582,7 @@ $cnt++;
 		$target->determine_armor_class();
 		$to_hit = $origin->get_to_hit_number( $target, $this->range );
 		$to_hit-= ( $target->is_down() ) ? 4 : 0;
+		$to_hit = apply_filters( 'opponent_to_hit_object', $to_hit, $target, $origin );
 		return apply_filters( 'opponent_to_hit_opponent', $to_hit, $origin, $target );
 	}
 

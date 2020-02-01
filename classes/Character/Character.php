@@ -11,6 +11,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $base_xp    = 0;
 	public    $current_hp = -100;
 	protected $experience = 0;
+	protected $gear       = array();
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = 0;
 	protected $horse      = '';

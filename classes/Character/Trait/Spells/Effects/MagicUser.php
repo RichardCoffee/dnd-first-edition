@@ -12,11 +12,15 @@ trait DND_Character_Trait_Spells_Effects_MagicUser {
 		}
 	}
 
+	public function armor_status( $effect ) {
+		$filter = $effect->locate_filter('dissipation_hit_points');
+		echo "\t Points: {$filter[1]}\n";
+	}
+
 	public function magicuser_second_mirror_image( $spell, $num ) {
 		if ( ( $spell->get_name() === 'Mirror Image' ) && empty( $this->effects ) ) {
 			$spell->effects['images'] = intval( $num );
 		}
-echo "mirror images: {$spell->effects['images']}\n";
 	}
 
 	public function mirror_image_number( $string, $object, $spell ) {
@@ -44,6 +48,10 @@ echo "mirror image target: $roll\n";
 			}
 		}
 		return $damage;
+	}
+
+	public function mirror_image_status( $effect ) {
+		echo "\t Images: {$effect->effects['images']}\n";
 	}
 
 

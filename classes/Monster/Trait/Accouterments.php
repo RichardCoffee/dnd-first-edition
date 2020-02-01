@@ -17,7 +17,7 @@ trait DND_Monster_Trait_Accouterments {
 			$chance   = ( $chance ) ? $chance : $level * 5;
 			$types    = $this->acc_types( $obj );
 			$restrict = array_shift( $types );
-			$acc = $this->acc_get_accouterment_list( $types, $chance );
+			$acc = $this->acc_get_accouterment_list( $types, $chance, $restrict );
 		}
 		return $acc;
 	}
@@ -56,9 +56,8 @@ trait DND_Monster_Trait_Accouterments {
 		return array( 'T', 'shields', 'swords', 'weapons', 'potions', 'rings', 'books_tomes/jewels_jewelry/cloaks_robes/boots_gloves/girdles_helms/bags_bottles/dusts_stones/items_tools/instruments/weird_stuff' );
 	}
 
-	public function acc_get_accouterment_list( $types, $chance ) {
+	public function acc_get_accouterment_list( $types, $chance, $restrict ) {
 		$acc = array();
-		$restrict='';#$restrict = array_shift( $types );
 		foreach( $types as $type ) {
 			$accouter = '';
 			$possible = mt_rand( 1, 100 );
@@ -102,5 +101,6 @@ trait DND_Monster_Trait_Accouterments {
 		}
 		return $this->check_for_specials( $item );
 	}
+
 
 }

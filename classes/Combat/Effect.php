@@ -23,16 +23,17 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 	protected $book       = '';  //  Caster class
 	protected $caster     = '';  //  Caster key
 	protected $condition  = '';  //  Function that determines whether a filter is applied to passed value, returns a boolean value.
-	public    $effects    = array(); // array containing spell information
-	protected $ends       = 0;   //  Ending segment
-	protected $filters    = array(); // array of filter arrays
+	public    $effects    = array(); //  array containing spell information
+	protected $ends       = 0;       //  Ending segment
+	protected $filters    = array(); //  array of filter arrays
 	private   $key        = 'Effect_Key';
-	protected $location   = array(); // Map location
-	protected $object     = null;    //  Caster object
-	protected $replace    = '';  //  Spell replacement filter name
-	public    $rewrite    = false;   // flag to use new code base for handling effect filters
-	protected $secondary  = array(); // secondary effects for Monster classes
+	protected $location   = array(); //  Map location
+#	protected $object     = null;    //  Caster object
+	protected $replace    = '';      //  Spell replacement filter name
+	public    $rewrite    = false;   //  flag to use new code base for handling effect filters
+	protected $secondary  = array(); //  secondary effects for Monster classes
 	protected $special    = '';  //  Note on special effects
+	protected $status     = '';  //  Function to display status
 	protected $target     = '';  //  object key, 'party', 'enemy', 'aoe'
 	protected $when       = 1;   //  Spell effects begin/occur segment
 
@@ -50,6 +51,7 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		if ( ! empty( $this->filters ) ) {
 			$this->rewrite = is_string( $this->filters[0][1] );
 		}
+#if ( $this->name === 'Armor' ) $this->status = 'armor_status';
 	}
 
 
@@ -120,10 +122,13 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 	}
 
 	public function set_target( $target ) {
-		if ( empty( $this->target ) ) {
-			$this->target = ( is_object( $target ) ) ? $target->get_key() : $target;
-		} else if ( $this->target === 'origin' ) {
+		if ( $this->target === 'origin' ) {
 			$this->target = $this->caster;
+		} else if ( is_object( $target ) ) {
+			$this->target = $target->get_key();
+		} else if ( in_array( $this->target, [ 'party', 'enemy', 'aoe' ] ) ) {
+		} else {
+			$this->target = $target;
 		}
 	}
 
@@ -204,7 +209,7 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		}
 	}
 
-	protected function locate_filter( $name ) {
+	public function locate_filter( $name ) {
 		foreach( $this->filters as $filter ) {
 			if ( $filter[0] === $name ) return $filter;
 		}
@@ -231,6 +236,16 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		if ( ! empty( $this->duration ) ) $line .= "\tD: {$this->duration}";
 		if ( ! empty( $this->special ) )  $line .= "\tS: {$this->special}";
 		return $line;
+	}
+
+	public function show_status( $object ) {
+		echo "Name: {$this->name}\n";
+		echo "\t Caster: {$this->caster}\n";
+		echo "\t Target: {$this->target}\n";
+		if ( ! empty( $this->special ) )  echo "\tSpecial: {$this->special}\n";
+		if ( ( ! empty( $this->status ) ) && method_exists( $object, $this->status ) ) {
+			$object->{$this->status}( $this );
+		}
 	}
 
 	public function show_casting() {

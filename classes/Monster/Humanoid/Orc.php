@@ -6,35 +6,56 @@
 
 class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 
+
+#	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Lawful Evil';
 	protected $appearing    = array( 30, 10, 0 );
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;
 #	protected $attacks      = array( 'Weapon' => [ 1, 8, 0 ] );
+#	private   $combat_key   = '';      // DND_Monster_Trait_Combat
+#	public    $current_hp   = -10000;
+#	protected $description  = '';
 #	protected $fighter      = null;
 #	protected $frequency    = 'Common';
+#	protected $hd_minimum   = 1;
+#	protected $hd_value     = 8;
 	protected $hit_dice     = 1;
+#	protected $hit_points   = 0;
 #	protected $hp_extra     = 0;
 	protected $in_lair      = 35;
 #	protected $initiative   = 1;
 	protected $intelligence = 'Average (Low)';
+#	protected $magic_user   = null;
 	protected $movement     = array( 'foot' => 9 );
 	protected $name         = 'Orc';
 #	protected $psionic      = 'Nil';
 	protected $race         = 'Orc';
 	protected $reference    = 'Monster Manual page 75';
 #	protected $resistance   = 'Standard';
+#	protected $saving       = array( 'fight' );
+#	protected $segment      = 0;
 	protected $size         = "Medium(6'+ tall)";
 #	protected $specials     = array();
+#	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'L,C,O,Q,S';
+#	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
+#	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
+#	protected $weapon       = array(); // DND_Character_Trait_Weapons
+#	protected $weapons      = array(); // DND_Character_Trait_Weapons
 #	protected $xp_value     = array();
+#	protected $extra        = array();
 
+	public function __construct( $args = array() ) {
+		if ( has_filter( 'humanoid_fighter_data', [ $this, 'orc_fighter_data' ] ) === false ) {
+			add_filter( 'humanoid_fighter_data', [ $this, 'orc_fighter_data' ] );
+		}
+		parent::__construct( $args );
+
+	}
 
 	protected function determine_hit_dice() {
-		$this->description = "Orcs appear particularly disgusting because their coloration - brownish green with a bluish sheen - highlights their pinkish snouts and ears. Their bristly hair is dark brown or black, sometimes with dirty and often tan patches. Even their armor tends to be unattractive - bit rusty. Orcs favor unpleasant colors in general. Their garments are in tribal colors, as are shield devices or trim. Typical colors are blood red, rust red, mustard yellow, yellow green, moss green, greenish purple, and blackish brown. They live for 40 years.";
-		if ( array_key_exists( 'Weapon', $this->attacks ) ) {
-			$this->determine_weapon();
-		}
+		$this->description = "Orcs appear particularly disgusting because their coloration - brownish green with a bluish sheen - highlights their pinkish snouts and ears. Their bristly hair is dark brown or black, sometimes with dirty and often tan patches. Even their armor tends to be unattractive - bit rusty. Orcs favor unpleasant colors in general. Their garments are in tribal colors, as are shield devices or trim. Typical colors are blood red, rust red, mustard yellow, yellow green, moss green, greenish purple, and blackish brown. They live for about 40 years.";
 	}
 
 	protected function determine_specials() {
@@ -43,7 +64,14 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 		);
 	}
 
-	protected function determine_weapon() {
+	public function orc_fighter_data( $data ) {
+#		$data = $this->get_character_accouterments( $this );
+		if ( array_key_exists( 'Weapon', $this->attacks ) ) $this->determine_weapons();
+#		foreach( $this->
+		return $data;
+	}
+
+	protected function determine_weapons() {
 		$roll = mt_rand( 1, 100 );
 		if ( $roll < 6 ) {
 			$carry = array( 'Sword,Long', 'Flail,Foot' );
@@ -73,10 +101,11 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 		unset( $this->attacks['Weapon'] );
 		foreach( $carry as $weapon ) {
 			if ( $weapon === 'Pole-Arm' ) $weapon = $this->get_random_pole_arm();
-#echo "carry: $weapon\n";
+echo "carry: $weapon\n";
 			$this->attacks[ $weapon ] = $this->get_weapon_damage_array( $weapon );
 #print_r($this->attacks[$weapon]);
 		}
+print_r($this->attacks);
 	}
 
 	public function get_tribes_list() {

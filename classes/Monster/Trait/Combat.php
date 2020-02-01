@@ -7,7 +7,6 @@ trait DND_Monster_Trait_Combat {
 	protected $armor_type   = 11;
 	private   $combat_key   = '';
 	protected $to_hit_row   = array();
-	private   $weap_flag    = true;
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons
 #	protected $weapons      = array(); // DND_Character_Trait_Weapons
 

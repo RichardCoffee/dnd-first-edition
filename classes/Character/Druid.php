@@ -46,6 +46,7 @@ class DND_Character_Druid extends DND_Character_Cleric {
 					'filters'   => array(
 						array( 'opponent_to_hit_object', -2, 10, 3 ),
 					),
+					'target' => 'required',
 				),
 				'Invisibility to Animals' => array( 'page' => 'PH 55', 'type' => 'Alteration', 'cast' => '4 segments',
 					'duration' => sprintf( '%3.1u turns', ( $this->level * 0.1 ) + 10 ),

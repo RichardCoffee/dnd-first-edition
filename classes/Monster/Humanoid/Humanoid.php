@@ -47,11 +47,10 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		if ( array_key_exists( 'fighter', $args ) ) {
 			$this->fighter = unserialize( $args['fighter'] );
 			unset( $args['fighter'] );
-		}
-		parent::__construct( $args );
-		if ( $this->fighter === null ) {
+		} else {
 			$this->load_fighter();
 		}
+		parent::__construct( $args );
 	}
 
 	protected function determine_hit_dice() {
@@ -70,7 +69,6 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		$data = $this->get_fighter_data( $this->hit_dice );
 		$create = 'DND_Character_' . $new;
 		$this->fighter = new $create( $data );
-		$this->get_character_accouterments( $this->fighter );
 		if ( ! empty( $this->fighter->weapons ) ) {
 			$weapon = array_key_first( $this->fighter->weapons );
 			$this->fighter->set_current_weapon( $weapon );
@@ -95,14 +93,14 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 				'chr' => 12 + mt_rand( 1, 6 ),
 			),
 		);
-		return apply_filters( 'humanoid_fighter_data', $data, get_class( $this ) );
+		return apply_filters( 'humanoid_fighter_data', $data );
 	}
 
 	protected function get_character_accouterments( DND_Character_Character $object, $chance = 0 ) {
+		$data  = array();
 		$treas = new DND_Combat_Treasure_Treasure;
-		$accs  = $treas->acc_get_accouterments( $object, $chance );
+		$accs  = $treas->acc_get_accouterments( $this, $chance );
 		foreach( $accs as $item ) {
-#print_r($item);
 			switch( $item['type'] ) {
 				case 'armor':
 					
@@ -131,7 +129,7 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 			}
 			$this->extra[] = $item;
 		}
-print_r($this->extra);
+if ( ! empty( $this->extra ) ) print_r( $this->extra );
 	}
 
 

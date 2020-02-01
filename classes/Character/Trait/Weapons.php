@@ -425,7 +425,7 @@ trait DND_Character_Trait_Weapons {
 			$segment  = $this->segment;
 			$interval = 10 / ( $this->weapon['attacks'][0] / $this->weapon['attacks'][1] );
 			do {
-				$seqent[] = round( $segment );
+				$seqent[] = intval( round( $segment ) );
 				$segment += $interval;
 			} while( $segment < ( ( $rounds * 10 ) + 1 ) );
 		}

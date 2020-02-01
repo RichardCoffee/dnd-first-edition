@@ -69,6 +69,7 @@ These creatures are very rare. The lernaean hydra is indistinguishable from a no
 
 	public function lernaean_head_growth( $combat, $target ) {
 		if ( ( $this === $target ) && ( count( $this->attacks ) < 12 ) ) {
+#			$current = $this->weapon['current'];
 			foreach( $this->extra as $head => $state ) {
 				if ( $state > -1 ) continue;
 				if ( abs( $state ) === $combat->segment ) {
@@ -76,18 +77,25 @@ These creatures are very rare. The lernaean hydra is indistinguishable from a no
 					if ( ! $this->reset_head() ) {
 						$this->grow_new_head();
 					}
+					$this->segment = $combat->segment;
 				}
 			}
+			$this->determine_damage();
+			$this->initialize_sequence_attacks();
+#			$this->weapon = $this->get_attack_info( $current );
+			$this->weapon['attacks'][0] = count( $this->weapons['sequence'] );
 		}
 	}
 
 	protected function reset_head( $head = '' ) {
 		if ( $head ) {
 			$this->extra[ $head ] = $this->hd_value;
+			$this->current_hp   += $this->hd_value;
 		} else {
 			foreach( $this->extra as $key => $hp ) {
 				if ( $hp > -1 ) continue;
 				$this->extra[ $key ] = $this->hd_value;
+				$this->current_hp   += $this->hd_value;
 				return true;
 			}
 		}
@@ -102,7 +110,6 @@ These creatures are very rare. The lernaean hydra is indistinguishable from a no
 			$this->hit_dice      = max( $this->hit_dice, $num + 1 );
 			$this->hit_points    = $this->hit_dice * $this->hd_value;
 			$this->current_hp   += $this->hd_value;
-			$this->determine_damage();
 		}
 	}
 

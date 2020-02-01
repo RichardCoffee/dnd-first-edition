@@ -4,6 +4,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 
 #	protected $casting = array(); // DND_Combat_Combat
+	protected $default = false;
 #	public    $effects = array(); // DND_Combat_Combat
 #	protected $enemy   = array(); // DND_Combat_Combat
 #	protected $holding = array(); // DND_Combat_Combat
@@ -11,6 +12,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected $minus   = 0;
 #	protected $party   = array(); // DND_Combat_Combat
 #	protected $range   = 2000;    // DND_Combat_Combat
+	protected $rng_svd = 0;
 #	protected $rounds  = 3;       // DND_Combat_Combat
 #	protected $segment = 1;       // DND_Combat_Combat
 	protected $show    = 0;
@@ -32,6 +34,8 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		parent::__construct( $args );
 #		$this->process_opts();
 		$this->minus = ( ( ( $this->segment - 1 ) + floor( ( $this->segment - 1 ) / 10 ) ) * 2 );
+		if ( $this->rng_svd > 0 ) $this->range = $this->rng_svd;
+		if ( count( $this->enemy ) > 20 ) $this->default = true;
 	}
 
 	public function __toString() {
@@ -95,6 +99,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected function reset_combat() {
 		parent::reset_combat();
 		$this->limit   = 1000;
+		$this->minus   = 0;
 		$this->show    = 0;
 		$this->targets = array();
 	}
@@ -227,7 +232,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			if ( $object->segment === $this->segment ) return false;
 			if ( $limit > $this->limit ) return true;
 			if ( $this->targets && ! in_array( $key, $this->targets ) ) return true;
-		return false;
+		return $this->default;
 	}
 
 	/**  Spells  **/
@@ -314,7 +319,11 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		if ( $cast = parent::pre_cast_spell( $origin, $spell, $target ) ) {
 			echo "\n" . $cast->get_caster() . " has cast " . $cast->get_name() . " on " . $cast->get_target() . "\n\n";
 			if ( $cast->has_special() ) echo $cast->get_special() . "\n\n";
-		} else { echo "\npre cast bombed!\n\n"; exit; }
+		} else {
+			if ( $this->error ) $this->show_message( $this->error );
+			echo "\npre cast bombed!\n\n";
+			exit;
+		}
 	}
 
 	protected function insufficent_manna( $spell ) {
@@ -337,14 +346,24 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$heading = '  ';
 		$heading.= 'Att      ';
 		$heading.= 'Name           ';
-		$heading.= 'Weapon             ';
+		$heading.= sprintf( 'Weapon %-12s', $this->range_check() );
 		$heading.= 'Hit   ';
 		$heading.= 'Dam   ';
 		$heading.= 'Atts          ';
 		$heading.= 'Movement           ';
 		$heading.= 'Seg   Attack Sequence';
 		echo "$heading\n";
-}
+	}
+
+	protected function range_check() {
+		if ( $this->rng_svd > 0 ) {
+			return sprintf( '( r = %u )', $this->rng_svd );
+		}
+		if ( $this->range < 2000 ) {
+			return sprintf( '( r: %u )', $this->range );
+		}
+		return '';
+	}
 
 	protected function show_party_attacks() {
 		$separator = 0;
@@ -420,9 +439,9 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				$weapon .= "({$char->manna}/{$char->manna_init})";
 			}
 		} else if ( ( substr( $weapon, 0, 3) === 'Bow' ) && ( $this->range < BOW_POINT_BLANK ) ) {
-			if ( in_array( $this->party[ $name ]->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": Damage*2";
+			if ( in_array( $char->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": Damage*2";
 		} else if ( ( substr( $weapon, 0, 5) === 'Cross' ) && ( $this->range < CROSSBOW_POINT_BLANK ) ) {
-			if ( in_array( $this->party[ $name ]->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": D*2";
+			if ( in_array( $char->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": D*2";
 		}
 		return $weapon;
 	}
@@ -521,7 +540,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				$map .= '-|';
 				if ( $cnt++ % 10 === 0 ) $map .='^|';
 			}
-			$keys = count( array_keys( $seqent, ( $att % 10 ) ) );
+			$keys = count( array_keys( $seqent, $att ) );
 			$map .= ( ( $keys > 1 ) ? '@' : $att % 10 ) . '|';
 			$cur  = $att;
 		}
@@ -552,7 +571,8 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		exit;
 	}
 
-	/**  Notification functions  **/
+
+	/**  Attack/Movement functions  **/
 
 	public function show_notifications() {
 		echo "\nSegment {$this->segment}\n";
@@ -605,6 +625,19 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		}
 	}
 
+
+	/**  Notification functions  **/
+
+	protected function show_active_effects() {
+		echo "\n";
+		foreach( $this->effects as $key => $effect ) {
+			$origin = $this->get_object( $effect->get_caster() );
+			$effect->show_status( $origin );
+			echo "\n";
+		}
+		exit;
+	}
+
 	protected function show_message( $text ) {
 		echo "\n$text\n\n";
 		exit;
@@ -644,6 +677,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected function get_serialization_data() {
 		$table = parent::get_serialization_data();
 		$table['limit']   = $this->limit;
+		$table['rng_svd'] = $this->rng_svd;
 		$table['show']    = $this->show;
 		$table['targets'] = $this->targets;
 		return $table;
