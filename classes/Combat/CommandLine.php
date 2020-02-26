@@ -204,11 +204,10 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function show_enemy_name( $object ) {
 		static $base_ac = 11;
+		if ( $object instanceOf DND_Monster_Humanoid_Humanoid ) $object->determine_armor_class();
 		if ( $base_ac === 11 ) $base_ac = $this->get_base_ac();
 		$name = substr( $object->get_key(), -16 );
-		if ( $object instanceOf DND_Monster_Humanoid_Humanoid ) $object->determine_armor_class();
 		if ( ! ( $base_ac === $object->get_armor_class() ) ) {
-#echo "$base_ac:".$object->get_armor_class()."\n";
 			$name .= sprintf( ':%d', $object->get_armor_class() - $base_ac );
 			$name  = substr( $name, -16 );
 		}
@@ -217,7 +216,6 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function get_base_ac() {
 		$object = $this->get_shown_monster();
-#echo "gba: {$object->armor_class}\n";
 		return $object->get_armor_class();
 	}
 
