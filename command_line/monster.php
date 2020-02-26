@@ -4,7 +4,7 @@ if ( empty( $combat->enemy ) ) {
 #	$monster = new DND_Monster_Animal_Boar_Wild();
 #	$monster = new DND_Monster_Animal_Wolf();
 #	$monster = new DND_Monster_Dragon_Bronze();
-	$monster = new DND_Monster_Dragon_Bronze( [ 'appearing' => [ 1, 1, 0 ], 'hit_dice' => 9, 'hd_minimum' => 8, 'spell_list' => [ 'Dancing Lights', 'Ventriloquism', 'Pyrotechnics', 'Continual Light', 'Hold Person', 'Protection From Normal Missiles', 'Wizard Eye', 'Dispel Illusion' ] ] );
+#	$monster = new DND_Monster_Dragon_Bronze( [ 'appearing' => [ 1, 1, 0 ], 'hit_dice' => 9, 'hd_minimum' => 8, 'spell_list' => [ 'Dancing Lights', 'Ventriloquism', 'Pyrotechnics', 'Continual Light', 'Hold Person', 'Protection From Normal Missiles', 'Wizard Eye', 'Dispel Illusion' ] ] );
 #	$monster = new DND_Monster_Dragon_Faerie();
 #	$monster = new DND_Monster_Dragon_Shadow();
 #	$monster = new DND_Monster_Giant_Crane();

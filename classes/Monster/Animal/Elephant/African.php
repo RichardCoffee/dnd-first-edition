@@ -1,7 +1,7 @@
 <?php
 /* Name: African Elephant
  * Class: DND_Monster_Animal_Elephant_African
- * Encounter: {}
+ * Encounter: {"TSC":{"H":"R","S":"R","P":"C","F":"C","D":"R"},"TSW":{"H":"R","S":"R","P":"C","F":"C","D":"R"}}
  */
 
 class DND_Monster_Animal_Elephant_African extends DND_Monster_Monster {

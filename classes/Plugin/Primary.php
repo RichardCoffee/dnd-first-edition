@@ -28,10 +28,6 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 				} else {
 					$this->combat = DND_Combat_Plugin::instance();
 				}
-			} else {
-				if ( defined( 'CSV_PATH' ) ) {
-					echo "using transient data\n";
-				}
 			}
 		}
 		return $this->combat;
@@ -49,7 +45,8 @@ class DND_Plugin_Primary extends DND_Plugin_Library {
 		if ( $data ) {
 			set_transient( $entry, $data, $expire );
 		} else {
-			return $this->unserialize( get_transient( $entry ), [ 'DND_Combat', 'DND_Monster_Monster', 'DND_Character_Character' ] );
+#			return $this->unserialize( get_transient( $entry ), [ 'DND_Combat', 'DND_Monster_Monster', 'DND_Character_Character' ] );
+			return $this->unserialize( get_transient( $entry ) );
 		}
 	}
 

@@ -1,10 +1,52 @@
 <?php
+/*
+
+'Anti-Vermin Barrier' - protects against vermin, of any size
+'Assess Health' - A combination of divination and necromantic magic, the advanced magic revealed a combination of detections about the body, such as whether one was diseased, carried parasites, the age of the person, their overall fitness, endurance, revealing any impairments due to past injury, and in Mindal's case, her capacity to become pregnant.
+'Bed of Rest' - improves bedding. lasts 12 hours or until released via command word
+'Blanket of Comfort' - warms blankets and sheets
+'Break Camp' - packs the camping gear up
+'Calm Chaos' - used to calm a distraught individual
+'Circle of Judgment' - While inside the circle, the castor cannot cast offensive magic, but on the other hand, no one mortal and even lesser planar beings cannot cross the barrier. It will even block a lot of magical energies as well.
+'Circle of Privacy' - reduces noise, prevents eavesdropping
+'Command Oration' - when the caster speaks, everybody hears it!
+"Crimley's Repair Leather" - repair a leather item
+'Cure Moderate Wounds' - more han CLW, less than CSW
+'Detect Pregnancy' - is she pregnant?
+'Disinfect' - cleanse an area
+'Divine Age'
+'Dream Path' - guides a person's dreams to help them make decisions
+'Ease Pain'(O) - use for headaches and other mild pains
+'Easy March' - allows person to march longer between breaks
+'Fertility' - need to ask?
+'Gathering The Sheaves' - will gather together all the particulate parts of a dead body.
+'Heavenly Chains of Binding' - used to contain a spirit
+'Holy Scribe' - will record whatever the caster hears and sees. The enchanted scribe can record feelings and images with the observations.
+'Know Injury' - tells the caster what wounds a person has
+'Lay of the Land' - reveals the nature of the land,for good or ill
+'Lighten Load' - reduce weight
+'Make Camp' - it won't light the fire for you, nor gather wood
+'Oration' - a lesser version of Command Oration
+'Prevent Pregnancy' - no babies here
+'Prime the Bull' (Necromantic) - what do -you- think it does?
+'Repair Phenomic Form' - this is a serious spell and should be used with care
+'Rest Eternal' - as RIP, and prevents return as undead
+'Rest in Peace' - reduces body to dust
+'Restful Sleep' - puts a person to sleep for 8 hours
+'Reveal the Past' - replay past events
+
+*/
 
 trait DND_Character_Trait_Spells_Cleric {
 
 
-	protected function get_spell_table() {
+	protected function get_cleric_spell_table() {
 		return array(
+			'Orison' => array(
+				'Ease Pain' => array(
+					'kind' => 'Person-Affecting',
+				),
+			),
 			'First' => array(
 				'Bless' => array( 'page' => 'PH 44',
 					'type'       => 'Conjuration/Summoning',
@@ -18,10 +60,10 @@ trait DND_Character_Trait_Spells_Cleric {
 					'special'    => 'To hit: +1, morale: +5%',
 					'condition'  => 'this_group_only',
 					'filters'    => array(
-						array( 'object_to_hit_opponent', 1, 10, 3 ),
-						array( 'object_morale_check',    5, 10, 3 ),
+						array( 'dnd1e_armor_class_adj', -1, 10, 3 ),
+#						array( 'object_morale_check',    5, 10, 3 ), # FIXME: adj applies to other group, while check applies to caster's group
 					),
-					'target' => 'party',
+					'target' => 'other',
 				),
 				'Ceremony' => array( 'page' => 'UA 32', 'cast' => '1 hour' ),
 				'Combine' => array( 'page' => 'UA 32',
@@ -31,24 +73,74 @@ trait DND_Character_Trait_Spells_Cleric {
 					'filters'   => array(
 						array( 'opponent_to_hit_group', -4, 10, 2 ),
 #						array( 'group_ac_dex_bonus',     0, 10, 2 ), # replacement filter
-#						array( 'object_level_bonus', max( 4, count( $group ) ), 10, 2 ),
+#						array( 'dnd1e_cleric_level_bonus', max( 4, count( $group ) ), 10, 2 ),
 					),
 					'target'    => 'origin'
 				),
-				'Command' => array( 'page' => 'PH 44', 'cast' => '1 segment', 'duration' => '1 round' ),
+				'Command' => array(
+					'page'     => 'PH 44',
+					'type'     => 'Enchantment/Charm',
+					'range'    => '10 feet',
+					'duration' => '1 round',
+					'aoe'      => 'One creature',
+					'comps'    => 'V',
+					'cast'     => '1 segment',
+					'saving'   => 'Int>12 or HD>5',
+					'target'   => 'required',
+				),
 				'Create Water' => array( 'page' => 'PH 44', 'type' => 'Alteration', 'cast' => '1 round', 'reversible' => true,
 					'aoe' => sprintf( '%u gallons', $this->level * 4 ),
 				),
-				'Cure Light Wounds' => array( 'page' => 'PH 44', 'cast' => '5 segments',
-					'special' => sprintf( 'Heals 1d8+%u', $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] ) ) . $this->reroll_healing_string(),
+				'Cure Light Wounds' => array(
+					'page'       => 'PH 44',
+					'type'       => 'Necromantic',
+					'reversible' =>  true,
+					'range'      => 'Touch',
+					'duration'   => 'Permanent',
+					'aoe'        => 'Creature touched',
+					'comps'      => 'V,S',
+					'cast'       => '5 segments',
+					'saving'     => 'None',
+					'special'    =>  sprintf( 'Heals 1d8+%u', $this->get_wisdom_saving_throw_bonus( $this->stats['wis'] ) ) . $this->reroll_healing_string(),
+					'apply'      => 'cleric_first_cure_light_wounds',
+					'check'      => 'cure_wounds_check_target',
+					'prior'      =>  array( 'dnd1e_combat_init', 'cure_wounds_notice', 10, 1 ),
+					'target'     => 'required',
 				),
 				'Detect Evil' => array( 'page' => 'PH 45', 'cast' => '1 round',
 					'duration' => sprintf( '%3.1f turns', ( $this->level * 0.5 ) + 1 ),
 				),
+				'Detect Magic (C)' => array(
+					'page'     => 'PH 45',
+					'type'     => 'Divination',
+					'range'    => '30 feet',
+					'duration' => '1 turn',
+					'aoe'      => '10 foot path, 30 feet long',
+					'comps'    => 'V,S,M',
+					'cast'     => '1 round',
+					'saving'   => 'None',
+				),
 				'Endure Cold/Heat' => array( 'page' => 'UA 33', 'cast' => '1 round',
 					'duration' => sprintf( '%u turns', $this->level * 9 ),
 				),
-				'Invisibility to Undead' => array( 'page' => 'UA 33', 'cast' => '4 segments', 'duration' => '6 rounds' ),
+				'Invisibility to Undead' => array(
+					'page'      => 'UA 33',
+					'type'      => 'Illusion/Phantasm',
+					'range'     => 'Touch',
+					'duration'  => '6 rounds',
+					'aoe'       => 'Creature touched',
+					'comps'     => 'V,S,M',
+					'cast'      => '4 segments',
+					'saving'    => 'Negates',
+					'special'   => 'No attacks or spells, or this spell ends.',
+#					'apply'     => 'cleric_first_invisibility_to_undead',
+#					'condition' => 'this_group_only',
+					'effect'    => 'undead',
+#					'filters'   => array(
+#						array( FIXME: no attacks against this character
+#					),
+					'target' => 'other',
+				),
 				'Light' => array( 'page' => 'PH 45', 'type' => 'Alteration', 'cast' => '4 segments',
 					'duration' => sprintf( '%u turns', $this->level + 6 ),
 				),
@@ -68,17 +160,35 @@ trait DND_Character_Trait_Spells_Cleric {
 					'saving'     => 'None',
 					'condition'  => 'this_origin_only',
 					'filters'    => array(
-						array( 'object_to_hit_opponent',      2, 10, 3 ),
-						array( 'character_all_saving_throws', 2, 10, 2 ),
-						array( 'opponent_to_hit_object',      2, 10, 3 ),
+						array( 'dnd1e_object_to_hit_opponent',    2, 10, 3 ),
+						array( 'dnd1e_secondary_to_hit_opponent', 2, 10, 3 ),
+						array( 'character_all_saving_throws',     2, 10, 2 ),
+						array( 'dnd1e_to_hit_object',             2, 10, 3 ),
 					),
 				),
-				'Purify Food & Drink' => array( 'page' => 'PH 45', 'type' => 'Alteration', 'cast' => '1 round' ),
+				'Purify Food & Drink' => array(
+					'page'       => 'PH 45',
+					'type'       => 'Alteration',
+					'reversible' => true,
+					'range'      => '30 feet',
+					'duration'   => 'Permanent',
+					'aoe'        => sprintf( '%u cubic feet, 10 foot square area', $this->level ),
+					'comps'      => 'V,S',
+					'cast'       => '1 round',
+					'saving'     => 'None',
+				),
 				'Resist Cold' => array( 'page' => 'PH 45', 'type' => 'Alteration', 'cast' => '1 round',
 					'duration' => sprintf( '%u turns', $this->level ),
 				),
-				'Sanctuary' => array( 'page' => 'PH 45', 'cast' => '4 segments',
+				'Sanctuary' => array(
+					'page'     => 'PH 45',
+					'type'     => 'Abjuration',
+					'range'    => 'Touch',
 					'duration' => sprintf( '%u rounds', $this->level + 2 ),
+					'aoe'      => 'One creature',
+					'comps'    => 'V,S,M',
+					'cast'     => '4 segments',
+					'saving'   => 'None',
 				),
 			),
 			'Second' => array(
@@ -88,10 +198,12 @@ trait DND_Character_Trait_Spells_Cleric {
 					'special' => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
 					'condition' => 'this_group_only',
 					'filters' => array(
-						array( 'object_to_hit_opponent',      1, 10, 3 ),
-						array( 'weapon_damage_bonus',         1, 10, 2 ),
-						array( 'character_all_saving_throws', 1, 10, 2 ),
-						array( 'opponent_to_hit_object',      1, 10, 3 ),
+						array( 'dnd1e_object_to_hit_opponent',    1, 10, 3 ),
+						array( 'dnd1e_secondary_to_hit_opponent', 2, 10, 3 ),
+						array( 'dnd1e_weapon_damage_bonus',       1, 10, 2 ),
+						array( 'dnd1e_secondary_damage_bonus',    1, 10, 2 ),
+						array( 'character_all_saving_throws',     1, 10, 2 ),
+						array( 'dnd1e_to_hit_object',             1, 10, 3 ),
 					),
 					'target' => 'party',
 				),
@@ -149,10 +261,12 @@ trait DND_Character_Trait_Spells_Cleric {
 					'special'   => '+1 to hit, +1 damage, +1 saving throw, -1 to hit for opponents',
 					'condition' => 'this_group_only',
 					'filters'   => array(
-						array( 'object_to_hit_opponent',      1, 10, 3 ),
-						array( 'weapon_damage_bonus',         1, 10, 2 ),
-						array( 'character_all_saving_throws', 1, 10, 2 ),
-						array( 'opponent_to_hit_object',      1, 10, 3 ),
+						array( 'dnd1e_object_to_hit_opponent',    1, 10, 3 ),
+						array( 'dnd1e_secondary_to_hit_opponent', 2, 10, 3 ),
+						array( 'dnd1e_weapon_damage_bonus',       1, 10, 2 ),
+						array( 'dnd1e_secondary_damage_bonus',    1, 10, 2 ),
+						array( 'character_all_saving_throws',     1, 10, 2 ),
+						array( 'dnd1e_to_hit_object',             1, 10, 3 ),
 					),
 					'target' => 'party',
 				),
@@ -210,7 +324,7 @@ trait DND_Character_Trait_Spells_Cleric {
 		);
 	}
 
-	protected function get_description_table() {
+	protected function get_cleric_description_table() {
 		static $table = null;
 		if ( $table ) return $table;
 		$table = array(

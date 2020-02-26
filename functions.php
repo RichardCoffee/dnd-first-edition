@@ -66,6 +66,16 @@ if ( ! function_exists( 'array_key_next' ) ) {
 	}
 }
 
+if ( ! function_exists( 'array_key_replace' ) ) {
+	function array_key_replace( $array, $old, $new ) {
+		if ( ! array_key_exists( $old, $array ) ) return $array;
+		$keys = array_keys( $array );
+		$pos  = array_search( $old, $keys );
+		$keys[ $pos ] = $new;
+		return array_combine( $keys, $array );
+	}
+}
+
 if ( ! function_exists( 'dnd1e_transient' ) ) {
 	function dnd1e_transient( $name, $data = null, $expire = YEAR_IN_SECONDS ) {
 		$entry = "dnd1e_$name";

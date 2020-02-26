@@ -6,8 +6,7 @@ class DND_Character_Cleric extends DND_Character_Character {
 	protected $hit_die    = array( 'limit' => 9, 'size' => 8, 'step' => 2 );
 	protected $non_prof   = -3;
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 9, 'dex' => 3, 'con' => 3, 'chr' => 3 );
-	protected $undead     = array();
-	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff,Quarter' );
+	protected $weap_allow = array( 'Club', 'Flail', 'Hammer', 'Hammer,Lucern', 'Mace', 'Spell', 'Staff,Quarter', 'Turn Undead' );
 	protected $weap_init  = array( 'initial' => 2, 'step' => 4 );
 	protected $weapons    = array( 'Spell' => array( 'bonus' => 0, 'skill' => 'PF' ) );
 	protected $xp_bonus   = array( 'wis' => 16 );
@@ -16,7 +15,12 @@ class DND_Character_Cleric extends DND_Character_Character {
 
 
 	use DND_Character_Trait_Magic;
-	use DND_Character_Trait_Spells_Cleric;
+	use DND_Character_Trait_Spells_Cleric {
+		get_cleric_spell_table as get_spell_table;
+		get_cleric_description_table as get_description_table;
+	}
+	use DND_Character_Trait_Spells_Effects_Cleric;
+	use DND_Character_Trait_Undead;
 
 
 	public function __construct( $args = array() ) {
@@ -24,11 +28,12 @@ class DND_Character_Cleric extends DND_Character_Character {
 		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spell_list( $args['spell_import'] );
 		}
-		$this->calculate_manna_points();
+		$this->spell_zero = 'Orison';
 	}
 
 	protected function initialize_character() {
 		parent::initialize_character();
+		$this->calculate_manna_points( 'cleric' );
 		$this->undead = $this->get_undead_caps();
 	}
 
@@ -39,54 +44,6 @@ class DND_Character_Cleric extends DND_Character_Character {
 	protected function define_specials() {
 		$this->specials = array(
 			'string_undead' => 'Turn Undead',
-		);
-	}
-
-	public function special_string_undead( $type, $level = 0 ) {
-		$response = 'Unknown';
-		$type   = ucfirst( $type );
-		$level  = ( ( $level === 0 ) ? $this->level : $level ) + apply_filters( 'object_level_bonus', 0 );
-		$undead = $this->get_undead_table();
-		if ( array_key_exists( $type, $undead ) ) {
-			$foe = $undead[ $type];
-			if ( array_key_exists( $level, $foe ) ) {
-				$response = $foe[ $level ];
-			} else {
-				$response = array_pop( $foe );
-			}
-		}
-		return $response;
-	}
-
-	public function get_undead_caps( $level = 0 ) {
-		$caps   = array();
-		$level  = ( $level === 0 ) ? $this->level : $level;
-		$undead = $this->get_undead_table();
-		foreach( $undead as $yuch => $turn ) {
-			if ( array_key_exists( $level, $turn ) ) {
-				$caps[ $yuch ] = $turn[ $level ];
-			} else {
-				$caps[ $yuch ] = array_pop( $turn );
-			}
-		}
-		return $caps;
-	}
-
-	protected function get_undead_table() {
-		return array(
-			'Skeleton' => array(  13,    10,     7,     4,    'T',   'T',   'D',   'D',  'D*' ),
-			'Zombie'   => array(  16,    13,    10,     7,    'T',   'T',   'D',   'D',  'D', 'D*' ),
-			'Ghoul'    => array(  19,    16,    13,    10,     4,    'T',   'T',   'D',  'D', 'D', 'D', 'D', 'D', 'D*' ),
-			'Shadow'   => array(  20,    19,    16,    13,     7,     4,    'T',   'T',  'D', 'D', 'D', 'D', 'D', 'D', 'D*' ),
-			'Wight'    => array( 'N/A',  20,    19,    16,    10,     7,     4,    'T',  'T', 'D' ),
-			'Ghast'    => array( 'N/A', 'N/A',  20,    19,    13,    10,     7,     4,   'T', 'T', 'T', 'T', 'T', 'T', 'D' ),
-			'Wraith'   => array( 'N/A', 'N/A', 'N/A',  20,    16,    13,    10,     7,    4,  'T', 'T', 'T', 'T', 'T', 'D' ),
-			'Mummy'    => array( 'N/A', 'N/A', 'N/A', 'N/A',  19,    16,    13,    10,    7,   4,   4,   4,   4,   4,  'T', 'T', 'T', 'T', 'T', 'D' ),
-			'Spectre'  => array( 'N/A', 'N/A', 'N/A', 'N/A',  20,    19,    16,    13,   10,   7,   7,   7,   7,   7,   4,   4,   4,   4,   4,  'T' ),
-			'Vampire'  => array( 'N/A', 'N/A', 'N/A', 'N/A', 'N/A',  20,    19,    16,   13,  10,  10,  10,  10,  10,   7,   7,   7,   7,   7,   4 ),
-			'Ghost'    => array( 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A',  20,    19,   16,  13,  13,  13,  13,  13,  10,  10,  10,  10,  10,   7 ),
-			'Lich'     => array( 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A',  20,   19,  16,  16,  16,  16,  16,  13,  13,  13,  13,  13,  10 ),
-			'Special'  => array( 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 20,  19,  19,  19,  19,  19,  16,  16,  16,  16,  16,  13 ),
 		);
 	}
 

@@ -13,15 +13,20 @@ trait DND_Combat_Movement {
 	}
 
 	private function determine_enemy_movement() {
-		$monster = $this->get_base_monster();
-		if ( $monster ) {
-			$this->add_object_movement( $monster, $monster->initiative );
+		$added = array();
+		foreach( $this->enemy as $key => $object ) {
+			if ( ! in_array( $object->race, $added ) ) {
+				$this->add_object_movement( $object, $object->initiative );
+				$added[] = $object->race;
+			}
 		}
 	}
 
 	private function determine_party_movement() {
 		foreach( $this->party as $key => $char ) {
+			if ( $char->get_hit_points() < 1 ) continue;
 			if ( $this->is_casting( $key ) ) continue;
+			if ( in_array( $key, $this->holding ) && ( $char->segment > $this->segment ) ) continue;
 			$this->add_object_movement( $char, $char->initiative['actual'] );
 		}
 	}
@@ -34,10 +39,11 @@ trait DND_Combat_Movement {
 		$seg = ( $seg === 0 ) ? 10 : $seg;
 		$cnt = count( array_keys( $sequence, $seg ) );
 		if ( $cnt ) {
-			$this->moves[ $key ] = array(
+			$idx = ( $obj instanceOf DND_Monster_Monster) ? $obj->race : $key;
+			$this->moves[ $idx ] = array(
 				'cnt'  => $cnt,
 				'init' => $init,
-				'name' => $obj->get_name(),
+				'name' => ( ( $obj instanceOf DND_Monster_Monster) ? $obj->race : $obj->get_name() ),
 				'keep' => ( $obj instanceOf DND_Monster_Monster ),
 			);
 		}
@@ -85,26 +91,27 @@ trait DND_Combat_Movement {
 				$segs = array( 1, 3, 5, 7, 9 );
 				break;
 			case '6':
-				$segs = array( 2, 4, 5, 6, 8, 10 );
+				$segs = array( 2, 3, 5, 6, 8, 10 );
 				break;
 			case '6a':
-				$segs = array( 1, 3, 5, 7, 9, 10 );
+				$segs = array( 1, 3, 5, 7, 8, 10 );
 				break;
 			case '7':
-				$segs = array( 1, 2, 4, 6, 7, 8, 10 );
+				$segs = array( 1, 2, 4, 5, 7, 8, 9 );
 				break;
 			case '8':
-				$segs = array( 1, 2, 4, 5, 6, 8, 9, 10 );
+				$segs = array( 1, 3, 4, 5, 6, 8, 9, 10 );
 				break;
 			case '9':
-				$segs = array( 1, 2, 3, 4, 5, 7, 8, 9, 10 );
+				$segs = array( 1, 2, 3, 4, 6, 7, 8, 9, 10 );
 				break;
 			case '9a':
-				$segs = array( 2, 3, 4, 5, 6, 7, 8, 9, 10 );
+				$segs = array( 1, 2, 3, 4, 5, 6, 7, 8, 9 );
 				break;
 			case '10':
 				$segs = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
 				break;
+#			case '12': case 12 is the default
 			case '11':
 				$segs = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10 );
 				break;
@@ -112,7 +119,7 @@ trait DND_Combat_Movement {
 				$segs = array( 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10 );
 				break;
 			case '18':
-				$segs = array( 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10 );
+				$segs = array( 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10 );
 				break;
 			case '21':
 				$segs = array( 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10 );

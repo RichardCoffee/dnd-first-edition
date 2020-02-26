@@ -36,18 +36,10 @@ trait DND_Character_Trait_Serialize {
 			'weapon'     => $this->weapon,
 			'weapons'    => $this->weapons,
 		);
+		if ( $this->weap_dual ) $table['weap_twins'] = $this->weap_twins;
 		if ( $this instanceOf DND_Character_Multi ) {
 			foreach( $this->classes as $key => $class ) {
 				$table[ $key ] = serialize( $this->$key );
-			}
-		} else if ( $this instanceOf DND_Character_Ranger ) {
-			if ( $this->spells ) {
-				$list = array();
-				foreach( $this->spells as $class => $spells ) {
-					$list[ $class ] = $this->convert_spell_list( $spells );
-				}
-				$table['spell_list'] = $list;
-				$table['manna']      = $this->manna;
 			}
 		} else if ( $this->spells ) {
 			$table['spell_list'] = $this->convert_spell_list( $this->spells );

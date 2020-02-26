@@ -1,7 +1,7 @@
 <?php
 /* Name: Mastodon
  * Class: DND_Monster_Animal_Elephant_Mastodon
- * Encounter: {}
+ * Encounter: {"CW":{"M":"R","H":"U","F":"C","S":"U","P":"C","D":"R"},"TW":{"M":"R","H":"U","F":"C","S":"U","P":"C","D":"R"}}
  */
 
 class DND_Monster_Animal_Elephant_Mastodon extends DND_Monster_Monster {

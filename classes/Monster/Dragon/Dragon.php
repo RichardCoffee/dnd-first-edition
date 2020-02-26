@@ -43,6 +43,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	protected $spells       = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'Nil';
+	protected $vulnerable   = array( 'dragon', 'reptile' );
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons
@@ -224,8 +225,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		);
 		if ( $this->hd_minimum > 4 ) {
 			$this->specials['fear_aura'] = 'Radiates fear aura. Run meatbag, Run!';
-			add_filter( 'character_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ], 10, 4 );
-			add_filter( 'monster_Spells_saving_throws',   [ $this, 'dragon_fear_aura_saving_throw' ], 10, 4 );
+			add_filter( 'dnd1e_object_Spells_saving_throws', [ $this, 'dragon_fear_aura_saving_throw' ], 10, 3 );
 		}
 		$this->specials_mate();
 		do_action( 'monster_determine_specials' );
@@ -233,7 +233,6 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 	public function determine_attack_weapon( $seg = 0 ) {
 		parent::determine_attack_weapon( $seg );
-#		if ( in_array( substr( $this->weapon['current'], 0, 4 ), [ 'Brea', 'BW: ' ] ) ) $this->weapon['damage'][0] = $this->hit_points;
 		if ( ( $seg === $this->segment ) && ( array_key_exists( $this->weapon['current'], $this->extra ) ) ) {
 			$this->extra[ $this->weapon['current'] ]++;
 		}
@@ -252,12 +251,13 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
 	}
 
-	protected function get_saving_throw_level() {
+	public function get_saving_throw_level() {
 		return max( $this->hit_dice, round( $this->hit_points / 4 ) );
 	}
 
-	public function dragon_fear_aura_saving_throw( $num, $target, $dragon, $cause ) {
-		if ( ( $dragon === $this ) && ( $cause === 'fear aura' ) ) {
+	# FIXME: needs origin
+	public function dragon_fear_aura_saving_throw( $num, $target, $cause ) {
+		if ( ( $cause === 'fear' ) && ( ! ( $target->race === $this->race ) ) ) {
 			if ( $this->hd_minimum === 5 ) {
 				$num -= 5;
 			} else if ( $this->hd_minimum === 6 ) {
@@ -278,6 +278,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 		$this->magic_user = new $create( [ 'level' => $level ] );
 		$this->attacks['Spell'] = [ 0, 0, 0 ];
 		if ( ! in_array( 'magic', $this->saving ) ) $this->saving[] = 'magic';
+		$this->vulnerable[] = 'magic';
 	}
 
 	protected function add_magic_spells( $list ) {
@@ -329,7 +330,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 				$index = 'spell' . $cnt++;
 				$this->specials[ $index ] = sprintf( '%7s: %s', $spell->get_level(), $spell->get_name() );
 			}
-		}# else { dnd1e()->log('stack'); echo "no spells\n"; }
+		}
 	}
 
 	public function spend_manna( $spell ) {
@@ -388,7 +389,7 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 	}
 
 	public function add_treasure_filters() {
-		add_filter( 'monster_treasure_multipliers', [ $this, 'modify_treasure_multipliers' ], 10, 2 );
+		add_filter( 'dnd1e_treasure_multipliers', [ $this, 'modify_treasure_multipliers' ], 10, 2 );
 	}
 
 	public function modify_treasure_multipliers( $mults, $monster ) {

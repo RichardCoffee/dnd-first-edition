@@ -38,6 +38,7 @@ class DND_Monster_Hydra_Lernaean extends DND_Monster_Hydra_Hydra {
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'B';
+#	protected $vulnerable   = array( 'reptile' );
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons

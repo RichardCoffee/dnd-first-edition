@@ -1,7 +1,7 @@
 <?php
 /* Name: Asiatic Elephant
  * Class: DND_Monster_Animal_Elephant_Asiatic
- * Encounter: {}
+ * Encounter: {"TSC":{"H":"R","S":"R","P":"C","F":"C","D":"R"},"TSW":{"H":"R","S":"R","P":"C","F":"C","D":"R"}}
  */
 
 class DND_Monster_Animal_Elephant_Asiatic extends DND_Monster_Monster {

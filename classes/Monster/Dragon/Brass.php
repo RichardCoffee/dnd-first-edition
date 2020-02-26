@@ -11,7 +11,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $appearing    = array( 1, 4, 0 );
 	protected $armor_class  = 2;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 4, 4, 0 ], 'BW: Cone of Sleep' => [ 1, 1, 0 ], 'BW: Fear' => [ 1, 1, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 4, 0 ], 'Claw Left' => [ 1, 4, 0 ], 'Bite' => [ 4, 4, 0 ], 'BW: Cone of Sleep' => [ 1, 1, 0 ], 'BW: Fear Cloud' => [ 1, 1, 0 ] );
 	protected $co_speaking  = 30;
 	protected $co_magic_use = 30;
 	protected $co_sleeping  = 50;
@@ -35,7 +35,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 #	protected $spells       = array();
 	protected $treasure     = 'H';
 #	protected $xp_value     = array();
-	protected $extra        = array( 'BW: Cone of Sleep' => 0, 'BW: Fear' => 0 );
+	protected $extra        = array( 'BW: Cone of Sleep' => 0, 'BW: Fear Cloud' => 0 );
 
 
 
@@ -48,7 +48,7 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		parent::determine_specials();
 		$this->specials['breath1'] = "1st BW: Cone of Sleep Gas - 70' long, terminating diameter of 20'.";
 		$this->specials['breath2'] = "2nd BW: Fear Gas Cloud - 40' wide, 50' long, 20' high.";
-		add_filter( 'character_BreathWeapon_saving_throw', [ $this, 'brass_dragon_breath_weapon_saving_throw' ], 10, 3 );
+		add_filter( 'object_BreathWeapon_saving_throw', [ $this, 'brass_dragon_breath_weapon_saving_throw' ], 10, 3 );
 	}
 
 	protected function determine_magic_spells() {
@@ -63,8 +63,8 @@ class DND_Monster_Dragon_Brass extends DND_Monster_Dragon_Dragon {
 		return $needed;
 	}
 
-	public function brass_dragon_breath_weapon_saving_throw( $num, $target, $dragon ) {
-		if ( $dragon === $this ) {
+	public function brass_dragon_breath_weapon_saving_throw( $num, $target, $effect ) {
+		if ( ! ( $target->race === $this->race ) ) {
 			if ( $this->hit_dice === 6 ) {
 				$num -= 2;
 			} else if ( $this->hit_dice === 8 ) {

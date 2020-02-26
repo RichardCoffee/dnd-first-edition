@@ -13,7 +13,7 @@ trait DND_Monster_Trait_Serialize {
 
 	private function get_serialization_data() {
 		$table = array(
-#			'attacks'      => $this->attacks,
+			'attacks'      => $this->attacks,
 			'combat_key'   => $this->get_key(),
 			'current_hp'   => $this->current_hp,
 			'hit_dice'     => $this->hit_dice,
@@ -27,7 +27,7 @@ trait DND_Monster_Trait_Serialize {
 			'weapon'       => $this->weapon,
 			'xp_value'     => $this->xp_value,
 		);
-		foreach( [ 'extra', 'misc' ] as $prop ) {
+		foreach( [ 'extra', 'gear' ] as $prop ) {
 			if ( property_exists( $this, $prop ) ) {
 				$table[ $prop ] = $this->$prop;
 			}
@@ -55,7 +55,9 @@ trait DND_Monster_Trait_Serialize {
 				$table['stats'] = $this->stats;
 			}
 		} else if ( $this instanceOf DND_Monster_Humanoid_Humanoid ) {
-			$table['fighter'] = serialize( $this->fighter );
+			$table['armor']  = $this->armor;
+			$table['shield'] = $this->shield;
+#			$table['fighter'] = serialize( $this->fighter );
 		} else {
 			if ( $this->spells ) {
 				$table['spell_list'] = array();

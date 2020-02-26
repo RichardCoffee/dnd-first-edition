@@ -18,6 +18,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $hit_dice     = 0;
 	protected $hit_points   = 0;
 	protected $hp_extra     = 0;
+	protected $immune       = array();
 	protected $in_lair      = 0;
 	protected $initiative   = 10;
 	protected $intelligence = 'Animal';
@@ -30,10 +31,11 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $resistance   = 'Standard';
 	protected $saving       = array( 'fight' );
 	protected $segment      = 0;
-	protected $size         = 'Medium';
+	protected $size         = "Medium";
 	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'Nil';
+	protected $vulnerable   = array();
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons
@@ -44,7 +46,12 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Utilities;
 	use DND_Character_Trait_Weapons;
-	use DND_Monster_Trait_Combat;
+	use DND_Monster_Trait_Combat {
+		determine_armor_class as monster_armor_class;
+		get_armor_class as get_armor_flank;
+		get_armor_class as get_armor_rear;
+		get_armor_class as get_armor_spell;
+	}
 	use DND_Monster_Trait_Experience;
 	use DND_Monster_Trait_Treasure;
 	use DND_Monster_Trait_Serialize;
@@ -61,7 +68,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->parse_args( $args );
 		$this->determine_hit_dice();
 		$this->determine_hit_points();
-		$this->determine_armor_type(); // DND_Monster_Trait_Combat
+		$this->determine_armor_class(); // DND_Monster_Trait_Combat
+		$this->armor_type = $this->armor_class;
 		$this->determine_to_hit_row();
 		$this->determine_specials();
 		$this->determine_saving_throw();
@@ -125,7 +133,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$this->specials['saving'] = sprintf( 'Saves as a %u HD creature.', $this->get_saving_throw_level() );
 	}
 
-	protected function get_saving_throw_level() {
+	public function get_saving_throw_level() {
 		$level = $this->hit_dice;
 		$level+= ceil( $this->hp_extra / 4 );
 		return $level;
@@ -134,8 +142,16 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	/**  Get functions  **/
 
+	public function get_armor_type() {
+		return $this->get_armor_class();
+	}
+
 	public function get_class() {
-		return substr( get_class( $this ), 12 );
+		return array_reverse( explode( '_', get_class( $this ) ) )[0];
+	}
+
+	public function get_hit_points() {
+		return $this->current_hp;
 	}
 
 	public function get_name( $underscore = false ) {
@@ -149,16 +165,6 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 			$num += mt_rand( 1, $this->appearing[1] );
 		}
 		return $num;
-	}
-
-	public function get_appearing_hit_points( $number = 1 ) {
-		$number = intval( $number );
-		$hit_points = array( $this->hit_points );
-		for( $i = 1; $i < $number; $i++ ) {
-			$monster = $this->calculate_hit_points( true );
-			$hit_points[] = [ $monster, $monster ];
-		}
-		return $hit_points;
 	}
 
 	protected function generate_additionals( $base, $number = 0 ) {
@@ -191,7 +197,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$info = $this->get_attack_info( $new );
 		if ( $info ) {
 			$this->weapon = $info;
-			$this->weapon['bonus'] = apply_filters( 'weapon_damage_bonus', $this->weapon['bonus'], $this );
+			$this->weapon['bonus'] = apply_filters( 'dnd1e_weapon_damage_bonus', $this->weapon['bonus'], $this );
 			return true;
 		}
 		return false;
@@ -226,8 +232,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$response = 'No Treasure Available.';
 		if ( empty( $possible ) ) $possible = $this->treasure;
 		if ( ! ( $possible === 'Nil' ) ) {
-			$test = $this->get_treasure_possibilities( $possible );
-			if ( $test ) {
+			if ( $test = $this->get_treasure_possibilities( $possible ) ) {
 				$response = $test;
 			}
 		}

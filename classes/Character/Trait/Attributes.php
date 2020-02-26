@@ -68,7 +68,7 @@ trait DND_Character_Trait_Attributes {
 
 	private function get_strength_damage_bonus( $str ) {
 		$bonus = 0;
-		switch( $str ) {
+		switch( intval( $str ) ) {
 			case 3:
 			case 4:
 			case 5:
@@ -152,6 +152,26 @@ trait DND_Character_Trait_Attributes {
 			case 25:
 				$bonus = 5;
 				break;
+			default:
+		}
+		return $bonus;
+	}
+
+	protected function get_wisdom_manna( $wis, $lvl ) {
+		$bonus = 0;
+		switch( $wis ) {
+			case 18:
+				if ( $lvl > 6 ) $bonus += 4;
+			case 17:
+				if ( $lvl > 4 ) $bonus += 3;
+			case 16:
+				if ( $lvl > 2 ) $bonus += 2;
+			case 15:
+				if ( $lvl > 2 ) $bonus += 2;
+			case 14:
+				$bonus++;
+			case 13:
+				$bonus++;
 			default:
 		}
 		return $bonus;

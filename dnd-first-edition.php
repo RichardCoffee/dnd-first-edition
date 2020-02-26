@@ -16,7 +16,7 @@
  * Requires at least: 4.7.0
  * Requires WP:       4.7.0
  * Tested up to:      4.7.4
- * Requires PHP:      5.4.0
+ * Requires PHP:      5.6.0
  * Author:            Richard Coffee
  * Author URI:        rtcenterprises.net
  * GitHub Plugin URI: github uri only needed if using plugin-update-checker
@@ -39,6 +39,6 @@ define( 'DND_FIRST_EDITION_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once( 'functions.php' );
 
-$myplugin = DND_Plugin_FirstEdition::get_instance( array( 'file' => __FILE__ ) );
+$dnd1e_plugin = DND_Plugin_FirstEdition::get_instance( array( 'file' => __FILE__ ) );
 
-register_activation_hook( __FILE__, array( 'DND_Register_Register', 'activate' ) );
+register_activation_hook( __FILE__, array( 'DND_Register_FirstEdition', 'activate' ) );

@@ -71,8 +71,8 @@ abstract class DND_Monster_Humanoid_Elf_Elf extends DND_Monster_Humanoid_DemiHum
 			),
 			'weapons' => $weapons,
 		);
-		$data = apply_filters( 'humanoid_fighter_data', $data, $this );
-		return apply_filters( 'elf_fighter_data', $data, $this );
+		$data = apply_filters( 'dnd1e_humanoid_fighter_data', $data, $this );
+		return apply_filters( 'dnd1e_elf_fighter_data', $data, $this );
 	}
 
 	protected function weapon_choices( $level = 1 ) {

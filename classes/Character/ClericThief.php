@@ -3,6 +3,7 @@
 class DND_Character_ClericThief extends DND_Character_Multi {
 
 
+	use DND_Character_Trait_Dual;
 	use DND_Character_Trait_Multi_Cleric{ locate_cleric_spell as public locate_magic_spell; }
 	use DND_Character_Trait_Multi_Thief;
 

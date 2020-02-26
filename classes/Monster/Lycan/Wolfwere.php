@@ -74,9 +74,9 @@ class DND_Monster_Lycan_Wolfwere extends DND_Monster_Monster {
 	public function possible_wolfpack( $adds ) {
 		if ( $this->special_boolean_pack() ) {
 			if ( $this->check_chance( 30 ) ) {
-				$base = new DND_Monster_Wolf_Wolf;
+				$base = new DND_Monster_Animal_Wolf_Wolf;
 			} else {
-				$base = new DND_Monster_Wolf_Worg;
+				$base = new DND_Monster_Animal_Wolf_Worg;
 			}
 			$more = $this->generate_additionals( $base );
 			$adds = array_merge( $adds, $more );

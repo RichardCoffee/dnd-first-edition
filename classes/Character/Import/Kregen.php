@@ -1,41 +1,18 @@
 <?php
 
-class DND_Character_Import_Kregen {
+class DND_Character_Import_Kregen extends DND_Character_Import_CSV {
 
-	public    $character      = null;
+
+#	public    $character      = null;    // DND_Character_Import_CSV
 	protected $classes        = array();
-	protected $data           = array();
-	public    $import_message = 'Could not import file.';
-	public    $import_status  = 'failed';
+#	protected $data           = array(); // DND_Character_Import_CSV
+#	public    $import_message = '';      // DND_Character_Import_CSV
+#	public    $import_status  = '';      // DND_Character_Import_CSV
 	protected $import_task    = 'import';
-	protected $name           = '';
+	private   $in_spells      = false;
+#	protected $name           = '';      // DND_Character_Import_CSV
 	protected $time_line      = array();
 
-
-	public function __construct( $file, $extra = array() ) {
-		$contents = file ( $file, FILE_IGNORE_NEW_LINES );
-		$class    = $this->parse_class( $contents[0] );
-		if ( class_exists( $class ) ) {
-			foreach( $contents as $line ) {
-				$parsed = array_values( array_filter( explode( ',', $line ) ) );
-				if ( $parsed && ( count( $parsed ) > 1 ) ) {
-					$this->parse_line( $parsed );
-				}
-			}
-			$info = array_merge( $this->data, $extra );
-			$this->character = new $class( $info );
-			ksort( $this->time_line );
-			$last = array_pop( $this->time_line );
-			$this->character->add_experience( $last[1] );
-			$key = 'dnd1e_' . $class . '_' . $this->character->get_key(1);
-			$this->save_character( $key );
-			$this->import_status = 'success';
-			$this->import_message = "{$this->name} imported as $class.";
-		} else {
-			$this->import_status = 'fail';
-			$this->import_message = "The template for $class does not exist.  Talk to the programmer!";
-		}
-	}
 
 	protected function parse_class( $data ) {
 		$line = array_values( array_filter( explode( ',', $data ) ) );
@@ -77,14 +54,14 @@ class DND_Character_Import_Kregen {
 		return $class;
 	}
 
-	protected function save_character( $key ) {
-		if ( function_exists( 'get_current_user_id' ) ) {
-			$user = get_current_user_id();
-			if ( $user ) {
-				update_user_meta( $user, $key, $this->character );
-			}
-		}
+	protected function determine_experience() {
+		ksort( $this->time_line );
+		$last = array_pop( $this->time_line );
+		$this->character->add_experience( $last[1] );
 	}
+
+
+	/**  Parse functions  **/
 
 	protected function parse_line( $line ) {
 		if ( $this->import_task === 'import' ) {
@@ -187,10 +164,12 @@ class DND_Character_Import_Kregen {
 	}
 
 	protected function parse_line_spells( $line ) {
-		$skip1 = array( '"First Lvl"', '"C: First Lvl"', '"C: Sixth Lvl"', '"MU: Cantrips"', '"MU: Fifth Lvl"', '"First Level"', 'Cantrips', '"D: First"' );
+		$skip1 = array( '"First Lvl"', '"C: First Lvl"', '"C: Sixth Lvl"', '"MU: Cantrips"', '"MU: Fifth Lvl"', '"First Level"', 'Cantrips', '"D: First"', '"C:First Lvl"' );
 		if ( in_array( $line[0], $skip1 ) ) {
+			$this->in_spells = true;
 			return;
 		}
+		if ( ! $this->in_spells ) return;
 		$skip2 = array_merge(
 			array( 'Spc', 0.1, '%' ),
 			array( 'Pick Pockets', 'Open Locks', 'Find Traps', 'Move Silently', 'Hide Shadow', 'Hear Noise', 'Climb Walls', 'Languages' )
@@ -204,7 +183,6 @@ class DND_Character_Import_Kregen {
 			if ( ( $pos = strpos( $name, ' PH' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			if ( ( $pos = strpos( $name, ' UA' ) ) > 0 ) { $name = substr( $name, 0, $pos ); }
 			$this->data['spell_import'][] = $name;
-#echo "Spell: $name\n";
 		}
 	}
 
@@ -245,7 +223,7 @@ class DND_Character_Import_Kregen {
 			$check = intval( $item, 10 );
 			if ( ( $check > 2010 ) && ( $check < 2025 ) ) {
 				$check = strtotime( $item );
-				if ( $check ) {
+				if ( $check && array_key_exists( $k + 1, $line ) ) {
 					$this->time_line["$item"] = array( $line[ $k + 1 ] );
 					if ( $k + 2 < $cnt ) $this->time_line["$item"][] = $line[ $k + 2 ];
 #					if ( ( $mul > 1 ) && ( $k + 3 < $cnt ) ) $this->time_line["$item"][] = $line[ $k + 3 ];

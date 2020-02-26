@@ -15,9 +15,9 @@ trait DND_Character_Trait_Multi_Ranger {
 		return $this->fight->special_attack_giant( $race, $type );
 	}
 
-	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
+/*	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
 		return $this->fight->get_weapon_damage_bonus( $target, $range );
-	}
+	} //*/
 
 	public function special_integer_track() {
 		return $this->fight->special_integer_track();

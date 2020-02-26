@@ -1,0 +1,151 @@
+http://flockhart.virtualave.net/afal/kpass.html
+
+    Kobold Pass
+
+On Eleasias 18, 1369
+<http://flockhart.virtualave.net/afal/logs/log_Eleasias_18_1369.html>,
+while looking for a hidden cave in a hidden pass, the party discovered a
+fortified kobold village overlooking an occupied hidden cave in a hidden
+pass. Most of their adventures and discoveries are explained in the log,
+but here are some extra details.
+
+
+      The Loot
+
+In the kobold village and the cave beneath it, the party raked in the
+following loot:
+
+  * The kobold shaman's Magic Cooking Pot <#pot>
+  * 3 vials of Potion of Shopping <#shop>
+  * A folded map to a Shar shrine on the South face of the next mountain
+    to the East. (The map did not make it clear what it was a map to,
+    but AFAL investigated
+    <http://flockhart.virtualave.net/afal/logs/log_Eleasias_20_1369.html>.)
+  * 2 +1 Charged Daggers, 50 hits ea., which the party sold for 500gp each.
+  * Makeup of Disguise (5 charges), which the party unloaded for 700gp
+  * 3 backpacks containing:
+      o 3 cloaks & outfits, old styles, nondescript mixed colors
+      o 3 purses 
+  * 6435.95gp, as follows:
+      o 16385 CP
+      o 11408 SP
+      o 1213 EP
+      o 912 OGP (.65 exchange rate)
+      o 397 GP
+      o 107 PP
+      o 60 MP 
+  * 777gp worth of cheap gems:
+      o 4 5gp sardonyx
+      o 2 5gp moss agate
+      o 2 5gp rhodochrosite
+      o 8 5gp crystal
+      o 3 5gp malachite
+      o 3 5gp bloodstone
+      o 2 5gp tiger eye
+      o 6 5gp malachite/azurite
+      o 4 5gp onyx
+      o 1 5gp sodalite
+      o 2 5gp obsidian
+      o 2 small 10gp chalcedony
+      o 2 small 30gp citrine
+      o 1 15gp bloodstone
+      o 3 8gp malachite
+      o 2 8gp moss agate
+      o 3 9gp obsidian
+      o 1 40gp carnelian
+      o 3 70gp smokey quartz
+      o 1 100gp amber
+      o 1 80gp star rose quartz 
+
+
+      The Cooking Pot
+
+Among the most interesting items the party recovered was a magic cooking
+pot, or cauldron, of about 1 gallon capacity. It is crudely cast iron
+with runes gouged into the inner surface and comes with a tripod to hold
+it and a decorated wooden spoon.
+
+The party has learned that if you make a special soup in it, and a
+spellcaster drinks from it with the spoon, the cauldron will function as
+a crystal ball until the soup goes cold or cooks dry. However the
+spellcaster must first make a saving throw. Those who fail their save
+vs. poison are thrown into a delirious and incapacitated state for 3-12
+hours. After that, they must make another save vs. poison or die. Those
+who survive the second save will remember disjointed prophetic visions
+that they experienced during the delirium.
+
+The party learned what they believe to be the formula for the special
+soup in the form of a poem:
+
+    Half fill with water
+    from a mountains north face,
+    Add 3 newborn squirrels
+    ground into paste.
+    Two fists full of gimson weed
+    roasted till dry,
+    Over a fire of hemlock
+    under black skies.
+    Scallions and garlic,
+    carrots and wormwood,
+    Minced up and rubbed
+    in oil of monks hood.
+    Boil on a fire of laurel and willow,
+    Put ash on your tongue
+    and take a deep swallow.
+    /(Translated from the original kobold./ 
+
+
+      Potions of Shopping
+
+The Potions of Shopping were another interesting find. The vials are
+green glass with violet glass stoppers sealed with wax. Each is labeled
+as follows:
+
+
+  Original Mulophor Brand Potion of Shopping
+
+
+    Accept No Substitutes
+
+*Directions:* Grab your purse and drink it down!
+/Approx. dur. 3 hours/
+
+When Steve tried to identify the potions, the following message played
+in his head:
+
+    /Congratulations lucky shopper! You hold in your hand an Original
+    Mulophor Brand Potion of Shopping! This, the greatest innovation in
+    modern retail commerce puts the power of a total buyer convenience
+    solution at your command. With this potion, you are freed from the
+    tyrannies of distance, time and weather that plague the traditional
+    shopping experience. No longer must you endure the inconvenience of
+    traveling to the retailers location at a time of their choosing. Our
+    shops are open all hours and you hold the answer to travel in your
+    hand!
+
+    Your total buyer convenience solution was created for our centenial
+    celebration in this, the Year of Orange Snow. But remember, this is
+    a vessel of personal empowerment and both the potion and our fair
+    city will be ready for you whenever you choose to use it. And what a
+    city it is! A marketplace that brings together merchants from all
+    over the world, all with an active quality commitment, and yet every
+    product we sell is totally duty free! A bazar beyond compare where
+    many otherwise hard to find products, such as rare gems, unusual
+    spell components, alchemical goods, exotic trained beasts and
+    unusual amusements are readily available - and don't forget to
+    sample one of our fine restaurants and peruse our unmatched
+    collections of enchanted items.
+
+    /
+
+    /So put together your shopping list and the moment you're ready,
+    drink it down. Just remember to bring your purse, because where
+    you're going, you're sure to find plenty of good uses for it. /
+
+Later identifies revealed that the potion would transport the drinker to
+a preset location and then return him/her to the point of departure
+several hours later.
+
+
+Go Home <http://flockhart.virtualave.net/afal/afal.html>
+

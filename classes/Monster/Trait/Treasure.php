@@ -83,7 +83,7 @@ trait DND_Monster_Trait_Treasure {
 			'gold'     => 1000,
 			'platinum' => 100,
 		);
-		return apply_filters( 'monster_treasure_multipliers', $mults, $this );
+		return apply_filters( 'dnd1e_treasure_multipliers', $mults, $this );
 	}
 
 	private function get_treasure_table() {

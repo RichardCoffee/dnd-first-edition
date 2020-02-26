@@ -3,6 +3,9 @@
 abstract class DND_Monster_Lycan_Lycan extends DND_Monster_Monster {
 
 
+	protected $vulnerable = array( 'shifter' );
+
+
 	use DND_Monster_Trait_Defense_Weapons;
 
 

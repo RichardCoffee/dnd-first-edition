@@ -10,6 +10,7 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 #	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Lawful Evil';
 	protected $appearing    = array( 30, 10, 0 );
+#	protected $armor        = array(); // DND_Character_Trait_Armor
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;
 #	protected $attacks      = array( 'Weapon' => [ 1, 8, 0 ] );
@@ -35,7 +36,8 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 #	protected $segment      = 0;
-	protected $size         = "Medium(6'+ tall)";
+#	protected $shield       = array(); // DND_Character_Trait_Armor
+	protected $size         = "Medium (6'+ tall)";
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'L,C,O,Q,S';
@@ -46,29 +48,16 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 #	protected $xp_value     = array();
 #	protected $extra        = array();
 
-	public function __construct( $args = array() ) {
-		if ( has_filter( 'humanoid_fighter_data', [ $this, 'orc_fighter_data' ] ) === false ) {
-			add_filter( 'humanoid_fighter_data', [ $this, 'orc_fighter_data' ] );
-		}
-		parent::__construct( $args );
-
-	}
 
 	protected function determine_hit_dice() {
 		$this->description = "Orcs appear particularly disgusting because their coloration - brownish green with a bluish sheen - highlights their pinkish snouts and ears. Their bristly hair is dark brown or black, sometimes with dirty and often tan patches. Even their armor tends to be unattractive - bit rusty. Orcs favor unpleasant colors in general. Their garments are in tribal colors, as are shield devices or trim. Typical colors are blood red, rust red, mustard yellow, yellow green, moss green, greenish purple, and blackish brown. They live for about 40 years.";
+		if ( array_key_exists( 'Weapon', $this->attacks ) ) $this->determine_weapons();
 	}
 
 	protected function determine_specials() {
 		$this->specials = array(
 			'senses' => "Infravision 30'",
 		);
-	}
-
-	public function orc_fighter_data( $data ) {
-#		$data = $this->get_character_accouterments( $this );
-		if ( array_key_exists( 'Weapon', $this->attacks ) ) $this->determine_weapons();
-#		foreach( $this->
-		return $data;
 	}
 
 	protected function determine_weapons() {
@@ -98,14 +87,11 @@ class DND_Monster_Humanoid_Orc extends DND_Monster_Humanoid_Humanoid {
 		} else {
 			$carry = array( 'Pole-Arm' );
 		}
-		unset( $this->attacks['Weapon'] );
+		$this->attacks = array();
 		foreach( $carry as $weapon ) {
 			if ( $weapon === 'Pole-Arm' ) $weapon = $this->get_random_pole_arm();
-echo "carry: $weapon\n";
 			$this->attacks[ $weapon ] = $this->get_weapon_damage_array( $weapon );
-#print_r($this->attacks[$weapon]);
 		}
-print_r($this->attacks);
 	}
 
 	public function get_tribes_list() {
@@ -122,12 +108,21 @@ print_r($this->attacks);
 		);
 	}
 
-	# TODO: finish function - see monster manual
-	public function group_composition( $num ) {
-		$extra = array();
-		$leads = intval( $num / 30 );
-		for( $i = 1; $i <= $leads; $i++ ) {
-			$extra[] = 'leader and 3 assistants (8hp each)';
+	public function get_number_appearing() {
+		$num   = parent::get_number_appearing();
+		$orcs  = array( $num );
+		for( $i = 1; $i <= intval( $num / 30 ); $i++ ) {
+			$orcs[] = array( 'name' => 'Leader', 'hit_points' => 8 );
+			$orcs[] = array( 'name' => 'Assistant', 'hit_points' => 8 );
+			$orcs[] = array( 'name' => 'Assistant', 'hit_points' => 8 );
+			$orcs[] = array( 'name' => 'Assistant', 'hit_points' => 8 );
+		}
+		if ( $num > 150 ) {
+			$orcs[] = array( 'name' => 'Subchief', 'armor_class' => 4, 'hit_dice' => 2, 'hit_points' => 11 );
+			$num_gd = mt_rand( 1, 6 ) + mt_rand( 1, 6 ) + mt_rand( 1, 6 );
+			for( $i = 1; $i <= $num_gd; $i++ ) {
+				$orcs[] = array( 'name' => 'Guard', 'armor_class' => 4, 'hit_dice' => 2, 'hit_points' => 11 );
+			}
 		}
 		if ( $this->check_for_lair() ) {
 			if ( $this->check_chance( 75 ) ) {
@@ -135,8 +130,12 @@ print_r($this->attacks);
 			} else {
 				$this->in_lair = '100: Above ground village';
 			}
+			$orcs[] = array( 'name' => 'Chief', 'armor_class' => 4, 'hit_dice' => 3, 'hit_points' => 12 + mt_rand( 1, 4 ) );
+			$num_gd = mt_rand( 1, 6 ) + mt_rand( 1, 6 ) + mt_rand( 1, 6 ) + mt_rand( 1, 6 ) + mt_rand( 1, 6 );
+			for( $i = 1; $i <= $num_gd; $i++ ) {
+				$orcs[] = array( 'name' => 'Guard', 'armor_class' => 4, 'hit_dice' => 3, 'hit_points' => 12 + mt_rand( 1, 4 ) );
+			}
 		} else {
-			$stats = 'AC4, 11hp, as 2HD, dam 1d6+1';
 			if ( $this->check_chance( 20 ) ) {
 				$num_carts = mt_rand( 1, 6 );
 				$num_slave = 0;
@@ -144,17 +143,10 @@ print_r($this->attacks);
 					$num_slave += mt_rand( 1, 6 );
 				}
 				$extra[] = "$num_carts carts, with $num_slave slaves";
-			} else {
-				if ( $num > 150 ) {
-					$extra[] = 'subchief ' . $stats;
-					$num_gd = 0;
-					for( $i = 1; $i <= 3; $i++ ) {
-						$num_gd += mt_rand( 1, 6 );
-					}
-					$extra[] = "$num_gd guards " . $stats;
-				}
 			}
 		}
+		return $orcs;
 	}
+
 
 }

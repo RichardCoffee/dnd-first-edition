@@ -55,7 +55,7 @@ class DND_Monster_Humanoid_Jermlaine extends DND_Monster_Humanoid_Humanoid {
 		return $data;
 	}
 
-	protected function get_saving_throw_level() {
+	public function get_saving_throw_level() {
 		return 4;
 	}
 

@@ -6,6 +6,11 @@ trait DND_Character_Trait_Multi_Cleric {
 	protected $cleric = null;
 
 
+	use DND_Character_Trait_Spells_Cleric;
+	use DND_Character_Trait_Spells_Effects_Cleric;
+#	use DND_Character_Trait_Undead;
+
+
 	protected function set_cleric_armor() {
 		$this->armor = $this->cleric->armor;
 	}

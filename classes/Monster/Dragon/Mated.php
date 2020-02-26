@@ -12,7 +12,7 @@ trait DND_Monster_Dragon_Mated {
 		if ( array_key_exists( 'mate', $args ) ) {
 #			$this->mate = unserialize( $args['mate'] );
 #			$this->solitary = 0;
-#			unset( $args['mate'] );
+			unset( $args['mate'] );
 		}
 	}
 
@@ -53,19 +53,6 @@ trait DND_Monster_Dragon_Mated {
 			$this->solitary = 0;
 			$this->specials_mate();
 		}
-	}
-
-	public function get_appearing_hit_points( $number = 1 ) {
-		$hit_points = array( $this->hit_points );
-		if ( $this->mate ) {
-			$hit_points[] = [ $this->mate->hit_points, $this->mate->hit_points ];
-			$number--;
-		}
-		for( $i = 1; $i < $number; $i++ ) {
-			$hp = $this->calculate_hit_points( true );
-			$hit_points[] = [ $hp, $hp ];
-		}
-		return $hit_points;
 	}
 
 	private function specials_mate() {

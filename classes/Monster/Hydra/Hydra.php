@@ -38,6 +38,7 @@ class DND_Monster_Hydra_Hydra extends DND_Monster_Monster {
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'B';
+	protected $vulnerable   = array( 'reptile' );
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons
@@ -79,7 +80,7 @@ Description: Hydrae are gray brown to blackish brawn with lighter underbellies t
 
 	/**  Override functions  **/
 
-	public function assign_damage( $damage, $segment, $type = '' ) {
+	public function assign_damage( $damage, $segment = 0, $type = '' ) {
 		$cnt  = count( $this->attacks );
 		$head = mt_rand( 1, $cnt );
 		$list = array_keys( $this->attacks );

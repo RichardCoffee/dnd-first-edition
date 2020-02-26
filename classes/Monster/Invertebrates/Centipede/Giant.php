@@ -46,13 +46,13 @@ class DND_Monster_Invertebrates_Centipede_Giant extends DND_Monster_Monster {
 		parent::determine_specials();
 		$this->specials['poison'] = 'Bite causes no damage, but is poisonous (ST+4)';
 		$this->specials['saving'] = 'Giant centipede saves are at -1.';
-		add_filter( 'character_Poison_saving_throws', [ $this, 'poison_bite_saving_throw' ], 10, 3 );
-		add_filter( 'monster_Poison_saving_throws',   [ $this, 'poison_bite_saving_throw' ], 10, 3 );
-		add_filter( 'Giant_Centipede_all_saving_throws', [ $this, 'giant_centipede_saving_throws' ], 10, 2 );
+		add_filter( 'dnd1e_object_Poison_saving_throws', [ $this, 'poison_bite_saving_throw' ],      10, 3 );
+		add_filter( "{$this->race}_all_saving_throws",   [ $this, 'giant_centipede_saving_throws' ], 10, 2 );
 	}
 
-	public function poison_bite_saving_throw( $roll, $target, $origin ) {
-		if ( $origin === $this ) {
+	# FIXME: needs origin
+	public function poison_bite_saving_throw( $roll, $target, $effect ) {
+		if ( ! ( $target->race === $this->race ) ) {
 			$roll -= 4;
 		}
 		return $roll;

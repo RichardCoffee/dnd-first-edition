@@ -7,13 +7,10 @@ if ( ! defined( 'BOW_POINT_BLANK' ) ) {
 
 trait DND_Character_Trait_Weapons {
 
-#  Would love to do this, but traits cannot have constants.
-#	private const BOW_POINT_BLANK = 31;
-#	private const CROSSBOW_POINT_BLANK = 61;
 
 	protected $weap_allow = array();
 	protected $weap_dual  = false;
-	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0 );
+	protected $weapon     = array( 'current' => 'none', 'skill' => 'NP', 'attacks' => [ 1, 1 ], 'bonus' => 0, 'attack' => 'none' );
 	protected $weapons    = array();
 	static protected $weapons_table;
 
@@ -50,36 +47,23 @@ trait DND_Character_Trait_Weapons {
 	protected function weapons_armor_type_check( $target ) {
 		if ( $target instanceOf DND_Character_Character ) return true;
 		if ( ! ( $target instanceOf DND_Monster_Humanoid_Humanoid ) ) return false;
-		if ( ! ( $target->armor_type === $target->armor_class ) ) return true;
+		if ( ! ( $target->armor['armor'] === 'none' ) ) return true;
 		return false;
 	}
 
 	protected function set_character_weapon( $new ) {
 		if ( empty ( $new ) ) return false;
-		if ( ! $this->weapons_check( $new ) ) return false;
-		if ( ! empty( $this->weap_allow ) && ! in_array( $new, $this->weap_allow ) ) return false;
-		$this->weapon = $this->base_weapon_array( $new );
-		if ( ( ! empty( $this->weapons ) ) && array_key_exists( $new, $this->weapons ) ) {
-			$this->weapon = array_merge( $this->weapon, $this->weapons[ $new ] );
-		} else {
-			// TODO: show alert for non-proficient weapon use
-		}
-		$data = $this->get_weapon_info( $this->weapon['current'] );
-		$this->weapon = array_merge( $this->weapon, $data );
-		$this->weapon['attacks'] = $this->get_weapon_attacks_per_round( $this->weapon );
-		if ( $this->weap_dual ) $this->set_current_weapon_dual();
-		$this->determine_armor_class();
+		$name = ( is_object( $new ) ) ? $new->typepub : $new;
+		if ( ! $this->weapons_check( $name ) )     return false;
+		if ( ! $this->is_allowed_weapon( $name ) ) return false;
+		$weapon = $this->get_merged_weapon_info( $name );
+		if ( is_object( $new ) ) $weapon = $new->merge_gear_info( $weapon );
+		$this->weapon = ( $this->weap_dual ) ? $this->set_current_weapon_dual( $weapon ) : $weapon;
 		return true;
 	}
 
-	protected function base_weapon_array( $new, $skill = 'NP' ) {
-		return array( 'current' => $new, 'skill' => $skill, 'attacks' => array( 1, 1 ), 'bonus' => 0 );
-	}
-
 	private function weapons_check( $weapon = 'Spell' ) {
-		if ( empty( static::$weapons_table ) ) {
-			static::$weapons_table = $this->get_weapons_table();
-		}
+		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		if ( ! empty( $this->weap_allow ) ) {
 			foreach( [ 'Stunned', 'Immobilized' ] as $state ) {
 				$this->add_to_allowed_weapons( $state );
@@ -88,10 +72,26 @@ trait DND_Character_Trait_Weapons {
 		return array_key_exists( $weapon, static::$weapons_table );
 	}
 
+	protected function get_merged_weapon_info( $name ) {
+		$weapon = $this->base_weapon_array( $name );
+		if ( array_key_exists( $name, $this->weapons ) ) $weapon = array_merge( $weapon, $this->weapons[ $name ] );
+		$weapon = array_merge( $weapon, $this->get_weapon_info( $name ) );
+		$weapon['attacks'] = $this->get_weapon_attacks_per_round( $weapon );
+		return $weapon;
+	}
+
+	protected function base_weapon_array( $name, $skill = 'NP' ) {
+		return array(
+			'current' => $name,
+			'skill'   => $skill,
+			'attacks' => array( 1, 1 ),
+			'bonus'   => 0,
+			'attack'  => 'none'
+		);
+	}
+
 	protected function get_weapon_info( $weapon = 'Spell' ) {
-		if ( empty( static::$weapons_table ) ) {
-			static::$weapons_table = $this->get_weapons_table();
-		}
+		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		$info  = static::$weapons_table['Bite'];
 		$check = substr( $weapon, 0, 4 );
 		if ( in_array( $check, [ 'Bite', 'Claw', 'Horn' ] ) ) {
@@ -105,9 +105,7 @@ trait DND_Character_Trait_Weapons {
 
 	protected function get_random_pole_arm() {
 		static $pole_arms = array();
-		if ( empty( static::$weapons_table ) ) {
-			static::$weapons_table = $this->get_weapons_table();
-		}
+		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		if ( empty( $pole_arms ) ) {
 			foreach( static::$weapons_table as $weapon => $data ) {
 				if ( $data['attack'] === 'pole' ) {
@@ -120,257 +118,405 @@ trait DND_Character_Trait_Weapons {
 		return $pole_arms[ $roll ];
 	}
 
+	public function get_weapon_effect( $weapon ) {
+		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
+		if ( array_key_exists( $weapon, static::$weapons_table ) ) {
+			return static::$weapons_table[ $weapon ]['effect'];
+		}
+		return 'none';
+	}
+
 	private function get_weapons_table() {
 		return array(
 			'Axe,Battle' => array(
 				'type'   => array( -5, -4, -3, -2, -1, -1, 0, 0, 1, 1, 2 ),
 				'speed'  => 7,
+				'reach'  => 4,
 				'damage' => array( '1d8', '1d8', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Axe,Hand' => array(
 				'type'   => array( -5, -4, -3, -2, -2, -1, 0, 0, 1, 1, 1 ),
 				'speed'  => 4,
+				'reach'  => 1,
 				'damage' => array( '1d6', '1d4', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Axe,Throwing' => array(
 				'type'   => array( -6, -5, -4, -3, -2, -1, -1, 0, 0, 0, 1 ),
 				'damage' => array( '1d6', '1d4', 'Yes' ),
 				'range'  => array( 10, 20, 30 ),
-				'attack' => 'thrown1'
+				'attack' => 'thrown1',
+				'effect' => 'slash',
 			),
 			'Bardiche' => array(
 				'type'   => array( -3, -2, -2, -1, 0, 0, 1, 1, 2, 2, 3 ),
 				'speed'  => 9,
+				'reach'  => 5,
 				'damage' => array( '2d4', '3d4', 'Yes' ),
-				'attack' => 'pole'
+				'attack' => 'pole',
+				'effect' => 'slash',
 			),
 			'Beak' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 2,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
-				'attack' => 'monster'
+				'attack' => 'monster',
+				'effect' => 'pierce',
 			),
 			'Bec de Corbin' => array(
 				'type'   => array( 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, -1 ),
 				'speed'  => 9,
+				'reach'  => 6,
 				'damage' => array( '1d8', '1d6', 'Yes' ),
-				'attack' => 'pole'
+				'attack' => 'pole',
+				'effect' => 'slash',
 			),
 			'Bill-Guisarme' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ),
 				'speed'  => 10,
+				'reach'  => 8,
 				'damage' => array( '2d4', '1d10', 'Yes' ),
-				'attack' => 'pole'
+				'attack' => 'pole',
+				'effect' => 'slash',
 			),
 			'Bite' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 3,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
-				'attack' => 'monster'
+				'attack' => 'monster',
+				'effect' => 'slash',
 			),
 			'Bow,Long' => array(
 				'type'   => array( -2, -1, -1, 0, 0, 1, 2, 3, 3, 3, 3 ),
 				'damage' => array( '1d6', '1d6', 'No' ),
 				'range'  => array( 70, 140, 210 ),
-				'attack' => 'bow'
+				'attack' => 'bow',
+				'effect' => 'pierce',
 			),
 			'Bow,Short' => array(
 				'type'   => array( -7, -6, -5, -4, -1, 0, 0, 1, 2, 2, 2 ),
 				'damage' => array( '1d6', '1d6', 'No' ),
 				'range'  => array( 50, 100, 150 ),
-				'attack' => 'bow'
+				'attack' => 'bow',
+				'effect' => 'pierce',
 			),
 			'Breath' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'damage' => array( 'Spec', 'Spec', 'No' ),
-				'attack' => 'spell'
+				'attack' => 'spell',
 			),
 			'Claw' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 4,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
-				'attack' => 'monster'
+				'attack' => 'monster',
+				'effect' => 'slash',
 			),
 			'Club' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, -1, 0, 0, 1 ),
 				'speed'  => 4,
+				'reach'  => 3,
 				'damage' => array( '1d6', '1d3', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'crush',
+			),
+			'Crossbow,Hand' => array(
+				'type'   => array( -6, -4, -2, -1, 0, 0, 0, 1, 2, 2, 3 ),
+				'damage' => array( '1d3', '1d2', 'No' ),
+				'range'  => array( 20, 40, 60 ),
+				'attack' => 'handXbow',
+				'effect' => 'pierce',
 			),
 			'Crossbow,Heavy' => array(
 				'type'   => array( -1, 0, 1, 2, 3, 3, 3, 4, 4, 4, 4 ),
 				'damage' => array( '1d4+1', '1d6+1', 'No' ),
 				'range'  => array( 80, 160, 240 ),
 				'attack' => 'hvyXbow',
+				'effect' => 'pierce',
 			),
 			'Crossbow,Light' => array(
 				'type'   => array( -3, -2, -2, -1, 0, 0, 1, 2, 3, 3, 3 ),
 				'damage' => array( '1d4', '1d4', 'No' ),
 				'range'  => array( 60, 120, 180 ),
-				'attack' => 'lgtXbow'
+				'attack' => 'lgtXbow',
+				'effect' => 'pierce',
 			),
 			'Dagger' => array(
 				'type'   => array( -4, -4, -3, -3, -2, -2, 0, 0, 1, 1, 3 ),
 				'speed'  => 2,
+				'reach'  => 1,
 				'damage' => array( '1d4', '1d3', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Dagger,Off-Hand' => array(
 				'type'   => array( -4, -4, -3, -3, -2, -2, 0, 0, 1, 1, 3 ),
 				'speed'  => 2,
+				'reach'  => 1,
 				'damage' => array( '1d4', '1d3', 'Yes' ),
-				'attack' => 'off-hand'
+				'attack' => 'off-hand',
+				'effect' => 'slash',
 			),
 			'Dagger,Thrown' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, -1, 0, 0, 1 ),
 				'damage' => array( '1d4', '1d3', 'Yes' ),
 				'range'  => array( 10, 20, 30 ),
-				'attack' => 'thrown2'
+				'attack' => 'thrown2',
+				'effect' => 'pierce',
 			),
 			'Dart' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, 0, 1, 0, 1 ),
 				'damage' => array( '1d3', '1d2', 'Yes' ),
 				'range'  => array( 15, 30, 45 ),
-				'attack' => 'dart'
+				'attack' => 'dart',
+				'effect' => 'pierce',
 			),
 			'Flail,Foot' => array(
 				'type'   => array( 3, 3, 2, 2, 1, 2, 1, 1, 1, 1, -1 ),
 				'speed'  => 7,
+				'reach'  => 6,
 				'damage' => array( '1d6+1', '2d4', 'Yes' ),
 				'attack' => 'hand',
+				'effect' => 'slash',
+			),
+			'Flail,Horse' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0 ),
+				'speed'  => 6,
+				'reach'  => 4,
+				'damage' => array( '1d4+1', '1d4+1', 'Yes' ),
+				'attack' => 'horse',
+				'effect' => 'slash',
+			),
+			'Halberd' => array(
+				'type'   => array( 0, 1, 1, 1, 1, 2, 2, 2, 1, 1, 0 ),
+				'speed'  => 9,
+				'reach'  => 5,
+				'damage' => array( '1d10', '2d6', 'Yes' ),
+				'attack' => 'pole',
+				'effect' => 'slash',
 			),
 			'Hammer' => array(
 				'type'   => array( 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0 ),
 				'speed'  => 4,
+				'reach'  => 2,
 				'damage' => array( '1d4+1', '1d4', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'crush',
 			),
 			'Hammer,Lucern' => array(
 				'type'   => array( 0, 1, 1, 1, 2, 2, 2, 1, 1, 0, 0 ),
 				'speed'  => 9,
+				'reach'  => 5,
 				'damage' => array( '2d4', '1d6', 'Yes' ),
-				'attack' => 'two-hand'
+				'attack' => 'two-hand',
+				'effect' => 'crush',
 			),
 			'Horn' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 3,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
-				'attack' => 'monster'
+				'attack' => 'monster',
+				'effect' => 'pierce',
 			),
 			'Immobilized' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 10,
-				'damage' => array( 'spec', 'spec', 'No' ),
-				'attack' => 'immobilized'
+				'damage' => array( 'Spec', 'Spec', 'No' ),
+				'attack' => 'immobilized',
 			),
 			'Javelin' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, 0, 1, 0, 1 ),
 				'damage' => array( '1d6', '1d6', 'Yes' ),
 				'range'  => array( 20, 40, 60 ),
-				'attack' => 'thrown1'
+				'attack' => 'thrown1',
+				'effect' => 'pierce',
 			),
 			'Knife' => array(
 				'type'   => array( -6, -5, -5, -4, -3, -2, -1, 0, 1, 1, 3 ),
 				'speed'  => 2,
+				'reach'  => 1,
 				'damage' => array( '1d3', '1d2', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
+			),
+			'Knife,Thrown' => array(
+				'type'   => array( -8, -7, -6, -5, -4, -3, -2, -1, 0, 0, 1 ),
+				'damage' => array( '1d3', '1d2', 'Yes' ),
+				'range'  => array( 10, 20, 30 ),
+				'attack' => 'thrown2',
+				'effect' => 'pierce',
+			),
+			'Mace,Foot' => array(
+				'type'   => array( 2, 2, 1, 1, 0, 0, 0, 0, 0, 1, -1 ),
+				'speed'  => 7,
+				'reach'  => 4,
+				'damage' => array( '1d6+1', '1d6', 'Yes' ),
+				'attack' => 'hand',
+				'effect' => 'crush',
+			),
+			'Mace,Horse' => array(
+				'type'   => array( 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 6,
+				'reach'  => 2,
+				'damage' => array( '1d6', '1d4', 'Yes' ),
+				'attack' => 'horse',
+				'effect' => 'crush',
+			),
+			'Morning Star' => array(
+				'type'   => array( 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2 ),
+				'speed'  => 7,
+				'reach'  => 5,
+				'damage' => array( '2d4', '1d6+1', 'Yes' ),
+				'attack' => 'hand',
+				'effect' => 'crush',
+			),
+			'Pick,Foot' => array(
+				'type'   => array( 3, 3, 2, 2, 1, 1, 0, -1, -1, -1, -2 ),
+				'speed'  => 7,
+				'reach'  => 4,
+				'damage' => array( '1d6+1', '2d4', 'Yes' ),
+				'attack' => 'hand',
+				'effect' => 'slash',
+			),
+			'Pick,Horse' => array(
+				'type'   => array( 2, 2, 1, 1, 1, 1, 0, 0, -1, -1, -1 ),
+				'speed'  => 5,
+				'reach'  => 2,
+				'damage' => array( '1d4+1', '1d4', 'Yes' ),
+				'attack' => 'horse',
+				'effect' => 'slash',
+			),
+			'Sling' => array(
+				'type'   => array( -7, -6, -5, -4, -2, -1, 0, 0, 2, 1, 3 ),
+				'damage' => array( '1d4', '1d4', 'Yes' ),
+				'range'  => array( 40, 80, 160 ),
+				'attack' => 'thrown1',
+				'effect' => 'crush',
 			),
 			'Spear' => array(
 				'type'   => array( -2, -2, -2, -1, -1, -1, 0, 0, 0, 0, 0 ),
 				'speed'  => 7,
+				'reach'  => 5,
 				'damage' => array( '1d6', '1d8', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'pierce',
 			),
 			'Spear,Thrown' => array(
 				'type'   => array( -4, -4, -3, -3, -2, -2, -1, 0, 0, 0, 0 ),
 				'damage' => array( '1d6', '1d8', 'Yes' ),
 				'range'  => array( 10, 20, 30 ),
-				'attack' => 'thrown1'
+				'attack' => 'thrown1',
+				'effect' => 'pierce',
 			),
 			'Spell' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-				'damage' => array( 'spec', 'spec', 'No' ),
-				'attack' => 'spell'
+				'damage' => array( 'Spec', 'Spec', 'No' ),
+				'attack' => 'spell',
 			),
 			'Staff,Quarter' => array(
 				'type'   => array( -9, -8, -7, -5, -3, -1, 0, 0, 1, 1, 1 ),
 				'speed'  => 4,
+				'reach'  => 7,
 				'damage' => array( '1d6', '1d6', 'Yes' ),
-				'attack' => 'two-hand'
+				'attack' => 'two-hand',
+				'effect' => 'crush',
 			),
 			'Stunned' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 10,
-				'damage' => array( 'spec', 'spec', 'No' ),
-				'attack' => 'stunned'
+				'damage' => array( 'Spec', 'Spec', 'No' ),
+				'attack' => 'stunned',
 			),
 			'Sword,Bastard' => array(
 				'type'   => array( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 ),
 				'speed'  => 6,
+				'reach'  => 4,
 				'damage' => array( '2d4', '2d8', 'Yes' ),
-				'attack' => 'two-hand'
+				'attack' => 'two-hand',
+				'effect' => 'slash',
 			),
 			'Sword,Broad' => array(
 				'type'   => array( -5, -4, -3, -2, -1, 0, 0, 0, 1, 1, 1),
 				'speed'  => 5,
+				'reach'  => 4,
 				'damage' => array( '2d4', '1d6+1', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Sword,Long' => array(
 				'type'   => array( -4, -3, -2, -1, 0, 0, 0, 0, 0, 1, 2 ),
 				'speed'  => 5,
+				'reach'  => 3,
 				'damage' => array( '1d8', '1d12', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Sword,Short' => array(
 				'type'   => array( -5, -4, -3, -2, -1, 0, 0, 0, 1, 0, 2 ),
 				'speed'  => 3,
+				'reach'  => 2,
 				'damage' => array( '1d6', '1d8', 'Yes' ),
-				'attack' => 'hand'
+				'attack' => 'hand',
+				'effect' => 'slash',
 			),
 			'Sword,Two Handed' => array(
 				'type'   => array( 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 1 ),
 				'speed'  => 10,
+				'reach'  => 6,
 				'damage' => array( '1d10', '3d6', 'Yes' ),
-				'attack' => 'two-hand'
+				'attack' => 'two-hand',
+				'effect' => 'slash',
 			),
 			'Tail' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'speed'  => 5,
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
-				'attack' => 'monster'
+				'attack' => 'monster',
+				'effect' => 'slash',
+			),
+			'Turn Undead' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'damage' => array( 'Spec', 'Spec', 'Yes' ),
+				'attack' => 'cleric',
+				'effect' => 'undead',
 			),
 			'Voice' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'damage' => array( 'Spec', 'Spec', 'No' ),
 				'range'  => array( 10, 20, 30 ),
-				'attack' => 'spell'
+				'attack' => 'spell',
 			),
 			'Voulge' => array(
 				'type'   => array( -2, -2, -1, -1, 0, 1, 1, 1, 0, 0, 0 ),
 				'speed'  => 10,
+				'reach'  => 8,
 				'damage' => array( '2d4', '2d4', 'Yes' ),
-				'attack' => 'pole'
+				'attack' => 'pole',
+				'effect' => 'slash',
 			),
 		);
 	}
 
+
+	/**  Status functions  **/
+
 	protected function get_weapons_using_strength_bonuses() {
-		return array( 'hand', 'monster', 'off-hand', 'pole', 'two-hand' );
+		return array( 'hand', 'horse', 'monster', 'off-hand', 'pole', 'two-hand' );
 	}
 
 	private function get_weapons_using_strength_damage() {
-		return array( 'dart', 'hand', 'monster', 'off-hand', 'pole', 'thrown1', 'thrown2', 'two-hand' );
+		return array( 'dart', 'hand', 'horse', 'monster', 'off-hand', 'pole', 'thrown1', 'thrown2', 'two-hand' );
 	}
 
-	private function get_weapons_not_allowed_shield() {
+	protected function get_weapons_not_allowed_shield() {
 		return array( 'bow', 'hvyXbow', 'immobilized', 'lgtXbow', 'monster', 'off-hand', 'pole', 'prone', 'spell', 'stunned', 'two-hand' );
 	}
 
 	private function get_weapons_using_missile_adjustment() {
-		return array( 'bow', 'dart', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
+		return array( 'bow', 'dart', 'handXbow', 'hvyXbow', 'lgtXbow', 'thrown1', 'thrown2' );
 	}
 
 	protected function get_weapon_attacks_per_round( $weapon, $opponent = null ) {
@@ -419,11 +565,11 @@ trait DND_Character_Trait_Weapons {
 		return $index;
 	}
 
-	public function get_attack_sequence( $rounds ) {
+	public function get_attack_sequence( $rounds, $weapon = array() ) {
 		$seqent = array();
-		if ( $this->weapon['attacks'][0] > 0 ) {
+		if ( $weapon['attacks'][0] > 0 ) {
 			$segment  = $this->segment;
-			$interval = 10 / ( $this->weapon['attacks'][0] / $this->weapon['attacks'][1] );
+			$interval = 10 / ( $weapon['attacks'][0] / $weapon['attacks'][1] );
 			do {
 				$seqent[] = intval( round( $segment ) );
 				$segment += $interval;
@@ -432,7 +578,7 @@ trait DND_Character_Trait_Weapons {
 		return $seqent;
 	}
 
-	private function get_weapon_proficiency_bonus( $skill, $desire = 'hit' ) {
+	protected function get_weapon_proficiency_bonus( $skill, $desire = 'hit' ) {
 		$bonus = 0;
 		switch( $skill ) {
 			case 'NP':
@@ -447,11 +593,6 @@ trait DND_Character_Trait_Weapons {
 			default:
 		}
 		return $bonus;
-	}
-
-	private function get_weapon_type_adjustment( $weapon, $type ) {
-		$info = $this->get_weapon_info( $weapon );
-		return $info['type'][ $type ];
 	}
 
 	private function get_missile_proficiency_bonus( $weapon, $range, $desire = 'hit' ) {
@@ -493,7 +634,7 @@ trait DND_Character_Trait_Weapons {
 		return $adjust;
 	}
 
-	protected function get_weapon_damage_array( $weapon, $target = 'SM' ) {
+	public function get_weapon_damage_array( $weapon, $target = 'SM' ) {
 		$info = $this->get_weapon_info( $weapon );
 		$base = ( $target === 'SM' ) ? $info['damage'][0] : $info['damage'][1];
 		$base = str_replace( [ 'd', '+' ], ',', $base );
@@ -503,7 +644,29 @@ trait DND_Character_Trait_Weapons {
 		return $dam;
 	}
 
+	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
+		$bonus = $this->weapon_damage_bonus( $this->weapon, $target, $range );
+		return apply_filters( 'dnd1e_weapon_damage_bonus', $bonus, $this, $target );
+	}
+
+	protected function weapon_damage_bonus( $weapon, $target, $range ) {
+		$bonus = 0;
+		if ( in_array( $weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
+			$bonus += $this->get_missile_proficiency_bonus( $weapon, $range, 'damage' );
+		}
+		if ( in_array( $weapon['attack'], $this->get_weapons_using_strength_damage() ) ) {
+			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
+		}
+		$bonus += $this->get_weapon_proficiency_bonus( $weapon['skill'], 'damage' );
+		$bonus += $weapon['bonus'];
+		return $bonus;
+	}
+
+
+	/**  Allowed Weapons functions  **/
+
 	public function add_to_allowed_weapons( $new ) {
+		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		if ( array_key_exists( $new, static::$weapons_table ) ) {
 			if ( ! in_array( $new, $this->weap_allow ) ) {
 				$this->weap_allow[] = $new;
@@ -511,49 +674,18 @@ trait DND_Character_Trait_Weapons {
 		}
 	}
 
-	/**  Dual Weapon functions  **/
+	protected function is_allowed_weapon( $name ) {
+		if ( ! empty( $this->weap_allow ) && ! in_array( $name, $this->weap_allow ) ) return false;
+		return true;
+	}
 
-	public function is_off_hand_weapon() {
-		if ( $this->weap_dual && array_key_exists( 1, $this->weap_dual ) ) {
-			if ( ( $this->weapon['current'] === $this->weap_dual[1] ) ) {
+	public function is_dual_weapon() {
+		if ( $this->weap_dual && in_array( $this->weapon['current'], $this->weap_dual ) ) {
+			if ( property_exists( $this, 'weap_twins' ) && ( count( $this->weap_twins ) === 2 ) ) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public function set_primary_weapon() {
-		if ( array_key_exists( 0, $this->weap_dual ) ) {
-			$this->set_current_weapon( $this->weap_dual[0] );
-		}
-	}
-
-	public function set_dual_weapon() {
-		if ( array_key_exists( 1, $this->weap_dual ) ) {
-			$this->set_current_weapon( $this->weap_dual[1] );
-		}
-	}
-
-	protected function set_current_weapon_dual() {
-		if ( in_array( $this->weapon['current'], $this->weap_dual ) ) {
-			if ( stripos( $this->weapon['current'], 'off-hand' ) ) {
-				$primary  = $this->weap_dual[0];
-				$priminfo = $this->get_weapon_info( $primary );
-				$primatt  = $this->get_weapon_attacks_array( $priminfo['attack'] );
-				$primidx  = $this->get_weapon_attacks_per_round_index( $this->weapons[ $primary ]['skill'] );
-				$prime    = $primatt[ $primidx ];
-				if ( $prime[1] === $this->weapon['attacks'][1] ) {
-					$this->weapon['attacks'][0] += $prime[0];
-				} else {
-					$this->weapon['attacks'][0] += ( $prime[1] === 2 ) ? ( $this->weapon['attacks'][0] + $prime[0] ) : ( $prime[0] * 2 ) ;
-					$this->weapon['attacks'][1] += ( $prime[1] === 2 ) ? 1 : 0;
-				}
-			}
-		}
-	}
-
-	public function assign_damage( $damage, $segment, $type = '' ) {
-		$this->current_hp -= $damage;
 	}
 
 

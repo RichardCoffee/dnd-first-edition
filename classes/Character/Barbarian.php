@@ -12,7 +12,7 @@ class DND_Character_Barbarian extends DND_Character_Fighter {
 	protected $xp_table  = array( 0, 6000, 12000, 24000, 48000, 80000, 150000, 275000, 500000 );
 
 
-	protected function get_armor_class_dexterity_adjustment( $dex ) {
+	public function get_armor_class_dexterity_adjustment( $dex ) {
 		$bonus = parent::get_armor_class_dexterity_adjustment( $dex );
 		if ( $this->stats['dex'] > 14 ) {
 			$bulk  = $this->get_armor_bulk( $this->armor['armor'] );

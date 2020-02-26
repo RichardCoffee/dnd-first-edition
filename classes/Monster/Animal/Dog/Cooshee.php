@@ -78,7 +78,7 @@ A cooshee is the size of the largest common dog. It has a greenish coat with bro
 		$this->determine_attack_weapon( $segment );
 	}
 
-	public function get_attack_sequence( $rounds ) {
+	public function get_attack_sequence( $rounds, $unused = array() ) {
 		$segment  = $this->segment;
 		$seqent   = array();
 		do {

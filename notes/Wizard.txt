@@ -1,0 +1,1921 @@
+http://flockhart.virtualave.net/afal/spelldesc.html
+
+
+    Wizard Spells in Our Campaign That Aren't in the Compendium
+
+
+      === Dragon #226 ===
+
+*Swami Spells*
+
+*Cloud messenger*
+(Conjuration/Summoning)
+Level: 1
+Range: 0
+Components: V, S, M
+Duration: Special
+Casting Time: 1
+Area of Effect: Special
+Saving Throw: None
+This spell, based on a classical pane-gyric poem, can be cast only on a
+day with cloud cover: mist, rain, snow, and so on. The spell summons a
+small cloud to act as a messenger for the caster. The caster can impart
+a message of up to five minutes length to the cloud, which then hurries
+across the sky to the intended recipient. Its maximum Move is 96, though
+favorable gales might increase this. The cloud messenger must be told
+the location and general appearance of the recipient; it is incapable of
+asking for directions. It is not entirely substantial and so can go
+through tiny openings and survive heavy winds. It can carry objects
+weighing up to 10 pounds for delivery. When it reaches its recipient, it
+relates the entire message including whatever emo-tion it heard in the
+caster’s voice. The cloud messenger then returns to its caster; one may
+follow it to the caster’s location. The material components are fresh
+flow-ers and a bottle of rainwater.
+
+*Waking light of dawn*
+(Enchantment/Charm)
+Level: 1
+Range: 10 yards
+Components: V, S, M
+Duration: Special
+Casting Time: 2
+Area of Effect: 1 creature/level
+Saving Throw: None
+This spell causes sleeping creatures to awaken. If naturally asleep or
+affected by a sleep spell, the creatures awaken instantly. If under the
+influence of a more powerful enchantment, the creatures are given new
+saving throws against the effect, modified by +1 per four levels of the
+caster. If the creatures are suffering from a sleeping poison or disease
+(such as that from the tsetse fly), the spell works exactly as a slow
+poison on the affected creatures. The spell does not simulate the
+effects of a good night’s sleep, nor can it reduce the sleep neces- sary
+before memorization of spells. The material component is a lock which
+must be unlocked during casting.
+
+*Distract*
+(Enchantment/Charm)
+Level: 3
+Range: 0
+Components: V, S, M
+Duration: 2 rounds/level
+Casting Time: 3
+Area of Effect: Special
+Saving Throw: Special
+A mage can use this spell to distract all within hearing distance who
+are trying to do any sort of work other than combat. The material
+component of the spell is a flute. While the caster plays the flute (no
+proficiency necessary), those wishing to continue in their work must
+make a Wisdom check each round to concen-trate on their task at hand.
+Wisdom checks are at +4 if stopping work would result in imminent harm
+(failing to shore up a seawall during a monsoon, for example).
+Distracted persons cannot for-mulate strategies, instruct others, write,
+draw, or otherwise do complex work. However, the spell does not pacify
+those present, so they may attack the caster if they desire. If the
+caster stops playing the flute before the duration is over, the effect
+ends.
+
+*Skin of the fire tiger*
+(Alteration)
+Level: 3
+Range: Touch
+Components: V, S, M
+Duration: 3 rounds/level
+Casting Time: 3
+Area of Effect: 1 creature
+Saving Throw: None
+When cast on the caster or another creature, this spell imbues the
+subject with glowing orange stripes across his skin. These stripes
+generate a deep inter-nal warmth that acts as a resist cold spell. While
+in effect, the subject’s skin is scald-ing hot to the touch, so anyone
+touching the subject’s open skin suffers 1d3 points of damage. If the
+subject uses an unarmed combat attack or is attacked by an unarmed foe,
+the damage is applied to the subject’s foe. The subject and his garments
+are unaffected by the scalding effect but are not otherwise protected
+from fire or heat. After the spell elapses, the subject will be
+incapacitated for one round due to shivering unless endure cold or
+resist cold is cast on him. The material component of the spell is a
+tiger-eye gem.
+
+*Serpent garland*
+(Alteration)
+Level: 4
+Range: 0
+Components: V, S, M
+Duration: 1 round/level
+Casting Time: 4
+Area of Effect: 1 item
+Saving Throw: Special
+By casting this spell, the mage turns his ordinary scarf, necklace, or
+other neckwear into a poisonous snake. The snake appears to be the
+normal piece of clothing or jewelry until the caster desires it to
+attack. It strikes as a Warrior with a level equal to that of the
+caster. Its bite causes 1d2 points of damage, plus it also injects a
+poison if the victim does not make a saving throw vs. poison. The poi-
+son may be of the caster’s choosing: lethal (save or die), paralytic
+(save or be paralyzed for 4d4 turns), or soporific (save or fall into a
+coma for ld4 days). The snake may attack once per round, during which
+time it is revealed as a ser- pent. Reversing the sticks to snakes spell
+cancels this magic, and the snake is sub- ject to snake charms. When the
+duration elapses or the effect is dispelled, the gar- ment or jewelry
+returns to normal.
+
+*Mourning stone*
+(Abjuration)
+Level: 4
+Range: Touch
+Components: V, S, M
+Duration: Permanent
+Casting Time: 5
+Area of Effect: Up to 1 ton/level
+Saving Throw: Special
+This spell channels a person’s grief over loss of a loved one into
+stone. When cast upon a subject and an amount of stone, the spell pulls
+the grief from the subject’s heart and forces the stone to grieve
+instead. The subject gets a saving throw vs. magic to avoid the effects
+if he wants to retain his grief. When affected by the spell, the subject
+feels the weight of sorrow unburdened from his heart. The stone shows
+its grief by becoming pristine white and refracting light like a prism,
+never appearing exactly the same twice. Persons viewing the stone are
+awestruck and saddened for one round though not stopped from acting.
+Within 10’ of mourning stone, emotion, and other such spells and effects
+are cancelled. Stone enchanted by this spell can be used to erect
+buildings, in the manner of beautiful and enigmatic mausolea like the
+Taj Mahal.
+
+*Third eye*
+(Evocation)
+Level: 7
+Range: 0
+Components: V, S, M
+Duration: 1 round/level
+Casting Time: 7
+Area of Effect: Caster
+Saving Throw: Special
+This spell creates a swirling spiral on the caster’s forehead which
+casts beams of annihilation. The third eye fires a ray which has the
+same attack roll as the mage. The beams must attack a target every
+round, living or otherwise. Creatures hit by the third eye’s ray must
+save vs. spell or be killed, while inani- mate objects must save vs.
+disintegration or break apart. While this spell is in effect, the caster
+may use no other spells or attacks. At the end of the spell, the caster
+must make a System Shock roll to avoid falling unconscious for 3d4 rounds.
+
+*Life illusion*
+(Illusion/Phantasm)
+Level: 8
+Range: 10 yards/level
+Components: V, S, M
+Duration: Special
+Casting Time: 8
+Area of Effect: 1 creature
+Saving Throw: Special
+Similar to a maze spell, the life illusion spell creates a new mental
+world in which the subject can live. The illusionary life (maya) can
+include any manner of new persons, surroundings, and even new classes
+and abilities for the subject. The subject is allowed a saving throw vs.
+spells to avoid entering this new world, but if he fails, the subject
+retains only dream-like memories of his real life. Entire months or
+years can pass in this new life, though time passes much faster here
+than in the real world. No method of exit is allowed while in the
+illusory world, except the priest spell penetrate cosmic ignorance. The
+illusion seems real but may contain flaws and mispercep- tions based on
+the subjects lack of understanding of his new surroundings. Thus, the
+subject is allowed new saving throws vs. spells every so often based on
+his Wisdom score. If a saving throw is successful, the subject returns
+to reality with much of the memory of the illusory life, though no new
+abilities are retained. New saving throws are allowed on the following
+schedule:
+
+Subject’s Wisdom
+Score 	Time Between
+Saving Throws
+under 3	2d4 days
+3 - 6	1d4+1 days
+7-10	2d8 hours
+11-14	1d8+1 hours
+15-18	1d4 hours
+19 and up	1d4 turns
+
+The material component is a sketch of the environment in which the
+subject will stay. If the sketch is marred or destroyed during the
+spell’s duration, the subject immediately returns to reality.
+
+*Monsoon*
+(Conjuration/Summoning)
+Level: 9
+Range: 0
+Components: V, S, M
+Duration: 2 turns/level
+Casting Time: 1 turn
+Area of Effect: 10d100 square miles
+Saving Throw: None
+This spell can only be cast in a climate which could have monsoons, such
+as a semi-tropical coastline. When cast, the spell conjures up the most
+powerful of wind and rainstorms to ravage the area. Winds come at
+hundreds of miles per hour, smashing boats and unstable struc- tures.
+Rain pounds the area, swamping piers and depressions. The spell causes
+siege damage as by a screw or drill on all structures and trees in the
+area of effect, and all unmoored ships must make sea- worthiness checks.
+(DUNGEON MASTER® Guide, pages 105 and 170). Creatures that cannot take
+adequate cover on high ground must save vs. paralyzation to avoid
+drowning. From the caster’s point of view, the most dangerous aspect of
+this spell is its range of zero. This means the caster must be amid the
+effect; if he is not protected, he is subject to the same effects as
+everyone else. The monsoon can be countered using a control weather
+spell, but the caster of that spell must roll greater than the monsoon
+creator’s Intelligence on a d20, with +1 added to the roll for each
+level that the control weather caster exceeds the level of the monsoon
+creator. Once the monsoon is unleashed, the caster has no control over
+it, and it may combine with existing weather conditions to have greater
+dura- tion and effect than anticipated.
+
+
+*Brahmin Spells*
+
+*Om*
+(Abjuration)
+Sphere: All
+Level: 1
+Range: 0
+Components: V
+Duration: Until ceased
+Casting Time: 1
+Area of Effect: Caster
+Saving Throw: None
+This simple chant creates a deep clar- ity in the caster’s mind. All
+outside sounds and sights are blocked out, allow- ing the priest to
+regain spells or hit points at a 50% faster rate; however, the priest
+cannot focus on anything outside him- self. Anything that disrupts
+concentration, such as an attack on the priest or a con- scious action
+by him breaks the spell. Spells cast on the priest are affected by the
+om spell. The priest is immune to sleep and charm effects while
+chanting, and receives a +4 on all saving throws that allow Wisdom
+bonuses; however, the priest forfeits saving throw bonuses for Dexterity
+or anything else requiring- conscious thought. Magical healing is not
+affected by the spell’s increased healing rate.
+
+*Sanctify ghi*
+(Alteration) Reversible
+Sphere: All
+Level: 1
+Range: Touch
+Components: V, S, M
+Duration: Permanent
+Casting Time: 8 hours
+Area of Effect: 2 ounces/level
+Saving Throw: None
+This augments the holy clarification of butter into a liquid substance
+called ghi. Cow or buffalo milk must be churned, boiled, and blessed to
+make holy ghi, which can be used on undead as holy water. When drunk,
+the holy ghi acts as a mild curative, healing 1d3 points of dam- age per
+ounce. The reverse of this spell, desecrate ghi, is used by evil priests
+to cre- ate a liquid butter version of unholy water, which harms
+paladins and Kshatriya. Either of these spells can be used to counter
+the other.
+
+*Karma sight*
+(Divination) Reversible
+Sphere: Divination
+Level: 2
+Range: 10 yards
+Components: V, S
+Duration: 1 round/level
+Casting Time: 2
+Area of Effect: 1 creature/level
+Saving Throw: Neg.
+This spell determines the number of karma points that a target creature
+has. (For rules on karma, see Legends & Lore, pages 124-126.) In
+creatures from soci- eties not based on India, it determines level or
+Hit Dice. Unless the creature is a willing target, it is allowed a
+saving throw vs. spells to avoid the revelation of its karma. This spell
+does not directly affect the mind of the target, so Wisdom bonuses and
+mind shielding do not help avoid the effect. The priest may examine
+multiple targets, but if a creature saves against the effect, it cannot
+be examined again during that casting of the spell. The reverse of the
+spell, karma musk, hides a subject’s karma for 24 hours, though any
+divine being can see through the mask.
+
+*Steep soma-juice*
+(Alteration)
+Sphere: Protection
+Level: 2
+Range: Touch
+Components: V, S, M
+Duration: One week
+Casting Time: 8 hours
+Area of Effect: 2 ounces/level
+Saving Throw: None
+This spell is per Legends & Lore, page 132. It is primarily for those of
+Indian societies, though others could be allowed to use it or their
+deities could grant it if the Dungeon Master desires. When the priest
+brews and blesses the soma plant’s leaves, he creates a powerful magical
+juice. Those drinking at least one ounce a week receive two benefits: an
+increase of one point of Constitution and immunity to non-magical
+disease. These effects dis- sipate at the end of a week without
+soma-juice. The priests generally restrict the usage of the juice to
+nobles and priests.
+
+*That art thou*
+(Divination)
+Sphere: Divination
+Level: 3
+Range: 0
+Components: V
+Duration: 1 round/level
+Casting Time: 1
+Area of Effect: 30’ radius sphere
+Saving Throw: None
+By uttering the phrase “tat tvam asi” (“that art thou”), the caster’s
+senses become one with all beings and objects within a 30’ radius sphere
+centered on the caster. The caster sees and feels everything sensed by
+every person, cater pillar, tree, and rock in the area of effect. (A
+first-time caster will be surprised how much a rock feels.) The onrush
+of sensory information allows the caster to know of all beings and
+objects in the area, includ- ing hidden and invisible creatures, traps,
+and magic items. The caster does not sense thoughts or detect powers of
+crea- tures and objects contacted. Because the spell accesses thoughts,
+any being whose thoughts are masked cannot be spotted solely with this
+spell. While the spell is in effect, the caster may take no other
+action, including movement and speech. The caster may discontinue the
+effect at any time during the spell’s duration.
+
+*See all faces*
+(Divination)
+Sphere: Divination
+Level: 4
+Range: 10 yards
+Components: V, M
+Duration: 1 round
+Casting Time: 4
+Area of Effect: 1 creature
+Saving Throw: Neg.
+This spell requires that an item belonging to the target be in the
+caster’s possession. When cast, an unwilling tar- get must make saving
+throw vs. spells or have all major aspects of his personality revealed
+to the caster. Thus, if the target is a mage, a rajah, a lothario, or a
+liar, the caster knows it. Note that the see all faces spell reveals
+only truly major aspects; if the aforementioned target also liked
+chocolate and raga music, this would not be revealed. Since this spell
+does not affect the mind, mind shielding and Wisdom bonuses are not
+effective defenses.
+
+*Pool of deeds*
+(Enchantment)
+Sphere: Divination, Elemental (Water)
+Level: 5
+Range: 10 yards
+Components: V, S, M
+Duration: 24 hours
+Casting Time: 6 turns
+Area of Effect: 1 pool
+Saving Throw: None
+The pool of deeds spell turns any pool of water, from as small as a
+birdbath to as large as a small lake, into a storyteller. The enchanted
+pool can recount the pub- licly known deeds of any one individual
+exactly as they happened. The subject may be living, dead, or even not
+yet born; the deeds may reflect the past, pre- sent, and even possible
+futures. The sur- face of the water reflects the images as if they were
+happening at the moment, and at the speed at which they occurred. The
+caster must know of the stories that he wants to reflect, but he need
+not know the details. If the caster wishes to reflect deeds that are not
+publicly known, he may try The subject makes a saving throw vs. spells
+to keep secrets unre- vealed; this roll is at the subjects level at the
+time of the revealed deeds.
+
+The caster may create a pool of deeds that reflects his own future, but
+the images may leave out critical details to prevent tampering with the
+future. The caster should expect whatever appears to come true,
+regardless of his efforts to change it. The pool is activated by toss-
+ing in a handful of colored powder.
+
+*Conceal lifeforce*
+(Abjuration)
+Sphere: Necromantic
+Level: 5
+Range: Touch
+Components: V, S
+Duration: 1 day/level
+Casting Time: 5
+Area of Effect: 1 creature
+Saving Throw: None
+This spell hides a being’s lifeforce (shakti) from detection, preventing
+spells like karma sight and reincarnation sight from working on the
+creature. It can also be used for a much more dangerous pur- pose: to
+prevent the creature from being reincarnated, at least temporarily. By
+cast- ing conceal lifeforce on a creature within an hour of its death,
+the creature’s self (atman) is hidden from the divine agents who attend
+to reincarnation. During the spell’s duration, the character may be
+raised or resurrected. (This should be the only way raise dead or
+resurrection can be used on a character from an Indian- based culture or
+with an Indian-based PC kit more than a day after death; see Legends &
+Lore, page 126.) Using this spell for this purpose is a violation of the
+cos- mic order and may trigger divine wrath.
+
+*Reincarnation sight*
+(Divination)
+Sphere: Divination, Necromantic
+Level: 6
+Range: Special
+Components: V, S, M
+Duration: 1 round
+Casting Time: 6
+Area of Effect: 1 creature
+Saving Throw: None
+This spell reveals the presence of a reincarnated character. Using a
+piece of clothing belonging to the original charac- ter, the priest may
+use this spell to dis- cover the reincarnation of that charac- ter’s
+name, appearance, and approxi- mate location. If found, a reincarnation
+has only vague memories of his past and will be unlikely to recognize
+any of his compatriots. The spell can cross planar barriers, but it
+cannot penetrate barriers like conceal lifeforce or amulets of life pro-
+tection.
+
+A second use of this spell is to reveal to a person all of the memories
+of one of his reincarnations. The priest needs merely to touch the
+subject, and he knows all that his past life contained. Using the two
+uses of this spell in order can reacquaint old friends, at least in a
+superficial way. (Note that these spells allow a slain PC to rejoin the
+campaign with his memories intact, and perhaps his level and abilities.
+See the reincarna- tion table on page 126 of Legends&Lore.)
+
+*Penetrate cosmic ignorance*
+(Divination)
+Sphere: Divination
+Level: 7
+Range: 0
+Components: V, S
+Duration: Special
+Casting Time: 7
+Area of Effect: 10'/level radius
+Saving Throw: Special
+This dangerous spell is based on the age-old belief that the world is
+just illu- sion and that mortals may not compre- hend it. Penetrate
+cosmic ignorance allows a partial piercing of that veil. When cast, the
+spell reveals the divine hands behind every creature and object present.
+The caster learns of characters’ patron deities, consecrated spaces,
+holy relics, spell residue, and extra-planar creatures. It tells every
+character’s level, every magic item’s power, and every monster’s spe-
+cial abilities, among many other revela- tions. Wherever the hands of
+deities manipulate life — and they do so every- where — the priest will
+know it. Using this spell requires the caster to make a saving throw vs.
+breath weapon, modified only by Wisdom bonuses. If the character fails,
+he is driven insane by the revelation; if ever cured, he forgets
+everything he saw. In addition, using this spell wipes all other spells
+from the cast- er’s mind, and the character must rest a full night
+before learning new ones.
+
+*Call avatar*
+Sphere: All
+Level: 7
+Range: Unlimited
+Components: V, S, M
+Duration: Special
+Casting Time: 6 turns
+Area of Effect: Special
+Saving Throw: None
+This risky spell allows the priest to summon an avatar of his deity. The
+spell opens up a gate to another plane, and, though the avatar is
+compelled to come through the rift, it is not compelled to stay more
+than an instant. Even if it chooses to hear the requests of the priests,
+the avatar may or may not grant them. The avatar may also make demands
+on the priest as well, and the priest would do well to heed them. The
+avatar may stay as long as it likes, often at great expense to the
+caster. The spell requires a relic of the deity in question; when the
+avatar leaves, it takes the relic with it. Casting this spell ages the
+caster five years.
+
+
+      === Dragon #227 ===
+
+The higher-level spells can create an awesome display that would make
+any opponent think twice about tangling with the manipulator of such
+magic. Inventive players and DMs should be able to put a fireworks mage
+(a special-ist) to quite good use.
+
+Dungeon Masters can make the use of firework spells more interesting and
+challenging by specifying particulars regarding their casting. For
+instance, in my campaign, spellcasters can dictate the color of the
+spell effects when casting spells by manipulating their choice of
+material components; otherwise the col-ors are random. (Specifying
+colors in material components adds considerably to their manufacturing
+value.) The fireworks spells noted below all draw their substance and
+energy from the quasi-elemental plane of Radiance. Creatures from the
+elemental plane of Fire suffer half damage from any physi-cal effects.
+Creatures from the quasi-ele-mental plane of Radiance or the positive
+energy plane suffer no damage. A subtle difference in the verbal
+com-ponent allows the mage to render all firework spells harmless. This
+difference is most often (90%) included in spell instructions; however,
+there is a 10% chance that the spell is set for either a harmful or
+non-harmful effect. If the spellcaster is unfamiliar with firework
+spells, he may not know the difference. This often has disastrous
+results. While less effective in daylight, fire-work spells can still be
+used if the caster properly color-cues the components. The DM should
+adjudicate the visual effects — while not the damage — depending upon
+the light conditions.
+
+
+*First level*
+
+*Firecracker*
+(Evocation)
+Range: 90 yards
+Components: V, S, M
+Duration: 1 round
+Casting time: 1
+Area of Effect: 10’ radius
+Saving throw: None
+With this spell, the wizard creates small, firecracker-type explosions
+within the area of effect. One “string” of 10 fire- crackers is created
+per level of the caster. The strings appear 10 seconds after each other.
+The firecrackers appear in a 10’ radius and inflict 1 hp damage per
+string to all in the area. The firecrackers are loud and create quite a
+bit of acrid smoke that, unless dispersed by a strong wind, remains in
+the area for 1-3 rounds after the spell is finished. Any creatures in
+the area must successfully save vs. poison, or the smoke makes their
+eyes smart and water, giving them -1 on attack rolls. If the spell is
+used in a surprise situation, the party being surprised has a +4
+penal-ty to the die roll.
+
+The material component is several hairs from a black cat.
+
+*Sparkler*
+(Evocation)
+Range: 0
+Components: V, S, M
+Duration: 3 rounds/level
+Casting time: 1
+Area of effect: Special
+Saving throw: None
+This spell creates a sparkler effect that can originate from any metal
+object. It creates an intensely bright light at the end of the object
+which throws off harm-less sparks in a 2’ radius. The sparkler does not
+harm the object upon which it is cast. The effect sheds light in a 10’
+radius similar to torchlight. If the sparkler is touched to exposed
+flesh (including the caster’s), it inflicts 1 hp damage per level of the
+caster to a maximum of 10 hp. This causes the spell to end and the
+effect to go out. Dispel magic, darkness, and cold-generating magic does
+extin-guish this spell, but ordinary water does not. This spell can
+light a torch or tinder in 3 rounds, but it cannot directly light oil.
+Sparkler works normally underwater.
+
+The material component is a tiny strip of magnesium, which is not
+consumed in the casting.
+
+
+*Second level*
+
+*Flare*
+(Evocation)
+Range: 180 feet + 30 feet/level
+Components: V, S, M
+Duration: 9 rounds + 2 rounds/level
+Casting time: 5
+Area of effect: Special
+Saving throw: Neg.
+This spell creates a flare of light that shoots up into the air from a
+brass tube into which the caster has inserted a tiny strip of magnesium.
+The magnesium is consumed in the spell; the tube is not. The ball of
+light is only 1” in diameter when shot but bursts with a 10’ radius upon
+attaining the desired range. The ball slowly drifts to the ground at 20’
+per round. The flare continues to shed light in a spherical area whose
+diameter is equal to its maximum range throughout the spell duration
+regardless of its location. The brightness is equal in intensity to a
+light spell. Environmental light conditions affect the illuminatory
+effects of the flare, although the flare itself can be seen even in
+bright daylight. The flare is not hot and cannot set combustible objects
+on fire. It can be shot at any angle up, down, or across provided it can
+travel at least 90’. If the spell effect hits any object before
+traveling 90’, it automatically fails.
+
+The flare can be fired at a living target and, if used in this manner,
+acts as a light spell.
+
+*Goblin Chaser*
+(Evocation)
+Range: 60 yards + 20 yards/level
+Components: V, S, M
+Duration: 1 segment/level
+Casting time: 2
+Area of effect: Special
+Saving throw: None
+Goblin chaser sends a 3” diameter ball of light whistling along the
+ground in a direction indicated by the mage. The ball of light can
+travel either in a straight line (“shoot and forget”) or any course
+(“actively directed”) by the caster. The goblin chaser travels 100 yards
+per round. At the end of the spell’s duration, on impact, or sooner if
+so designated by the caster, the ball explodes with a brilliant flash of
+light inflicting 1 hp damage per level of the caster to any creature
+within a 5’ radius.
+
+The ball must travel along a solid sur-face or it fails. As the ball
+travels, it emits a shrill, downward glissando whistle.
+
+The material component is a silver-coated brass slide whistle worth at
+least 10 gp. The caster manipulates the whis-tle only for a brief
+moment, not for the entire casting time or duration of the spell. The
+whistle is not consumed in the casting.
+
+*Spark fountain*
+(Evocation)
+Range: 60 yards + 1 yard/level
+Components: V, S, M
+Duration: 3 rounds + 3 rounds/level
+Casting time: 2
+Area of effect: 20’ radius
+Saving throw: None
+With this spell, the caster creates a shower of brilliant, multi-colored
+sparks that shoot up in a fountain 8’ high. The fountain illuminates an
+area with a 20’ radius with the brightness of torchlight. Anyone in a 5’
+radius centered on the base of the fountain suffers 2 hp damage per
+round from the falling sparks. If the fountain is restricted in height,
+say through a low ceiling, the sparks fall outward 1’ further for each
+1’ of height it is restricted. It can be created only on a solid,
+nonliving surface at least the consistency of mud.
+
+The material component is a small, silver-coated brass cone worth at
+least 10 gp. The cone is not consumed in the casting.
+
+
+*Third Level*
+
+*Bakarapper*
+(Evocation)
+Range: 120 yards + 20 yards/level
+Components: V, S, M
+Duration: 1 round
+Casting time: 3
+Area of effect: 20’ radius
+Saving throw: None
+This spell can be quite deadly if used against aerial creatures. With
+bakarapper, the caster creates a 1” ball of light that shoots into the
+sky much like a flare. Upon reaching the designated target point,
+however, the ball disappears. Six seconds later, the ball explodes into
+sev-eral balls of light (one per level of caster) that fly out in random
+directions from the center and then explode inward six seconds after
+that. The initial explosion causes no damage; the second explosion
+inflicts 2 hp damage per level of the cast-er to any creature within a
+20’ radius from the initial explosion.
+
+When casting the spell, the spellcaster can add a thunderclap sound that
+increases the casting time to 4. The thun-derclap deafens all in the
+area of effect causing them a penalty of 2 on die rolls. This spell must
+be cast so that the initial ball of light is fired at a minimum of a 45°
+angle from the horizontal plane. It can be triggered at any distance
+beyond 3”.
+
+The material component is a hollow 3” silver ball worth at least 200 gp.
+The tube is not consumed in the casting.
+
+*Dragon Whirl*
+(Evocation)
+Range: 60 yards +10 yards/level
+Components: V, S, M
+Duration: 1 round/level
+Casting time: 3
+Area of effect: 5’ radius
+Saving throw: Half damage
+This spell creates a 1’ diameter circle of whirling sparks at the
+caster’s feet. The whirl sheds light in a 10’ radius. It shoots out in
+an arc to a target point designated by the caster and explodes into a
+sphere with a 5’ radius and inflicts 2d4 hp dam-age. A successful save
+vs. spell halves the damage.
+
+It acts like Melf’s minute meteors in that after the first whirl is
+created and sent out, subsequent whirls are created auto-matically each
+round thereafter. Each successive whirl is created and fired in the
+first few seconds of a melee round. The caster can fire the whirl and
+then cast another spell that round. The caster must designate a target
+each round or the spell stays in place, exploding at the end of the
+round. The spell can be discontin-ued by the caster before the duration
+expires naturally. The spell flies out at a rance of 1” per second.
+
+The material component is a silver likeness of a dragon worth at least
+250 gp. It is not consumed in the spell casting.
+
+*Roman Candle*
+(Evocation)
+Range: 120 yards
+Components: V, S, M
+Duration: 1 round + 1 round/level
+Casting time: 3
+Area of effect: Special
+Saving throw: None
+The Roman candle spell fires small balls of light in a brightly colored
+array from a silver tube. The balls shoot out a rate of fire determined
+by the caster, but they cannot be fired faster than than one ball every
+20 seconds nor slower than one per round. The caster can target each
+ball separately. The balls are shot as if missile weapons fired by a
+warrior of the same level as the caster (for exam-ple, Roman candle
+balls fired by a 10th-level mage have the THAC0 of a 10th-level
+warrior). Upon impact, each ball inflicts 1 hp damage for each level of
+the caster. If the ball misses, it travels to its range limit (unless it
+hits another object in the line of fire) and explodes, inflicting 1 hp
+damage on anyone within a 5’ radius.
+
+The mage must continue to direct the silver tube or (unless the spell is
+discon-tinued by the caster) the balls go off in the direction the tube
+is facing until the spell expires. If cast at a rate of one per round,
+the caster can place the tube in a safe place (on the ground, in a belt,
+etc.) and cast another spell, much as with Melf’s minute meteors. It
+takes several seconds to place, and another few to recover the tube. At
+the one-per-round rate, the balls always shoot out in the first few
+seconds. The rate of fire cannot be changed once the spell is cast.
+
+The material component is a 1” diameter tube of pure silver which is at
+least 6” long. It must be worth at least 150 gp in workmanship. It is
+not consumed in the spell casting.
+
+
+*Fourth Level*
+
+*Special Effects*
+(Alteration)
+Range: 0
+Components: V, S
+Duration: 1 turn/level
+Casting time: 1 round
+Area of effect: Special
+Saving throw: None
+With this spell, the caster can shape the physical characteristics of
+his fire-work spells. This spell also effects any spell that can be
+bound by a display spell. Thus a wall of fog can be formed into a
+mountain shape, or a starburst can burst into a phalanx of spears. The
+caster “shapes” his fireworks spells as he casts them, adding half a
+round to the casting time of each individual spell.
+
+*Starburst*
+(Evocation)
+Range: 180 yards + 20 yards/level
+Components: V, S, M
+Duration: 1 round
+Casting time: 5
+Area of effect: Sphere up to 800 yards in diameter
+Saving throw: Half
+Perhaps the most spectacular of the fireworks spells, starburst creates
+a huge aerial burst of colored sparks. Like bakarapper, it must be fired
+upward at least 45° angle from the horizontal. The initial effect is a
+1’ diameter ball of light that explodes at a designated point and sends
+multicolored sparks outward in a brilliant display. Any creature caught
+in the area of effect suffers 2d4 hp damage, plus 1 hp damage per level
+of the caster. The initial ball of light must travel for at least 90’ or
+it fails, The spellcaster can add a thunderclap sound at the casting of
+the spell, increasing the casting time to 6. The thunderclap causes
+deafness to all in the area of effect, inflicting on them a 2 point
+penalty on die rolls.
+
+The material component is a platinum tube of fine workmanship worth no
+less than 500 gp.
+
+
+*Seventh Level*
+
+*Display*
+(Evocation)
+Range: 300 yards
+Components: V, S, M
+Duration: 1 turn/level
+Casting time: Special
+Area of effect: Special
+Saving throw: None
+This special spell binds several spells together into a single display
+or show. Display takes 1 round to cast for each spell that is bound. The
+caster must have all spells to be displayed memorized or immediately
+available on a scroll. The caster actually casts the spells during the
+casting of the display spell. This spell has the following effects:
+
+  * The timing, direction, areas of effect, and color of all spells
+    bound are dictated by the caster. Spells do not have to be cast
+    within the display spell in the same order that the caster desires
+    the outcome of the display to be.
+  * All spells can be designated as harm-ful or nonharmful. If
+    nonharmful, then only the light or noise effects causes any-one
+    undue distress. The spellcaster must know and use the difference in
+    the ver-bal component as the results are exactly as the spell is
+    cast. This is of particular importance for spells cast off scrolls
+    (which are set and cannot be changed by verbal components).
+  * The following spells can be bound by this spell: affect normal
+    fires, cantrip, light, dancing lights, phantasmal force, sparkler,
+    firecracker, improved phantasmal force, flare, goblin chaser,
+    pyrotechnics, dragon whirl, Roman candle, spark fountain, starburst,
+    bakarapper, fire burst, continual light, darkness 15’ radius, fog
+    cloud, magic mouth, audible glamour, wall of fog, special effects,
+    and sense shifting. Spells that manipulate the characteristics of
+    another spell (range, duration, etc.) can also be bound if cast
+    within the display spell.
+  * Bound spells activate according to the program designated by the
+    caster regardless of their original spell duration. 
+
+The material component of this spell is a silver wand encrusted with
+gems, the whole of which is worth at least 1,500 gp. The wand is not
+consumed in the casting.
+
+
+      === Dragon #228 ===
+
+Far below Waterdeep, where the labyrinths of Undermountain twist and
+spiral ever downward, treasure waits. One band of adventurers, braving
+the dangerous tunnels, came back battered and shaken – recovering only a
+book before escaping with their lives. But such a treasure it was – an
+ancient snakeskin-bound spellbook written in elvish. Among the
+enchantments inside were spells to attract powerful familiars. These
+creatures, which bind themselves to the wizards who cast the spells,
+imbue their mentors with wondrous abilities.
+
+*Find Companion*
+(Conjuration/Summoning)
+Third Level
+Range: 1 mile/level
+Components: V, S
+Duration: Special
+Casting Time: Eight hours
+Area of Effect: One creature
+Saving Throw: None
+This enchantment is similar to the first level spell find famil- iar;
+however, it brings to the caster an animal companion with enhanced
+abilities. The creature attracted benefits a wizard by conveying its
+sensory powers to its master, conversing with him, and serving as a
+guard, scout, or spy. A wizard can have only one animal companion at a
+time, though he also can have a normal familiar drawn by the first level
+spell. The animal companion enters into a magical bond with the wizard
+and will no longer age at the rate a similar normal ani-mal would. The
+animal lives as long as its wizard mentor–unless it is killed earlier by
+spells, phys-ical attacks, or neglect. In addition, like a familiar, the
+animal companion gains the saving throws of its wizard-mentor. The
+wizard gains an empathic link with the ani-mal and can issue it mental
+commands at a distance of up to 10 miles.
+
+Because it is enhanced through the casting of the find com- panion
+spell, such an animal usually has more hit dice and a better Armor Class
+than a creature like it would normally pos-sess. Its hit points are
+improved also. In addition to rolling hit points based on the animal’s
+hit dice, a number of hit points are added equal to the caster’s level –
+to a maximum of 20. For example, a 7th-level wizard with a badger
+companion would add 7 hit points to the creature’s total. A 9th-level
+wizard would add 9.
+
+Wizards can call upon these creatures to perform various tasks and
+missions and can rely upon their innate magical abil-ities. Smarter than
+a natural creature, companions easily can carry out basic orders and can
+understand when their masters are in danger. All animal companions
+initially have a Neutral alignment. Through association with the wizard,
+however, the companion assumes the same alignment as its master.
+
+If the companion is separated from its wizard mentor by more than 50
+miles, the wizard loses one hit point a day until he dies (at which time
+the companion also dies) or until the companion returns to within the
+50-mile radius. These improved familiars gain the saving throws of their
+wizard-masters.
+
+If the companion is killed, the wizard must successfully roll an
+immediate system shock check or lose two levels of experi-ence. If the
+check is successful, the wizard loses one level of experience.
+
+Companions vary in power and abilities, and the type of companion gained
+is random. Roll 1d20 and consult the following chart:
+
+1	Raccoon	11	Monkey
+2	Badger	12	Snake
+3	Winged serpent	13	Stag
+4	Rat	14	Otter
+5	Spider	15	Fox
+6	Iguana	16	Wolf
+7	Talking owl	17	Horse
+8	Falcon	18	Cooshee
+9	Vulture	19	Brown bear
+10	Bat	20	Cheetah
+
+Badger: HD 2+1; AC 3; THAC0 19; #AT 3; Dmg l–3/1–3/1–4; MV 9, burrow 6;
+SZ S A sturdy burrowing animal with thick hair, a badger is a loyal and
+fierce com-panion. A wizard who has this animal as a companion develops
+a patch of white hair at the top of his head, just as a bad-ger has a
+patch of white hair on the top of its head. Some wizards cover up this
+patch so others will not learn about the presence of a badger companion.
+
+A badger companion, once a day, can add 15 bonus hit points to its
+wizard-master and confer to its master an AC of 3. The Armor Class
+benefit does not apply if the wizard already has an AC of 3 or better.
+This is done at the wizard’s request or if the badger senses its master
+is in serious danger. The added hit points and Armor Class remain for
+six turns (one hour). The badger does not lose any of its hit points,
+nor does its Armor Class worsen in the process.
+
+Bat: HD 1+2; AC 7; THAC0 20; #AT 1; DMG 1–3; MV 1; FI 24 (B); SZ T A bat
+companion is small and has a wingspan of 6”–1’. Bats come in shades of
+gray, brown, and black, and their wiz-ard companions’ hair quickly
+matches the hue of the bats’ leathery wings. A bat companion is loathe
+to be about during the day – unless in an underground set-ting. During
+the daylight, its movement rate is cut in half. At night, because of its
+sonar, it has the equivalent of infravision to 120’ and can ignore the
+effects of fog and magical darkness. Once an evening, it allows its
+wizard-master to fly with a movement rate of 12 (B), and to trans-form
+himself into a bat with a flying rate of 24 (B). These abilities last
+for 1d6 +2 turns (30 to 80 minutes).
+
+Brown bear: HD 5+5; AC 5; THAC0 15; #AT 3; Dmg 1–6/1–6/1–8; SA hug; MV
+12; S L An aggressive hunter that stands 9’ tall, a bear companion gifts
+its master with the hunting proficiency at a score of 18. This companion
+animal has such keen senses that three times a day he can detect
+illusions within a 30’ radius. This information can be readily passed to
+its wizard-master. A wizard with this com-panion grows long, thick,
+shaggy hair.
+
+Cheetah: HD 4; AC 4; THAC0 16; #AT 3; Dmg 1–3/1–3/1–8; SA rear claws 1–3
+each; SD surprised only on a 1; MV 15, sprint 45; SZ M A sand-colored
+cat that stands 4’–4½’ tall, the cheetah is a skilled hunter that can
+naturally camouflage itself. It is surprised only on a 1. Unless
+springing to the attack, it has a 90% chance to go unseen in woodland
+set-tings, an 80% chance in farmlands or plains, and a 70% chance in
+shadowy buildings or underground areas. The cheetah possesses the
+following non-weapon proficiencies: hunting (15), track-ing (16), and
+survival (16). When its wiz-ard- master is within 30’ of it in an
+out-door setting, the effect is as if the wizard was wearing a cloak of
+elvenkind. Further, while the wizard is within 10’ of the cat, he is
+surprised only on a 1. The wizard companion develops cat’s-eyes.
+
+Cooshee: HD 4+3; AC: 4; THAC0 16; #AT 3; Dmg 1–4/1–4/2–8; MV 15, sprint
+45; SZ M Recognized as an elven dog, the cooshee only barks to warn its
+wizard-master of danger. A cooshee companion can puss without truce at
+will, as per the 1st level priest spell, and allows its wiz-ard to do
+the same once a day. In addi-tion, the dog has infravision to 90’ can
+detect secret or concealed doors on a 1–2 on a six-sided die, can move
+silently in any woodland setting, and has the tracking nonweapon
+proficiency at a score of 18. A cooshee companion has a very magical
+nature, and once a day it can identify wizards within a 60’ radius. A
+wizard who has this animal for a com-panion has brown patches on his back.
+
+Falcon: HD 2; AC 4; THAC0 19; #AT 3; Dmg 1–3/1–3/1–3; MV 1, fly 36 (B);
+SZ S Small, maneuverable birds of prey, falcons form fast bonds with
+their mas-ters. Like the falcon, the wizard gains a taste for raw meat
+and periodically has an urge to hunt for his dinner. A falcon companion,
+once a day, allows its mas-ter to cast a 1st, 2nd, or 3rd level spell
+through it. For example, a wizard with a falcon flying high overhead
+could cast a magic missile or a web at a foe that would otherwise be out
+of the wizard’s range.
+
+Fox: HD 2; AC 6; THAC0 19; #AT 1; Dmg 1–6; MV 15; SZ S A member of the
+dog family, foxes are noted for their bushy tails and large erect ears.
+A wizard who gains a fox companion also gains a slight point to his
+ears, making others suspect that there is a hint of elvish blood in his
+lin- eage. Elves gain an even more pro-nounced point to their ears.
+Especially clever and quick, foxes bestow improved movement, so that the
+wizard has a maximum normal movement rate of 15.
+
+Three times a day a fox companion is able to dimension door into trees
+and bushes, similar to the way a dryad can dimension door into an oak
+tree. The fox can stay in a tree or bush as long as it or its
+wizard-master desires. Once a day the fox can confer one of its
+dimension door uses to its master. However, the wizard can stay inside a
+tree for only up to eight hours. At the end of that time, the wizard
+finds himself expelled from the tree.
+
+Horse: HD 4+4; AC 6; THAC0 16; #AT 2; Dmg 1–8/1–8; MV 15, gallop 30; SZ
+L A companion horse is large and mus-cular, an impressive mount that is
+tremendously loyal to its master. It can travel long distances without
+tiring, and it can fend for itself, feeding on plants and grasses – even
+locating food for its master, if necessary.
+
+Twice a day, at its master’s request, a companion horse can determine
+how many spells remain in a designated wiz-ard’s memory. However, it
+cannot deter-mine the levels or kinds of spells. A wiz-ard with this
+companion comes to favor apples, oats, and sugar.
+
+Iguana: HD 2; AC 6; THAC0 19; #AT 1; Dmg 1–4; MV 9, climb 6; SZ S A
+large herbivorous green lizard with a dorsal crest, an iguana companion
+per-haps best serves as a guard for its wizard master or his home and
+treasures. A wiz-ard who attracts this animal through the find companion
+spell quickly loses an appetite for meat. Like his iguana com-panion,
+the wizard now prefers fruits and vegetables.
+
+Once a day, an iguana can be com-manded to guard an object or
+individual. If the object or individual is threatened, the iguana
+changes form to defend its charge. It retains this new form for 3d4
+turns (30 minutes to two hours): HD 6; AC 0; THAC0 13; #AT 1; Dmg 4–16;
+MV 18, climb 12; S M. In addition, once a day the iguana can cast a
+strength spell upon its master. The spell grants the wizard 1d4
+additional points of Strength, which lasts six turns (one hour).
+
+Monkey: HD 2+1; AC 7; THAC0 19; #AT 1; Dmg 1–3; MV 9, climb 9; SZ S A
+small primate with a long tail, a monkey is fiercely loyal to its
+master. The wizard with this companion prefers to eat fruits, nuts, and
+the occasional insect. The wizard gains the ability to climb trees at
+90% and to climb walls at 50%.
+
+Twice a day, the monkey can call upon an innate jump ability, as per the
+spell, with each session lasting 10 rounds and allowing him to travel
+much farther than would normally be possible. Also twice a day, the
+monkey grants to its master the ability to speak with mon-keys, as per
+the speak with animals spell. Each use of this ability lasts 1 turn.
+
+Otter: HD 2; AC 4; THAC0 19; #AT 1; Dmg 1–3; MV 12, swim 18; SZ S Having
+webbed and clawed feet and dark brown fur, an otter companion is a fast
+and agile swimmer that gifts its mas-ter with the swimming proficiency
+at a score of 18 and a swimming movement rate of 12. A wizard with such
+a compan-ion has no desire to eat red meat. He prefers fish above all
+other foods – raw or cooked – and goes out of his way to dine on
+freshwater fish.
+
+Twice a day, an otter companion can breathe water as if it were air for
+up to four hours at a time. If it desires, or if the wizard requests it,
+the otter can bestow one of those water-breathing uses upon its master.
+
+Raccoon: HD 2; AC 8; THAC0 19; #AT 1; Dmg 1–4; MV 9, swim 9; SZ S A
+small, flesh-eating mammal with a bushy, ringed tail, the raccoon
+bestows on its wizard master a 40% chance to climb walls and an 80%
+chance to climb trees. Like his animal friend, the wizard prefers to eat
+meat – and only eats veg-etables or fruit when there is no meat
+available. The raccoon is a timid animal and only ventures into
+dangerous terrain when commanded.
+
+Raccoons see well in darkness, and once a day – at its master’s request
+– it can grant the wizard infravision to 60’. This ability lasts 1d4
+hours. If its master already possesses infravision, the rac-coon
+increases its master’s infravision range by 25% during this time.
+
+Rat: HD 2; AC 6; THAC0 19; #AT 1; Dmg 1–3; MV 15, swim 6; SZ T A small
+gnawing mammal with white, brown, or black fur, a rat serves as an
+excellent spy. A wizard with this creature as his animal companion
+quickly learns that his hair matches the color of his companion rat.
+
+Once a day, the rat can assume gaseous form for one hour. If the rat
+does not assume gaseous form at all during the course of a day, it can
+instead confer upon its master the ability to turn gaseous. This request
+must be made by the wizard.
+
+Snake: HD 3+1; AC 5; THAC0 18; #AT 2; Dmg 1–3 (bite)/1–3 (constrict); MV
+9; SZ S A 5’–6’ long constrictor, the snake causes its wizard-master’s
+tongue to thin slightly and to fork. The wizard gains a permanent +2
+bonus to saving throws vs. snake poison.
+
+Twice a day, the snake can transform itself into a wooden staff. Each
+transfor-mation lasts up to two hours. If used as a weapon, the staff
+inflicts 1d6 hp dam-age. The staff has the snake’s Armor Class and can
+withstand the snake’s hit points in damage before it – and the snake –
+are destroyed. Once a day the wizard can meld form with the snake,
+though not while it is a staff. During the meld, the snake assumes the
+wizard’s hit points and movement rate. The wizard cannot cast spells
+while melded with the snake. The meld lasts 1d4 +4 turns (50–80
+minutes), with the wizard being able to break the meld earlier.
+
+Spider: HD 1; AC 7; THAC0 20; #AT 1; Dmg 1–2; MV 12, web 9; SZ T The
+smallest of animal companions, the spider is roughly 2”–3” across.
+Attracting this creature through the find companion spell causes the
+wizard’s eyes to become black and glossy. Those look-ing closely at him
+see the faint outline of a spider in the center of his pupils. A spi-der
+is small enough to slip into most places unseen, acting as an excellent
+information-gatherer for its master.
+
+Three times a day the spider can con-fer upon the wizard the spider
+climbing ability, as per the spell. The duration of each use is 1–3
+turns (10–30 minutes), and the wizard must communicate his desire for
+the ability. In addition, the wiz-ard gains a +2 to his saving throws if
+a web spell is cast in his vicinity.
+
+Stag: HD 4+2; AC 6; THAC0 17; #AT 1; Dmg1–8; MV24; SZ M As tall as a
+horse, though lacking some of the bulk, the stag is an elegant-looking
+companion. It can be used as a mount by an unarmored wizard-master.
+Three times a day, at its master’s request, a stag can determine the
+alignment of a designated individual who is within 60 yards. The wizard
+with this companion grows twin nubs on the top of his head, roughly
+where antlers would be on a stag’s head.
+
+Talking owl: HD 3+2; AC 2; THAC0 18; #AT 1; Dmg 1–4/1–4/1–2; MV 1 fly 36
+(B); SZ S A diminutive bird of prey with a large head and a small hooked
+bill, the owl can fly at any time of the day, though it is clear the
+bird prefers to be about in the evenings. Its master soon feels more at
+ease when the sun sets, and he acquires a taste for small rodents. A
+talking owl speaks the language of its master, plus six additional tongues.
+
+The bird can detect good at will six times a day. However, if it forgoes
+any of the uses of that ability in a day, it can transfer them to its
+wizard-companion. For example, if a talking owl decided not to use its
+detect good ability during the course of a day, it could grant its
+master six uses of the detect good spell. The owl is immune to the
+following spells: cause fear, charm person, command, friends, hyp-
+notism, forget, hold person, ray of enfeeble- ment, scare, and fear.
+
+Vulture: HD 2+1; AC 5; THAC0 19; #AT 1; Dmg 1-4; MV 3, fly 27 (E); SZ M
+Scavengers with bodies roughly 2’ long and wingspans of up to 7’,
+vultures are far from the most attractive of animal companions. They
+have greasy-looking blue and black feathers over their bodies, save for
+their heads, which are bald and pink-skinned. A wizard with such a
+com-panion also is bald. Because vultures have a knack for finding dead
+creatures, three times a day they can detect undead: within a 120’
+radius. They suffer only half-damage from physical attacks of undead
+creatures, and they ignore the following effects caused by undead aging,
+level draining, fear, mummy rot, and paralyzation. A vulture bestows
+upon its companion the ability to ignore one aging or one level-draining
+attack per day. For example, a wizard with a vulture companion would
+ignore the first attack from a vampire that would normally cause a loss
+of two experience levels. However, a second attack by the undead would
+result in the level drain.
+
+Winged serpent: HD 4+4; AC 5; THAC0 15; #AT 1; Dmg 14; MV 12, fly 18
+(B); SZ L Colorful snakes with hues of green, blue, purple, yellow, and
+orange, these companions are 8’–10’ long and have wingspans of 10’–15’.
+The bite of a winged serpent is venomous, inflicting 1–4 hp damage the
+first round and 2–8 hp damage the following two rounds, save vs. poison
+for half damage. Three times a day the serpent can use a breath weapon,
+which consists of a cloud of dancing sparks 10’ in diameter. All those
+within the cloud suffer 2–16 hp damage, save for one-half, and the
+sparks ignite exposed flammable materials. The ser-pents are especially
+vulnerable to fire-based attacks, suffering a –2 saving throw. If they
+fail their saving throw against a fire attack, its wings are
+inciner-ated. The serpents cannot use their breath weapon while
+wingless. The ser-pents are immune to all electrical attacks, and they
+are able to regenerate their wings in 1–3 days. If they tuck their wings
+in close to their bodies they can spider climb at will. Once per day the
+ser-pent can transfer its breath weapon to its master. The wizard with
+this companion must spend 100 gp a month on special fruits and nuts for
+the winged serpent. After a few months in the company of this creature,
+the wizard’s diet starts to mirror the serpent’s.
+
+Dmg 2–5; MV 38; SZ S Wolf: HD 4; AC 6; THAC0 17; #AT 1; Standing between
+3’–4’ high at the shoulder, this companion confers upon its
+wizard-master a permanent +1 bonus to saving throws vs. charm attacks.
+The wolf also enjoys this benefit. In addition, twice a day the animal
+can turn itself into a worg with these statistics: HD 5; AC 5; THAC0 16;
+#AT 1; Dmg 2–8; MV 18; SZ M (4’–7’). The form lasts 2d4 turns.
+
+When in the presence of its wolf com-panion, the wizard is able to speak
+with wolves, as a speak with animal spell. A wizard with a wolf
+companion becomes almost exclusively a meat eater.
+
+
+*Find Minion*
+(Conjuration/Summoning)
+Sixth Level
+Range: 1 mile/level
+Components: V, S
+Duration: Special
+Casting Time: 12 hours
+Area of Effect: One creature
+Saving Throw: None
+This enchantment is similar to the first level spell find familiar and
+the third level spell find companion; however it brings to the caster a
+minion with powerful abili-ties. The creature attracted benefits a
+wiz-ard by conveying its sensory powers to its master, conversing with
+him, and serv-ing as a guard, scout, or spy. A wizard can have only one
+minion at a time, though he also can have a normal familiar drawn by the
+1st-level spell and a com-panion drawn by the third level spell. The
+minion enters into a magical bond with the wizard and no longer ages at
+the rate a similar normal animal would. The ani-mal will live as long as
+the wizard unless it is killed earlier by spells, physical attacks, or
+neglect. In addition, like a familiar or companion, the minion gains the
+saving throws of its wizard-mentor. The wizard gains an empathic link
+with the minion and can issue it mental com-mands at a distance of up to
+30 miles. In addition to rolling hit points based on a minion’s hit
+dice, a number of hit points are added based on the wizard’s level, to a
+maximum of 20 bonus hit points. For example, a 12th-level wizard with an
+owl-bear minion would add 12 hit points to the creature’s total. A
+16th-level wizard would add 16.
+
+Wizards can call upon these creatures to perform various tasks and
+missions and can rely upon their special abilities. Minions easily carry
+out basic orders and understand when their masters are in danger. If the
+minion is separated from the wizard by more than 100 miles, the wizard
+loses one hit point a day until the wizard dies (at which time the
+minion also dies) or until the minion returns to within the 100-mile
+radius. If the minion is killed, the wizard must successfully roll an
+immediate system shock check or loose two points of Intelligence. If the
+check is successful, the wizard loses one point of Intelligence. Minions
+vary in power and abilities, and those attracted by the spell are
+determined randomly. More information on each minion can be found in the
+Monstrous MANUAL™ tome. Roll 1d12 and consult the following table.
+
+1	Owl bear
+2	Elven Cat
+3	Blink Dog
+4	Umberhulk
+5	Unicorn
+6	Pseudodragon
+7	Displacer Beast
+8	Peryton
+9	Pegasus
+10	Dragonne
+11	Hippogriff
+12	Griffon
+
+Blink Dog: HD 4; AC 5; THAC0 17; #AT 1; Dmg 1–6; MV 12; SZ M A blink dog
+minion looks like a stocky mutt or mongrel, making their kind diffi-cult
+to distinguish or recognize as special. A wizard with this minion has
+unkempt, shaggy hair. Blink dogs have their own complex language of
+barks and yelps, which their masters can understand. These creatures
+have an innate ability to blink, with no possibility of ending up inside
+something solid. Roughly 75% of the time they are able to attack targets
+from the rear because of this ability. Twice a day, a blink dog minion
+grants to its wizard master the ability to blink, as per the spell for
+six rounds.
+
+Displacer Beast: HD 6; AC 4; THAC0 15; #AT 2; Dmg 2–8/2–8; MV 15; SZ L
+Looking like a puma with two tenta-cles, a displacer beast minion causes
+its master to have jet-black hair. This crea-ture retains its lawful
+evil alignment, no matter the alignment of its master – who it
+faithfully serves. Such a minion can: displace itself, allowing it to
+appear about 3’ from its actual location; make all saving throws as if
+it were a 12th-level fighter; cause attacking opponents to suffer a –2
+penalty. A displacer beast grants to lawful neutral and lawful evil
+wizard-masters the ability to displace themselves 1’–2’ from where they
+are actually standing for up to one hour a day. This ability acts
+effectively as a cloak of displacement, which is listed in the DUNGEON
+MASTER® Guide.
+
+Dragonne: HD 9; AC 6 flying, 2 ground; THAC0 11; #AT; Dmg 1–8/1–8/ 3–18;
+MV 15, fly 9 (E); SZ M A dragonne companion resembles a lion with long,
+feathery eyebrows and large, webbed wings. A wizard-master also gains
+overlong, feathery eyebrows. Three times a day this minion can emit a
+terrible roar that causes weakness in creatures within 120’ of it unless
+they make a successful saving throw vs. para-lyzation. Any creature
+within 30’ of the roar is deafened for 2–12 rounds, and all those
+hearing the roar suffer –1 on attack rolls. A dragonne’s master is
+immune to the effects of the roar. A dragonne minion is more powerful
+than its brethren. While they can fly for 1–3 turns at a time, the
+minion can fly for 2–8 turns.
+
+Elven Cat: HD 3+6; AC 4; THAC0 17; #AT 3; Dmg 1–2/1–2/1–3; MV 18, swim
+9; SZ T Looking like a normal house cat, often with gray or brown fur
+and black stripes, these minions have their own language and also
+understand the elvish tongue. Unlike other cats, they love water, and
+they are frequently found swimming or playing in streams and puddles
+when not performing a task or mission These minions are surprised only
+on a 1; impose a –5 to opponents’ surprise roll; enjoy a 99.9% chance to
+move silently and a 90% chance to hide in wilderness areas; and can leap
+20’ with ease. Further, they have limited ESP, can use enlarge and trip
+once a day, and can employ reduce and tree twice a day– at the 9th level
+of ability. Enlarge doubles the minion’s Hit Dice and damage; tree
+allows it to assume the shape of a tree limb. Once a day, they confer to
+their master the ability to use the enlarge or tree spell. This does not
+count against a wizard’s spell allotment, though it pre-vents the minion
+from using the chosen ability that day. A wizard with an elven cat as a
+minion develops a taste for swimming and playing in the water.
+
+Griffon: HD 7; AC 3; THAC0 13; #AT 3; Dmg 1–4/1–4/2–16; MV 12, fly 30
+(C, D mounted); SZ L Ferocious avians that look like the meld of a lion
+and a giant eagle, these minions, which can serve as mounts, are prized
+and powerful. A wizard with this minion either has his hair turn a
+golden brown, or his skin (50% chance for either.) Further, a wizard
+feels compelled to provide the minion at least one horse, Pony or donkey
+each week. In exchange, the griffon grants its wizard-master the ability
+to once a week control horses, as per the animal control potion. The
+wizard can influence the emotions and drives of 1d4+4 horses for 1d4+4
+turns (10 to 80 minutes).
+
+Hippogriff: HD 3+3; AC 5; THAC0 17; #AT 3; Dmg 1–6/1–6/1–10; MV 18, fly
+36 (C, D mounted); SZ L This monstrous hybrid of an eagle and a horse is
+one of the more prized minions. It will readily lay down its life for
+its wizard-master. Because of the bond established, the wizard cannot
+eat until he is certain his hippogriff is sated– even if that means
+offering the animal his food. Once a day it can change its form to that
+of a light riding horse, a shape it can hold for 3d6 turns (30 min-utes
+to three hours), and twice a day it can assume the form of a
+regular-sized eagle, a shape it can hold for 2d4 turns (20–80 minutes).
+The hippogriff gifts the wizard with the ability to speak with horses
+and to speak with eagles each once a day, as per the speak with animals
+spell.
+
+Owlbear: HD 5+2; AC 5; THAC0 15; #AT 3; Dmg 1–6/1–6/2–12; SA hug; MV 12;
+SZ L Appearing as a cross between a giant owl and a bear, these minions
+weigh in excess of 1,000 pounds and are often aggressive and vicious. A
+minion owl-bear will not fight to the death unless it is commanded to do
+so by its wizard-master or unless its master is in serious danger.
+Though these minions prefer heavily-wooded forests, they usually stay at
+their masters’ sides – no matter where he travels. Unlike other
+owlbears, these minions do not lay eggs. However, like their brethren,
+they hibernate in the win-ter – provided they and their wizard-masters
+live in lands that have such cli-mates. A wizard with this minion
+devel-ops a small crest of yellow-brown hair at the top of his head,
+mirroring the owl-bear’s crest. A minion owl bear possess-es one special
+ability: once a day, for 2d4+4 turns (one to two hours), it can assume
+the form of a giant owl or a brown bear. It retains its normal hit
+points and Armor Class during the trans-formation.
+
+Pegasus: HD 4; AC 6; THAC0 17; #AT 3; Dmg 1–8/1–8/1–3; MV 24, fly 48 (C,
+D mounted); SZ L A formidable winged steed, a minion Pegasus can be
+found in hues of white, gray, tan, and dark brown. Such a minion can
+understand most human common tongues. A Pegasus remains chaotic good,
+and over the course of a few months; its wizard-master’s alignment
+changes to chaotic good. A Pegasus min-ion can attack an opponent with
+its rear hooves, inflicting 2–12 hp damage; dive from 50’ or higher at
++2 to attack, with its front hooves inflicting double damage; and detect
+evil and detect good in a 60- yard range at will. The Pegasus’
+wizard-master is granted the ability to cast detect evil and detect good
+each once a day. A wizard with a Pegasus minion is only able to eat
+fruit, grass, and other plants.
+
+Peryton: HD 4; AC 7; THAC0 17; #AT 1; Dmg 4–16; MV 12, fly 21 (C); SZ M
+A peryton minion looks like a giant dark green eagle with a blue-black
+stag’s head, obsidian antlers, and red-orange eyes. Typically an evil
+creature, this min-ion’s alignment quickly changes to match that of its
+wizard-master. In return, its master’s eyes become orange-red. Such a
+minion gains +2 on all attack rolls, is immune to nonmagical weapons,
+and can plunge from several hundred feet at a target for an additional
++2 attack bonus. A wizard with a peryton minion gains an immunity to
+nonmagi-cal weapons once a day for 1d6 turns (10 minutes to one hour).
+
+Pseudodragon: HD 2; AC 2; THAC0 19; #AT 1; Dmg 1–3; SA poison sting; MV
+6, fly 24 (B); SZ T Resembling a miniature red dragon, a pseudodragon
+minion is +4 on attack rolls. Its poison is quite potent – all those who
+fail a saving throw against it fall into a state of catalepsy that lasts
+1–6 days. The creature’s chameleon-like power enables it to blend with a
+forest back-ground, giving it an 80% chance to be effectively invisible.
+A pseudodragon has infravision to 60’, can see invisible crea-tures and
+objects, and has a 35% magic resistance.
+
+Once a day, a pseudodragon minion will grant to its wizard master
+infravision of 60’ for 3d4 turns (30 minutes to two hours) and the
+ability to see invisible objects and creatures for 1d4 turns (10–40
+minutes). These abilities are grant-ed when the wizard requests them. A
+wiz-ard with this minion will grow a circular band of red scales about
+his wrists or ankles (50% chance for either location).
+
+Umberhulk: HD 8+8; AC 2; THAC0 11; #AT 3; Dmg 3–12/3–12/1–10; MV 6,
+bur-row 1–6; SZ L An umberhulk retains its chaotic evil alignment, even
+though it will obey its wizard-master, who can be of any align-ment.
+Wizards with these minions have eyes that look like blackened circles. A
+powerful subterranean creature, the umberhulk prefers to remain in dark
+confines, where it has a greater chance to surprise opponents. Like
+other umber-hulks, a minion can easily bite through hide or bone, cause
+opponents under-ground or in dark chambers to suffer a –5 penalty to
+surprise rolls; burrow; dig through stone; cause cave-ins; and cause
+confusion per the spell – if a victim looks into its eyes. This minion
+has infravision to 90’ and grants an evilly-aligned wizard-master the
+same infravi-sion ability. If the wizard is evil and is an elf or
+half-elf, his infravision range is increased to 180’.
+
+Unicorn: HD 4+4; AC 2; THAC0 15; #AT 3; Dmg 1–6/1–6/1–12; MV 2; SZ L A
+unicorn minion retains its chaotic good alignment, no matter the
+align-ment of its wizard-master and will unerr-ingly serve a master of
+any alignment. Such minions can sense an enemy up to 240 yards away,
+cause opponents to suf-fer –6 on their surprise rolls, gain a +2 bonus
+to hit, charge an opponent with its horn for 3–36 points of damage, and
+teleport themselves and their wizard-master once a day up to 360 yards
+away. These minions can never be charmed or held by spells, they are
+immune to death spells, and they make saving throws as if they were 11th
+level wizards. A unicorn minion will gift to a goodly-aligned
+wizard-master a perma-nent immunity to charm person or hold person
+spells – the choice is the wizard’s Because of the wizard’s close ties
+to its minion, his hair becomes stark white, matching the hair color of
+the unicorn.
+
+
+      === Dragon #238 ===
+
+*Spell Echo*
+(IlIusion/Phantasm)
+Level: 1
+Components: S
+Range: 0
+Casting Time: 1
+Duration: 1-2 rounds
+Save: None
+Area of Effect: Special
+This spell creates a silent illusory scene that depicts the operation
+(unleashing) of a previously-launched magic. The duration and size of
+the scene varies according to the nature of that previous spell’s
+effect, but it always includes its caster (or magical item acti-vator)
+if he was present at the time of the original magic taking effect, and
+any creatures in the immediate vicinity who were affected by the spell.
+
+Any amount of time can elapse between the original spell and the
+cast-ing of the echo, but the caster of the echo must occupy some part
+of the precise area of effect of the original spell, or the spot in
+which its caster or activator stood at the time, or the spell fails
+with-out effect. If multiple spells have taken effect in the area or
+have been cast from the spot chosen by the echo-caster, the caster is
+made aware of the race of the caster or activator of each, the school or
+sphere of each magic, and the approxi-mate time, and must choose to
+display just one of the previous magics from that information. Multiple
+spell echo spells can be cast in the same spot to “sort through”
+multiple previous enchantments, without affecting the “recalls.” This
+spell works only in Realmspace.
+
+A spell echo is purely an illusion, but it is known to be a true
+illusion, not suscepti-ble to alteration by any known magic — and
+therefore acceptable as evidence of who did what to whom in the past.
+
+*Scourge of Stars*
+(Alteration, Evocation)
+Level: 3
+Components: V, S, M
+Range: 0
+Casting Time: 6
+Duration: 12 rounds
+Save: None
+Area of Effect: Special
+This spell brings into being a weight-less whip extending from an
+appendage of the caster. It need not be grasped by the wizard (who can
+hold other items in a hand that it may extend from), but it does
+preclude other spellcasting on the part of its caster that requires
+somatic and mate- rial components. The whip appears as a band of shadow
+dotted with thousands of tiny, twinkling motes of light, and it strikes
+silently. It can’t be grasped or snagged on things, and its reach is the
+length of the casters appendage plus 10’.
+
+A scourge of stars strikes with, a THAC0 6 points, better than that of
+its caster, and it deals 2d4 hp damage per round. Any damage it inflicts
+is bestowed on its caster as extra or healing hit points (any excess hit
+points vanish when the scourge does, but until then, all damage suffered
+by the caster is taken first from these extra points). The scourge may
+strike only once in a round, can never harm its caster, and has no
+tangible existence (i.e., it can’t be tied to any- thing, or be cut by
+an opponent, or used to entangle a weapon).
+
+The material component of a scourge of stars is a string of nine
+diamonds or other clear, colorless faceted gemstones of any type and
+value. The gems must be pierced and have a single, continu- ous chain or
+cord running through each stone to link all of them. Other gems and
+adornments may be present, but all, are consumed in the spellcasting.
+
+*Firedart*
+(Evocation)
+Level: 4
+Components: V, S, M
+Range: 300 yards
+Casting Time: 2
+Duration: 2 rounds
+Save: ½
+Area of Effect: Special
+This spell brings into being one fiery dagger per level of its caster.
+These look like 4”-long knives whose blades are wavering tongues of
+flame and which flicker into existence around the casters head and
+shoulders. They can’t harm the caster who creates them or cause harm to
+any non-living material (they can’t ignite wood, cloth, paper, or any-
+thing else) but are deadly to living and undead targets.
+
+These firedarts fly at targets chosen by the caster. They must be
+visible to the caster as spellcasting begins, but they need not be so
+after; the firedarts follow and seek them, at MV Fly 20 (A), THAC0 4,
+two attacks allowed (the second only if the first misses). Contact with
+any magical barrier or spell effect, or passing out of spell range,
+causes a firedart to vanish instantly and harmlessly. A firedart that
+misses on both its attack attempts fizzles out and vanishes, harmlessly,
+wasted. One that strikes deals 1d4 hp piercing damage and is quenched,
+its magic expended. The tar- get is allowed a saving throw vs. spell,
+and if (and only if) that save fails, the dart also inflicts 1d4+1 hp
+fire damage.
+
+A caster can elect to hurl each firedart at a different target, or group
+them in attacks against various targets, or even “save” some to attack
+on the second round of the spell. All of the firedarts van- ish when
+they miss or hit, or if they haven’t been fired when the spell expires
+(the firedart spell ends instantly if the caster casts another spell
+during that second round). Decisions about the tar- gets of firedarts
+saved until the second round need not be made until that sec- ond round,
+but the targets are still limited to creatures visible to the caster
+when the spell is first cast.
+
+A common use of this spell is to strike out at a group of warriors
+attacking the caster, saving some firedarts to send against warriors who
+are still attacking after the first “wave” of firedarts have struck.
+
+The material components of a firedart spell are a fragment of flint and
+a feather. The feathers may be of any size and from any source.
+
+*Turnblade*
+(Alteration)
+Level: 4
+Components: V, S, M
+Range: Special
+Casting Time: 7
+Duration: 8 rounds
+Area of Effect: One weapon
+Save None
+This spell allows its caster to transform any weapon (any object that
+one being can lift and wield, that has in the past been used to cause
+damage to a living or undead creature, whether it is a rock or a garden
+stake or a broadsword) into any weapon of his choice.
+
+The “new” weapon must be a copy of an item the caster has personally
+seen before. Its size, appearance, composition and construction (e.g.,
+silver-coated, non-ferrous, or specific to a left- or right-handed user)
+conform to the turnblade-casters desires, but the new weapon has no
+magical properties beyond having +3 bonuses on all attack and dam-age
+rolls. Its base damage is that of the weapon-form chosen, regardless of
+size. For damage purposes, treat all weapons not easily classified as a
+standard weapon type as either a quarterstaff or a club, depending on
+rough overall size.
+
+This spell is most commonly used to transform a dagger into a long sword
++3 or a two-handed sword, or to turn a dagger into an axe when the
+latter weapon is needed as a tool (i.e., to chop through a door to
+freedom). The weapon can be wielded by anyone (even against the caster,
+or in defiance of the caster’s wishes) and — even if the caster
+deliberately chooses to forego the magical bonuses the spell affords —
+is considered a +3 magical weapon for purposes of determining what
+creatures it can hit.
+
+A turnblade spell can’t be ended before the weapon it affects has
+existed in its transformed state for eight full rounds. The weapon
+affected is the material component of the spell — and it is consumed by
+the magic, vanishing forever when the spell expires.
+
+*Backshift*
+(Alteration, Necromancy)
+Level: 8
+Components: V, S, M
+Range: 30 yards
+Casting Time: 1 turn
+Duration: Special
+Save: Special
+Area of Effect: One creature
+This spell forces its target (who must be visible to the caster when
+casting begins) back into previous body shapes the target has assumed.
+If it is cast on a creature that has never changed its shape, the spell
+is wasted. Purely illusion-ary disguises, and minor changes to the
+nature of a targets body such as in growing and aging do not count as
+“changes in shape.”
+
+The backshift spell forces its target back into the last three body
+shapes it has assumed that weren’t the targets own. If the target has
+taken fewer than three shapes since birth, the spell dis-plays all forms
+it has taken. The target creature appears into these shapes in reverse
+chronological order (that is, the most recently-taken form first) for
+one round each. If there are fewer than three shapes available, the
+spell cycles through them, never including the form the creature was
+using when first struck by the backshift.
+
+There is no saving throw against this initial part of the backshift, and
+this spell can force creatures into shapes not adapted for survival in
+the current sur-roundings (such as aquatic forms, on dry land). Target
+activities, such as spell-casting and weapon use, may be ham-pered or
+aided by the forms taken (dropping weapons is common), but the backshift
+spell itself doesn’t prohibit them.
+
+At the end of the third round, the vic-tim of a backshift is allowed a
+saving throw vs. spell. If the save succeeds, the spell ends, and the
+creature is instantly returned to the form it had at first con-tact with
+the spell.
+
+If the save fails, the caster of the spell can freely choose any one of
+the four forms (the initial one and the three forced “returns”) as the
+target creature’s new form. As the magic expires, it puts the target
+creature into the chosen form. This change is permanent unless altered
+by later magics, though the chosen form isn’t the creature’s “true”
+form, a simple dispel magic causes the creature to revert to its true form.
+
+Once a backshift has been cast, its caster is free to undertake other
+activi-ties during later rounds (while its victim is undergoing the
+spell effects). The death of the caster frees the target from the
+backshift immediately, but move-ment out of spell range does not.
+
+The material components of a back- shift are a strand of spiderweb, a
+whole, raw egg and a fragment of shell from an egg that has hatched.
+Both the whole egg and the shell fragment may come from any egg-laying
+creature, and they need not both be from the same indi-vidual or even
+species.
+
+This spell was originally developed to unmask individuals who employed
+shape-changing magics to conceal their identities when they openly
+carried out crimes. For safety reasons, a backshift spell is usually
+memorized by at least one senior participant prior to any “twenty
+transformations” game.
+
+*Mystra’s Unraveling*
+(Alteration, Enchantment)
+Level: 9
+Components: V, S
+Range: 0
+Casting Time: 1
+Duration: Instantaneous
+Save: None
+Area of Effect: 30’ radius
+This spell instantly destroys all spells and enchantments linked to,
+focused on, or held within items. Imprisoned beings are set free,
+magically-preserved items are exposed to all the aging they’ve been
+protected from, and so on. Magical items automatically lose their
+powers, and barriers and wards connected to doors, anchor points, or
+other solid things collapse. Items connected to other planes lose those
+connections; if the link- ages are to non-living items, those items are
+yanked fully into the plane wherein the unraveling is cast. All portions
+of a large item are affected if any part of it is within range of the
+unraveling.
+
+This magic has no effect on magical items touched by the caster during
+cast-ing or carried on the caster’s person. It also leaves untouched
+spell effects not attached to an item, including those that originated
+in magical item discharges. An unraveling reveals the multiple pow-ers
+of artifacts (to the mind of its caster only) in precise and fine
+detail, but it doesn’t affect or harm them — beyond the fact that its
+touch won’t activate an artifact, regardless of the artifacts nor-mal
+conditions for activation.
+
+Alternatively, an unraveling can be cast with a different incantation
+word. In such cases, it leaves magical items and artifacts completely
+untouched, and it works only against enchantments. It can affect such
+magics regardless of their age and origin, even if they are quies-cent,
+awaiting later activation, within an area or a being. Such an unraveling
+suc-cessfully destroys multiple linked enchantments without triggering
+their magics, penetrates all known barriers (including prismatic effects
+and antimagic shells), and is roughly the equivalent of four dispel
+magic spells.
+
+------------------------------------------------------------------------
+
+
+    Spells From FR11: Dwarves Deep
+
+/These spells were originally all clerical spells specific to the
+Dwarven Clerics in Dwarves Deep. However some of them have made the
+crossover to Wizard spells in the A.F.A.L. campaign. They are presented
+here. Priest and Wizard spell levels _and casting times_ are the same
+unless otherwise noted./
+
+*Hurl Rock*
+(Alteration)
+/Reversible/
+Sphere: Combat
+Level: 2
+Components: V, S, M
+Range: 10 yards/level
+Casting Time: 2
+Duration: 1 round
+Save: None
+Area of Effect: One rock (see below)
+
+This spell allows the caster to suddenly and violently use /telekinesis/
+on a loose rock, using it as a missile. Only stone can be used, either
+natural stone or petrified objects. The stone must be loose; it cannot
+be a block that is part of a wall, or a piece of a rock face or ceiling.
+The rocky projectile leaps from its resting position to attack with the
+caster's THAC0. The "range" of this spell refers to the distance between
+the caster and the potential stone missile. The projectile can leap up
+to 45 feet vertically and up to 45 feet horizontally. Determine where
+missiles land using the "Grenade-Like Missile Effects" table in the DMG.
+
+The caster can move up to 2 cubic feet/level. Rocks that are too large
+will be felt as such; the caster can choose another rock in the same
+round, but if it is also too large, the spell is wasted.
+
+At times it will be important to know what damage the missile itself
+sustains after being hurled; for instance, if it is a fragile, valuable
+object, or, say, a petrified companion. The missile itself suffers 2d4
+points of damage from its use in this spell and double that if it falls
+more than 50 feet in the process. This shatters the missile if it is
+brought to zero hit points. Assume rocky missiles to have an average hp
+total of 6 per 2 cubic feet, so that a rock of the maximum size that a
+3rd level caster can move (6 cubic feet) will have 18 hp.
+
+Rocky missiles that shatter spray shrapnel; all creatures within 10 feet
+of the landing site of a missile must save vs. spell or suffer 1d4+1
+points of damage.
+
+Any item struck by the missile or its shrapnel (see above) must save vs.
+"crushing blow". A being struck by the missile is hurt as follows:
+
+Rock Volume
+(in cubic feet) 	Damage
+1-2	2d4
+3-4	2d8
+5-6	2d10
+7-8	3d8
+9-10	3d10
+> 10	4d12
+
+The reverse of this spell, /rock shield/, allows the caster to deflect
+rocky missiles of all types and from all sources. The shield remains in
+effect for one round/level, infallible against all missiles whose edges
+contain or are made of stone. Once cast, it does not require continued
+concentration or further action. The deflections are in directions
+uncontrollable by the user of the shield. Use the "Grenade-Like Missile
+Effects" table, noting that deflections may hit companions of the
+/shield/-user.
+
+The material components of this spell are a suitable rock to serve as
+the projectile, a tiny pebble, held in the caster's hand and not
+consumed in the casting. The reverse of the spell requires two small
+pebbles and a translucent piece of glass, mica, ice, crystal, or a gem.
+
+*Rockburst*
+(Alteration)
+Sphere: Combat
+Level: 2
+Components: V, S
+Range: 10 yards/level
+Casting Time: 2
+Duration: 1 round
+Save: Special
+Area of Effect: 1 cubic foot/level
+
+This spell allows the caster to cause a boulder or rockpile to suddenly
+explode, propelling jagged shards in all directions. If the desired
+spell focus is larger than the volume the caster can effect, only part
+of it will fly about.
+
+Shrapnel endangers all beings within 20 feet of the spell focus. Beings
+within 10 feet must save vs. spell for half damage. Beings between 10
+and 20 feet distant who save successfully are allowed a second saving
+throw. If both rolls are successful, they avoid all damage (due to luck,
+dodging, and cover). If only one roll is successful, they take half
+damage. The presence of cover or armor does not automatically lessen
+damage due to the unpredictability of ricochets, bounces, and the like.
+
+The shrapnel does a base damage of 1d4+1 points per level of the caster
+(i.e. 1d4+1 points per cubic foot of rock). In rare cases, the explosion
+will remove enough rock to cause an avalanche or cave-in, but such
+results can rarely be deliberately caused with this spell.
+
+*Glowglory*
+(Alteration, Evocation)
+Sphere: Combat
+Level: 3
+Components: V, S, M
+Range: Touch
+Casting Time: 3
+Duration: Special
+Save: None
+Area of Effect: Secial
+
+This spell allows the caster to unleash /beams of power/ from
+/glowstones/, or make normal stone (in a surface area of up to one
+square foot per level of the caster) radiate a /continual light/
+radiance, for 1 turn/level.
+
+*Lesser Guardian Hammer*
+(Invocation)
+Sphere: Guardian
+Level: 3
+Components: V, S, M
+Range: Touch (of area to be guarded)
+Casting Time: 3
+Duration: Special
+Save: None
+Area of Effect: Special
+
+A /lesser guardian hammer/, is an invisible, hammer-shaped field of
+force that appears when a guarded door, lock, threshold, or area is
+disturbed (even years after the spell was cast). When activated, it
+charges through the air to strike the living thing nearest to the
+disturbed guardian area, or any being in the area (if there is more than
+one, determine target randomly).
+
+------------------------------------------------------------------------
+
+
+    Spells Found in Undermountain
+
+*Whirling Blade*
+(Evocation)
+Level: 2
+Components: V, S
+Range: 0
+Casting Time: 2
+Duration: 1 round/level
+Save: None
+Area of Effect: Special
+
+This spell creates a shimmering, translucent silvery blade of force
+equal in dimensions and damage to a long sword. It orbits one of the
+casters hands and strikes once per round as a magical weapon ( +1 to
+attack and damage rolls).
+
+The blade is weightless, and passes through metallic things as though
+they did not exist, without affecting them.
+
+Metal armor is discounted when determining armor class against blade
+attacks; i.e. targets receive dexterity and magical bonuses, but not
+metal shield and mail protection. Beings wearing leather armor have a
+base armor class of 8, studded leather also counting as AC 8 against
+blade attacks; creatures with naturally tough hides or natural armor
+plating have their usual armor classes!
+
+A whirling blade also passes through the body of its caster without harm
+- the caster is never imperilled by his own weapon. The blade cannot
+break, but is destroyed instantly by contact with a wall of force,
+anti-magic shell, or dispel magic spell.
+
+A whirling blade emits a continuous, high-pitched shrieking noise -
+vibrations of magical force that cannot be magically silenced - and
+therefore cannot be used with any measure of stealth. Note that the
+caster can hold or carry normal weapons and other inorganic objects in
+the hand wielding the whirling blade without hampering its functioning,
+unless the carried objects are so large as to obstruct the casters view
+of foes, or so heavy (10 pounds or more) as to hamper or significantly
+slow arm movement. This magical weapon exists for the duration given or
+until the caster concentrates on casting another spell, whereupon it
+vanishes. Wielding and actively using a weapon also disrupts the spell,
+canceling its effects prematurely.
+
+*Energy Transformation*
+(Alteration)
+Level: 6
+Components: V, S, M
+Range: 0
+Casting Time: 4 rounds
+Duration: Permanent
+Save: None
+Area of Effect: 40' radius sphere
+
+This complex spell creates a permanent, undetectable magical field. It
+absorbs magical discharges, such as spell effects and item functions,
+and uses them to power (that is, to extend the duration of) an existing
+magical spell or protection, with which the energy transformation is
+linked. The casting of the transformation must name this existing magic
+it is powering, and must also outline any desired limits on the
+absorption area of the transformation, within the limits of the area of
+effect given above. The spell field does not affect any magical items or
+weapons unless they are using a spell-like effect when they contact the
+field; in such cases, the energy transformation field absorbs the spell
+effect but has no further effect on the item or weapon.
+
+The field absorbs spells cast through its area of effect, and it absorbs
+spells of all types that come in contact with the field save abjuration
+and conjuration/summoning spells. Any external magical effects on
+weapons or items will be slightly hampered by the field; for example,
+glowing weapons or a continual light cast on a torch will visibly dim
+and flicker while passing through an energy transformation field.
+
+An example of the use of this spell would be a field around an icon,
+using spell energy to recharge a magical item within the icon itself.
+Only a Mordenkainens disjunction, limited wish or wish spell will
+destroy a single such field - a dispel magic will be absorbed by it,
+without having effect.
+
+The material components of this spell include no less than three
+permanent magic items (which are consumed in the casting), three drops
+of the casters blood, the eye of any living creature, and a powdered
+diamond of not less than 5,000 gp value.
+
+*The Curse of Forgetfulness*
+(Enchantment/Charm) Reversible
+Level: 7
+Components: V, S
+Range: Touch
+Casting Time: 2
+Duration: Permanent
+Save: None
+Area of Effect: One creature
+
+By means of this spell, a wizard bestows a special curse on another
+wizard which destroys the ability to comprehend certain spells. Lost
+spells cannot be memorized or even cast from a scroll; the mind of the
+victim of this curse simply cannot understand and enact them.
+
+Spells known to a victim are lost at random, beginning with spells
+currently memorized. One spell is lost instantly, and an additional
+spell is lost every ten days thereafter, until the victim forever loses
+all spell casting ability. A remove curse will not affect this special
+curse; a heal, limited wish or stronger spell is necessary.
+
+The reverse of this spell, bestow remembrance, reverses the effects of a
+curse of forgetfulness or a forget spell, Note that a successful to hit
+roll is required to confer either version of this spell upon an
+unwilling being.
+
+------------------------------------------------------------------------
+
+
+      Other Spells
+
+*Unseelie Servant*
+(Conjuration/Summoning)
+Level: 2
+Components: V, S, (M)
+Range: 0
+Casting Time: 2 rounds
+Duration: 12 hours + 3 hours/level
+Save: None
+Area of Effect: 60' radius
+
+The unseelie servant is similar to the unseen servant in that it
+conjures a type of magical automaton to perform simple taskes for the
+caster. Like the unseen servant, the unseelie servant can perform simple
+tasks like cleaning and fetching small objects but cannot fight. Unlike
+the unseen servant, the unseelie servant is visible and has a distinct
+form. It appears as an eight-inch, androgynous winged humanoid composed
+of magical darkness. The unseelie servant can walk at a speed of 6 or
+fly at 15 (MC B). It can fly with objects up to one pound, walk with up
+to three pounds, or drag an object of up to 6 pounds. If it moves more
+than 40 feet + 5 ft./level away from the caster, the servant is
+dispelled - it will follow commands that have this result.
+
+When it is not actively engaged in some task for its caster, the
+unseelie servant will sit on the caster's left shoulder and amuse
+itself. It cannot be discouraged from this behavior except by giving it
+another task to perform. If there is something else on the caster's left
+shoulder (ex. a parrot) the unseelie servant will sit on top of it. When
+sitting, the unseelie servant can rest on the point of a needle without
+harm. Otherwise, it is AC 3, has 6hp, and uses the item saving throw
+table. The unseelie servant avoids contact with the skin of living
+creatures other than the caster's left shoulder when not commanded
+otherwise and takes 1hp of damage per round from such contact. Those who
+have managed to touch one say it feels slick and cold. The unseelie
+servant is utterly silent. It is said that even grabbing it and smacking
+it against a bell until it is destroyed produces no sound.
+
+When commanding the unseelie servant, the caster must address it by name
+in the caster's native tongue. When /Unseelie Servant/ is first cast,
+the caster must choose a name for the servant. For unknown reasons, this
+name must be at least three syllables, start with K or Q, contain at
+least 1 X and end in Y (ex. "Kisgixy", "Quaxaty", "Kaxexixoxuxy".
+Likewise, if the caster conjures more than one unseelie servant at a
+time, each needs its own name. If the servant is destroyed by damage, a
+new name must be chosen at the next casting. The material component, a
+piece of jet of at least 20gp value, is only needed when a new servant
+is being named.
+
+------------------------------------------------------------------------
+
+Libraries 	Go to Libraries Page 	Libraries
+
+<http://flockhart.virtualave.net/afal/libraries.html>
+Go Home <http://flockhart.virtualave.net/afal/afal.html>
+

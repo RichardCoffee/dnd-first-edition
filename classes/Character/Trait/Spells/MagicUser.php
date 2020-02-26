@@ -1,11 +1,17 @@
 <?php
+/*
 
+'Magic Tailor' - fit clothes to a person
+'Fancy Hair' - a woman's spell
+'Replay of the Past' - lets caster, and others, see a past event
+
+*/
 trait DND_Character_Trait_Spells_MagicUser {
 
 
 	protected function get_spell_table() {
 		return array(
-			'Cantrips' => array(
+			'Cantrip' => array(
 				'Change'  => array( 'page' => 'UA 48' ),
 				'Chill'   => array( 'page' => 'UA 45' ),
 				'Clean'   => array( 'page' => 'UA 45' ),
@@ -16,6 +22,12 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'type' => 'Evocation',
 					'aoe'  => 'One person',
 				),
+				'Dry'     => array(
+					'kind' => 'Useful',
+					'page' => 'UA 45',
+					'type' => 'Abjuration',
+					'aoe'  => '1 cubic yard'
+				),
 				'Dust'    => array( 'page' => 'UA 45-46' ),
 				'Flavor'  => array( 'page' => 'UA 46' ),
 				'Freshen' => array( 'page' => 'UA 46' ),
@@ -24,7 +36,11 @@ trait DND_Character_Trait_Spells_MagicUser {
 				'Mouse'   => array( 'page' => 'UA 50' ),
 				'Palm'    => array( 'page' => 'UA 48' ),
 				'Rattle'  => array( 'page' => 'UA 51' ),
-				'Ravel'   => array( 'page' => 'UA 47' ),
+				'Ravel'   => array(
+					'kind' => 'Reversed',
+					'page' => 'UA 47',
+					'type' => 'Alteration',
+				),
 				'Salt'    => array( 'page' => 'UA 46' ),
 				'Shine' => array(
 					'kind' => 'Useful',
@@ -35,12 +51,23 @@ trait DND_Character_Trait_Spells_MagicUser {
 				'Smokepuff' => array( 'page' => 'UA 50' ),
 				'Sneeze'  => array( 'page' => 'UA 48' ),
 				'Spill'   => array( 'page' => 'UA 47' ),
-				'Tangle'  => array( 'page' => 'UA 48' ),
+				'Stitch'  => array(
+					'kind' => 'Useful',
+					'page' => 'UA 46',
+					'type' => 'Alteration',
+				),
+				'Tangle' => array( 'page' => 'UA 48' ),
+				'Twitch' => array(
+					'kind' => 'Person-Affecting',
+					'page' => 'UA 49',
+					'type' => 'Evocation',
+					'aoe'  => 'One creature',
+				),
 				'Tweak' => array(
 					'kind' => 'Personal',
 					'page' => 'UA 50',
 					'type' => 'Conjuration',
-					'aoe'  => 'One Creature',
+					'aoe'  => 'One creature',
 				),
 				'Untie' => array(
 					'kind' => 'Reversed',
@@ -48,6 +75,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'type' => 'Alteration',
 					'aoe'  => 'One object',
 				),
+				'Warm'    => array( 'page' => '' ),
 				'Whistle' => array( 'page' => 'UA 51' ),
 				'Wilt'    => array( 'page' => 'UA 48' ),
 				'Wink'    => array( 'page' => 'UA 49' ),
@@ -74,8 +102,16 @@ trait DND_Character_Trait_Spells_MagicUser {
 					),
 					'status' => 'armor_status',
 				),
-				'Burning Hands' => array( 'page' => 'PH 65', 'type' => 'Alteration', 'cast' => '1 segment',
-					'special' => sprintf( 'damage: %u hit points', $this->level ),
+				'Burning Hands' => array(
+					'page'     => 'PH 65',
+					'type'     => 'Alteration',
+					'range'    => 0,
+					'duration' => '1 round',
+					'aoe'      => '3 foot length in 120 degree arc',
+					'comps'    => 'V,S',
+					'cast'     => '1 segment',
+					'saving'   => 'None',
+					'special'  => sprintf( 'damage: %u hit points', $this->level ),
 				),
 				'Comprehend Languages' => array( 'page' => 'PH 66', 'type' => 'Alteration', 'cast' => '1 round',
 					'duration' => sprintf( '%3.1f turns', $this->level / 2  ),
@@ -84,8 +120,8 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'range'    => sprintf( '%u feet', ( $this->level * 10 ) + 40 ),
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
-				'Detect Magic' => array(
-					'page'     => 'PH 66, PH 45',
+				'Detect Magic (M)' => array(
+					'page'     => 'PH 66,45',
 					'type'     => 'Divination',
 					'range'    => '0',
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
@@ -189,14 +225,22 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'cast'     => '1 round',
 					'saving'   => 'None',
 				),
-				'Precipitation' => array( 'page' => 'UA 52, UA 34', 'type' => 'Alteration', 'cast' => '1 segment',
+				'Precipitation' => array( 'page' => 'UA 52,34', 'type' => 'Alteration', 'cast' => '1 segment',
 					'duration' => sprintf( '%u segments', $this->level ),
 				),
-				'Protection from Evil' => array( 'page' => 'PH 68, PH 44', 'type' => 'Abjuration', 'cast' => '1 segment', 'reversible' => true,
+				'Protection from Evil' => array( 'page' => 'PH 68,44', 'type' => 'Abjuration', 'cast' => '1 segment', 'reversible' => true,
 					'duration' => sprintf( '%u rounds', $this->level * 2 ),
 				),
-				'Read Magic' => array( 'page' => 'PH 69', 'type' => 'Divination', 'cast' => '1 round', 'reversible' => true,
-					'duration' => sprintf( '%u rounds', $this->level * 2 ),
+				'Read Magic' => array(
+					'page'       => 'PH 69',
+					'type'       => 'Divination',
+					'reversible' => true,
+					'range'      => '0',
+					'duration'   => sprintf( '%u rounds', $this->level * 2 ),
+					'aoe'        => 'Special',
+					'comps'      => 'V,S,M',
+					'cast'       => '1 round',
+					'saving'     => 'None',
 				),
 				'Run' => array(
 					'page'     => 'UA 52',
@@ -256,7 +300,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'saving'   => 'None',
 					'special'  => 'Commands: Coil; Coil & Knot; Loop; Loop & Knot; Tie & Knot; and reverses.',
 				),
-				'Continual Light' => array( 'page' => 'PH 70, PH 47', 'type' => 'Alteration', 'cast' => '2 segments' ),
+				'Continual Light' => array( 'page' => 'PH 70,47', 'type' => 'Alteration', 'cast' => '2 segments' ),
 				"Darkness 15' Radius" => array( 'page' => 'PH 70', 'type' => 'Alteration', 'cast' => '2 segments',
 					'range'    => sprintf( '%u feet', $this->level * 10 ),
 					'duration' => sprintf( '%3.1f turns', ( $this->level / 10 ) + 1 ),
@@ -312,7 +356,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'cast'     => '2 segments',
 					'saving'   => 'Negates',
 				),
-				'Stinking Cloud' => array( 'page' => 'PH 72, PH 59', 'type' => 'Evocation', 'cast' => '2 segments',
+				'Stinking Cloud' => array( 'page' => 'PH 72,59', 'type' => 'Evocation', 'cast' => '2 segments',
 					'duration' => sprintf( '%u rounds', $this->level ),
 				),
 				'Strength' => array( 'page' => 'PH 73', 'type' => 'Alteration', 'cast' => '1 turn',
@@ -342,7 +386,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 				'Cloudburst' => array( 'page' => 'UA 55', 'type' => 'Alteration', 'cast' => '3 segments',
 					'range' => sprintf( '%u feet', $this->level * 10 ),
 				),
-				'Dispel Magic' => array( 'page' => 'PH 74, PH 48', 'type' => 'Abjuration', 'cast' => '3 segments' ),
+				'Dispel Magic' => array( 'page' => 'PH 74,48', 'type' => 'Abjuration', 'cast' => '3 segments' ),
 				'Feign Death' => array( 'page' => 'PH 74', 'type' => 'Necromantic', 'cast' => '1 segment',
 					'duration' => sprintf( '%u rounds', $this->level + 6 ),
 				),
@@ -455,11 +499,28 @@ trait DND_Character_Trait_Spells_MagicUser {
 					'range' => sprintf( '%u feet', $this->level * 20 ),
 					'aoe'   => sprintf( ' %1$u x %1$u square area', $this->level * 10 ),
 				),
+				'Heat Metal' => array(
+					'page'       => 'PH 57',
+					'type'       => 'Alteration',
+					'reversible' => true,
+					'range'    => sprintf( '%u feet', $this->level * 5 ),
+					'duration'   => '7 rounds',
+					'aoe'        => sprintf( '%u man-sized creatures', intval( $this->level / 2 ) ),
+					'comps'      => 'V,S,M',
+					'cast'       => '4 segments',
+					'saving'     => 'None',
+					'special'    => sprintf( 'Max %u ) Mild: 1d6 (2,6);  Severe: 2d6 (3,4,5)', intval( $this->level / 2 ) ),
+					'apply'      => 'magicuser_fourth_heat_metal',
+					'filters'    => array(
+						array( 'dnd1e_new_seg_enemy', 'magicuser_heat_metal_effect', 10, 2 ),
+					),
+					'status' => 'magicuser_heat_metal_status',
+				),
 				"Leomund's Secure Shelter" => array( 'page' => 'UA 57', 'type' => 'Alteration,Enchantment', 'cast' => '4 turns',
 					'duration' => sprintf( '%u hours', $this->level ),
 					'aoe'      => sprintf( '%u square feet', $this->level * 30 ),
 				),
-				'Plant Growth' => array( 'page' => 'PH 79, PH 58', 'type' => 'Alteration', 'cast' => '4 segments',
+				'Plant Growth' => array( 'page' => 'PH 79,58', 'type' => 'Alteration', 'cast' => '4 segments',
 					'range' => sprintf( '%u feet', $this->level * 10 ),
 					'aoe'   => sprintf( ' %1$u x %1$u square feet area', $this->level * 10 ),
 				),
@@ -493,7 +554,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 				'Airy Water' => array( 'page' => 'PH 80', 'type' => 'Alteration', 'cast' => '5 segments',
 					'duration' => sprintf( '%u turns', $this->level ),
 				),
-				'Animal Growth' => array( 'page' => 'PH 80, PH 61', 'type' => 'Alteration', 'cast' => '5 segments', 'reversible' => true,
+				'Animal Growth' => array( 'page' => 'PH 80,61', 'type' => 'Alteration', 'cast' => '5 segments', 'reversible' => true,
 					'duration' => sprintf( '%u rounds', $this->level ),
 					'special'  => "Up to 8 animals in a 20' square area",
 				),
@@ -573,7 +634,7 @@ trait DND_Character_Trait_Spells_MagicUser {
 		static $table = null;
 		if ( $table ) return $table;
 		$table = array(
-			'Cantrips' => array(
+			'Cantrip' => array(
 				'Cough' => 'This cantrip enables the caster to make the subject individual cough spasmodically. If a saving throw is made, the cough is only a brief hacking which will not usually disturb other activities. Failing the saving throw indicates the victim is affected by a loud and active series of coughs lasting from 1 to 3 seconds. The somatic component is a gagging gesture while a gasp is verbalized.',
 				'Shine' => "Similar to the polish cantrip, this magic allows the caster to remove tarnish, rust, corrosion, and similar substances from the desired object. This cantrip brings about a mirror-bright shine to objects capable of such, causing their surfaces to be smooth and unmarred. A piece of jewelry, for instance, would be made more attractive, and the gems (only) of such a piece might be actually made more valuable: If base value of the gem(s) in a piece of jewelry was originally decreased, and a shine cantrip is used upon the object, then the owner may (if desired) find out whether the value of the gem(s) has been changed. (The DM should roll again on the \"Increase or Decrease of Worth Beyond Base Value\" table on page 26 of the DMG, with a -1 modifier to the die roll.) No gem can be \"re-valued\" in this manner more than once.
 A single object up to about 1 cubic yard in volume can be treated by this cantrip. Its components,are similar to those of polish.",
@@ -614,7 +675,7 @@ The components necessary for the casting of this dweomer are nitre and sulphur f
 				'Sepia Snake Sigil' => 'There are three forms of this spell, but each eventually causes the conjuration of a deep brown snake-like force. This so-called sepia snake springs into being and strikes at the nearest living creature (but the sepia snake will not attack the magic-user who cast the spell). Its attack is made as if it were a monster with hit dice equal to the level of the magic-user who cast the dweomer. If it is successful in striking, the victim is engulfed in a shimmering amber field of force, frozen and immobilized until the caster releases the dweomer or until a dispel magic spell does so. Until then, nothing can get at the victim, move the shimmering force surrounding him or her, or otherwise affect the field or the victim. The victim does not age, grow hungry, sleep or regain spells when in this state, and is not aware of his or her surroundings. If the sepia snake misses its target, it dissipates in a flash of brown light, with a loud noise and a puff of dun-colored smoke which is 10 feet in diameter and lasts for 1 round. The three applications are: 1) as a glowing sigil in the air drawn by the spell caster and pointed at the intended target; 2) as a glyph of umber marked on some surface that is touched or gazed upon; and 3) as a small character written into some magic work to protect it. The components for the spell are 100 gp worth of powdered amber, a scale from any snake, and a pinch of mushroom spores.',
 			),
 			'Fourth' => array(
-				'Enchanted Weapon' => 'This spell turns an ordinary weapon into a magical one. The weapon is the equivalent of a f l weapon but has no bonuses whatsoever. Thus, arrows, axes, bolts, bows, daggers, hammers, maces, spears, swords, etc. can be made into enchanted weapons. Two small (arrows, bolts, daggers, etc.) or one large (axe, bow, hammer, mace, etc.) weapon can be affected by the spell. Note that successful hits by enchanted missile weapons cause the spell to be broken, but that otherwise the spell duration lasts until the time limit based on the level of experience of the magic-user casting i t expires, i.e. 40 rounds (4 turns) in the case of an 8th level magic-user. The material components of this spell are powdered lime and carbon.',
+				'Enchanted Weapon' => 'This spell turns an ordinary weapon into a magical one. The weapon is the equivalent of a +1 weapon but has no bonuses whatsoever. Thus, arrows, axes, bolts, bows, daggers, hammers, maces, spears, swords, etc. can be made into enchanted weapons. Two small (arrows, bolts, daggers, etc.) or one large (axe, bow, hammer, mace, etc.) weapon can be affected by the spell. Note that successful hits by enchanted missile weapons cause the spell to be broken, but that otherwise the spell duration lasts until the time limit based on the level of experience of the magic-user casting it expires, i.e. 40 rounds (4 turns) in the case of an 8th level magic-user. The material components of this spell are powdered lime and carbon.',
 				'Stoneskin' => "When this spell is cast, the affected creature gains a virtual immunity to any attack by cut, blow, projectile or the like. Thus, even a sword of sharpness would not affect a creature protected by stoneskin, nor would a rock hurled by a giant, a snake's strike, etc. However, magic attacks from such spells as fireball, magic missile, lightning bolt, and so forth would have normal effect. Any attack or attack sequence from a single opponent dispels the dweomer, although it makes the creature immune to that single attack or attack sequence. Attacks with relatively soft weapons, such as a monk's hands, an ogrillon's fist, etc, will inflict 1-2 points of damage on the attacker for each such attack while the attacked creature is protected by the stoneskin spell, but will not dispel the dweomer. The material components of the spell are granite and diamond dust sprinkled on the recipient's skin",
 			),
 			'Fifth' => array(

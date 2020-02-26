@@ -4,10 +4,10 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected $ac_rows    = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 );
 	protected $alignment  = 'Good';
-	protected $classes    = array( 'druid' => 'Druid', 'magic' => 'Magic User' );
-	protected $druid      = null;
+#	protected $classes    = array( 'druid' => 'Druid', 'magic' => 'Magic User' );
+#	protected $druid      = null;
 	protected $hit_die    = array( 'limit' => 11, 'size' => 8, 'step' => 2 );
-	protected $magic      = null;
+#	protected $magic      = null;
 	protected $non_prof   = -2;
 	protected $spell_list = array();
 	protected $stats      = array( 'str' => 13, 'int' => 13, 'wis' => 14, 'dex' => 3, 'con' => 14, 'chr' => 3 );
@@ -18,37 +18,29 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected $xp_step    = 325000;
 	protected $xp_table   = array( 0, 2250, 4500, 10000, 20000, 40000, 90000, 150000, 225000, 325000 );
 
+	use DND_Character_Trait_Magic { locate_magic_spell as locate_spell; }
+	use DND_Character_Trait_Ranger { DND_Character_Trait_Ranger::locate_magic_spell insteadof DND_Character_Trait_Magic; }
+	use DND_Character_Trait_Spells_Druid;
+	use DND_Character_Trait_Spells_MagicUser;
+	use DND_Character_Trait_Spells_Effects_MagicUser;
+
 
 	public function __construct( $args = array() ) {
-		if ( array_key_exists( 'druid', $args ) ) {
-			unset( $args['druid'] );
-		}
-		if ( array_key_exists( 'magic', $args ) ) {
-			unset( $args['magic'] );
-		}
 		parent::__construct( $args );
 		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spells( $args['spell_import'] );
 		}
+		$this->calculate_ranger_manna_points();
+		add_filter( 'dnd1e_weapon_damage_bonus',    [ $this, 'ranger_damage_bonus' ], 10, 3 );
+		add_filter( 'dnd1e_secondary_damage_bonus', [ $this, 'ranger_damage_bonus' ], 10, 3 );
 	}
 
 	protected function initialize_character() {
-		if ( empty( $this->druid ) ) {
-			$data = array(
-				'level' => $this->level,
-				'name'  => $this->name,
-			);
-			$this->druid = new DND_Character_Druid( $data );
-			$this->magic = new DND_Character_MagicUser( $data );
-		}
 		parent::initialize_character();
-		$this->initialize_spell_list( $this->spell_list );
 	}
 
 	protected function calculate_level( $xp ) {
 		$level = parent::calculate_level( $xp );
-		$this->druid->set_level( $level );
-		$this->magic->set_level( $level );
 		if ( ( $level > 7 ) && ( ! array_key_exists( 'Spell', $this->weapons ) ) ) {
 			$this->weapons['Spell'] = array( 'bonus' => 0, 'skill' => 'PF' );
 		}
@@ -71,18 +63,16 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	public function special_integer_giant() {
 		return $this->level;
-	} //*/
+	}
 
 	public function special_array_giant() {
 		return array( 'bugbear', 'cyclopskin', 'dune stalker', 'ettin', 'flind', 'giant', 'gibberling', 'gnoll',
 			'goblin', 'grimlock', 'hobgoblin', 'kobold', 'meazel', 'norker', 'ogre',
 			'ogre mage', 'ogrillon', 'orc', 'quaggoth', 'tasloi', 'troll', 'xvart',
 			'cloud giant', 'fire giant', 'frost giant', 'hill giant', 'stone giant', 'storm giant',
-#			'giant,cloud', 'giant,fire', 'giant,frost', 'giant,hill', 'giant,stone', 'giant,storm',
 			'fog giant', 'mountain giant', 'fomorian giant', 'firbolg giant', 'verbeeg giant',
-#			'giant,fog', 'giant,mountain', 'giant,fomorian', 'giant,firbolg', 'giant,verbeeg',
 		);
-	} //*/
+	}
 
 	public function special_attack_giant( $race, $type = 'bool' ) {
 		$race   = strtolower( $race );
@@ -91,13 +81,14 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 			$result = ( $result ) ? $this->special_integer_giant() : 0;
 		}
 		return $result;
-	} //*/
+	}
 
-	public function get_weapon_damage_bonus( $target = null, $range = -1 ) {
-		$bonus = parent::get_weapon_damage_bonus( $target, $range );
-		if ( $target instanceOf DND_Monster_Monster ) {
-			if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
-				$bonus += $this->special_attack_giant( $target->race, 'int' );
+	public function ranger_damage_bonus( $bonus, $origin, $target ) {
+		if ( $origin === $this ) {
+			if ( $target instanceOf DND_Monster_Monster ) {
+				if ( in_array( $this->weapon['attack'], $this->get_weapons_using_strength_bonuses() ) ) {
+					$bonus += $this->special_attack_giant( $target->race, 'int' );
+				}
 			}
 		}
 		return $bonus;
@@ -116,14 +107,10 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 
 	protected function initialize_spell_list( $book ) {
 		if ( $book ) {
-			foreach( $book as $class => $list ) {
-				$key = array_search( $class, [ 'druid' => 'Druid', 'magic' => 'Magic User' ] );
-				$this->spells[ $class ] = array();
-				foreach( $list as $level => $spells ) {
-					$this->spells[ $class ][ $level ] = array();
-					foreach( $spells as $name ) {
-						$this->spells[ $class ][ $level ][ $name ] = $this->$key->locate_magic_spell( $name );
-					}
+			foreach( $book as $level => $spells ) {
+				$this->spells[ $level ] = array();
+				foreach( $spells as $name ) {
+					$this->spells[ $level ][ $name ] = $this->locate_magic_spell( $name );
 				}
 			}
 		}
@@ -132,34 +119,63 @@ class DND_Character_Ranger extends DND_Character_Fighter {
 	protected function import_spells( $spells ) {
 		foreach( $spells as $spell ) {
 			$new = $this->locate_magic_spell( $spell );
-			if ( ! array_key_exists( 'page', $new ) ) return;
+			if ( ! $new ) continue;
 			$this->add_spell( $new );
 		}
 	}
 
-	protected function add_spell( $data ) {
-		$caster = $data['caster'];
-		$level  = $data['level'];
-		$name   = $data['name'];
-		if ( ! isset( $this->spells[ $caster ][ $level ][ $name ] ) ) {
-			$key = array_keys( $this->classes, $caster )[0];
-			$this->spells[ $caster ][ $level ][ $name ] = $this->$key->locate_magic_spell( $name, $this->classes[ $key ] );
-		}
+	protected function add_spell( $spell ) {
+		$level = $spell->get_level();
+		$name  = $spell->get_name();
+		if ( ! array_key_exists( $level, $this->spells ) ) $this->spells[ $level ] = array();
+		if ( ! array_key_exists( $name,  $this->spells[ $level ] ) ) $this->spells[ $level ][ $name ] = $spell;
 	}
 
 	public function get_spell_list() {
 		return $this->spells;
 	}
 
-	public function locate_magic_spell( $name, $type = '' ) {
-		$spell = null;
-		if ( empty( $type ) || ( $type === 'Druid' ) ) {
-			$spell = $this->druid->locate_magic_spell( $name, 'Druid' );
+	protected function calculate_ranger_manna_points() {
+		if ( $this->level < 8 ) return;
+		if ( $this->manna_init === 0 ) {
+			$tables = array( 'druid_manna_points' );
+			if ( $this->level > 8 ) $tables[] = 'magic_user_manna_points';
+			foreach( $tables as $type ) {
+				$table = $this->$type();
+				$level = ( array_key_exists( $this->level, $table ) ) ? $table[ $this->level ] : array_pop( $table );
+				foreach( $level as $key => $value ) {
+					$this->manna_init += $value * ( $key + 1 );
+				}
+			}
+			if ( $this->manna === 0 ) $this->manna = $this->manna_init;
 		}
-		if ( ! is_object( $spell ) ) {
-			$spell = $this->magic->locate_magic_spell( $name, 'Magic User' );
-		}
-		return $spell;
+	}
+
+	protected function druid_manna_points() {
+		return array(
+			8  => array( 1 ),
+			9  => array( 1 ),
+			10 => array( 2 ),
+			11 => array( 2 ),
+			12 => array( 2, 1 ),
+			13 => array( 2, 1 ),
+			14 => array( 2, 2 ),
+			15 => array( 2, 2 ),
+			16 => array( 2, 2, 1 ),
+			17 => array( 2, 2, 2 ),
+		);
+	}
+
+	protected function magic_user_manna_points() {
+		return array(
+			9  => array( 1 ),
+			10 => array( 1 ),
+			11 => array( 2 ),
+			12 => array( 2 ),
+			13 => array( 2, 1 ),
+			14 => array( 2, 1 ),
+			15 => array( 2, 2 ),
+		);
 	}
 
 

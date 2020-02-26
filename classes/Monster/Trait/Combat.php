@@ -21,24 +21,17 @@ trait DND_Monster_Trait_Combat {
 	}
 
 	public function get_key( $under = false ) {
-		if ( empty( $this->key ) ) $this->set_key( $this->name ); // needed for testing outside combat environment
+#		if ( empty( $this->combat_key ) ) $this->set_key( $this->name ); // needed for testing outside combat environment
 		if ( $under ) return str_replace( ' ', '_', $this->combat_key );
 		return $this->combat_key;
 	}
 
 	public function set_key( $new ) {
-		if ( empty( $this->combat_key ) ) $this->combat_key = $new;
+		$this->combat_key = $new;
 	}
 
 
 	/**  Setup functions  **/
-
-	protected function determine_armor_type() {
-		$this->determine_armor_class();
-		if ( $this->armor_type === 11 ) {
-			$this->armor_type = max( 0, $this->armor_class );
-		}
-	}
 
 	protected function determine_to_hit_row() {
 		$table = $this->to_hit_ac_table();
@@ -57,11 +50,31 @@ trait DND_Monster_Trait_Combat {
 				$this->weapons['sequence'][] = $name;
 			} else {
 				$this->weapons[ $name ] = $damage;
+				if ( $this instanceOf DND_Monster_Humanoid_Humanoid ) {
+					$this->weapons[ $name ] = array( 'damage' => $damage );
+				}
 			}
 		}
 		if ( empty( $this->weapon ) || $this->weapon['current'] === 'none' ) {
 			$this->determine_attack_weapon();
 		}
+	}
+
+
+	/**  Armor Class functions  **/
+
+	public function determine_armor_class() {
+		if ( $this->armor_type === 11 ) {
+			$this->armor_type = max( 0, $this->armor_class );
+		}
+	}
+
+	public function get_armor_type() {
+		return $this->armor_type;
+	}
+
+	public function get_armor_class() {
+		return $this->armor_class - apply_filters( 'dnd1e_armor_class_adj', 0, $this );
 	}
 
 
@@ -148,7 +161,7 @@ trait DND_Monster_Trait_Combat {
 	/**  Attack functions  **/
 
 	public function get_to_hit_number( $target, $range = 2000 ) {
-		$target_armor = ( $this->weapon['current'] === 'Spell' ) ? $target->armor_spell : $target->armor_class;
+		$target_armor = ( $this->weapon['current'] === 'Spell' ) ? $target->get_armor_spell() : $target->get_armor_class();
 		$armor_type = min( max( $target_armor, $target->armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) $this->determine_to_hit_row();
 		$index  = 10 - $target_armor;
@@ -159,12 +172,8 @@ trait DND_Monster_Trait_Combat {
 		if ( in_array( $this->weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
 			$to_hit -= $this->get_missile_range_adjustment( $this->weapon['range'], $range );
 		}
-		return apply_filters( 'opponent_to_hit_object', $to_hit, $target, $this );
+		return $to_hit;
 	} //*/
-
-	public function determine_armor_class() {
-		$this->armor_class -= apply_filters( 'armor_class_adjustments', 0, $this );
-	}
 
 
 }

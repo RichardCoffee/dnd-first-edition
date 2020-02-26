@@ -6,7 +6,7 @@ trait DND_Character_Trait_Utilities {
 	protected static $utilities_replace = array();
 
 
-	/** Effect functions **/
+	/** Selection functions **/
 
 	public function this_origin_only( $effect ) {
 		if ( $this->get_key() === $effect->get_caster() ) {
@@ -31,11 +31,16 @@ trait DND_Character_Trait_Utilities {
 		if ( $target === 'enemy' ) {
 			if ( array_key_exists( $this->get_key(), $combat->enemy ) ) return true;
 		}
+		if ( $target === 'other' ) {
+			$caster = $effect->get_caster();
+			if ( array_key_exists( $this->get_key(), $combat->party ) && array_key_exists( $caster, $combat->enemy ) ) return true;
+			if ( array_key_exists( $this->get_key(), $combat->enemy ) && array_key_exists( $caster, $combat->party ) ) return true;
+		}
 		return false;
 	} //*/
 
 
-	/**  Filter functions  **/
+	/**  Condition functions  **/
 
 	private function is_condition( $condition ) {
 		if ( apply_filters( $condition, 0, $this ) ) return true;
@@ -82,6 +87,16 @@ trait DND_Character_Trait_Utilities {
 			if ( ! in_array( $filter, static::$utilities_replace ) ) {
 				static::$utilities_replace[] = $filter;
 			}
+		}
+	}
+
+
+	/**  Miscellaneous functions  **/
+
+	public function assign_damage( $damage, $segment = 0, $type = '' ) {
+		$this->current_hp -= $damage;
+		if ( $this->current_hp < 0 ) {
+			$this->segment += 100;
 		}
 	}
 

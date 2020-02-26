@@ -22,6 +22,7 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $hit_dice     = 0;
 #	protected $hit_points   = 0;
 #	protected $hp_extra     = 0;
+#	protected $immune       = array();
 #	protected $in_lair      = 0;
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
@@ -34,10 +35,11 @@ class DND_Monster_Template extends DND_Monster_Monster {
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 #	protected $segment      = 0;
-#	protected $size         = 'Medium';
+#	protected $size         = "Medium";
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'Nil';
+#	protected $vulnerable   = array();
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
 #	protected $weapon       = array(); // DND_Character_Trait_Weapons

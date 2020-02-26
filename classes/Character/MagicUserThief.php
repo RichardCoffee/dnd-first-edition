@@ -3,6 +3,7 @@
 class DND_Character_MagicUserThief extends DND_Character_Multi {
 
 
+	use DND_Character_Trait_Dual;
 	use DND_Character_Trait_Multi_MagicUser;
 	use DND_Character_Trait_Multi_Thief;
 

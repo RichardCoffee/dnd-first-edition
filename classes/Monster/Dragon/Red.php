@@ -61,7 +61,7 @@ class DND_Monster_Dragon_Red extends DND_Monster_Dragon_Dragon {
 	}
 
 	public function rejected_spells( $rejects, $object ) {
-		if ( $this === $object ) {
+		if ( $object->name === $this->name ) {
 			$mine = array( 'Hold Portal', 'Jump', "Tenser's Floating Disc", 'Write' );
 			foreach( $mine as $reject ) {
 				if ( ! in_array( $reject, $rejects ) ) $rejects[] = $reject;

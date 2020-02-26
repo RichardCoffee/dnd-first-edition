@@ -5,7 +5,8 @@ trait DND_Character_Trait_Magic {
 
 	protected $manna       = 0;
 	protected $manna_init  = 0;
-	private   $spell_table = array();
+	protected $spell_table = array();
+	protected $spell_zero  = 'Cantrip';
 
 
 	/**  Setup functions  **/
@@ -38,11 +39,7 @@ trait DND_Character_Trait_Magic {
 	public function get_listed_spell( $name ) {
 		foreach( $this->spells as $level => $spells ) {
 			if ( array_key_exists( $name, $spells ) ) {
-				if ( is_object( $spells[ $name ] ) ) {
-					return $spells[ $name ];
-				} else {
-					return $this->locate_magic_spell( $name );
-				}
+				return $spells[ $name ];
 			}
 		}
 		return false;
@@ -94,12 +91,31 @@ trait DND_Character_Trait_Magic {
 
 	protected function import_spell_list( $list, $type = '' ) {
 		foreach( $list as $k => $name ) {
-			$spell = $this->locate_magic_spell( $name );
+			$spell = $this->locate_magic_spell( $name, $type );
 			if ( is_object( $spell ) ) {
 				$level = $spell->get_level();
 				if ( ! array_key_exists( $level, $this->spells ) )          $this->spells[ $level ] = array();
 				if ( ! array_key_exists( $name, $this->spells[ $level ] ) ) $this->spells[ $level ][ $name ] = $spell;
 			}
+		}
+		$this->sort_spell_list();
+	}
+
+	protected function sort_spell_list() {
+		$ord = DND_Enum_Ordinal::get_instance( array( $this->spell_zero ) );
+		uksort(
+			$this->spells,
+			function( $a, $b ) use ( $ord ) {
+				return $ord->compare( $a, $b );
+			}
+		);
+		foreach( $this->spells as $level => $spells ) {
+			uksort(
+				$this->spells[ $level ],
+				function( $a, $b ) {
+					return strcasecmp( $a, $b );
+				}
+			);
 		}
 	}
 
@@ -115,12 +131,16 @@ trait DND_Character_Trait_Magic {
 
 	/**  Manna functions  **/
 
-	public function calculate_manna_points() {
+	public function calculate_manna_points( $type = '' ) {
+		if ( $this->level === 0 ) return; # temp fix
 		if ( $this->manna_init === 0 ) {
 			$table = $this->spells_usable_table();
 			$level = $table[ $this->level ];
 			foreach( $level as $key => $value ) {
 				$this->manna_init += $value * ( $key + 1 );
+			}
+			if ( $type === 'cleric' ) {
+				$this->manna_init += $this->get_wisdom_manna( $this->stats['wis'], $this->level );
 			}
 			if ( $this->manna === 0 ) $this->manna = $this->manna_init;
 		}

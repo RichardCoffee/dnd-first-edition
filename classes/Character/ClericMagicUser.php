@@ -4,7 +4,7 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 
 
 	use DND_Character_Trait_Multi_Cleric;
-	use DND_Character_Trait_Multi_MagicUser { locate_magic_spell as locate_magic_user_spell; }
+	use DND_Character_Trait_Multi_MagicUser;
 
 
 	public function __construct( $args = array() ) {
@@ -28,7 +28,7 @@ class DND_Character_ClericMagicUser extends DND_Character_Multi {
 			$spell = $this->locate_cleric_spell( $name );
 		}
 		if ( ! is_object( $spell ) ) {
-			$spell = locate_magic_user_spell( $name );
+			$spell = locate_magicuser_spell( $name );
 		}
 		return $spell;
 	}

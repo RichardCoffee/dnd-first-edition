@@ -6,14 +6,15 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 #	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 #	protected $alignment    = 'Neutral';
 #	protected $appearing    = array( 1, 1, 0 );
+#	protected $armor        = array(); // DND_Character_Trait_Armor
 #	protected $armor_class  = 10;
 #	protected $armor_type   = 11;
 	protected $attacks      = array( 'Weapon' => [ 1, 8, 0 ] );
 #	private   $combat_key   = '';      // DND_Monster_Trait_Combat
 #	public    $current_hp   = -10000;
 #	protected $description  = '';
-	protected $fighter      = null;
 #	protected $frequency    = 'Common';
+	protected $gear         = array();
 #	protected $hd_minimum   = 1;
 #	protected $hd_value     = 8;
 #	protected $hit_dice     = 0;
@@ -31,6 +32,7 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
 #	protected $segment      = 0;
+#	protected $shield       = array(); // DND_Character_Trait_Armor
 #	protected $size         = 'Medium';
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
@@ -43,18 +45,25 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 	protected $extra        = array();
 
 
-	public function __construct( $args = array() ) {
-		if ( array_key_exists( 'fighter', $args ) ) {
-			$this->fighter = unserialize( $args['fighter'] );
-			unset( $args['fighter'] );
-		} else {
-			$this->load_fighter();
-		}
-		parent::__construct( $args );
-	}
+	use DND_Character_Trait_Armor;
+
+
+	/**  Override functions  **/
 
 	protected function determine_hit_dice() {
 		$this->hit_dice = 1;
+	}
+
+	protected function determine_hit_points() {
+		parent::determine_hit_points();
+		if ( $this->weapon['current'] === 'none' ) $this->generate_humanoid_accouterments();
+	}
+
+	protected function initialize_sequence_attacks() {
+		if ( array_key_exists( 'Weapon', $this->attacks ) ) {
+			$this->attacks = array_key_replace( $this->attacks, 'Weapon', 'Spear' );
+		}
+		parent::initialize_sequence_attacks();
 	}
 
 	protected function non_sequence_chance( $segment ) {
@@ -65,72 +74,73 @@ abstract class DND_Monster_Humanoid_Humanoid extends DND_Monster_Monster {
 		return false;
 	}
 
-	protected function load_fighter( $new = 'Fighter' ) {
-		$data = $this->get_fighter_data( $this->hit_dice );
-		$create = 'DND_Character_' . $new;
-		$this->fighter = new $create( $data );
-		if ( ! empty( $this->fighter->weapons ) ) {
-			$weapon = array_key_first( $this->fighter->weapons );
-			$this->fighter->set_current_weapon( $weapon );
+	public function set_current_weapon( $new ) {
+		if ( $status = $this->set_character_weapon( $new ) ) {
+			$this->determine_armor_class();
 		}
+		return $status;
 	}
 
-	protected function get_fighter_data( $level = 1 ) {
-		$data = array(
-			'ac_rows'    => $this->ac_rows,
-			'experience' => 1,
-			'hit_die'    => array( 'limit' => $this->hit_dice, 'size' => $this->hd_value ),
-			'max_move'   => $this->movement['foot'],
-			'movement'   => $this->movement['foot'],
-			'name'       => $this->name,
-			'race'       => $this->race,
-			'stats'      => array(
-				'str' => 12 + mt_rand( 1, 6 ),
-				'int' => 12 + mt_rand( 1, 6 ),
-				'wis' => 12 + mt_rand( 1, 6 ),
-				'dex' => 12 + mt_rand( 1, 6 ),
-				'con' => 12 + mt_rand( 1, 6 ),
-				'chr' => 12 + mt_rand( 1, 6 ),
-			),
-		);
-		return apply_filters( 'humanoid_fighter_data', $data );
+	protected function base_weapon_array( $name, $skill = 'PF' ) {
+		return parent::base_weapon_array( $name, $skill );
 	}
 
-	protected function get_character_accouterments( DND_Character_Character $object, $chance = 0 ) {
-		$data  = array();
+
+	/**  Humanoid functions  **/
+
+	protected function generate_humanoid_accouterments( $chance = 0 ) {
 		$treas = new DND_Combat_Treasure_Treasure;
-		$accs  = $treas->acc_get_accouterments( $this, $chance );
-		foreach( $accs as $item ) {
-			switch( $item['type'] ) {
+		$this->gear = $treas->acc_get_accouterments( $this, $chance );
+		foreach( $this->gear as $item ) {
+
+		}
+/*			$type = $item['sub'];
+			if ( ! array_key_exists( $type, $this->gear ) ) $this->gear[ $type ] = array();
+			switch( $type ) {
+				case 'potions':
+				case 'scrolls':
+				case 'rings':
+					$this->gear[ $type ][] = $item;
+					break;
 				case 'armor':
-					
+					if ( ( $this->get_armor_ac_value( $item['key'], true ) - abs( $item['bonus'] ) ) < $this->armor_class ) {
+						$this->armor['armor'] = $item['key'];
+						$this->armor['bonus'] = $item['bonus'];
+						$item['size'] = $this->race;
+					}
+					$this->gear[ $type ] = $item;
 					break;
 				case 'shields':
-					
-					break;
-				case 'swords':
-					
+					$this->gear[ $type ]   = $item;
+					$this->shield['type']  = "{$item['size']} {$item['text']}";
+					$this->shield['bonus'] = $item['bonus'];
+					$this->shield['size']  = $item['size'];
 					break;
 				case 'weapons':
-					
-					break;
-				case 'potions':
-					
-					break;
-				case 'scrolls':
-					
-					break;
-				case 'rings':
-					
+					if ( ! array_key_exists( 'key', $item ) ) {
+						$this->gear[ $type ][] = $item;
+						break;
+					}
+				case 'swords':
+					$key = $item['key'];
+					$this->gear[ $type ][ $key ] = $item;
+					if ( ! array_key_exists( $key, $this->attacks ) ) {
+						$this->attacks[ $key ] = $this->get_weapon_damage_array( $key );
+						$this->attacks[ $key ][2] += $item['bonus'];
+						if ( array_key_exists( 'Weapon', $this->attacks ) ) unset( $this->attacks['Weapon'] );
+					}
 					break;
 				case 'none':
 					break;
 				default:
 			}
-			$this->extra[] = $item;
-		}
-if ( ! empty( $this->extra ) ) print_r( $this->extra );
+		}*/
 	}
+
+
+	/**  Placeholder functions  **/
+
+	protected function get_ac_dex_bonus() { return 0; }
 
 
 }

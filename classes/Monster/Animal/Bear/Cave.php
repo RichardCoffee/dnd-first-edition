@@ -11,7 +11,7 @@ class DND_Monster_Animal_Bear_Cave extends DND_Monster_Monster {
 	protected $appearing    = array( 1, 2, 0 );
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;
-	protected $attacks      = array( 'Claw Right', => [ 1, 8, 0 ], 'Claw Left' => [ 1, 8, 0 ], 'Bite' => [ 1, 12, 0 ] );
+	protected $attacks      = array( 'Claw Right' => [ 1, 8, 0 ], 'Claw Left' => [ 1, 8, 0 ], 'Bite' => [ 1, 12, 0 ] );
 #	public    $current_hp   = 0;
 #	protected $description  = '';
 	protected $frequency    = 'Uncommon';

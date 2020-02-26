@@ -1,7 +1,7 @@
 <?php
 /* Name: Mammoth
  * Class: DND_Monster_Animal_Elephant_Mammoth
- * Encounter: {}
+ * Encounter: {"CC":{"M":"C","H":"U","F":"C","S":"U","P":"C"},"CW":{"M":"C","H":"U","F":"C","S":"U","P":"C"}}
  */
 
 class DND_Monster_Animal_Elephant_Mammoth extends DND_Monster_Monster {

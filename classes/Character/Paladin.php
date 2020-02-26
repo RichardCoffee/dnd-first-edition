@@ -15,12 +15,15 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 	protected $xp_table   = array( 0, 2750, 5500, 12000, 24000, 45000, 95000, 175000, 350000 );
 
 
+	use DND_Character_Trait_Undead;
+
 
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
-		add_filter( 'opponent_to_hit_object', [ $this, 'protection_from_evil_to_hit' ], 10, 3 );
+		add_filter( 'dnd1e_to_hit_object', [ $this, 'protection_from_evil_to_hit' ], 10, 3 );
 		$filter = $this->get_key(1) . '_all_saving_throws';
 		add_filter( $filter, [ $this, 'protection_from_evil_saving_throw' ], 10, 3 );
+		add_filter( $filter, [ $this, 'undead_level_adjustment' ], 10, 2 );
 	}
 
 	protected function initialize_character() {
@@ -28,6 +31,7 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 			$this->cleric = new DND_Character_Cleric( [ 'level' => $this->level ] );
 		}
 		parent::initialize_character();
+		$this->undead = $this->get_undead_caps();
 	}
 
 	protected function calculate_level( $xp ) {
@@ -76,15 +80,14 @@ class DND_Character_Paladin extends DND_Character_Fighter {
 		return $this->has_horse;
 	}
 
-	public function special_string_undead( $type, $level = 0 ) {
-		return $this->cleric->special_string_undead( $type, $this->level - 2 );
+	public function undead_level_adjustment( $adj, $object ) {
+		if ( $object === $this ) {
+			$adj -= 2;
+		}
+		return $adj;
 	}
 
-	public function get_undead_caps( $level = 0 ) {
-		return $this->cleric->get_undead_caps( $this->level - 2 );
-	}
-
-	public function protection_from_evil_to_hit( $number, $target, $origin ) {
+	public function protection_from_evil_to_hit( $number, $origin, $target ) {
 		if ( $this->protection_from_evil_judgement( $origin, $target ) ) {
 			$number += 2;
 		}

@@ -24,8 +24,12 @@ class DND_Character_MagicUser extends DND_Character_Character {
 		if ( array_key_exists( 'spell_import', $args ) ) {
 			$this->import_spell_list( $args['spell_import'] );
 		}
+	}
+
+	protected function initialize_character() {
+		parent::initialize_character();
 		$this->calculate_manna_points();
-		$this->add_replacement_filter( 'armor_type_replacement' );       // First level Armor spell
+		$this->add_replacement_filter( 'dnd1e_armor_type' ); // First level Armor spell
 	}
 
 	protected function define_specials() { }
@@ -70,52 +74,6 @@ class DND_Character_MagicUser extends DND_Character_Character {
 			array( 6, 6, 6, 6, 6, 6, 6, 6, 6 ), // 28
 			array( 7, 7, 7, 7, 6, 6, 6, 6, 6 ), // 29
 		);
-	}
-
-
-	/**  Spell functions  **/
-
-	public function magicuser_first_armor( $spell, $target ) {
-		# TODO: may need to test for other condition - see spell description: UA 51
-		if ( $target->armor_type === 10 ) {
-			$spell->add_filter( [ 'armor_type_replacement', 8, 10, 2 ] );
-		} else {
-			$spell->add_filter( [ 'armor_class_adjustments', 1, 10, 2 ] );
-		}
-	}
-
-	public function magicuser_second_mirror_image( $spell, $num ) {
-		if ( ( $spell->get_name() === 'Mirror Image' ) && empty( $this->effects ) ) {
-			$spell->effects['images'] = intval( $num );
-		}
-echo "mirror images: {$spell->effects['images']}\n";
-	}
-
-	public function mirror_image_number( $string, $object, $spell ) {
-		if ( $this === $object ) {
-			if ( $spell->effects['images'] > 0 ) {
-				$string .= $spell->effects['images'];
-			}
-		}
-		return $string;
-	}
-
-	public function mirror_image_target( $damage, $target, $type, $spell ) {
-		if ( $this === $target ) {
-			if ( $spell->effects['images'] > 0 ) {
-				$roll = mt_rand( 1, $spell->effects['images'] + 1 );
-echo "mirror image target: $roll\n";
-				if ( $roll > 1 ) {
-					$spell->effects['images']--;
-					if ( $spell->effects['images'] < 1 ) {
-						$spell->remove_filter( 'dnd1e_damage_to_target' );
-						$spell->remove_filter( 'dnd1e_object_status' );
-					}
-					return 0;
-				}
-			}
-		}
-		return $damage;
 	}
 
 

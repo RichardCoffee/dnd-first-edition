@@ -39,7 +39,7 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 		$this->specials['saving'] = 'Saves at 4 levels higher';
 	}
 
-	protected function get_saving_throw_level() {
+	public function get_saving_throw_level() {
 		return parent::get_saving_throw_level() + 4;
 	}
 
@@ -80,8 +80,8 @@ abstract class DND_Monster_Humanoid_Gnome_Gnome extends DND_Monster_Humanoid_Dem
 			),
 			'weapons' => $this->weapon_choices( $level ),
 		);
-		$data = apply_filters( 'humanoid_fighter_data', $data, $this );
-		return apply_filters( 'gnome_fighter_data', $data, $this );
+		$data = apply_filters( 'dnd1e_humanoid_fighter_data', $data, $this );
+		return apply_filters( 'dnd1e_gnome_fighter_data', $data, $this );
 	}
 
 	protected function weapon_choices( $level = 1 ) {

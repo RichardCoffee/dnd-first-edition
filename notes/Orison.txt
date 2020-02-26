@@ -1,0 +1,156 @@
+http://flockhart.virtualave.net/afal/spelldescpriest.html
+
+    New or Fixed Priest Spells in Our Campaign
+
+
+      Current Versions of Broken Spells That Are Being Fixed
+
+*Orison*
+(Various schools)
+Sphere: All, but see below Level: 1
+Range: 10 yds.
+Components: V, S
+Duration: Special
+Casting Time: 4
+Area of Effect: Varies
+Saving Throw: Varies
+Subtlety: +3
+Knockdown: None
+Sensory: Small visual/audio
+Critical: None
+
+The most humble of priestly spells is the orison, a brief prayer or
+invocation of a minor nature. Typically, priests learn a number of
+orisons as acolytes or students in order to hone their spellcasting
+skills and emphasize concepts, ideals, or phrases of particular
+importance to the faith. Because an orisons is not even on par with
+other 1st-level magic, a priest memorizes a number of individual orisons
+equal to three +1 per level (up to a maximum of nine) when he devotes a
+1st-level spell slot to orison. In other words, a 1st-level priest can
+memorize four orisons for one 1st-level spell slot, a 2nd-level priest
+can memorize five, and so on.
+
+Unlike /Cantrip/ (which is not found in the AFAL campaign anyway), an
+orison must have a specific effect, which must be chosen when the orison
+is memorized. Regardless of the prayer chosen, the orison's duration is
+never more than one round per level. The orisons that a particular
+priest can cast depend on the spheres available to that priest, so, for
+example, a druid can cast orisons in the plant and animal spheres, but
+not one from the necromantic or sun sphere. Known orisons include the
+following:
+
+Alleviate (/Healing/):
+    A single creature suffering from nausea or pain is relieved of its
+    discomfort. Magically induced nausea or pain is only alleviated if
+    the victim passes a saving throw vs. spell with a -2 penalty.
+Buddy (/Guardian/):
+    Caster feels a tugging on his/her left earlobe whenever
+    someone/thing approaches caster from behind for orisons duration.
+    Any living or animated creature on casters left shoulder negates
+    this orison.
+Calm (/Charm/Animal/):
+    A single person (Charm sphere version) or creature (Animal shere)
+    that has been startled or frightened is soothed. Victims suffering
+    from magical fear may attempt a save vs. spell with a -2 penalty to
+    calm themselves.
+Clarity (/All/):
+    For the duration of the orison, the priest's speech is clear and
+    free of impediment - useful for readings from sacred texts and other
+    such rites. Magical conditions such as confuse languages cannot be
+    overcome by this orison.
+Consensus Result (/Law/):
+    Person touched makes a roll in the next round 3 times. Median is
+    taken as the result (i.e. (1,3,8) = 3, (1,6,14) = 6, (1,9,16) = 9,
+    etc.). What this means.
+    <http://flockhart.virtualave.net/afal/consensusresult.png>
+Courage (/Combat/):
+    The priest gains a +1 bonus to his next attack roll, as long as the
+    attack is made within the spell's duration.
+Cup (/Creation/):
+    Priest calls into being a plain tin cup which lasts for orisons
+    duration. At higher levels priest may instead create a bowl (2nd),
+    bucket (5th), washbasin (8th), or bathtub (12th).
+Extreme Result (/Chaos/):
+    Person touched makes a roll in the next round 3 times. Greatest
+    outlier is taken as the result (i.e. (1,3,8) = 8, (1,6,14) = 14,
+    (1,9,16) = 1, etc.). If equal difference between numbers (2,9,16),
+    roll is chosen randomly from max and min roll. What this means.
+    <http://flockhart.virtualave.net/afal/extremeresult.png>
+Fertilize (/Plant/):
+    Cause up to 1 man-sized or smaller plant per level or a single
+    larger one to grow more healthy for a day. Regular treatment with
+    this orison can result in remarkably beautiful flowers, award
+    winning vegetables, trees of maximum possible height, etc.
+Glow (/Sun/):
+    Causes a nonliving object held by priest to glow with dim light
+    (roughly candlelight, sufficient for reading) for orisons duration.
+Guidance (/Thought/):
+    The priest gains a +1 bonus to a Wisdom or Intelligence check to
+    determine the right course of action in a moral dilemma or puzzle.
+Healing (/Healing/):
+    By his touch, the priest may heal a creature of 1 point of damage.
+Line in the Sand (/Wards/):
+    Caster draws a line in the sand/soil or chalks one on a hard floor
+    (max 1'/level). Whenever line is crossed wihin spells duration,
+    caster will know.
+Magic sense (/Divination/):
+    If there is a persistent spell effect or magical item within 10
+    yards, the priest feels a recognizable tingle or sensation of some
+    kind. He has no way to determine what item or spell may have caused
+    the reaction.
+Memory (/Thought/):
+    Any item the priest commits to memory during the spell duration is
+    more completely and permanently learned; he gains a +2 bonus to any
+    checks to recall the exact appearance, wording, or meaning of an
+    item, text, or message.
+Pest (/Summoning/):
+    Calls forth a buzzing, semi-solid, fly-like spirit that flies at
+    speed 8 (MC C) and can be made to buzz in an opponents ear. Targets
+    making attacks must save vs. spells at +2 or suffer a -2 penalty to
+    hit that round, spellcasters must save at +1 for each even point of
+    INT or WIS above 9 (10=+1, 12=+2, etc.) each round to avoid spell
+    failure.
+Pinch (/Elemental/):
+    Create a small flame or a number of droplets of water, small
+    pebbles, or CCs of air equal to half the priests level, rounded up.
+    Flame lasts one round unless created on a dry, easily ignited
+    material. These materials can be used as spell components.
+Preserve (/Necromantic/):
+    Flowers or other cut plants treated with this orison and kept in
+    water will stay fresh twice as long, although they will not survive
+    or grow new roots, even if they otherwise might have.
+Repair Shoe (/Travellers/):
+    Functions as the Wizard spell mending on shoes worn by person or
+    mount touched.
+Resistance to magic (/Protection/):
+    The caster gains a +1 bonus to his next saving throw against magic
+    of any type, as long as it occurs during the orison's duration.
+Resistance to poison (/Protection/):
+    The priest gains a +1 bonus to his next saving throw vs. poison, as
+    long as it occurs during the orison's duration.
+Sense Commitment (/War/):
+    Sense if a group of enemies has standard moralle for that creature
+    type of if it is being modified up or down by some factor.
+Sense Gate (/Astral/):
+    Allows priest to determine if a specific object or portal is
+    currently an active gate to a specific outer or astral plane named
+    by the priest. Above 8th level, priest may generalize to "The Abyss"
+    instead of "The 62nd layer of the Abyss".
+Storm Sense (/Weather/):
+    Allows caster to predict to within 3 minutes (GM adds d7-3 to
+    correct time) when an aproaching (less than 3hrs away) rain- or
+    snowfall will begin.
+Verbalacrity (/Time/):
+    Lower casting time of spell cast next round by 1 seg/5 levels of
+    caster (round up, caster only)
+
+Other orisons of similar power or scope may be permitted by the GM.
+Generally, an orison should not affect more than one creature or die
+roll at a time, and an orison that can actually cause immediate harm to
+a creature should inflict no more than 1 or 2 points of damage. An
+offensive orison would be quite rare and most probably associated with
+an evil or chaotic priesthood.
+
+
+Go Home <http://flockhart.virtualave.net/afal/afal.html>
+

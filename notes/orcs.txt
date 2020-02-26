@@ -1,0 +1,65 @@
+Array
+(
+    [chance] => 14
+    [text] => Bastard Sword of the Planes - Ivan
+    [xp] => 2000
+    [gp] => 30000
+    [link] => 
+    [type] => swords
+    [powers] => Array
+        (
+            [align] => Lawful Neutral
+            [int] => 13
+            [primary] => Array
+                (
+                    [0] => detect gems, kind, and number in a 5 foot radius
+                    [1] => detect evil/good in a 10 foot  radius
+                )
+
+            [extra] => Array
+                (
+                )
+
+            [comm] => empathy
+        )
+
+)
+Array
+(
+    [chance] => 10
+    [text] => Sword, Broad +5 - Krieg
+    [xp] => 0
+    [gp] => 0
+    [ex] => Y:1
+    [link] => DMG
+    [type] => weapons
+    [powers] => Array
+        (
+            [align] => Lawful Evil
+            [ego] => 11
+            [int] => 12
+            [primary] => Array
+                (
+                    [0] => detect gems, kind, and number in a 5 foot radius
+                )
+
+            [extra] => Array
+                (
+                )
+
+            [comm] => semi-empathy
+        )
+
+)
+Array
+(
+    [chance] => 12
+    [text] => Bronze Plate +3 - on cart
+    [bonus] => 3
+    [key] => bronze
+    [xp] => 2250
+    [gp] => 15000
+    [link] => DMG
+    [type] => armor
+    [size] => Human
+)

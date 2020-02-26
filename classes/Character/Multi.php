@@ -19,8 +19,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 #	protected $level      = 0;
 	protected $manna      = 0;
 	protected $manna_init = 0;
-#	protected $max_move   = 12;
-#	protected $movement   = 12;
+#	protected $move       = array( 'max' => 12, 'foot' => 12, 'segment' => 0 );
 #	protected $name       = 'Character Name';
 #	protected $non_prof   = -100;
 #	protected $race       = 'Human';
@@ -34,6 +33,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 #	protected $weap_dual  = false;   // DND_Character_Trait_Weapons
 #	protected $weap_init  = array();
 #	protected $weap_reqs  = array();
+#	protected $weap_twins = array(); // DND_Character_Trait_Dual
 #	protected $weapon     = array(); // DND_Character_Trait_Weapons
 #	protected $weapons    = array(); // DND_Character_Trait_Weapons
 #	protected $xp_bonus   = array();
@@ -55,13 +55,11 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		parent::__construct( $args );
-		$this->calculate_manna_points();
 	}
 
 	protected function initialize_character() {
 		$number     = count( $this->classes );
 		$initial    = '';
-#		$experience = 0;
 		$hit_points = 0;
 		$level      = 0;
 		$non_prof   = 0;
@@ -69,14 +67,15 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$weap_step  = 0;
 		foreach( $this->classes as $key => $class ) {
 			if ( empty( $initial ) ) $initial = $key;
-#			$this->$key->weap_dual = $this->weap_dual;
-#			$this->$key->initialize_character();
 			$hit_points += $this->$key->hit_points;
 			$level      += $this->$key->level;
 			$non_prof   += $this->$key->non_prof;
 			$weap_init  += $this->$key->weap_init['initial'];
 			$weap_step  += $this->$key->weap_init['step'];
-			$this->specials = array_merge( $this->specials, $this->$key->specials );
+			$this->specials    = array_merge( $this->specials, $this->$key->specials );
+			$this->weap_allow  = array_merge( $this->weap_allow, $this->$key->weap_allow );
+			$this->manna_init += $this->$key->manna_init;
+			$this->manna      += $this->$key->manna;
 		}
 		$this->hit_points = round( $hit_points / $number );
 		if ( in_array( $this->current_hp, [ 0, -100 ] ) ) {
@@ -86,9 +85,10 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$this->non_prof             = $non_prof  / $number;
 		$this->weap_init['initial'] = $weap_init / $number;
 		$this->weap_init['step']    = $weap_step / $number;
-		$props = array( 'armor', 'movement', 'name', 'race', 'stats', 'weapon', 'weapons' );
+		if ( $this->weapon['current'] === 'none' ) $this->set_current_weapon( array_key_first( $this->weapons ) );
+		$props = array( 'armor', 'movement', 'name', 'race', 'stats' );
 		foreach( $props as $prop ) {
-			$this->$prop = $this->$initial->$prop;
+#			$this->$prop = $this->$initial->$prop;
 		}
 		$this->determine_initiative();
 	}
@@ -115,14 +115,18 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		$this->level = $this->level / count( $this->classes );
 	}
 
-	public function set_dual_weapons( $one, $two ) {
+	public function add_experience( $xp ) {
+		$this->experience += $xp;
+		$new = $xp / count( $this->classes );
 		foreach( $this->classes as $key => $class ) {
-			if ( method_exists( $this->$key, 'set_dual_weapons' ) ) {
-				$this->$key->set_dual_weapons( $one, $two );
-			}
+			$this->$key->add_experience( $new );
 		}
-		$this->weap_dual = [ $one, $two ];
+		$this->initialize_character();
+		$this->current_hp = $this->hit_points;
 	}
+
+
+	/**  Weapon functions  **/
 
 	public function set_current_weapon( $new = '' ) {
 		$ret = parent::set_current_weapon( $new );
@@ -132,16 +136,6 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		return $ret;
-	}
-
-	public function add_experience( $xp ) {
-		$this->experience += $xp;
-		$new = $xp / count( $this->classes );
-		foreach( $this->classes as $key => $class ) {
-			$this->$key->add_experience( $new );
-		}
-		$this->initialize_character();
-		$this->current_hp = $this->hit_points;
 	}
 
 
@@ -197,7 +191,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 			}
 		}
 		return "Spell '$name' not found in {$this->name}'s spell book.";
-	}
+	} //*/
 
 	public function calculate_manna_points() {
 		if ( $this->manna_init === 0 ) {

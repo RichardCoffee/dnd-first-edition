@@ -24,7 +24,7 @@ trait DND_Character_Trait_Multi_Thief {
 
 	public function set_current_weapon( $new = '' ) {
 		$ret = parent::set_current_weapon( $new );
-		$this->armor  = $this->thief->armor;
+		$this->armor = $this->thief->armor;
 		return $ret;
 	}
 
