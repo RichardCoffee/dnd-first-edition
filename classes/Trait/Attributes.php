@@ -1,124 +1,133 @@
 <?php
 /**
- * classes/Trait/Attributes.php
+ *  A trait that provides methods to generate sanitized HTML elements.
  *
  * @package FirstEdition
  * @subpackage Traits
- * @author Richard Coffee <richard.coffee@rtcenterprises.net>
- * @copyright Copyright (c) 2018, Richard Coffee
- */
-defined( 'ABSPATH' ) || exit;
-/**
- * A trait that provides methods to generate html for tag attributes
- *
  * @since 20170506
+ * @author Richard Coffee <richard.coffee@rtcenterprises.net>
+ * @copyright Copyright (c) 2017, Richard Coffee
  * @link 4.9.5:wp-includes/general-template.php:2949
  * @link https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md
  */
+defined( 'ABSPATH' ) || exit;
+
 trait DND_Trait_Attributes {
 
 
 	/***  Properties  ***/
 
 	/**
-	 *  flag to force sandbox attribute for iframes tag
-	 *
 	 * @since 20191213
-	 * @var bool
+	 * @var bool  Flag to force sandbox attribute for iframes tag
 	 */
 	protected static $attr_iframe_sandbox = false;
 	/**
-	 *  flag for double quote replacement in attribute values
-	 *
-	 * @since 20191118
-	 * @var bool
+	 * @since 20200313
+	 * @var string  Nonce to be added for javascript events.
 	 */
-	protected static $attr_quote_replacement = false;
+	private static $attr_javascript_nonce = '';
 
 
 	/***  Methods  ***/
 
 	/**
-	 *  alias for apply_attrs_element method
+	 *  Display an HTML element.
 	 *
 	 * @since 20180426
-	 * @param string $tag
-	 * @param array  $attrs
-	 * @param string $text
-	 * @param bool   $raw  true will prevent $text from being escaped when displayed.
+	 * @param string $tag    Tag for the HTML element.
+	 * @param array  $attrs  Attributes for the element.
+	 * @param string $text   Text to appear between the opening and closing tags.
+	 * @param bool   $raw    Set this to true to prevent $text from being escaped when displayed.  Use this at your own risk.
 	 */
 	public function element( $tag, $attrs, $text = '', $raw = false ) {
-		echo $this->get_apply_attrs_element( $tag, $attrs, $text, $raw );
+		echo $this->get_element( $tag, $attrs, $text, $raw );
 	}
 
 	/**
-	 *  alias for get_apply_attrs_element method
+	 *  Return an HTML element.
 	 *
-	 * @since 20180426
-	 * @param string $tag
-	 * @param array  $attrs
-	 * @param string $text
-	 * @param bool   $raw  true will prevent $text from being escaped when displayed.
-	 * @return string
+	 * @since 20180408
+	 * @param string $tag    Tag for the HTML element.
+	 * @param array  $attrs  Attributes to be applied to element.
+	 * @param string $text   Text to appear between the opening and closing tags.
+	 * @param bool   $raw    Set this to true to prevent $text from being escaped when displayed.  Use this at your own risk.
+	 * @return string        An HTML element in string form.
 	 * @used-by DND_Form_Admin::field_label()
 	 */
 	public function get_element( $tag, $attrs, $text = '', $raw = false ) {
-		return $this->get_apply_attrs_element( $tag, $attrs, $text, $raw );
+		$tag   = $this->sanitize_tag( $tag );
+		$attrs = $this->filter_attributes_by_tag( $tag, $attrs );
+		$html  = "<$tag" . $this->get_apply_attrs( $attrs );
+		$inner = ( $raw ) ? $text : esc_html( $text );
+		if ( $this->is_tag_self_closing( $tag ) ) {
+			$html .= ' />' . $inner;
+		} else {
+			$html .= '>' . $inner . "</$tag>";
+		}
+		return $html;
 	}
 
 	/**
-	 *  alias for apply_attrs_tag method
+	 *  Display a self-closing HTML element.
 	 *
 	 * @since 20180426
-	 * @param string $tag
-	 * @param array  $attrs
+	 * @param string $tag    Tag for the HTML element.
+	 * @param array  $attrs  Attributes to be applied to element.
 	 */
 	public function tag( $tag, $attrs ) {
-		echo $this->get_apply_attrs_tag( $tag, $attrs );
+		echo $this->get_tag( $tag, $attrs );
 	}
 
 	/**
-	 *  alias for get_apply_attrs_tag method
-	 * @since 20180426
-	 * @param string $tag
-	 * @param array  $attrs
-	 * @return string
-	 */
-	public function get_tag( $tag, $attrs ) {
-		return $this->get_apply_attrs_tag( $tag, $attrs );
-	}
-
-	/**
-	 * echo the generated html attributes
+	 *  Return a string containing a self-closing HTML element.
 	 *
 	 * @since 20170506
-	 * @param array $attrs an associative array containing the attribute keys and values
+	 * @param string $tag    Tag for the HTML element.
+	 * @param array  $attrs  Attributes to be applied to element.
+	 * @return string        An HTML tag element in string form.
+	 */
+	public function get_tag( $tag, $attrs ) {
+		$attrs = $this->filter_attributes_by_tag( $tag, $attrs );
+		$html  = '<' . $this->sanitize_tag( $tag );
+		$html .= $this->get_apply_attrs( $attrs );
+		$html .= ( $this->is_tag_self_closing( $tag ) ) ? ' />' : '>';
+		return $html;
+	}
+
+
+	/**
+	 *  Echo the generated HTML attributes.
+	 *
+	 * @since 20170506
+	 * @param array $attrs  An associative array containing the attribute keys and values
 	 */
 	public function apply_attrs( $attrs ) {
 		echo $this->get_apply_attrs( $attrs );
 	}
 
 	/**
-	 * generates the html for the tag attributes
+	 *  Generates the HTML for the tag attributes
 	 *
 	 * @since 20170506
-	 * @param array $attrs contains attribute/value pairs
-	 * @return string
+	 * @param array $attrs  Contains attribute/value pairs.
+	 * @return string       Generated HTML attributes.
 	 */
 	public function get_apply_attrs( $attrs ) {
-
 /*		static $is_allowed_no_value = null;
 		if ( empty( $is_allowed_no_value ) ) {
-			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'value' ] );
+			$is_allowed_no_value = apply_filters( 'fluid_attr_is_allowed_no_value', [ 'itemscope', 'multiple', 'required', 'sandbox', 'value' ] );
 		} //*/
 		$is_allowed_no_value = array( 'itemscope', 'multiple', 'value', 'required', 'sandbox' );
-
+		if ( ! empty( static::$attr_javascript_nonce ) ) {
+			$attrs = $this->attr_nonce_check( $attrs );
+		}
 		$html = '';
 		foreach( $attrs as $key => $value ) {
 			$attr = sanitize_key( $key );
 			if ( empty( $value ) ) {
 				if ( in_array( $attr, $is_allowed_no_value, true ) ) {
-					$html .= "$attr ";
+					$html .= ' ' . $attr;
 				}
 				continue;
 			}
@@ -145,17 +154,39 @@ trait DND_Trait_Attributes {
 				default:
 					$value = esc_attr( $value );
 			}
-			if ( static::$attr_quote_replacement ) $value = str_replace( '"', "'", $value );
 			$html .= ' ' . $attr . '="' . $value . '"';
 		}
 		return $html;
 	}
 
 	/**
-	 * applys the wordpress function sanitize_html_class to a string containing multiple css classes
+	 *  Check to see if a nonce is required.
+	 *
+	 * @since 20200313
+	 * @param  array $attrs  Attributes for HTML tag.
+	 * @return array         Attributes with the nonce possibly added.
+	 */
+	private function attr_nonce_check( $attrs ) {
+		static $nonce_required = array();
+		if ( empty( $nonce_required ) ) {
+			$nonce_required = apply_filters( 'fluid_attr_nonce_required', [ 'onchange', 'onclick' ] );
+		}
+		if ( ! array_key_exists( 'nonce', $attrs ) ) {
+			foreach( $nonce_required as $required ) {
+				if ( array_key_exists( $required, $attrs ) ) {
+					$attrs['nonce'] = static::$attr_javascript_nonce;
+					return $attrs;
+				}
+			}
+		}
+		return $attrs;
+	}
+
+	/**
+	 *  Applys the wordpress function sanitize_html_class to a string containing multiple CSS classes.
 	 *
 	 * @since 20170510
-	 * @param string|array $classes css classes to be sanitized
+	 * @param string|array $classes  CSS classes to be sanitized
 	 * @return string
 	 */
 	public function sanitize_html_class( $classes ) {
@@ -170,27 +201,11 @@ trait DND_Trait_Attributes {
 	}
 
 	/**
-	 * generates the initial html for the desired tag and attributes
-	 *
-	 * @since 20170506
-	 * @param string $html_tag tag to be generated
-	 * @param array  $attrs contains attribute/value pairs
-	 * @return string
-	 */
-	public function get_apply_attrs_tag( $html_tag, $attrs ) {
-		$attrs = $this->filter_attributes_by_tag( $html_tag, $attrs );
-		$html  = '<' . $this->sanitize_tag( $html_tag );
-		$html .= $this->get_apply_attrs( $attrs );
-		$html .= ( $this->is_tag_self_closing( $html_tag ) ) ? ' />' : '>';
-		return $html;
-	}
-
-	/**
-	 *  sanitize element tag
+	 *  Sanitize the element tag.
 	 *
 	 * @since 20180829
-	 * @param string $tag
-	 * @return string
+	 * @param string $tag  Tag for the HTML element.
+	 * @return string      The sanitized tag.
 	 */
 	protected function sanitize_tag( $tag ) {
 		$tag = strtolower( $tag );
@@ -199,10 +214,10 @@ trait DND_Trait_Attributes {
 	}
 
 	/**
-	 * checks for tags that are self closing
+	 *  Checks for tags that are self closing.
 	 *
 	 * @since 20170507
-	 * @param string $tag tag to check for
+	 * @param string $tag  Tag for the HTML element.
 	 * @return bool
 	 */
 	protected function is_tag_self_closing( $tag ) {
@@ -215,126 +230,96 @@ trait DND_Trait_Attributes {
 	}
 
 	/**
-	 * echo the generated html
-	 *
-	 * @since 20180408
-	 * @param string $element
-	 * @param array  $attrs
-	 * @param string $text
-	 */
-	public function apply_attrs_element( $element, $attrs, $text = '' ) {
-		echo $this->get_apply_attrs_element( $element, $attrs, $text );
-	}
-
-	/**
-	 * generates the html for the element with enclosed content
-	 *
-	 * @since 20180408
-	 * @param string $element element to be generated
-	 * @param array  $attrs contains attribute/value pairs
-	 * @param string  $text content of html element
-	 * @param boolean $raw  true will prevent $text from being escaped when displayed.
-	 * @return string
-	 */
-	public function get_apply_attrs_element( $element, $attrs, $text = '', $raw = false ) {
-		$element = $this->sanitize_tag( $element );
-		$attrs   = $this->filter_attributes_by_tag( $element, $attrs );
-		$html    = "<$element" . $this->get_apply_attrs( $attrs );
-		$inner   = ( $raw ) ? $text : esc_html( $text );
-		if ( $this->is_tag_self_closing( $element ) ) {
-			$html .= ' />' . $inner;
-		} else {
-			$html .= '>' . $inner . "</$element>";
-		}
-		return $html;
-	}
-
-	/**
-	 *  filter the attribute array by the html tag and the array subscript
+	 *  Filter the attribute array by the HTML tag and the attribute.
 	 *
 	 * @since 20180425
 	 * @link https://www.hongkiat.com/blog/wordpress-rel-noopener/
 	 * @link https://support.performancefoundry.com/article/186-noopener-noreferrer-on-my-links
-	 * @param string $html_tag
-	 * @param array  $attrs
+	 * @param string $tag    Tag for the HTML element.
+	 * @param array  $attrs  Attributes to be applied to element.
 	 * @return array
 	 */
-	public function filter_attributes_by_tag( $html_tag, $attrs ) {
-		if ( ( $html_tag === 'a' ) && array_key_exists( 'target', $attrs ) ) {
+	public function filter_attributes_by_tag( $tag, $attrs ) {
+		if ( ( $tag === 'a' ) && array_key_exists( 'target', $attrs ) ) {
 			$attrs['rel'] = ( ( array_key_exists( 'rel', $attrs ) ) ? $attrs['rel'] : '' ) . ' nofollow noopener noreferrer ugc';
 		}
-		if ( ( $html_tag === 'iframe' ) && static::$attr_iframe_sandbox ) {
+		if ( ( $tag === 'iframe' ) && static::$attr_iframe_sandbox ) {
 			if ( ! array_key_exists( 'sandbox', $attrs ) ) {
 				$attrs['sandbox'] = '';
+			}
+		}
+		if ( ( $tag === 'script' ) && ! empty( static::$attr_javascript_nonce ) ) {
+			if ( ! array_key_exists( 'nonce', $attrs ) ) {
+				$attrs['nonce'] = static::$attr_javascript_nonce;
 			}
 		}
 		return $attrs;
 	}
 
 
-/***   helper functions   ***/
+	/***   helper functions   ***/
 
 	/**
-	 *  add the checked attribute to the attributes array
+	 *  Add the checked attribute to the attributes array.
 	 *
 	 * @since 20180424
 	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
-	 * @param array $attrs   Accepted as reference.
-	 * @param mixed $checked value to check
-	 * @param mixed $current base value to check against
+	 * @param array $attrs    Accepted as reference.
+	 * @param mixed $checked  value to check
+	 * @param mixed $current  base value to check against
 	 */
 	public function checked( &$attrs, $checked, $current = true ) {
 		$this->checked_selected_helper( $attrs, $checked, $current, 'checked' );
 	}
 
 	/**
-	 *  add the disabled attribute to the attributes array
+	 *  Add the disabled attribute to the attributes array.
 	 *
 	 * @since 20180424
 	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
-	 * @param array $attrs    Accepted as reference.
-	 * @param mixed $disabled value to check
-	 * @param mixed $current  base value to check against
+	 * @param array $attrs     Accepted as reference.
+	 * @param mixed $disabled  value to check
+	 * @param mixed $current   base value to check against
 	 */
 	public function disabled( &$attrs, $disabled, $current = true ) {
 		$this->checked_selected_helper( $attrs, $disabled, $current, 'disabled' );
 	}
 
 	/**
-	 *  add the readonly attribute to the attributes array
+	 *  Add the readonly attribute to the attributes array.
 	 *
 	 * @since 20180424
 	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
-	 * @param array $attrs    Accepted as reference.
-	 * @param mixed $readonly value to check
-	 * @param mixed $current  base value to check against
+	 * @param array $attrs     Accepted as reference.
+	 * @param mixed $readonly  value to check
+	 * @param mixed $current   base value to check against
 	 */
 	public function readonly( &$attrs, $readonly, $current = true ) {
 		$this->checked_selected_helper( $attrs, $readonly, $current, 'readonly' );
 	}
 
 	/**
-	 *  add the selected attribute to the attributes array
+	 *  Add the selected attribute to the attributes array.
 	 *
 	 * @since 20180424
 	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
-	 * @param array $attrs    Accepted as reference.
-	 * @param mixed $selected value to check
-	 * @param mixed $current  base value to check against
+	 * @param array $attrs     Accepted as reference.
+	 * @param mixed $selected  value to check
+	 * @param mixed $current   base value to check against
 	 */
 	public function selected( &$attrs, $selected, $current = true ) {
 		$this->checked_selected_helper( $attrs, $selected, $current, 'selected' );
 	}
 
 	/**
-	 *  workhorse of the checked, disabled, readonly, and selected methods
+	 *  Workhorse of the checked, disabled, readonly, and selected methods.
 	 *
 	 * @since 20180424
 	 * @link https://developer.wordpress.org/reference/files/wp-includes/general-template.php/
-	 * @param array  $attrs   Accepted as reference.
-	 * @param mixed  $checked value to check
-	 * @param mixed  $current base value to check against
-	 * @param string $type    attribute to add
+	 * @param array  $attrs    Accepted as reference.
+	 * @param mixed  $checked  value to check
+	 * @param mixed  $current  base value to check against
+	 * @param string $type     attribute to add
 	 */
 	protected function checked_selected_helper( &$attrs, $helper, $current, $type ) {
 		if ( (string) $helper === (string) $current ) {
@@ -360,30 +345,6 @@ trait DND_Trait_Attributes {
 	}
 
 
-	/***  methods for controlling the attr_quote_replacement property  ***/
-
-	/**
-	 *  Get the attr_quote_replacement property
-	 *
-	 * @since 20191118
-	 * @return bool
-	 */
-	public function get_attr_quote_replacement() {
-		return static::$attr_quote_replacement;
-	}
-
-	/**
-	 *  Set the attr_quote_replacement property
-	 *
-	 * @since 20191118
-	 * @param bool
-	 */
-	public function set_attr_quote_replacement( $new = true ) {
-		static::$attr_quote_replacement = ( $new ) ? true : false;
-		return static::$attr_quote_replacement;
-	}
-
-
 	/***  methods for controlling the attr_iframe_sandbox property  ***/
 
 	/**
@@ -405,6 +366,22 @@ trait DND_Trait_Attributes {
 	public function set_attr_iframe_sandbox( $new = true ) {
 		static::$attr_iframe_sandbox = ( $new ) ? true : false;
 		return static::$attr_iframe_sandbox;
+	}
+
+	/**
+	 *  Set the nonce value.  It's validity is entirely your own responsibility.
+	 *
+	 * @since 20200313
+	 * @param string $nonce  New value to set.
+	 * @return string        Current value of the nonce.
+	 */
+	public function set_attr_javascript_nonce( $nonce  = '' ) {
+		if ( empty( static::$attr_javascript_nonce ) ) {
+			if ( $nonce && is_string( $nonce ) ) {
+				static::$attr_javascript_nonce = $nonce;
+			}
+		}
+		return static::$attr_javascript_nonce;
 	}
 
 

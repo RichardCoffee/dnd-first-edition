@@ -9,6 +9,7 @@
  * @copyright Copyright (c) 2018, Richard Coffee
  * @link https://github.com/RichardCoffee/fluidity-theme/blob/master/classes/Trait/ParseArgs.php
  */
+defined( 'ABSPATH' ) || exit;
 /**
  *  trait DND_Trait_ParseArgs
  *

@@ -556,7 +556,7 @@ if ( is_array( $effect ) ) continue;
 			if ( $key ) $this->deactivate_weapon( $key, $object );
 			if ( $object->weap_dual ) $this->check_for_secondary_gear( $object );
 			if ( $object->weapon['skill'] === 'NP' ) $this->messages[] = $object->get_key() . " is not proficient in the use of '{$object->weapon['current']}'";
-			$this->remove_hold( $object->get_key() );
+			$this->remove_holding( $object->get_key() );
 		}
 		$this->search_gear_for_ammo( $object );
 		$object->determine_armor_class();
@@ -583,7 +583,6 @@ if ( is_array( $effect ) ) continue;
 		if ( ( ! $origin ) || $origin->is_stunned() ) return 100;
 		$target = $this->get_object( $name2, true );
 		if ( ! $target ) return 100;
-#echo $origin->get_key().":".$target->get_key()."\n";
 		$to_hit = $origin->get_to_hit_number( $target, $this->range );
 		$to_hit-= ( $target->is_down() ) ? 4 : 0;
 		return apply_filters( 'dnd1e_to_hit_object', $to_hit, $origin, $target );

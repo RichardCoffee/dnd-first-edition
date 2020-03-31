@@ -1,6 +1,6 @@
 <?php
 /**
- *  classes/Enum/Latinate.php
+ *  Provides a Latinate enumeration set.
  *
  * @package FirstEdition
  * @subpackage Enum
@@ -10,11 +10,8 @@
  * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Enum/Enum.php
  */
 defined( 'ABSPATH' ) || exit;
-/**
- *  Provides a Latinate enumeration set.
- *
- * @since 20191201
- */
+
+
 class DND_Enum_Latinate extends DND_Enum_Enum {
 
 
@@ -28,7 +25,7 @@ class DND_Enum_Latinate extends DND_Enum_Enum {
 	 *  Constructor method
 	 *
 	 * @since 20191201
-	 * @param array Substitution values for the set
+	 * @param array $args Substitution values for the set.
 	 * @link https://oeis.org/wiki/Trigesimal_numeral_system
 	 * @link https://wikidiff.com/vigenary
 	 */

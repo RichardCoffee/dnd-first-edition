@@ -1,9 +1,0 @@
-<?php
-
-/*
-
-TODO: remove transients
-
-
-
-*/

@@ -12,14 +12,14 @@
  * Plugin Name:       DnD First Edition Combat Helper
  * Plugin URI:        pluginhome.com
  * Description:       Something I wrote to help with my DnD campaigns.
- * Version:           0.4.0
+ * Version:           0.5.0
  * Requires at least: 4.7.0
  * Requires WP:       4.7.0
- * Tested up to:      4.7.4
+ * Tested up to:      5.3.2
  * Requires PHP:      5.6.0
  * Author:            Richard Coffee
  * Author URI:        rtcenterprises.net
- * GitHub Plugin URI: github uri only needed if using plugin-update-checker
+ * GitHub URI:        github uri only needed if using plugin-update-checker
  * License:           GPLv2
  * Text Domain:       dnd-first
  * Domain Path:       /languages
