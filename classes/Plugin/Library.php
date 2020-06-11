@@ -3,7 +3,7 @@
  *  Provides library access to core trait functions.
  *
  * @package FirstEdition
- * @subpackage Plugin_Core
+ * @subpackage Core
  * @since 20170503
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
@@ -13,8 +13,20 @@ defined( 'ABSPATH' ) || exit;
 
 class DND_Plugin_Library {
 
+	/**
+	 * @since 20180410
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Attributes.php
+	 */
 	use DND_Trait_Attributes;
+	/**
+	 * @since 20180410
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Logging.php
+	 */
 	use DND_Trait_Logging;
+	/**
+	 * @since 20180410
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Magic.php
+	 */
 	use DND_Trait_Magic;
 
 	/**
@@ -53,13 +65,12 @@ class DND_Plugin_Library {
 	 *
 	 * @since 20180501
 	 */
-	#duplicated in DND_Theme_Library
 	public function kses() {
 		return array(
-			'a'    => [ 'class' => [ ], 'href' => [ ], 'itemprop' => [ ], 'rel' => [ ], 'target' => [ ], 'title' => [ ], 'aria-label' => [ ] ],
-			'b'    => [ ],
-			'i'    => [ 'class' => [ ] ],
-			'span' => [ 'class' => [ ], 'itemprop' => [ ] ],
+			'a'    => [ 'class' => [], 'href' => [], 'itemprop' => [], 'rel' => [], 'target' => [], 'title' => [], 'aria-label' => [] ],
+			'b'    => [],
+			'i'    => [ 'class' => [] ],
+			'span' => [ 'class' => [], 'itemprop' => [] ],
 		);
 	}
 
@@ -75,7 +86,7 @@ class DND_Plugin_Library {
 		if ( is_string( $original ) ) {
 			if ( $original === serialize( false ) ) return false;
 			$test = @unserialize( $original, $acceptable );
-			if ( ! ( $test === false ) ) return $test;
+			if ( $test ) return $test;
 		}
 		return $original;
 	}

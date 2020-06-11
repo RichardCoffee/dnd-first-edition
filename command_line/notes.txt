@@ -1,0 +1,21 @@
+
+[oem@oem-HP-Compaq-4000-Pro-SFF-PC ~/work/php/first/command_line]$ php command_line.php --hit=53:Derryl:0
+PHP Fatal error:  Uncaught ErrorException: non-callable function 'get_strength_damage_bonus' called from /home/oem/work/php/first/classes/Character/Trait/Weapons.php on line 648 in /home/oem/work/php/first/classes/Trait/Magic.php on line 57 in /home/oem/work/php/first/command_line/functions.php:16
+Stack trace:
+#0 [internal function]: commandline_errors(256, 'non-callable fu...', '/home/oem/work/...', 57, Array)
+#1 /home/oem/work/php/first/classes/Trait/Magic.php(57): trigger_error('non-callable fu...', 256)
+#2 /home/oem/work/php/first/classes/Character/Trait/Weapons.php(658): DND_Monster_Monster->__call('get_strength_da...', Array)
+#3 /home/oem/work/php/first/classes/Character/Trait/Weapons.php(648): DND_Monster_Monster->weapon_damage_bonus(Array, Object(DND_Character_Cleric), 2000)
+#4 /home/oem/work/php/first/classes/Combat/Combat.php(597): DND_Monster_Monster->get_weapon_damage_bonus(Object(DND_Character_Cleric), 2000)
+#5 /home/oem/work/php/first/classes/Combat/CommandLine.php(672): DND_Combat_Combat->object_damage_with_orig in /home/oem/work/php/first/command_line/functions.php on line 16
+
+[oem@oem-HP-Compaq-4000-Pro-SFF-PC ~/work/php/first/command_line]$ php command_line.php --hit=58:Gaius:2
+PHP Fatal error:  Uncaught ErrorException: non-callable function 'get_strength_damage_bonus' called from /home/oem/work/php/first/classes/Character/Trait/Weapons.php on line 648 in /home/oem/work/php/first/classes/Trait/Magic.php on line 57 in /home/oem/work/php/first/command_line/functions.php:16
+Stack trace:
+#0 [internal function]: commandline_errors(256, 'non-callable fu...', '/home/oem/work/...', 57, Array)
+#1 /home/oem/work/php/first/classes/Trait/Magic.php(57): trigger_error('non-callable fu...', 256)
+#2 /home/oem/work/php/first/classes/Character/Trait/Weapons.php(658): DND_Monster_Monster->__call('get_strength_da...', Array)
+#3 /home/oem/work/php/first/classes/Character/Trait/Weapons.php(648): DND_Monster_Monster->weapon_damage_bonus(Array, Object(DND_Character_Druid), 2000)
+#4 /home/oem/work/php/first/classes/Combat/Combat.php(597): DND_Monster_Monster->get_weapon_damage_bonus(Object(DND_Character_Druid), 2000)
+#5 /home/oem/work/php/first/classes/Combat/CommandLine.php(672): DND_Combat_Combat->object_damage_with_origin in /home/oem/work/php/first/command_line/functions.php on line 16
+

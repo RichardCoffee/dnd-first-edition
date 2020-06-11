@@ -3,7 +3,7 @@
  *   Abstract class that contains helper functions for a plugin.
  *
  * @package FirstEdition
- * @subpackage Plugin_Core
+ * @subpackage Core
  * @since 20170111
  * @author Richard Coffee <richard.coffee@rtcenterprises.net>
  * @copyright Copyright (c) 2017, Richard Coffee
@@ -16,13 +16,21 @@ abstract class DND_Plugin_Plugin {
 
 #	 * @since 20170111
 	protected $admin = null;
-#	 * @since 20170111
-	public    $dbvers = '0';
 	/**
 	 * @since 20200221
 	 * @var string  Branch to be used in conjunction with https://github.com/YahnisElsts/plugin-update-checker
 	 */
 	protected $branch = 'master';
+	/**
+	 * @since 20170111
+	 * @var int  Update version.
+	 */
+	protected $dbvers = 0;
+	/**
+	 * @since 20200424
+	 * @var string  Option slug for version data.
+	 */
+	protected $dbv_option = '';
 	/**
 	 * @since 20200329
 	 * @var string  Text domain string, DO NOT USE as a variable.
@@ -77,11 +85,13 @@ abstract class DND_Plugin_Plugin {
 
 
 	/**
-	 *  Trait that provides default magic methods, see classes/Trait/Magic.php for more details
+	 * @since 20170214
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/Magic.php
 	 */
 	use DND_Trait_Magic;
 	/**
-	 *  Trait that provides methods used in autoloading plugin properties.
+	 * @since 20170214
+	 * @link https://github.com/RichardCoffee/custom-post-type/blob/master/classes/Trait/ParseArgs.php
 	 */
 	use DND_Trait_ParseArgs;
 
@@ -111,12 +121,13 @@ abstract class DND_Plugin_Plugin {
 			$data = get_file_data( $args['file'], $seek );
 			$defaults = array(
 				'dir'     => plugin_dir_path( $args['file'] ),
+				'domain'  => $data['domain'],
 				'plugin'  => dirname( plugin_basename( $args['file'] ) ),
 				'url'     => plugin_dir_url( $args['file'] ),
 				'version' => $data['ver'],
 			);
-			if ( is_url( $data['github'] ) ) $defaults['github'] = $data['github'];
-			if ( $this->tab === 'about' )    $this->tab = $defaults['plugin'];
+			if ( is_url( $data['github'] ) )           $defaults['github'] = $data['github'];
+			if ( in_array( $this->tab, [ 'about' ] ) ) $this->tab = $defaults['plugin'];
 			$args = array_merge( $defaults, $args );
 			$this->parse_args( $args );
 			$this->paths = DND_Plugin_Paths::get_instance( $args );
@@ -124,6 +135,7 @@ abstract class DND_Plugin_Plugin {
 			$this->schedule_initialize();
 			$this->load_textdomain();
 			$this->load_update_checker();
+			$this->check_update();
 		} else {
 			static::$abort__construct = true;
 		}
@@ -169,7 +181,11 @@ abstract class DND_Plugin_Plugin {
 		return $state;
 	}
 
-#	 * @since 20170227
+	/**
+	 *  Decides when to initialize plugin.
+	 *
+	 * @since 20170227
+	 */
 	protected function schedule_initialize() {
 		switch ( $this->state ) {
 			case 'plugin':
@@ -232,7 +248,7 @@ abstract class DND_Plugin_Plugin {
 		return $this->paths->get_plugin_file_path( $file );
 	}
 
-	/*
+	/**
 	 *  Removes 'Edit' option from plugin action links, and adds 'Settings' option.
 	 *
 	 * @since 20170111
@@ -246,18 +262,18 @@ abstract class DND_Plugin_Plugin {
 	 * @return array
 	 */
 	public function settings_link( $links, $file, $data, $context ) {
-		if ( strpos( $file, $this->plugin ) !== false ) {
+		if ( strpos( $file, basename( $this->paths->file ) ) ) {
 			if ( array_key_exists( 'edit', $links ) ) unset( $links['edit'] );
-			if ( is_plugin_active( $file ) && ! ( $this->tab === 'about' ) ) {
-				$url = ( $this->setting ) ? $this->setting : admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab );
-				$links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'dnd-first-edition' ) );
+			if ( is_plugin_active( $file ) ) {
+				$url = ( $this->setting ) ? $this->setting : ( ( in_array( $this->state, [ 'plugin', 'theme' ] ) ) ? admin_url( 'admin.php?page=fluidity_options&tab=' . $this->tab ) : false );
+				if ( $url ) $links['settings'] = sprintf( '<a href="%s"> %s </a>', esc_url( $url ), esc_html__( 'Settings', 'dnd-first-edition' ) );
 			}
 		}
 		return $links;
 	}
 
 
-  /** Update functions **/
+	/** Update functions **/
 
 	/**
 	 *  Load the plugin update checker.
@@ -276,37 +292,63 @@ abstract class DND_Plugin_Plugin {
 		}
 	}
 
-/*
-#	 * @since 20170111
-  public function check_update() {
-    $addr = 'tcc_options_'.$this->tab;
-    $data = get_option($addr);
-    if ( ! array_key_exists( 'dbvers', $data ) ) return;
-    if (intval($data['dbvers'],10)>=intval($this->dbvers)) return;
-    $this->perform_update($addr);
-  }
+	/**
+	 *  Handles running update functions.
+	 *
+	 * @since 20170111
+	 */
+	public function check_update() {
+		if ( empty( $this->dbvers     ) ) return;
+		if ( empty( $this->dbv_option ) ) return;
+		$current = intval( $this->get_option( $this->dbv_option, $this->dbvers ) );
+		if ( $this->dbvers > $current ) {
+			$this->perform_update( $current );
+		}
+	}
 
-#	 * @since 20170111
-  private function perform_update($addr) {
-    $option = get_option($addr);
-    $dbvers = intval($option['dbvers'],10);
-    $target = intval($this->dbvers,10);
-    while($dbvers<$target) {
-      $dbvers++;
-      $update_func = "update_$dbvers";
-      if ( method_exists( get_called_class(), $update_func ) ) {
-        $this->$update_func();
-      }
-    }
-    $option = get_option($addr); // reload in case an update changes an array value
-    $option['dbvers']  = $dbvers;
-    $option['version'] = $this->paths->version;
-    update_option($addr,$option);
-  } //*/
+	/**
+	 *  Call update functions.
+	 *
+	 * @since 20170111
+	 * @param int $dbvers  Current update status.
+	 */
+	private function perform_update( $dbvers ) {
+		while( $dbvers < $this->dbvers ) {
+			$dbvers++;
+			$update_func = "update_$dbvers";
+			if ( method_exists( get_called_class(), $update_func ) ) {
+				$this->$update_func( $dbvers );
+			}
+		}
+		/*  old code kept around just in case...
+		$option = get_option( $this->dbv_option ); // reload in case an update changes an array value
+		$option['dbvers']  = $dbvers;
+		$option['version'] = $this->paths->version; */
+		update_option( $this->dbv_option, $dbvers );
+	} //*/
+
+	/**
+	 *  Get an option, mainly provided so that a child class can replace it.
+	 *
+	 * @since 20200425
+	 * @param string $slug     Option to retrieve.
+	 * @param mixed  $default  Default option value.
+	 * @return mixed           Option value.
+	 */
+	protected function get_options( $slug, $default ) {
+		return get_option( $slug, $default );
+	}
 
 
 }
 
+/**
+ *  Test for a valid url.
+ *
+ * @since 20200227
+ * @param string $url  URL to check.
+ * @return bool        True for a valid url, false otherwise.
+ */
 if ( ! function_exists( 'is_url' ) ) {
 	function is_url( $url ) {
 		return filter_var( $url, FILTER_VALIDATE_URL );
