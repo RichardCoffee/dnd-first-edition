@@ -8,12 +8,12 @@ trait DND_Character_Trait_Undead {
 
 	public function special_string_undead( $type, $level = 0 ) {
 		$response = 'Unknown';
-		$type   = ucfirst( $type );
-		$level  = $this->calc_level_vs_undead( $level );
+		$type  = ucfirst( $type );
+		$level = $this->calc_level_vs_undead( $level );
 		if ( $level > 0 ) {
 			$undead = $this->get_undead_table();
 			if ( array_key_exists( $type, $undead ) ) {
-				$foe = $undead[ $type];
+				$foe = $undead[ $type ];
 				if ( array_key_exists( $level, $foe ) ) {
 					$response = $foe[ $level ];
 				} else {

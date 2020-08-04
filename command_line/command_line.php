@@ -4,7 +4,7 @@ require_once( 'setup.php');
 
 $combat = dnd1e()->combat;
 
-#include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
+include_once( DND_FIRST_EDITION_DIR . '/command_line/characters.php' );
 #include_once( DND_FIRST_EDITION_DIR . '/command_line/monster.php' );
 include_once( DND_FIRST_EDITION_DIR . '/command_line/weapons.php' );
 

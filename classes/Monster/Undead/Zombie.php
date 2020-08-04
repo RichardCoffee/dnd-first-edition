@@ -1,7 +1,7 @@
 <?php
 /* Name: Zombie
  * Class: DND_Monster_Undead_Zombie
- * Encounter: {"CC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"CW":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TSC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TSW":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"}}
+ * Encounter: {"CC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"CW":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TW":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TSC":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"},"TSW":{"M":"VR","H":"VR","F":"VR","S":"R","P":"VR","D":"VR"}}
  */
 
 class DND_Monster_Undead_Zombie extends DND_Monster_Undead_Undead {

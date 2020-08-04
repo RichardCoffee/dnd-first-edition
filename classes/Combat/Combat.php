@@ -395,7 +395,7 @@ if ( is_array( $effect ) ) continue;
 	protected function add_enemy_number( $base, $number, $limit = 0 ) {
 		if ( $number > 1 ) {
 			$cnt  = count( $this->enemy );
-			$loop = ( $limit === 0 ) ? $number : min( $number, ( $cnt - $limit ) );
+			$loop = ( $limit === 0 ) ? $number : $limit;
 			for( $i = 1; $i < $loop; $i++ ) {
 				$this->add_to_enemy( new $base );
 			}
@@ -546,7 +546,7 @@ if ( is_array( $effect ) ) continue;
 
 	/**  Combat functions  **/
 
-	protected function change_weapon( $object, $weapon, $normal = false ) {
+	public function change_weapon( $object, $weapon, $normal = false ) {
 		if ( $this->check_for_cursed_gear( $object, 'weapon' ) ) return;
 		$sequence = $object->get_attack_sequence( $this->rounds, $object->weapon );
 		$key = ( array_key_exists( 'key', $object->weapon ) ) ? $object->weapon['key'] : false;
@@ -588,25 +588,31 @@ if ( is_array( $effect ) ) continue;
 		return apply_filters( 'dnd1e_to_hit_object', $to_hit, $origin, $target );
 	}
 
-	public function object_damage_with_origin( $name, $target, $damage, $type = '' ) {
-		$origin = $this->get_object( $name );
+	public function resolve_damage( $params = array() ) {
+		$origin = null;
+		$target = null;
+		$damage = 0;
+		$type   = '';
+		extract( $params, EXTR_IF_EXISTS );
+		$origin = $this->get_object( $origin );
 		$target = $this->get_object( $target );
-		if ( $origin ) {
-			if ( in_array( $name, $this->action ) ) { $this->messages[] = "$name has already attacked this segment."; return; }
-			if ( $origin->get_hit_points() < 1 ) { $this->messages[] = "$name is dead.  He can make no attacks."; return; }
-			$damage += $origin->get_weapon_damage_bonus( $target, $this->range );
-			if ( empty( $type ) && array_key_exists( 'effect', $origin->weapon ) ) $type = $origin->weapon['effect'];
-			$damage = apply_filters( 'dnd1e_origin_damage', $damage, $origin, $target, $type );
-			if ( $origin->segment > $this->segment ) $object->segment = $this->segment;
-			$this->action[] = $origin->get_key();
-			$this->remove_holding( $origin->get_key() );
-		}
-		$this->object_damage( $target, $damage, $type );
-	}
-
-	protected function object_damage( $name, $damage, $type = '' ) {
-		$target = $this->get_object( $name );
 		if ( $target ) {
+			if ( $origin ) {
+				if ( in_array( $origin->get_key(), $this->action ) ) {
+					$this->messages[] = $origin->get_name() . ' has already attacked this segment.';
+					return;
+				}
+				if ( $origin->get_hit_points() < 1 ) {
+					$this->messages[] = $origin->get_name() . ' is dead or incapacitated.  No attacks possible.';
+					return;
+				}
+				$damage += $origin->get_weapon_damage_bonus( $target, $this->range );
+				if ( empty( $type ) && array_key_exists( 'effect', $origin->weapon ) ) $type = $origin->weapon['effect'];
+				$damage = apply_filters( 'dnd1e_origin_damage', $damage, $origin, $target, $type );
+				if ( $origin->segment > $this->segment ) $object->segment = $this->segment;
+				$this->action[] = $origin->get_key();
+				$this->remove_holding( $origin->get_key() );
+			}
 			$damage = intval( apply_filters( 'dnd1e_damage_to_target', $damage, $target, $type ) );
 			if ( $damage ) {
 				if ( $target instanceOf DND_Character_Character ) {
@@ -614,8 +620,13 @@ if ( is_array( $effect ) ) continue;
 				}
 				$target->assign_damage( $damage, $this->segment, $type );
 				$this->abort_casting( $target );
-				$this->messages[] = $target->get_key() . " took $damage points of damage.";
-				if ( ( $target->get_hit_points() < 1 ) && ( array_key_exists( $target->get_key(), $this->enemy ) ) ) $this->messages[] = 'Enemy Morale check!';
+				$message  = $target->get_key() . " took $damage points of ";
+				$message .= ( empty( $type ) ) ? 'damage' : "$type damage";
+				$this->messages[] = $message;
+				if ( ( $target->get_hit_points() < 1 ) && ( array_key_exists( $target->get_key(), $this->enemy ) ) ) {
+					$this->messages[] = $target->get_key() . 'is dead!';
+					$this->messages[] = 'Enemy Morale check!';
+				}
 			}
 			do_action( 'dnd1e_attack_made', $target, $this->segment );
 		}

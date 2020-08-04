@@ -176,7 +176,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	}
 
 	protected function determine_initiative() {
-		if ( ( $this->segment === 0 ) &&  ( $this->initiative['roll'] > 0 ) ) {
+		if ( $this->initiative['roll'] > 0 ) {
 			$this->initiative['actual']  = $this->initiative['roll'] + $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
 			$this->initiative['segment'] = 11 - $this->initiative['actual'];
 			$this->segment = $this->initiative['segment'];
@@ -185,7 +185,7 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 
 	public function set_initiative( $roll ) {
 		$roll = intval( $roll );
-		if ( $roll ) {
+		if ( $roll && ( $this->segment < 11 ) ) {
 			$this->initiative['roll'] = $roll;
 			$this->determine_initiative();
 		}

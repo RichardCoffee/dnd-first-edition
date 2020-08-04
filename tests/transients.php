@@ -1,12 +1,7 @@
 <?php
 
-define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
-define( 'CSV_PATH', '/home/oem/DnD/csv/' );
-define( 'WP_DEBUG', true );
+require_once( 'setup.php' );
 
-require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
-require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
-
-$trans = dnd1e_transient( 'cast' );
+$trans = dnd1e_transient( 'combat' );
 
 print_r($trans);

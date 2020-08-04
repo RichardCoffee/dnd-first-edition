@@ -39,6 +39,7 @@ class DND_Monster_Undead_Undead extends DND_Monster_Monster {
 #	protected $specials     = array();
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 #	protected $treasure     = 'Nil';
+	protected $turn_as      = '';
 	protected $vulnerable   = array( 'undead' );
 #	protected $weap_allow   = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual    = false;   // DND_Character_Trait_Weapons
@@ -46,6 +47,13 @@ class DND_Monster_Undead_Undead extends DND_Monster_Monster {
 #	protected $weapons      = array(); // DND_Character_Trait_Weapons
 #	protected $xp_value     = array( 0, 0, 0, 0 );
 
+
+	public function __construct( $args = array() ) {
+		parent::__construct( $args );
+		if ( empty( $this->turn_as ) ) {
+			$this->turn_as = $this->name;
+		}
+	}
 
 	protected function determine_hit_dice() {
 		$this->hit_dice = 1;

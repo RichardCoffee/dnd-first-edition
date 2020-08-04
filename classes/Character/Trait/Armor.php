@@ -120,9 +120,6 @@ trait DND_Character_Trait_Armor {
 	}
 
 	protected function get_armor_base_movement( $armor ) {
-#$val = $this->get_armor_trait_value( $armor, 'move' );
-#echo "$armor:$val\n";
-#return $val;
 		return $this->get_armor_trait_value( $armor, 'move' );
 	}
 

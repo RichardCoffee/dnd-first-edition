@@ -38,14 +38,10 @@ trait DND_Character_Trait_Spells_Effects_Druid {
 				if ( ! is_object( $possible ) )    continue;
 				if ( ! ( $object === $possible ) ) continue;
 				if ( ( $combat->segment - $spell->when > 9 ) && ( $combat->segment - $spell->when < 59 ) ) {
-					$damage = mt_rand( 1, 4 );
-					$combat->object_damage_with_origin( $this, $object, $damage, 'fire' );
+					$combat->resolve_damage( array( 'origin' => $this, 'target' => $object, 'damage' => mt_rand( 1, 4 ), 'type' => 'fire' ) );
 					if ( ( $combat->segment - $spell->when > 19 ) && ( $combat->segment - $spell->when < 49 ) ) {
-						$extra = mt_rand( 1, 4 );
-						$combat->object_damage_with_origin( $this, $object, $extra, 'fire' );
-						$damage += $extra;
+						$combat->resolve_damage( array( 'origin' => $this, 'target' => $object, 'damage' => mt_rand( 1, 4 ), 'type' => 'fire' ) );
 					}
-					$combat->messages[] = $object->get_key() . " took $damage points of heat damage";
 				}
 			}
 		}

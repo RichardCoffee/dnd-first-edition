@@ -136,7 +136,7 @@ class DND_Combat_Treasure_Items_Weapon extends DND_Combat_Treasure_Items_Item {
 		foreach( $this->data as $seg => $target ) {
 			if ( ( $seg + 100 ) > $segment ) continue;
 			if ( ( ( $segment - $seg ) % 10 ) === 0 ) {
-				$combat->object_damage_with_origin( null, $target, 1, $this->effect );
+				$combat->resolve_damage( array( 'target' => $target, 'damage' => 1, 'type' => $this->effect ) );
 			}
 		}
 	}

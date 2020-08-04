@@ -76,7 +76,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		}
 	}
 
-	public function generate_encounter( $terrain, $area, $freq, $crea, $limit ) {
+	public function generate_encounter( $terrain, $area, $freq, $crea, $number ) {
 		if ( $terrain && $area ) {
 			$enc = new DND_Combat_Encounters;
 			$listing = $enc->get_random_encounter( "$terrain:$area", $freq, $crea );
@@ -91,7 +91,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				$new = $listing['class'];
 				$this->reset_combat();
 				$monster = new $new;
-				$this->initialize_enemy( $monster, $limit );
+				$this->initialize_enemy( $monster, $number );
 				$this->new_segment_housekeeping();
 				return;
 			} else {
@@ -484,10 +484,14 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			} else {
 				$weapon .= "({$object->manna}/{$object->manna_init})";
 			}
+		} else if ( $weapon === 'Turn Undead' ) {
+			$weapon .= ':' . $this->get_turn_undead_string( $object );
 		} else if ( ( substr( $weapon, 0, 3) === 'Bow' ) && ( $this->range < BOW_POINT_BLANK ) ) {
-			if ( in_array( $object->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": Damage*2";
+			if ( in_array( $object->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ":Damage*2";
 		} else if ( ( substr( $weapon, 0, 5) === 'Cross' ) && ( $this->range < CROSSBOW_POINT_BLANK ) ) {
-			if ( in_array( $object->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ": D*2";
+			if ( in_array( $object->weapon['skill'], [ 'SP', 'DS' ] ) ) $weapon .= ":D*2";
+		} else if ( array_key_exists( 'range', $object->weapon ) ) {
+			$weapon .= ":" . implode( '/', $object->weapon['range'] );
 		} else if ( array_key_exists( 'symbol', $object->weapon ) ) {
 			$weapon .= ':' . $object->weapon['symbol'];
 		}
@@ -503,6 +507,26 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			return sprintf( '%2d %6s', $to_hit, $damage );
 		}
 		return 'No opponent ';
+	}
+
+	protected function get_turn_undead_string( $cleric ) {
+		static $undead = array();
+		if ( ! $undead ) {
+			foreach( $this->enemy as $key => $object ) {
+				if ( $object instanceOf DND_Monster_Undead_Undead ) {
+					if ( ! in_array( $object->turn_as, $undead ) ) {
+						$undead[] = $object->turn_as;
+					}
+				}
+			}
+		}
+		$turn = '';
+		if ( $undead ) {
+			foreach( $undead as $term ) {
+				$turn .= ' ' . $cleric->special_string_undead( $term );
+			}
+		}
+		return $turn;
 	}
 
 	protected function get_weapon_damage_string( DND_Character_Character $char, DND_Monster_Monster $monster ) {
@@ -662,16 +686,16 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$cnt = count( $in );
 		if ( $cnt === 2 ) {
 			list( $target, $damage ) = $in;
-			$this->object_damage( $target, $damage ); # DEPRECATED - Do not use this form - will be removed in the future
+			$this->resolve_damage( compact( $target, $damage ) );
 		} else if ( $cnt === 4 ) {
-			list( $origin, $target, $damage, $effect ) = $in;
-			$this->object_damage_with_origin( $origin, $target, $damage, $effect );
+			list( $origin, $target, $damage, $type ) = $in;
+			$this->resolve_damage( compact( $origin, $target, $damage, $type ) );
 		} else if ( $cnt === 3 ) {
 			list( $origin, $target, $damage ) = $in;
 			if ( is_numeric( $damage ) ) {
-				$this->object_damage_with_origin( $origin, $target, $damage );
-			} else { //               target   damage   effect
-				$this->object_damage( $origin, $target, $damage ); # DEPRECATED - All hits should include origin
+				$this->resolve_damage( compact( $origin, $target, $damage ) );
+			} else {
+				$this->resolve_damage( array( 'origin' => $origin, 'target' => $target, 'type' => $damage ) );
 			}
 		}
 	}

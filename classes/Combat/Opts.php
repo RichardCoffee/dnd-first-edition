@@ -143,17 +143,18 @@ trait DND_Combat_Opts {
 
 	--eff=<origin>:<target>:<effect>  Apply an effect from an attack.
 
-	--enc=<terrain>:<area>[:roll[:roll]]
+	--enc=<terrain>:<area>[:roll[:roll][:num]]
 	                Possibly generate a random encounter where terrain can be 'CC','CW','TC','TW','TSC','TSW' and area can be 'M','H','F','S','P','D'
 	                For water encounters terrain can be 'CF','CS','TF','TS','TSF','TSS' and area can be 'S','D'.  First roll is d100 for
-	                appearence category, second roll is for the creature.
+	                appearence category, second roll is for the creature.  Number is the number of creatures encountered, otherwise this
+	                number is generated using standard encounter determinants.
 
 	--hit=origin:target:#[:effect]   Use to record damage to a combatant, format is <name>:<damage>.  The effect can be used for the
 	                                 type of damage, recognized effects are 'cold', 'fire', 'electic', 'mental', 'sleep', 'charm', etc.
 
 	--hold=name[:#] Place a combatant's attack on hold.  Adding a segment value indicates that the combatant can attack on the specified segment.
 
-	--init=name:#   Set a participant's initiatve.
+	--init=name:#   Set a participant's initiative.
 
 	--loot          Show whatever loot dead opponents may have.
 
@@ -163,7 +164,7 @@ trait DND_Combat_Opts {
 
 	--st=name           Show the saving throws for the indicated combatant.
 
-	--store=group[:label]  Store a group.  Possible values as 'party', 'enemy', and 'gear.  The label can be used to sub-identify.
+	--store=group[:label]  Store a group.  Possible values as 'party', 'enemy', and 'gear'.  The label can be used to sub-identify.
 
 	--text             Show the enemy description if available.
 
@@ -329,6 +330,13 @@ trait DND_Combat_Opts {
 			if ( $this->error ) $this->show_error( $this->error );
 			$this->show_error( 'Exiting!' );
 		}
+	}
+
+
+	/**  Testing functions  **/
+
+	public function set_range( $range ) {
+		$this->range = $range;
 	}
 
 

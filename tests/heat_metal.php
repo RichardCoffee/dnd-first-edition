@@ -12,7 +12,7 @@ class Combat {
 		$this->messages = array();
 	}
 	public function get_object( $param )   { return $this->target; }
-	public function object_damage_with_origin( $p1, $p2, $p3, $p4 ) { }
+	public function resolve_damage( $arr = array() ) { }
 }
 
 class Target {
