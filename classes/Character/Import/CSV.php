@@ -33,6 +33,7 @@ abstract protected function parse_line( $data );
 			$this->import_status = 'fail';
 			$this->import_message = "The template for $class does not exist.  Either pick one that does exist or talk to the programmer.";
 		}
+		echo "{$this->import_message}\n";
 	}
 
 	protected function save_character( $class, $extra ) {

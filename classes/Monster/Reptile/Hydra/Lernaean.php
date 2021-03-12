@@ -1,10 +1,10 @@
 <?php
 /* Name: Lernaean Hydra
- * Class: DND_Monster_Hydra_Lernaean
+ * Class: DND_Monster_Reptile_Hydra_Lernaean
  * Encounter: {"CW":{"S":"VR"},"TSW":{"S":"VR"}}
  */
 
-class DND_Monster_Hydra_Lernaean extends DND_Monster_Hydra_Hydra {
+class DND_Monster_Reptile_Hydra_Lernaean extends DND_Monster_Reptile_Hydra_Hydra {
 
 
 #	protected $ac_rows      = array(); // DND_Monster_Trait_Combat

@@ -9,7 +9,10 @@ trait DND_Combat_Spells {
 	/**  Casting functions  **/
 
 	protected function pre_cast_spell( $name, $spell, $target = false ) {
-		if ( $this->segment > 1 ) return false;
+		if ( $this->segment > 1 ) {
+			$this->messages[] = "Cannot pre-cast after segment 1.";
+			return false;
+		}
 		if ( $effect = $this->start_casting( $name, $spell, $target ) ) {
 			$effect->set_pre_cast();
 			$this->finish_casting( $effect );
@@ -22,8 +25,9 @@ trait DND_Combat_Spells {
 	protected function start_casting( $name, $spell, $target = false ) {
 		$object = $this->get_object( $name );
 		if ( is_object( $object ) ) {
+			$name = $object->get_key();
 			$sequence = $object->get_attack_sequence( $this->rounds, $object->weapon );
-			if ( ! in_array( $this->segment, $sequence ) ) {
+			if ( ( ! dnd1e()->called_by( 'pre_cast_spell' ) ) && ( ! in_array( $this->segment, $sequence ) ) ) {
 				$this->messages[] = "$name must wait until his/her attack segment before casting a spell.";
 			} else if ( is_object( $spell ) ) {
 				$this->remove_holding( $name );
@@ -35,8 +39,9 @@ trait DND_Combat_Spells {
 					if ( $spell->check( $object, $target, $this ) ) {
 						$spell->set_target( $target );
 						$spell->set_when( $this->segment );
-						$this->casting[] = $spell;
-						$this->messages[] = "$name casting " . $spell->get_name() . " on " . $spell->get_target();
+						$this->casting[]  = $spell;
+						$this->messages[] = sprintf( '%s casting %s on %s', $name, $spell->get_name(), $spell->get_target() );
+						$this->check_special_casting( $spell );
 						return $spell;
 					}
 				}
@@ -75,11 +80,17 @@ trait DND_Combat_Spells {
 		);
 	}
 
-	protected function finish_casting( $spell, $data = null ) {
-		$caster = $this->get_object( $spell->get_caster() );
-		$target = $this->get_object( $spell->get_target() );
+	protected function apply_casting( $caster, $spell, $data = null ) {
+		$target = $this->get_object( $spell->get_target(), false, true );
+echo ( $data ) ? "$data\n" : "no data\n";
 		if ( $ret = $spell->process_apply( $caster, $target, $data ) ) $this->messages[] = $ret;
 		if ( count( $spell->get_filters() ) > 0 ) $this->add_effect( $spell );
+		if ( $ret = $spell->process_post( $caster, $target, $data ) ) $this->messages[] = $ret;
+	}
+
+	protected function finish_casting( $spell, $data = null ) {
+		$caster = $this->get_object( $spell->get_caster() );
+		$this->apply_casting( $caster, $spell, $data );
 		$caster->spend_manna( $spell );
 		$this->remove_casting( $caster->get_key() );
 	}
@@ -100,6 +111,13 @@ trait DND_Combat_Spells {
 			if ( $this->segment > $spell->get_when() ) {
 				$this->finish_casting( $spell );
 			}
+		}
+	}
+
+	private function check_special_casting( $spell ) {
+		if ( $spell->get_name() === 'Chant' ) {
+			$caster = $this->get_object( $spell->get_caster() );
+			$this->apply_casting( $caster, $spell );
 		}
 	}
 

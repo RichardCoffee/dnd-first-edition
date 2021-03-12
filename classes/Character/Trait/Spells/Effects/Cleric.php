@@ -4,7 +4,7 @@ trait DND_Character_Trait_Spells_Effects_Cleric {
 
 
 	public function cleric_first_command( $spell, $target, $unused ) {
-		$int = DND_Enum_Intelligence::instance();
+		$int = DND_Enum_Intelligence;
 		if ( ( $int->pos( $target->intelligence ) > 12 ) || ( $target->hit_dice > 5 ) ) {
 			$roll = $target->saving_throw( $spell->get_against(), $spell->get_effect() );
 			return sprintf( '%s gets a saving throw vs %s of %u', $target->get_key(), $spell->get_against(), $roll );

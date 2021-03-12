@@ -30,6 +30,11 @@ class DND_Combat_Treasure_Items_Item implements JsonSerializable, Serializable {
 		if ( count( $this->type ) === 1 ) $this->typepub = $this->type[0];
 	}
 
+/*	public function __destruct() {
+echo "__destruct method called for {$this->key}\n";
+		$this->turn_off();
+	} //*/
+
 
 	/**  Weapon functions  **/
 

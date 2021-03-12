@@ -1,7 +1,7 @@
 <?php
 /* Name: Ghoul
  * Class: DND_Monster_Undead_Ghoul
- * Encounter: {"CC":{"M":"U","H":"U","S":"U","P":"U"}"CW":{"M":"U","H":"U","S":"U","P":"U"}"TC":{"M":"U","H":"U","S":"U","P":"U"}"TW":{"M":"U","H":"U","S":"U","P":"U"}"TSC":{"M":"U","H":"U","S":"U","P":"U"}"TCC":{"M":"U","H":"U","S":"U","P":"U"}}
+ * Encounter: {"CC":{"M":"U","H":"U","S":"U","P":"U"},"CW":{"M":"U","H":"U","S":"U","P":"U"},"TC":{"M":"U","H":"U","S":"U","P":"U"},"TW":{"M":"U","H":"U","S":"U","P":"U"},"TSC":{"M":"U","H":"U","S":"U","P":"U"},"TSW":{"M":"U","H":"U","S":"U","P":"U"}}
  */
 
 class DND_Monster_Undead_Ghoul extends DND_Monster_Undead_Undead {
@@ -9,7 +9,7 @@ class DND_Monster_Undead_Ghoul extends DND_Monster_Undead_Undead {
 
 #	protected $ac_rows      = array(); // DND_Monster_Trait_Combat
 	protected $alignment    = 'Chaotic Evil';
-#	protected $appearing    = array( 1, 1, 0 );
+	protected $appearing    = array( 2, 12, 0 );
 	protected $armor_class  = 6;
 #	protected $armor_type   = 11;      // DND_Monster_Trait_Combat
 	protected $attacks      = array( 'Claw R' => [ 1, 3, 0 ], 'Claw L' => [ 1, 3, 0 ], 'Bite' => [ 1, 6, 0 ] );
@@ -30,7 +30,7 @@ class DND_Monster_Undead_Ghoul extends DND_Monster_Undead_Undead {
 	protected $movement     = array( 'foot' => 9 );
 	protected $name         = 'Ghoul';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Undead';
+	protected $race         = 'Ghoul';
 	protected $reference    = 'Monster Manual page 42-43';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );

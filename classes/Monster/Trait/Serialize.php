@@ -24,6 +24,7 @@ trait DND_Monster_Trait_Serialize {
 			'name'         => $this->name,
 			'saving'       => $this->saving,
 			'segment'      => $this->segment,
+			'stats'        => $this->stats,
 			'weapon'       => $this->weapon,
 			'xp_value'     => $this->xp_value,
 		);
@@ -50,9 +51,6 @@ trait DND_Monster_Trait_Serialize {
 			}
 			if ( $this instanceOf DND_Monster_Dragon_Faerie ) {
 				$table['co_druid'] = $this->co_druid;
-			}
-			if ( $this instanceOf DND_Monster_Dragon_Shadow ) {
-				$table['stats'] = $this->stats;
 			}
 		} else if ( $this instanceOf DND_Monster_Humanoid_Humanoid ) {
 			$table['armor']  = $this->armor;

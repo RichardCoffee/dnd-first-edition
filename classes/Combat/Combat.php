@@ -29,6 +29,13 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 	protected $segment  = 1;
 
 
+	protected $dcc_debug = array(
+		'atp'  => false,    # add_to_party
+		'gthn' => false,    # get_to_hit_number
+		'oaa'  => false,    # opp_attack_adj
+	);
+
+
 	use DND_Combat_Gear;
 	use DND_Combat_Movement;
 	use DND_Combat_Spells;
@@ -47,7 +54,9 @@ abstract class DND_Combat_Combat implements JsonSerializable, Serializable {
 		if ( $this->effects ) $this->integrate_effects();
 		if ( $this->party )   $this->integrate_party();
 		if ( $this->enemy )   $this->integrate_enemy();
+		if ( empty( $this->gear ) ) $this->load_transient_gear();
 		if ( $this->gear )    $this->integrate_gear();
+#print_r($this->gear);
 		if ( $this->holding ) $this->update_holds();
 		$this->determine_movement();
 		if ( $this->segment % 10 === 0 ) $this->messages[] = 'Enemy Morale check!';
@@ -122,7 +131,8 @@ if ( is_array( $effect ) ) continue;
 				unset( $this->gear[ $key ] );
 				continue;
 			}
-			$owner = $this->get_object( $item->owner );
+#echo "{$item->owner}\n";
+			$owner = $this->get_object( $item->owner, false, true );
 			if ( $owner === false ) continue;
 			if ( $item->active ) $item->activate_filters();
 		}
@@ -130,15 +140,17 @@ if ( is_array( $effect ) ) continue;
 
 	protected function update_holds() {
 		foreach( $this->holding as $name ) {
-			$object  = $this->get_object( $name );
+			$object = $this->get_object( $name );
 			if ( $object->segment > $this->segment ) continue;
 			$object->set_attack_segment( $this->segment );
 		}
+#		$this->holding = array_unique( $this->holding );
 	}
 
 	public function new_segment_housekeeping( $unused = null ) {
 		do_action( 'dnd1e_new_segment', $this->segment );
 		$this->action = array();
+		$this->range  = 2000;
 		foreach( $this->enemy as $key => $object ) {
 			$object->check_for_weapon_change( $this->segment );
 			do_action( 'dnd1e_new_seg_enemy', $this, $object );
@@ -156,7 +168,11 @@ if ( is_array( $effect ) ) continue;
 		}
 		$this->enemy   = array();
 		$this->holding = array();
-		foreach( $this->party as $char ) $char->set_attack_segment( 0 );
+		foreach( $this->party as $char ) {
+#echo "crc: $char\n";
+			$char->set_attack_segment( 1 );
+#echo "crc: $char: {$char->segment}\n";
+		}
 		$this->rounds  = 3;
 		$this->segment = 1;
 	}
@@ -194,6 +210,7 @@ if ( is_array( $effect ) ) continue;
 	}
 
 	protected function filter_attacker( $object ) {
+#print_r( $object );
 		if ( in_array( $object->get_key(), $this->action ) ) return false;
 		$sequence = $object->get_attack_sequence( $this->rounds, $object->weapon );
 		if ( in_array( $this->segment, $sequence ) ) return true;
@@ -232,11 +249,12 @@ if ( is_array( $effect ) ) continue;
 
 	/**  Utility functions  **/
 
-	protected function add_holding( $target, $segment = 0 ) {
+	protected function add_holding( $target, $new = 0 ) {
 		if ( $object = $this->get_object( $target ) ) {
-			$this->holding[] = $object->get_key();
-			$segment = ( $segment > 0 ) ? max ( $segment, $this->segment ) : $this->segment;
-			$object->set_attack_segment( $segment );
+			$key = $object->get_key();
+			if ( ! in_array( $key, $this->holding ) ) $this->holding[] = $key;
+			$new = max( $new, $this->segment );
+			if ( $new > $object->segment ) $object->set_attack_segment( $new );
 		}
 	}
 
@@ -247,7 +265,7 @@ if ( is_array( $effect ) ) continue;
 
 	protected function fumble_roll_result( $roll ) {
 		$dr = new DND_DieRolls;
-		return $dr->get_fumble_result( $roll );
+		$this->messages[] = $dr->get_fumble_result( $roll );
 	}
 
 	protected function generate_z( $x, $y ) {
@@ -258,16 +276,43 @@ if ( is_array( $effect ) ) continue;
 		return $this->__toString();
 	}
 
-	protected function get_object( $name, $strict = false ) {
+	protected function get_object( $name, $strict = false, $suppress = false ) {
+		if ( is_null( $name ) ) return false;
 		if ( is_object( $name ) ) return $name;
-		if ( is_null( $name ) )   return false;
 		if ( array_key_exists( $name, $this->party ) ) {
 			return $this->party[ $name ];
 		} else if ( array_key_exists( $name, $this->enemy ) ) {
 			return $this->enemy[ $name ];
-		} else if ( $strict && ! is_numeric( $name ) ) {
+		} else if ( ! is_numeric( $name ) ) {
+			if ( ! $strict ) {
+				$keys = array_keys( $this->party );
+				$len  = strlen( $name );
+				if ( $len > 0 ) {
+					$poss = array_filter(
+						$this->party,
+						function( $k ) use ( $name, $len ) {
+							if ( substr( $k, 0, $len ) === $name ) {
+								return true;
+							}
+							return false;
+						},
+						ARRAY_FILTER_USE_KEY
+					);
+					if ( count( $poss ) === 1 ) {
+						return array_shift( $poss );
+					}
+				}
+			} else {
+				$poss = $this->get_object( $name );
+				if ( is_object( $poss ) ) {
+					return $poss;
+				}
+			}
 		} else {
 			return $this->get_specific_enemy( intval( $name ) );
+		}
+		if ( ! $suppress ) {
+			$this->messages[] = "'$name' not found.";
 		}
 		return false;
 	}
@@ -276,9 +321,28 @@ if ( is_array( $effect ) ) continue;
 		$this->holding = array_diff( $this->holding, [ $name ] );
 	}
 
+	protected function reset_hit_points() {
+		foreach( $this->party as $char ) {
+			$char->reset_hit_points();
+		}
+	}
+
+	protected function reset_manna_points() {
+		foreach( $this->party as $char ) {
+			if ( method_exists( $char, 'reset_manna_points' ) ) {
+				$char->reset_manna_points();
+			}
+		}
+	}
+
 	protected function set_initiative( $name, $roll ) {
 		$object = $this->get_object( $name );
 		if ( $object ) $object->set_initiative( $roll );
+	}
+
+	protected function set_segment( $name, $segment ) {
+		$object = $this->get_object( $name );
+		if ( $object ) $object->set_attack_segment( $segment );
 	}
 
 	protected function store_data( $name, $label ) {
@@ -444,14 +508,21 @@ if ( is_array( $effect ) ) continue;
 
 	protected function get_enemy_morale() {
 		$base = count( $this->enemy );
-		$cnt  = $this->get_surviving_enemy();
+		$cnt  = $this->get_surviving_enemy( true );
 		return intval( round( $cnt / $base * 100 ) );
 	}
 
-	protected function get_surviving_enemy() {
+	protected function get_surviving_enemy( $morale = false ) {
 		$num = 0;
 		foreach( $this->enemy as $key => $obj ) {
-			if ( $obj->get_hit_points() > 0 ) $num++;
+			if ( $obj->get_hit_points() > 0 ) {
+				$num++;
+				continue;
+			}
+			if ( ! $obj->morale ) {
+				$num++;
+				continue;
+			}
 		}
 		return $num;
 	}
@@ -468,13 +539,20 @@ if ( is_array( $effect ) ) continue;
 			return true;
 		} else if ( is_string( $obj ) && defined( 'CSV_PATH' ) ) {
 			$file = CSV_PATH . $obj . '.csv';
+												if ( $this->dcc_debug['atp'] ) { echo "file1: $file\n"; }
 			if ( is_readable( $file ) ) {
+												if ( $this->dcc_debug['atp'] ) { echo "file2: $file\n"; }
 				$save = $this->pre_existing_character_check( $obj, $data );
 				$temp = new DND_Character_Import_Kregen( $file, $data );
+												if ( $this->dcc_debug['atp'] ) { echo "hp1: {$temp->character->hit_points}\n"; }
 				$name = $temp->character->get_key();
 				$this->party[ $name ] = $temp->character;
+												if ( $this->dcc_debug['atp'] ) { echo "hp2: {$this->party[$name]->hit_points}\n"; }
 				if ( $save ) $this->pre_existing_character_update( $name, $save );
+												if ( $this->dcc_debug['atp'] ) { echo "hp3: {$this->party[$name]->hit_points}\n"; }
 				return true;
+			} else {
+				$this->messages[] = sprintf( 'file %s not found or not readable.', $file );
 			}
 		}
 		return false;
@@ -484,7 +562,8 @@ if ( is_array( $effect ) ) continue;
 		$data = array();
 		if ( array_key_exists( $name, $this->party ) ) {
 			$char = $this->party[ $name ];
-			$data['current']    = $char->current_hp;
+			if ( ! $char ) { $this->messages[] = "$name is a null object"; return null; }
+			$data['hp_diff']    = $char->hit_points - $char->current_hp;
 			$data['initiative'] = $char->initiative['roll'];
 			$data['segment']    = $char->segment;
 			$data['weapon']     = $char->weapon['current'];
@@ -494,7 +573,7 @@ if ( is_array( $effect ) ) continue;
 
 	protected function pre_existing_character_update( $name, $data ) {
 		$char = $this->party[ $name ];
-		$char->current_hp = $data['current'];
+		$char->current_hp = $char->hit_points - $data['hp_diff'];
 		$char->set_attack_segment( $data['segment'] );
 		$char->set_initiative( $data['initiative'] );
 		$this->change_weapon( $char, $data['weapon'] );
@@ -585,51 +664,88 @@ if ( is_array( $effect ) ) continue;
 		if ( ! $target ) return 100;
 		$to_hit = $origin->get_to_hit_number( $target, $this->range );
 		$to_hit-= ( $target->is_down() ) ? 4 : 0;
+#		$to_hit+= $this->opp_attack_adj( $origin );
+		if ( $this->dcc_debug['gthn'] ) {
+			$prefil = $to_hit;
+			$to_hit = apply_filters( 'dnd1e_to_hit_object', $to_hit, $origin, $target );
+			$this->messages[] = sprintf( '%s : %d : %d', $origin->get_key(), $prefil, $to_hit );
+			return $to_hit;
+		}
 		return apply_filters( 'dnd1e_to_hit_object', $to_hit, $origin, $target );
+	}
+
+	public function missed_attack( $name ) {
+		$origin = $this->get_object( $name );
+		if ( $origin ) {
+			$this->action_taken( $origin );
+		}
 	}
 
 	public function resolve_damage( $params = array() ) {
 		$origin = null;
 		$target = null;
 		$damage = 0;
-		$type   = '';
+		$type   = 'attack';
 		extract( $params, EXTR_IF_EXISTS );
-		$origin = $this->get_object( $origin );
-		$target = $this->get_object( $target );
+		$origin   = $this->get_object( $origin, true );
+		$target   = $this->get_object( $target, true );
+		$dam_type = $type;
 		if ( $target ) {
 			if ( $origin ) {
 				if ( in_array( $origin->get_key(), $this->action ) ) {
-					$this->messages[] = $origin->get_name() . ' has already attacked this segment.';
+					$this->messages[] = $origin->get_key() . ' has already attacked this segment.';
 					return;
 				}
 				if ( $origin->get_hit_points() < 1 ) {
-					$this->messages[] = $origin->get_name() . ' is dead or incapacitated.  No attacks possible.';
+					$this->messages[] = $origin->get_key() . ' is dead or incapacitated.  No attacks possible.';
 					return;
 				}
 				$damage += $origin->get_weapon_damage_bonus( $target, $this->range );
-				if ( empty( $type ) && array_key_exists( 'effect', $origin->weapon ) ) $type = $origin->weapon['effect'];
+				if ( empty( $type ) && array_key_exists( 'effect', $origin->weapon ) && ( ! empty($origin->weapon['effect'] ) ) ) $type = $origin->weapon['effect'];
 				$damage = apply_filters( 'dnd1e_origin_damage', $damage, $origin, $target, $type );
+				if ( $damage < 0 ) return;
 				if ( $origin->segment > $this->segment ) $object->segment = $this->segment;
-				$this->action[] = $origin->get_key();
+				$this->action_taken( $origin );
 				$this->remove_holding( $origin->get_key() );
+			} else if ( array_key_exists( 'origin', $params ) ) {
+				$this->messages[] = sprintf( 'Invalid origin %s', $params['origin'] );
+				return;
 			}
 			$damage = intval( apply_filters( 'dnd1e_damage_to_target', $damage, $target, $type ) );
+			if ( $damage < 0 ) return;
 			if ( $damage ) {
 				if ( $target instanceOf DND_Character_Character ) {
 					$damage = $this->temporary_hit_points( $damage, $target, $type );
 				}
 				$target->assign_damage( $damage, $this->segment, $type );
 				$this->abort_casting( $target );
-				$message  = $target->get_key() . " took $damage points of ";
-				$message .= ( empty( $type ) ) ? 'damage' : "$type damage";
-				$this->messages[] = $message;
+				$dam_type = $this->message_damage_type( $origin, $target, $type );
+				$string   = ( $dam_type === 'none' ) ? '%s took %u %s of damage' : '%s took %u %s of %s damage';
+				$points   = ( $damage === 1 ) ? 'point' : 'points';
+				$this->messages[] = sprintf( $string, $target->get_key(), $damage, $points, $dam_type );
 				if ( ( $target->get_hit_points() < 1 ) && ( array_key_exists( $target->get_key(), $this->enemy ) ) ) {
-					$this->messages[] = $target->get_key() . 'is dead!';
-					$this->messages[] = 'Enemy Morale check!';
+					$this->messages[] = sprintf( '%s is dead!', $target->get_key() );
+					if ( $target->morale ) $this->messages[] = 'Enemy Morale check!';
+				} else {
+					if ( $origin && ( $origin instanceOf DND_Monster_Monster ) ) {
+						$string = $origin->monster_damage_string( $target );
+						if ( $string ) $this->messages[] = $string;
+					}
 				}
 			}
 			do_action( 'dnd1e_attack_made', $target, $this->segment );
+		} else {
+			$this->messages[] = sprintf( 'Invalid target %s', $params['target'] );
 		}
+	}
+
+	protected function message_damage_type( $origin, $target, $type = 'attack' ) {
+		if ( $origin ) {
+			if ( empty( $target->vulnerable ) || ! in_array( $type, $target->vulnerable ) ) {
+				$type = $origin->get_weapon_effect( $origin->weapon['current'] );
+			}
+		}
+		return $type;
 	}
 
 	protected function add_hit_effect( $from, $to, $type ) {
@@ -656,6 +772,25 @@ if ( is_array( $effect ) ) continue;
 		}
 	}
 
+	protected function opp_attack_adj( $origin ) {
+		if ( $origin->segment < $this->segment ) {
+			if ( $this->dcc_debug['oaa'] ) $this->messages[] = sprintf( '%s : %d : %d', $origin->name, $origin->segment, $origin->initiative['segment'] );
+			$origin->set_next_attack_segment( $this->segment );
+		}
+		$adj = $origin->segment - $this->segment;
+		if ( $this->dcc_debug['oaa'] ) $this->messages[] = sprintf( '%s : %d : %d : %d', $origin->name, $origin->segment, $origin->initiative['segment'], $adj );
+		return max( $adj, 0 );
+	}
+
+	protected function action_taken( $origin ) {
+		if ( $origin ) {
+			$key = $origin->get_key();
+			if ( ! in_array( $key, $this->action ) ) {
+				$this->action[] = $key;
+			}
+			$this->remove_holding( $key );
+		}
+	}
 
 	/**  JsonSerializable and Serializable functions  **/
 
@@ -677,6 +812,7 @@ if ( is_array( $effect ) ) continue;
 			'gear'    => $this->gear,
 			'holding' => $this->holding,
 			'party'   => $this->party,
+			'range'   => $this->range,
 			'segment' => $this->segment,
 		);
 		$table['what_am_i'] = get_class( $this );

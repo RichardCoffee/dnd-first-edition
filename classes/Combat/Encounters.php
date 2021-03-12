@@ -14,8 +14,9 @@ class DND_Combat_Encounters {
 
 	public function get_random_encounter( $terrain, $roll = 0, $creature = 0 ) {
 		list( $type, $area ) = explode( ':', $terrain );
-		$list = $this->get_monster_files();
+		$list      = $this->get_monster_files();
 		$possibles = array();
+		$result    = null;
 		foreach( $list as $key => $data ) {
 			if ( empty( $data ) ) continue;
 			if ( array_key_exists( $type, $data ) ) {

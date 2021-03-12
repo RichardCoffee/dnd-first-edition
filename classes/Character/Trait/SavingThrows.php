@@ -3,12 +3,13 @@
 trait DND_Character_Trait_SavingThrows {
 
 
-	public function saving_throw( $key, $effect ) {
+	public function saving_throw( $key, $effect = '' ) {
 		$level = ( $this instanceof DND_Monster_Monster ) ? $this->get_saving_throw_level() : $this->level;
 		return $this->get_base_saving_throw( $key, $level, $effect );
 	}
 
 	public function get_saving_throws( $effect = '' ) {
+		$level = ( $this instanceof DND_Monster_Monster ) ? $this->get_saving_throw_level() : $this->level;
 		$base  = $this->get_raw_saving_throws( $level, $effect );
 		return $this->get_keyed_saving_throws( $base );
 	}
@@ -79,6 +80,7 @@ trait DND_Character_Trait_SavingThrows {
 		foreach( $filters as $filter ) {
 			$base = apply_filters( $filter, $base, $this, $effect );
 		}
+echo "$row $index $base\n";
 		$base -= apply_filters( 'dnd1e_armor_saving_throws', 0, $this, $effect );
 		return max( $base, 2 );
 	}

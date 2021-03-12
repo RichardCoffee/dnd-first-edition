@@ -17,13 +17,14 @@ trait DND_Character_Trait_Armor {
 		$ac_adj      = apply_filters( 'dnd1e_armor_class_adj', 0, $this );
 		$shld_bonus  = apply_filters( 'dnd1e_shield_bonus', $this->shield['bonus'], $this );
 		$dex_bonus   = $this->get_ac_dex_bonus();
-#echo "dac:".$this->get_key().":$armor_armor:T$armor_type:B$arm_bonus:A$ac_adj:S$no_shld:T$shield_type:B$shld_bonus:D$dex_bonus\n";
+echo "dac:".$this->get_key().":$armor_armor:T$armor_type:B$arm_bonus:A$ac_adj:S$no_shld:T$shield_type:B$shld_bonus:D$dex_bonus\n";
 		$this->armor['type']  = $armor_type - ( ( $no_shld ) ? 0 : 1 );
 		$this->armor['class'] = $this->armor['type'] - $arm_bonus - $ac_adj - ( ( $no_shld ) ? 0 : $shld_bonus );
 		$this->armor['spell'] = $this->armor['class'];
 		$this->armor['class']+= $dex_bonus;
 		$this->armor['flank'] = $armor_type - $ac_adj - $arm_bonus + $dex_bonus;
 		$this->armor['rear']  = $armor_type - $ac_adj - $arm_bonus;
+#print_r($this->armor);
 	}
 
 	public function get_armor_type() {

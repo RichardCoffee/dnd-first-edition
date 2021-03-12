@@ -23,9 +23,13 @@ trait DND_Combat_Movement {
 	}
 
 	private function determine_party_movement() {
+		static $states = array();
 		foreach( $this->party as $key => $char ) {
+			if ( ! $states ) $states = $char->state_weapon_entries( true );
+			if ( in_array( $char->weapon['current'], $states ) ) continue;
 			if ( $char->get_hit_points() < 1 ) continue;
 			if ( $this->is_casting( $key ) ) continue;
+			if ( in_array( $char->get_key(), $this->action ) ) continue;
 			if ( in_array( $key, $this->holding ) && ( $char->segment > $this->segment ) ) continue;
 			$this->add_object_movement( $char, $char->initiative['actual'] );
 		}

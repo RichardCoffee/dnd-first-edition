@@ -48,8 +48,8 @@ class DND_Monster_Template extends DND_Monster_Monster {
 
 
 	protected function determine_hit_dice() {
-		$this->hit_dice = 1;
-		$this->description = 'Monster template.';
+#		$this->hit_dice = 1;
+#		$this->description = 'Monster template.';
 	}
 
 	protected function determine_specials() {

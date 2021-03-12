@@ -65,7 +65,8 @@ trait DND_Character_Trait_Weapons {
 	private function weapons_check( $weapon = 'Spell' ) {
 		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		if ( ! empty( $this->weap_allow ) ) {
-			foreach( [ 'Stunned', 'Immobilized' ] as $state ) {
+			$conds = $this->state_weapon_entries( true );
+			foreach( $conds as $state ) {
 				$this->add_to_allowed_weapons( $state );
 			}
 		}
@@ -121,13 +122,15 @@ trait DND_Character_Trait_Weapons {
 	public function get_weapon_effect( $weapon ) {
 		if ( empty( static::$weapons_table ) ) static::$weapons_table = $this->get_weapons_table();
 		if ( array_key_exists( $weapon, static::$weapons_table ) ) {
-			return static::$weapons_table[ $weapon ]['effect'];
+			if ( array_key_exists( 'effect', static::$weapons_table[ $weapon ] ) ) {
+				return static::$weapons_table[ $weapon ]['effect'];
+			}
 		}
 		return 'none';
 	}
 
 	private function get_weapons_table() {
-		return array(
+		$weapons = array(
 			'Axe,Battle' => array(
 				'type'   => array( -5, -4, -3, -2, -1, -1, 0, 0, 1, 1, 2 ),
 				'speed'  => 7,
@@ -321,12 +324,6 @@ trait DND_Character_Trait_Weapons {
 				'attack' => 'monster',
 				'effect' => 'pierce',
 			),
-			'Immobilized' => array(
-				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-				'speed'  => 10,
-				'damage' => array( 'Spec', 'Spec', 'No' ),
-				'attack' => 'immobilized',
-			),
 			'Javelin' => array(
 				'type'   => array( -7, -6, -5, -4, -3, -2, -1, 0, 1, 0, 1 ),
 				'damage' => array( '1d6', '1d6', 'Yes' ),
@@ -389,6 +386,14 @@ trait DND_Character_Trait_Weapons {
 				'attack' => 'horse',
 				'effect' => 'slash',
 			),
+			'Scimitar' => array(
+				'type'   => array( -4, -3, -3, -2, -2, -1, 0, 0, 1, 1, 3 ),
+				'speed'  => 4,
+				'reach'  => 2,
+				'damage' => array( '1d8', '1d8', 'Yes' ),
+				'attack' => 'hand',
+				'effect' => 'slash',
+			),
 			'Sling' => array(
 				'type'   => array( -7, -6, -5, -4, -2, -1, 0, 0, 2, 1, 3 ),
 				'damage' => array( '1d4', '1d4', 'Yes' ),
@@ -424,11 +429,12 @@ trait DND_Character_Trait_Weapons {
 				'attack' => 'two-hand',
 				'effect' => 'crush',
 			),
-			'Stunned' => array(
+			'Stinger' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-				'speed'  => 10,
-				'damage' => array( 'Spec', 'Spec', 'No' ),
-				'attack' => 'stunned',
+				'speed'  => 5,
+				'damage' => array( 'Spec', 'Spec', 'Yes' ),
+				'attack' => 'monster',
+				'effect' => 'pierce',
 			),
 			'Sword,Bastard' => array(
 				'type'   => array( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 ),
@@ -477,6 +483,13 @@ trait DND_Character_Trait_Weapons {
 				'attack' => 'monster',
 				'effect' => 'slash',
 			),
+			'Touch' => array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 5,
+				'damage' => array( 'Spec', 'Spec', 'Yes' ),
+				'attack' => 'monster',
+				'effect' => 'slash',
+			),
 			'Turn Undead' => array(
 				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 				'damage' => array( 'Spec', 'Spec', 'Yes' ),
@@ -498,6 +511,23 @@ trait DND_Character_Trait_Weapons {
 				'effect' => 'slash',
 			),
 		);
+		$states = $this->state_weapon_entries();
+		return $weapons + $states;
+	}
+
+	public function state_weapon_entries( $raw = false ) {
+		$conditions = array( 'Immobilized', 'Poisoned', 'Stunned' );
+		if ( $raw ) return $conditions;
+		$entries = array();
+		foreach( $conditions as $state ) {
+			$entries[ $state ] = array(
+				'type'   => array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+				'speed'  => 10,
+				'damage' => array( 'None', 'None', 'No' ),
+				'attack' => strtolower( $state ),
+			);
+		}
+		return $entries;
 	}
 
 
@@ -578,6 +608,19 @@ trait DND_Character_Trait_Weapons {
 		return $seqent;
 	}
 
+	public function set_next_attack_segment( $current ) {
+		$rounds   = intval( floor( $current / 10 ) ) + 2;
+		$sequence = $this->get_attack_sequence( $rounds, $this->weapon );
+		foreach( $sequence as $seg ) {
+			if ( $current > $seg ) continue;
+			$this->segment = $seg;
+			break;
+		}
+	}
+
+
+	/**  Bonus functions  **/
+
 	protected function get_weapon_proficiency_bonus( $skill, $desire = 'hit' ) {
 		$bonus = 0;
 		switch( $skill ) {
@@ -620,6 +663,22 @@ trait DND_Character_Trait_Weapons {
 		return $bonus;
 	}
 
+	private function check_for_point_blank_range( $weapon, $range ) {
+		if ( $weapon['attack'] === 'bow' ) {
+			if ( $range < BOW_POINT_BLANK ) {
+				add_filter( 'dnd1e_damage_to_target', [ $this, 'bow_double_damage' ], 20, 3 );
+			}
+		} else if ( substr( $weapon['attack'], 3 ) === 'Xbow' ) {
+			if ( $range < CROSSBOW_POINT_BLANK ) {
+				add_filter( 'dnd1e_damage_to_target', [ $this, 'bow_double_damage' ], 20, 3 );
+			}
+		}
+	}
+
+	public function bow_double_damage( $damage, $target, $type ) {
+		return $damage * 2;
+	}
+
 	private function get_missile_range_adjustment( $ranges, $actual ) {
 		$adjust = 0;
 		if ( $actual > ( $ranges[2] * 2 ) ) {
@@ -653,9 +712,12 @@ trait DND_Character_Trait_Weapons {
 		$bonus = 0;
 		if ( in_array( $weapon['attack'], $this->get_weapons_using_missile_adjustment() ) ) {
 			$bonus += $this->get_missile_proficiency_bonus( $weapon, $range, 'damage' );
+			$this->check_for_point_blank_range( $weapon, $range );
 		}
 		if ( in_array( $weapon['attack'], $this->get_weapons_using_strength_damage() ) ) {
-			$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
+			if ( array_key_exists( 'str', $this->stats ) ) {
+				$bonus += $this->get_strength_damage_bonus( $this->stats['str'] );
+			}
 		}
 		$bonus += $this->get_weapon_proficiency_bonus( $weapon['skill'], 'damage' );
 		$bonus += $weapon['bonus'];

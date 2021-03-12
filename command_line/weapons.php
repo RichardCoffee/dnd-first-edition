@@ -39,7 +39,7 @@ function add_special_gear( $combat ) {
 			'prefix'  => 'WFGW',
 			'type'    =>  array( 'Wind Fan' ),
 			'xp'      =>  500,
-		),
+		), //*/
 /*		array(
 			'class'  => 'DND_Combat_Treasure_Items_Armor',
 			'bonus'  =>  5,
@@ -205,8 +205,8 @@ function add_special_gear( $combat ) {
 			'prefix' => 'SBDC',
 			'type'   =>  array( 'Sword,Broad' ),
 			'xp'     =>  4400,
-		),
-		array(
+		), //*/
+/*		array(
 			'class'   => 'DND_Combat_Treasure_Items_Weapon',
 			'bonus'   => 1,
 			'effect'  => 'magic',

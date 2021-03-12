@@ -3,6 +3,7 @@
 class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 
+#	protected $action   = array(); // DND_Combat_Combat
 #	protected $base     = null;    // DND_Combat_Combat
 #	protected $casting  = array(); // DND_Combat_Spells
 	private   $columns  = 71;
@@ -44,7 +45,6 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function post_parent() {
 		$this->minus = ( ( ( $this->segment - 1 ) + floor( ( $this->segment - 1 ) / 10 ) ) * 2 );
-		if ( $this->rng_svd > 0 ) $this->range = $this->rng_svd;
 		if ( count( $this->enemy ) > $this->limit ) $this->default = true;
 		add_action( 'dnd1e_attack_made', [ $this, 'set_target' ] );
 	}
@@ -77,17 +77,15 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	}
 
 	public function generate_encounter( $terrain, $area, $freq, $crea, $number ) {
+		$terrain = $this->generate_terrain( $terrain );
+		$area    = $this->generate_area( $area );
+		$freq    = $this->check_frequency( $freq );
 		if ( $terrain && $area ) {
 			$enc = new DND_Combat_Encounters;
 			$listing = $enc->get_random_encounter( "$terrain:$area", $freq, $crea );
-			if ( $crea ) {
+			if ( $crea && $listing ) {
 				echo "\n\t{$listing['name']}";
 				echo "\t{$listing['class']}\n\n";
-			} else {
-				print_r( $listing );
-				echo "Count: " . count( $listing ) . "\n";
-			}
-			if ( $crea ) {
 				$new = $listing['class'];
 				$this->reset_combat();
 				$monster = new $new;
@@ -95,6 +93,10 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 				$this->new_segment_housekeeping();
 				return;
 			} else {
+				if ( $listing ) {
+					print_r( $listing );
+					echo "Count: " . count( $listing ) . "\n";
+				}
 				exit;
 			}
 		}
@@ -102,13 +104,101 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		exit;
 	}
 
+	protected function generate_terrain( $param ) {
+		$terrain = array( 'CC', 'CW', 'TC', 'TW', 'TSC', 'TSW' );
+		if ( ! in_array( $param, $terrain, true ) ) {
+			if ( ! is_numeric( $param ) ) {
+				$param = mt_rand( 1, 100 );
+			}
+			$index = $param % 6;
+			$param = $terrain[ $index ];
+echo "Generated terrain: ".$this->terrain_string($param)."\n";
+		}
+		return $param;
+	}
+
+	protected function generate_area( $param ) {
+		$area = array( 'M', 'H', 'F', 'S', 'P', 'D' );
+		if ( ! in_array( $param, $area, true ) ) {
+			if ( ! is_numeric( $param ) ) {
+				$param = mt_rand( 1, 100 );
+			}
+			$index = $param % 6;
+			$param = $area[ $index ];
+echo "Generated area: ".$this->area_string($param)."\n";
+		}
+		return $param;
+	}
+
+	protected function check_frequency( $freq ) {
+		$check = intval( $freq );
+		if ( $check === 0 ) {
+			switch( $freq ) {
+				case 'C':
+				case 'c':
+					$freq = 65;
+					break;
+				case 'U':
+				case 'u':
+					$freq = 85;
+					break;
+				case 'R':
+				case 'r':
+					$freq = 95;
+					break;
+				case 'VR':
+				case 'vr':
+					$freq = 100;
+				default:
+			}
+		}
+		return $freq;
+	}
+
 	protected function reset_combat() {
 		parent::reset_combat();
 		$this->limit   = 10;
 		$this->minus   = 0;
-		$this->rng_svd = 0;
+		$this->range   = 0;
 		$this->show    = 0;
 		$this->targets = array();
+	}
+
+	protected function terrain_string( $t ) {
+		static $terrain = array(
+			# Land
+			'CC'  => 'Cold - Civilized',
+			'CW'  => 'Cold - Wilderness',
+			'CF'  => 'Cold - Fresh Water',
+			'CS'  => 'Cold - Salt Water',
+			'TC'  => 'Temperate - Civilized',
+			'TW'  => 'Temperate - Wilderness',
+			'TF'  => 'Temperate - Fresh Water',
+			'TS'  => 'Temperate - Salt Water',
+			'TSC' => 'Sub-Tropical - Civilized',
+			'TSW' => 'Sub-Tropical - Wilderness',
+			'TSF' => 'Sub-Tropical - Fresh Water',
+			'TSS' => 'Sub-Tropical - Salt Water',
+		);
+		if ( array_key_exists( $t, $terrain ) ) {
+			return $terrain[ $t ];
+		}
+		return "Code $t is unknown value.";
+	}
+
+	protected function area_string( $a ) {
+		static $area = array(
+			'M' => 'Mountains',
+			'H' => 'Hills',
+			'F' => 'Forest',
+			'S' => 'Swamp',
+			'P' => 'Plains',
+			'D' => 'Desert',
+		);
+		if ( array_key_exists( $a, $area ) ) {
+			return $area[ $a ];
+		}
+		return "Code $a is unknown value.";
 	}
 
 
@@ -128,6 +218,36 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 
 	/**  Monsters  **/
+
+	protected function add_monster( $class, $num ) {
+		$enc  = new DND_Combat_Encounters;
+		$list = $enc->get_monster_list();
+		$keys = array_keys( $list );
+#print_r($keys);
+		$poss = array_filter(
+			$keys,
+			function( $key ) use ( $class ) {
+#				printf( "%i %s %s\n", strpos( $key, $class ), $key, $class );
+				return strpos( $key, $class );
+			}
+		);
+		if ( count( $poss ) === 0 ) {
+			$this->messages[] = "No matches found for '$class'";
+		} else if ( count( $poss ) === 1 ) {
+			$class = array_pop( $poss );
+			$base  = new $class;
+			for( $i = 1; $i <= $num; $i++ ) {
+				$this->add_to_enemy( $base );
+				echo '.';
+			}
+			echo "\n";
+		} else {
+			echo "Multiple results found.\n";
+			print_r( $poss );
+			echo "Please refine search term, and try again.\n";
+			exit;
+		}
+	}
 
 	protected function show_enemy_text() {
 		$object = $this->get_base_monster();
@@ -149,6 +269,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected function show_enemy_description( $num ) {
 		if ( empty( $this->enemy ) ) return;
 		$enemy = $this->get_object( $num );
+		if ( empty( $enemy ) ) return;
 		echo "\n";
 		echo "Appearing: " . $this->get_surviving_enemy() . "/" . count( $this->enemy );
 		echo "   Morale: " . $this->get_enemy_morale() . "%\n";
@@ -256,8 +377,11 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	}
 
 	protected function get_shown_monster() {
-		$first  = array_key_first( $this->shown );
-		return $this->shown[ $first ];
+		if ( $this->shown ) {
+			$first = array_key_first( $this->shown );
+			return $this->shown[ $first ];
+		}
+		return null;
 	}
 
 	protected function get_ranked_monster() {
@@ -355,7 +479,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			if ( $cast->has_special() ) $this->messages[] = $cast->get_special();
 		} else {
 			if ( $this->error ) $this->show_error( $this->error );
-			$this->show_error( 'pre cast bombed!' );
+			$this->messages[] = 'pre cast bombed!';
 		}
 	}
 
@@ -389,9 +513,6 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	}
 
 	protected function range_check() {
-		if ( $this->rng_svd > 0 ) {
-			return sprintf( '( r = %u )', $this->rng_svd );
-		}
 		if ( $this->range < 2000 ) {
 			return sprintf( '( r: %u )', $this->range );
 		}
@@ -401,7 +522,13 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 	protected function show_party_attacks() {
 		$separator = 0;
 		foreach( $this->party as $name => $char ) {
-			if ( $char->get_hit_points() < -10 ) continue;
+			if ( $char->get_hit_points() < -10 )
+{
+$hp = $char->get_hit_points();
+#echo "$name: $hp\n";
+continue;
+}
+#echo "$name\n";
 			if ( $separator++ % 3 === 0 ) echo str_repeat( '-', 120 ) . "\n";
 			if ( $char->is_dual_weapon() ) {
 				$char->set_dual_flag( 'primary' );
@@ -421,6 +548,9 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$len  = max( 0, strlen( $hits ) - 5 );
 		$line = sprintf( ' %5s ', $hits );
 		$name = $char->get_name() . $this->status_letter( $char );
+#if ( ! ( $name === $char->get_name() ) ) {
+#	$this->messages[] = sprintf( '%s %s', $char->get_name(), $name );
+#}
 		$info = trim( sprintf( '%7s(%d/%d)', $name, $char->get_hit_points(), $char->hit_points ) );
 		list( $len, $string ) = $this->minimize_string( [ '%', 17, 's' ], $len, $info );
 		$line.= sprintf( $string,  $info );
@@ -429,7 +559,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$line.= sprintf( $string, $weap );
 		$line.= sprintf( '%u/%u  ', $char->weapon['attacks'][0], $char->weapon['attacks'][1] );
 		$line.= sprintf( '%2u" ',   $char->movement );
-		$line.= sprintf( '%s  ',    $this->get_mapped_movement_sequence( $char->movement ) );
+		$line.= sprintf( '%s  ',    $this->get_mapped_movement_sequence( $char->move['foot'] ) );
 		$line.= sprintf( '%2d  ',   ( $char->segment ) );//% 10 ) );
 		$seq  = $char->get_attack_sequence( $this->rounds, $char->weapon );
 		$line.= substr( substr( $this->get_mapped_attack_sequence( $seq ), $this->minus ), 0, $this->columns );
@@ -535,6 +665,8 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		$damage = $char->get_weapon_damage_array( $char->weapon['current'], $size );
 		if ( $damage[0] === 'Spec' ) {
 			$string = 'Special';
+		} else if ( $damage[0] === 'None' ) {
+			$string = 'None';
 		} else {
 			$damage[1]  = apply_filters( 'dnd1e_damage_die', $damage[1], $char, $monster );
 #			$damage[2] += $char->get_weapon_damage_bonus( $monster, $this->range );
@@ -620,7 +752,7 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			}
 		} else {
 			foreach( $object->weapons as $weapon => $info ) {
-				echo "\t$weapon ({$info['skill']})\n";
+				echo "*\t$weapon ({$info['skill']})\n";
 			}
 			if ( method_exists( $object, 'special_string_undead' ) ) {
 				echo "\tTurn Undead\n";
@@ -673,29 +805,38 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 			if ( $char->weap_dual ) {
 				$secondary = $char->get_dual_attack_sequence( $this->rounds, 'secondary' );
 				if ( in_array( $this->segment, $secondary ) ) {
-					echo " {$char->weap_dual[1]}";
-				} else {
 					echo " {$char->weap_dual[0]}";
+				} else {
+					echo " {$char->weap_dual[1]}";
 				}
 			}
 		}
 	}
 
-	protected function damage_parameters( $in ) {
-		$in  = explode( ':', $this->opts['hit'] );
+	protected function damage_parameters( $in = array() ) {
 		$cnt = count( $in );
 		if ( $cnt === 2 ) {
-			list( $target, $damage ) = $in;
-			$this->resolve_damage( compact( $target, $damage ) );
+			$this->resolve_damage( array( 'target' => $in[0], 'damage' => $in[1] ) );
 		} else if ( $cnt === 4 ) {
-			list( $origin, $target, $damage, $type ) = $in;
-			$this->resolve_damage( compact( $origin, $target, $damage, $type ) );
+			$this->resolve_damage( array( 'origin' => $in[0], 'target' => $in[1], 'damage' => $in[2], 'type' => $in[3] ) );
 		} else if ( $cnt === 3 ) {
-			list( $origin, $target, $damage ) = $in;
-			if ( is_numeric( $damage ) ) {
-				$this->resolve_damage( compact( $origin, $target, $damage ) );
+			if ( is_numeric( $in[2] ) ) {
+				$this->resolve_damage( array( 'origin' => $in[0], 'target' => $in[1], 'damage' => $in[2] ) );
 			} else {
-				$this->resolve_damage( array( 'origin' => $origin, 'target' => $target, 'type' => $damage ) );
+				$this->resolve_damage( array( 'origin' => $in[0], 'target' => $in[1], 'type' => $in[2] ) );
+			}
+		}
+	}
+
+	protected function modify_char_stat( $name, $stat, $diff ) {
+		$char = $this->get_object( $name );
+		if ( $char ) {
+			if ( in_array( $stat, [ 'hp', 'mp' ] ) && is_numeric( $diff ) ) {
+				if ( $stat === 'hp' ) {
+					$char->assign_damage( $diff );
+				} else if ( method_exists( $char, 'adjust_manna' ) ) {
+					$char->adjust_manna( $diff );
+				}
 			}
 		}
 	}
@@ -705,10 +846,14 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 
 	protected function show_active_effects() {
 		echo "\n";
-		foreach( $this->effects as $key => $effect ) {
-			$origin = $this->get_object( $effect->get_caster() );
-			$effect->show_status( $origin, $this );
-			echo "\n";
+		if ( empty( $this->effects ) ) {
+			echo "There are currently no active effects.\n\n";
+		} else {
+			foreach( $this->effects as $key => $effect ) {
+				$origin = $this->get_object( $effect->get_caster() );
+				$effect->show_status( $origin, $this );
+				echo "\n";
+			}
 		}
 		exit;
 	}
@@ -767,16 +912,9 @@ class DND_Combat_CommandLine extends DND_Combat_Combat {
 		exit;
 	}
 
-	protected function fumble_roll_result( $roll ) {
-		$fumble = parent::fumble_roll_result( $roll );
-		echo "\n$fumble\n\n";
-		exit;
-	}
-
 	protected function get_serialization_data() {
 		$table = parent::get_serialization_data();
 		$table['limit']   = $this->limit;
-		$table['rng_svd'] = $this->rng_svd;
 		$table['show']    = $this->show;
 		$table['targets'] = $this->targets;
 		return $table;

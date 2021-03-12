@@ -7,6 +7,7 @@ trait DND_Character_Trait_Magic {
 	protected $manna_init  = 0;
 	protected $spell_table = array();
 	protected $spell_zero  = 'Cantrip';
+	protected $spells      = array();
 
 
 	/**  Setup functions  **/
@@ -22,6 +23,7 @@ trait DND_Character_Trait_Magic {
 	}
 
 	protected function reload_spells() {
+		$this->spell_table = array();
 		foreach( $this->spells as $level => $spells ) {
 			foreach( $spells as $name => $data ) {
 				$this->spells[ $level ][ $name ] = $this->locate_magic_spell( $name );
@@ -132,14 +134,14 @@ trait DND_Character_Trait_Magic {
 	/**  Manna functions  **/
 
 	public function calculate_manna_points( $type = '' ) {
-		if ( $this->level === 0 ) return; # temp fix
+		if ( $this->level === 0 ) return; # FIXME: level not yet determined
 		if ( $this->manna_init === 0 ) {
 			$table = $this->spells_usable_table();
 			$level = $table[ $this->level ];
 			foreach( $level as $key => $value ) {
 				$this->manna_init += $value * ( $key + 1 );
 			}
-			if ( $type === 'cleric' ) {
+			if ( $type && ( $type === 'cleric' ) ) {
 				$this->manna_init += $this->get_wisdom_manna( $this->stats['wis'], $this->level );
 			}
 			if ( $this->manna === 0 ) $this->manna = $this->manna_init;
@@ -151,6 +153,14 @@ trait DND_Character_Trait_Magic {
 		if ( $cost > 0 ) {
 			$this->manna -= $cost;
 		}
+	}
+
+	public function reset_manna_points() {
+		$this->manna = $this->manna_init;
+	}
+
+	public function adjust_manna( $diff ) {
+		$this->manna -= $diff;
 	}
 
 

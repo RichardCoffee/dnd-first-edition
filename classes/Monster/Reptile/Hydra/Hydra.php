@@ -1,10 +1,10 @@
 <?php
 /* Name: Hydra
- * Class: DND_Monster_Hydra_Hydra
+ * Class: DND_Monster_Reptile_Hydra_Hydra
  * Encounter: {"CW":{"M":"VR","F":"VR","S":"U","P":"VR"},"TW":{"M":"VR","F":"VR","S":"U","P":"VR"},"TSW":{"M":"VR","F":"VR","S":"U","P":"VR"}}
  */
 
-class DND_Monster_Hydra_Hydra extends DND_Monster_Monster {
+class DND_Monster_Reptile_Hydra_Hydra extends DND_Monster_Monster {
 
 
 #	protected $ac_rows      = array(); // DND_Monster_Trait_Combat

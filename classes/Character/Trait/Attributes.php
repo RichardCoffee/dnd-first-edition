@@ -20,7 +20,7 @@ trait DND_Character_Trait_Attributes {
 		return $perc;
 	}
 
-	private function get_strength_to_hit_bonus( $str ) {
+	private function get_strength_to_hit_bonus( $str = 9 ) {
 		$bonus = 0;
 		switch( (int)$str ) {
 			case 3:
@@ -66,7 +66,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	private function get_strength_damage_bonus( $str ) {
+	private function get_strength_damage_bonus( $str = 9 ) {
 		$bonus = 0;
 		switch( intval( $str ) ) {
 			case 3:
@@ -117,7 +117,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function get_wisdom_saving_throw_bonus( $wis ) {
+	protected function get_wisdom_saving_throw_bonus( $wis = 9 ) {
 		$bonus = 0;
 		switch( $wis ) {
 			case 3:
@@ -177,7 +177,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	private function get_missile_to_hit_adjustment( $dex ) {
+	private function get_missile_to_hit_adjustment( $dex = 9 ) {
 		$bonus = 0;
 		switch( $dex ) {
 			case 3:
@@ -214,7 +214,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	public function get_armor_class_dexterity_adjustment( $dex ) {
+	public function get_armor_class_dexterity_adjustment( $dex = 9 ) {
 		$bonus = 0;
 		switch( $dex ) {
 			case 3:
@@ -257,7 +257,7 @@ trait DND_Character_Trait_Attributes {
 		return $bonus;
 	}
 
-	protected function attr_get_constitution_hit_point_adjustment( $con ) {
+	protected function attr_get_constitution_hit_point_adjustment( $con = 9 ) {
 		$bonus = 0;
 		switch( $con ) {
 			case 3:

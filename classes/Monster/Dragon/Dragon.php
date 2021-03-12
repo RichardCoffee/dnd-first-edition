@@ -59,9 +59,6 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 	public function __construct( $args = array() ) {
 		$this->check_for_existing_mate( $args );
-		if ( array_key_exists( 'spell_list', $args ) ) {
-			$this->attacks['Spell'] = 'Special';
-		}
 		parent::__construct( $args );
 		if ( array_key_exists( 'spell_list', $args ) ) {
 			$this->set_magic_user();
@@ -271,15 +268,6 @@ abstract class DND_Monster_Dragon_Dragon extends DND_Monster_Monster {
 
 
 	/**  Magic functions  **/
-
-	protected function set_magic_user( $level = 0 ) {
-		$level = ( $level ) ? $level : $this->hit_dice;
-		$create = 'DND_Character_' . $this->magic_use;
-		$this->magic_user = new $create( [ 'level' => $level ] );
-		$this->attacks['Spell'] = [ 0, 0, 0 ];
-		if ( ! in_array( 'magic', $this->saving ) ) $this->saving[] = 'magic';
-		$this->vulnerable[] = 'magic';
-	}
 
 	protected function add_magic_spells( $list ) {
 		$rejects = apply_filters( 'dnd1e_rejected_spells', array(), $this );

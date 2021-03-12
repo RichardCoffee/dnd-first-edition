@@ -40,5 +40,19 @@ class DND_Monster_Invertebrates_Spider_Large extends DND_Monster_Invertebrates_S
 		);
 	}
 
+	public function monster_damage_string( $target ) {
+		add_filter( "dnd1e_object_Poison_saving_throws", [ $this, 'large_spider_poison_bite' ], 10, 3 );
+		$st = $target->saving_throw( 'Poison' );
+		remove_filter( "dnd1e_object_Poison_saving_throws", [ $this, 'large_spider_poison_bite' ], 10, 3 );
+		if ( $st ) {
+			return sprintf( '%s must make a saving throw versus Poison - %d', $target->get_name, $st );
+		}
+		return false;
+	}
+
+	public function large_spider_poison_bite( $base, $target, $effect ) {
+		return $base - 2;
+	}
+
 
 }

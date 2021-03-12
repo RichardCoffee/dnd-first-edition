@@ -30,7 +30,7 @@ class DND_Monster_Undead_Skeleton extends DND_Monster_Undead_Undead {
 #	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Skeleton';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Undead';
+	protected $race         = 'Skeleton';
 	protected $reference    = 'Monster Manual page 87-88';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );

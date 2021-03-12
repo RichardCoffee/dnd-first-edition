@@ -3,7 +3,7 @@
 class DND_Combat_Effect implements JsonSerializable, Serializable {
 
 
-	//  Original Spell data
+	//  Spell data
 	protected $aoe        = '';  //  Area of Effect
 	protected $against    = 'Spells'; // Category of saving throw
 	protected $cast       = '';  //  Casting time
@@ -23,23 +23,24 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 	protected $apply      = '';  //  Hook for when casting is complete
 	protected $book       = '';  //  Caster class
 	protected $caster     = '';  //  Caster key
-	protected $check      = '';  //  Callback run when spell casting is initiated.  Should return a boolean value.
-	protected $condition  = '';  //  Callback that determines whether a filter should be applied to passed value. Callback should return a boolean value.
+	protected $check      = '';  //  Hook run when spell casting is initiated.  Should return a boolean value.
+	protected $condition  = '';  //  Hook that determines whether a filter should be applied to passed value. Function should return a boolean value.
 	public    $data       = null;    //  Effect information
-	protected $effect     = '';      //  Basic spell effect type, ie: fire, cold, mental, electric, undead
+	protected $effect     = '';      //  Basic effect type, ie: fire, cold, mental, electric, undead
 	protected $ends       = 0;       //  Ending segment
 	protected $filters    = array(); //  array of filter arrays
 	private   $key        = 'Effect_Key';
 	protected $location   = array(); //  Map location
 	protected $object     = null;    //  Caster object
+	protected $post       = array(); //  Hook called after filters have been assigned
 	protected $prior      = array(); //  single filter run before casting is finished
-	protected $replace    = '';      //  Spell replacement filter name
+	protected $replace    = '';      //  replacement filter name
 	public    $rewrite    = false;   //  flag to use new code base for handling effect filters
 	protected $secondary  = array(); //  secondary effects for Monster classes
 	protected $special    = '';  //  Note on special effects
 	protected $status     = '';  //  Function to display status
 	protected $target     = '';  //  object key, 'party', 'enemy', 'aoe'
-	protected $when       = 1;   //  Spell effects begin/occur segment
+	protected $when       = 1;   //  effect begin/occur segment
 
 
 	use DND_Trait_ParseArgs;
@@ -57,6 +58,7 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 #if ( $this->name === 'Armor' ) $this->status = 'armor_status';
 #if ( $this->name === 'Faerie Fire' ) $this->filters[0][1] = 'faerie_fire_ac_adj';
 #if ( $this->name === 'Faerie Fire' ) $this->apply = 'druid_first_faerie_fire';
+#if ( $this->name === 'Magic Missile' ) $this->apply = 'magicuser_first_magic_missile';
 	}
 
 
@@ -68,6 +70,10 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		$caller  = @next( debug_backtrace() ); // without '@', this line produces "PHP Notice:  Only variables should be passed by reference"
 		$message = "non-callable function '$string' called from {$caller['file']} on line {$caller['line']}";
 		trigger_error( $message, E_USER_ERROR );
+	}
+
+	public function get_caster() {
+		return $this->caster;
 	}
 
 	public function get_key() {
@@ -85,6 +91,13 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 	public function manna_cost() {
 		$ord = DND_Enum_Ordinal::instance();
 		return $ord->position( $this->level );
+	}
+
+	public function get_status( $object, $combat ) {
+		if ( ( ! empty( $this->status ) ) && method_exists( $object, $this->status ) ) {
+			return $object->{$this->status}( $this, $combat );
+		}
+		return null;
 	}
 
 
@@ -191,11 +204,36 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		add_filter( $name, [ $this, 'process_effect' ], $priority, $argn );
 	}
 
-	public function process_apply( $object, $target, $data ) {
+	/**
+	 *  Runs when the casting segment ends, or when called using the '--spell' commandline opt.
+	 *
+	 * @param  object $caster spell caster
+	 * @param  object $target the spell target
+	 * @param  mixed  $data   any data the spell may require
+	 * @return string/bool    if string, should be displayed as message.
+	 */
+	public function process_apply( $caster, $target, $data ) {
+		$result = false;
 		if ( ! empty( $this->apply ) ) {
-			if ( method_exists( $object, $this->apply ) ) {
-				return $object->{$this->apply}( $this, $target, $data );
-			}
+			$result = $this->run_hook( $this->apply, $caster, $target, $data );
+		}
+		return $result;
+	}
+
+	public function process_post( $caster, $target, $data ) {
+		$result = false;
+		if ( ! empty( $this->post ) ) {
+			$result = $this->run_hook( $this->post, $caster, $target, $data );
+		}
+		return $result;
+	}
+
+	private function run_hook( $hook, $caster, $target, $data ) {
+		if ( method_exists( $caster, $hook ) ) {
+			return $caster->$hook( $this, $target, $data );
+		} else {
+			# TODO: Log this error
+			echo "$caster does not have method $hook\n";
 		}
 		return false;
 	}
@@ -213,6 +251,7 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 			add_filter( $name, [ $this, 'process_effect' ], $priority, $argn );
 		}
 	}
+
 
 	public function process_effect() {
 		global $wp_current_filter;
@@ -263,8 +302,9 @@ class DND_Combat_Effect implements JsonSerializable, Serializable {
 		echo "\t Target: {$this->target}\n";
 		if ( ! empty( $this->special ) )  echo "\tSpecial: {$this->special}\n";
 		if ( ( ! empty( $this->status ) ) && method_exists( $object, $this->status ) ) {
-			$object->{$this->status}( $this, $combat );
+			return $object->{$this->status}( $this, $combat, true );
 		}
+		return null;
 	}
 
 	public function show_casting() {

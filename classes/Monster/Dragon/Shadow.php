@@ -82,7 +82,7 @@ class DND_Monster_Dragon_Shadow extends DND_Monster_Dragon_Dragon {
 	}
 
 	protected function determine_intelligence() {
-		if ( $this->intelligence === 'Very to Genius' ) {
+		if ( strpos( $this->intelligence, ' to ' ) ) {
 			$roll = mt_rand( 11, 18 );
 			switch( $roll ) {
 				case 11:

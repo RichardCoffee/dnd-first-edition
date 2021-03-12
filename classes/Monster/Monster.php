@@ -23,6 +23,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $initiative   = 10;
 	protected $intelligence = 'Animal';
 	protected $magic_user   = null;
+	protected $morale       = true;
 	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Monster';
 	protected $psionic      = 'Nil';
@@ -33,6 +34,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $segment      = 0;
 	protected $size         = "Medium";
 	protected $specials     = array();
+	protected $stats        = array( 'str' => 9 );
 #	protected $to_hit_row   = array(); // DND_Monster_Trait_Combat
 	protected $treasure     = 'Nil';
 	protected $vulnerable   = array();
@@ -43,6 +45,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	protected $xp_value     = array( 0, 0, 0, 0 );
 
 
+	use DND_Character_Trait_Attributes;
 	use DND_Character_Trait_SavingThrows;
 	use DND_Character_Trait_Utilities;
 	use DND_Character_Trait_Weapons;
@@ -66,6 +69,7 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 	public function __construct( $args = array() ) {
 		$this->parse_key( $args ); // DND_Monster_Trait_Combat
 		$this->parse_args( $args );
+		$this->determine_intelligence();
 		$this->determine_hit_dice();
 		$this->determine_hit_points();
 		$this->determine_armor_class(); // DND_Monster_Trait_Combat
@@ -109,6 +113,21 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 
 	/**  Setup functions  **/
 
+	protected function determine_intelligence() {
+		static $int = null;
+		$int = ( $int ) ? $int : new DND_Enum_Intelligence;
+		if ( ! array_key_exists( 'int', $this->stats ) ) {
+			$rge = $int->range( $this->intelligence );
+			if ( strpos( $this->intelligence, 'Low' ) > 0 ) {
+				$this->stats['int'] = $rge[0];
+			} else {
+				$pos = mt_rand( 1, count( $rge ) );
+				$this->stats['int'] = $rge[ --$pos ];
+			}
+		}
+		$this->intelligence = $int->get( $this->stats['int'] );
+	}
+
 	protected function determine_hit_points() {
 		if ( ( $this->hit_points === 0 ) && ( $this->hit_dice > 0 ) ) {
 			$this->hit_points = $this->calculate_hit_points();
@@ -137,6 +156,18 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		$level = $this->hit_dice;
 		$level+= ceil( $this->hp_extra / 4 );
 		return $level;
+	}
+
+
+	/**  Magic functions  **/
+
+	protected function set_magic_user( $level = 0, $args = array() ) {
+		$args['level'] = ( $level ) ? $level : $this->hit_dice;
+		$create = 'DND_Character_' . $this->magic_use;
+		$this->magic_user = new $create( $args );
+		$this->attacks['Spell'] = [ 0, 0, 0 ];
+		if ( ! in_array( 'magic', $this->saving ) ) $this->saving[] = 'magic';
+		$this->vulnerable[] = 'magic';
 	}
 
 
@@ -238,6 +269,8 @@ abstract class DND_Monster_Monster implements JsonSerializable, Serializable {
 		}
 		return $response;
 	}
+
+	public function monster_damage_string( $target ) { return false; }
 
 	public function spend_manna( $spell ) { }
 

@@ -16,6 +16,8 @@ if ( empty( $combat->enemy ) ) {
 #	$monster = new DND_Monster_Invertebrates_Centipede_Giant();
 #	$monster = new DND_Monster_Lycan_Wolf();
 #	$monster = new DND_Monster_Rat();
+#	$monster = new DND_Monster_Rust();
+#print_r($monster);
 #	$monster = new DND_Monster_Sphinx_Manticore();
 #	$monster = new DND_Monster_Troll();
 #	$monster = new DND_Monster_Water_StingRay();

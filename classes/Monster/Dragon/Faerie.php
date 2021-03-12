@@ -91,7 +91,7 @@ class DND_Monster_Dragon_Faerie extends DND_Monster_Dragon_Dragon {
 		$this->specials['defense'] = 'Invisibility at will, AC: 1';
 	}
 
-	protected function set_magic_user( $level = 0 ) {
+	protected function set_magic_user( $level = 0, $args = array() ) {
 		$level = $this->faerie[ $this->hd_minimum ]['mu'];
 		if ( $this->check_chance( $this->co_druid ) ) {
 			$this->co_druid = 100;

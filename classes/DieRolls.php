@@ -286,7 +286,7 @@ class DND_DieRolls {
 			89 => 'Useless moron - Hit self, double damage, stunned for 1 round',
 			90 => 'Complete moron - Hit self, roll for critical',
 			92 => 'Unaware - Hit ally, normal damage',
-			93 => 'Very unaware - Hit ally, normal damage, stunned for one round',
+			93 => 'Very unaware - Hit ally, normal damage, stunned for 1 round',
 			95 => 'Unaware moron - Hit ally, double damage',
 			96 => 'Liability - Hit ally, double damage, stunned for 1 round',
 			97 => 'Big liability - Hit ally, roll for critical',

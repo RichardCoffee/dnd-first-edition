@@ -62,7 +62,7 @@ class DND_Monster_Dragon_Cloud extends DND_Monster_Dragon_Dragon {
 		$this->illusionist->set_key( $new );
 	}
 
-	protected function set_magic_user( $level = 0 ) {
+	protected function set_magic_user( $level = 0, $args = array() ) {
 		parent::set_magic_user();
 		$this->cleric      = new DND_Character_Cleric(      [ 'level' => $this->hit_dice ] );
 		$this->druid       = new DND_Character_Druid(       [ 'level' => $this->hit_dice ] );

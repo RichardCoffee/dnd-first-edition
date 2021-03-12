@@ -12,7 +12,7 @@ class DND_Character_Barbarian extends DND_Character_Fighter {
 	protected $xp_table  = array( 0, 6000, 12000, 24000, 48000, 80000, 150000, 275000, 500000 );
 
 
-	public function get_armor_class_dexterity_adjustment( $dex ) {
+	public function get_armor_class_dexterity_adjustment( $dex = 9 ) {
 		$bonus = parent::get_armor_class_dexterity_adjustment( $dex );
 		if ( $this->stats['dex'] > 14 ) {
 			$bulk  = $this->get_armor_bulk( $this->armor['armor'] );
@@ -22,7 +22,7 @@ class DND_Character_Barbarian extends DND_Character_Fighter {
 		return $bonus;
 	}
 
-	protected function attr_get_constitution_hit_point_adjustment( $con ) {
+	protected function attr_get_constitution_hit_point_adjustment( $con = 9 ) {
 		$bonus = parent::attr_get_constitution_hit_point_adjustment( $con );
 		if ( $bonus > 0 ) {
 			$bonus = ( $con - 14 ) * 2;

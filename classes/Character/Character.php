@@ -9,17 +9,16 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $armr_allow = array();
 	public    $assigned   = 'Unassigned';
 	protected $base_xp    = 0;
-	public    $current_hp = -100;
+	public    $current_hp = 0;
 	protected $experience = 0;
 	protected $gear       = array();
 	protected $hit_die    = array( 'limit' => -1, 'size' => -1, 'step' => -1 );
 	protected $hit_points = 0;
 	protected $horse      = '';
 	protected $initiative = array( 'roll' => 0, 'actual' => 0, 'segment' => 0 );
-	protected $level      = 0;
+	protected $level      = 1;
 	protected $move       = array( 'max' => 12, 'foot' => 12, 'segment' => 0 );
 	protected $max_move   = 12;
-	protected $movement   = 12;
 	protected $name       = 'Character Name';
 	protected $non_prof   = -100;
 	protected $race       = 'Human';
@@ -27,8 +26,8 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 #	protected $shield     = array(); // DND_Character_Trait_Armor
 	protected $shld_allow = array();
 	protected $specials   = array();
-	protected $spells     = array();
 	protected $stats      = array( 'str' => 3, 'int' => 3, 'wis' => 3, 'dex' => 3, 'con' => 3, 'chr' => 3 );
+	protected $status     = '';
 #	protected $weap_allow = array(); // DND_Character_Trait_Weapons
 #	protected $weap_dual  = false;   // DND_Character_Trait_Weapons
 	protected $weap_init  = array( 'initial' => 1, 'step' => 10 );
@@ -39,6 +38,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	protected $xp_step    = 1000000;
 	protected $xp_table   = array( 1000000 );
 
+	protected $dcc_debug = array(
+		'ae'  => false,    # add_experience
+		'dhp' => true,    # determine_hit_points
+		'si'  => false,    # set_initiative
+	);
+
 	use DND_Character_Trait_Armor;
 	use DND_Character_Trait_Attributes;
 	use DND_Character_Trait_SavingThrows;
@@ -46,11 +51,13 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 	use DND_Character_Trait_Utilities;
 	use DND_Character_Trait_Weapons;
 	use DND_Trait_Logging;
-	use DND_Trait_Magic;
+	use DND_Trait_Magic { __get as magic__get; }
 	use DND_Trait_ParseArgs;
 
 	abstract protected function define_specials();
 
+
+	/**  Initialization functions  **/
 
 	public function __construct( $args = array() ) {
 		if ( array_key_exists( 'ac_rows', $args ) ) {
@@ -64,11 +71,19 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 	}
 
+	public function __get( $name ) {
+		if ( $name === 'armor_class' ) return $this->armor['class'];
+		if ( $name === 'armor_type' )  return $this->armor['type'];
+		if ( $name === 'movement' )    return $this->move['foot'];
+		return $this->magic__get( $name );
+	}
+
 	public function __toString() {
 		return $this->name;
 	}
 
 	protected function initialize_character() {
+		$this->add_filters();
 		if ( ( $this->level < 2 ) && ( $this->experience > 0 ) ) {
 			# FIXME: this section may be either unnecessary or need to be rewritten
 			$new_level = $this->calculate_level( $this->experience );
@@ -82,8 +97,11 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		if ( $this->weapon['current'] === 'none' ) $this->set_current_weapon( array_key_first( $this->weapons ) );
 		$this->define_specials();
 		$this->determine_initiative();
-		$this->add_filters();
+		$this->determine_movement_speed();
 	}
+
+
+	/**  Get functions  **/
 
 	public function get_name( $full = false ) {
 		if ( $full ) return $this->name;
@@ -96,6 +114,34 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->get_name();
 	}
 
+	public function get_class() {
+		return array_reverse( explode( '_', get_class( $this ) ) )[0];
+	}
+
+	public function get_level( $param = '' ) {
+		return $this->level;
+	}
+
+	public function get_hit_points() {
+		return $this->current_hp + apply_filters( 'dnd1e_temporary_hp', 0, $this );
+	}
+
+	public function get_to_hit_number( $target, $range = -1 ) {
+		if ( ! is_object( $target ) ) { return -1; }
+		$to_hit  = $this->weapon_to_hit_number( $this->weapon, $target, $range );
+		$to_hit -= apply_filters( 'dnd1e_object_to_hit_opponent', 0, $this );
+		return $to_hit;
+	}
+
+	public function get_available_weapon_proficiencies() {
+		$total   = $this->weap_init['initial'] + intval( ( $this->level - 1 ) / $this->weap_init['step'] );
+		$current = $this->get_weapon_proficiencies_total();
+		return $total - $current;
+	}
+
+
+	/**  Set functions  **/
+
 	// Compatibility function
 	public function set_key( $new ) {
 		if ( $this->name === 'Character Name' ) {
@@ -103,17 +149,52 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		}
 	}
 
-	public function get_class() {
-		return array_reverse( explode( '_', get_class( $this ) ) )[0];
+	public function set_level( $level ) {
+		$this->level = $level;
+		$old_hp = $this->hit_points;
+		$this->determine_hit_points();
+		$this->current_hp = $this->hit_points;
+		if ( method_exists( $this, 'reload_spells' ) ) $this->reload_spells();
 	}
 
-	public function get_level() {
-		return $this->level;
+	public function reset_hit_points() {
+		$this->determine_hit_points();
+		$this->current_hp = $this->hit_points;
 	}
+
+	public function set_initiative( $roll ) {
+		$roll = intval( $roll );
+										if ( $this->dcc_debug['si'] ) { echo "{$this->name}1:{$this->segment}:$roll\n"; }
+		if ( $roll && ( $this->segment < 11 ) ) {
+			$this->initiative['roll'] = $roll;
+										if ( $this->dcc_debug['si'] ) { echo "roll:{$this->initiative['roll']}\n"; }
+			$this->determine_initiative( true );
+		}
+										if ( $this->dcc_debug['si'] ) { echo "{$this->name}2:{$this->segment}:$roll\n"; }
+										if ( $this->dcc_debug['si'] ) { echo "{$this->name} roll:{$this->initiative['roll']}  adj:{$this->initiative['actual']}  seg:{$this->segment}\n"; }
+	}
+
+	public function set_attack_segment( $segment ) {
+		if ( is_numeric( $segment ) ) {
+			$this->segment = intval( $segment );
+			if ( $this->segment === 0 ) $this->initiative['roll'] = 0;
+		}
+	}
+
+	public function set_current_weapon( $new = '' ) {
+		if ( $status = $this->set_character_weapon( $new ) ) {
+			$this->determine_movement_speed();
+		}
+		return $status;
+	}
+
+
+	/**  State functions  **/
 
 	protected function calculate_level( $xp ) {
 		$level = 0;
 		foreach( $this->xp_table as $key => $needed ) {
+echo "$key:$needed:$xp\n";
 			$level = $key;
 			if ( $xp < $needed ) {
 				break;
@@ -127,45 +208,45 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $level;
 	}
 
-	public function set_level( $level ) {
-		$this->level = $level;
-		$old_hp = $this->hit_points;
-		$this->determine_hit_points();
-		$this->current_hp = $this->hit_points;
-		if ( method_exists( $this, 'reload_spells' ) ) $this->reload_spells();
-	}
-
 	public function add_experience( $xp ) {
+										if ( $this->dcc_debug['ae'] ) { echo "xp: $xp\n"; }
 		$bonus = ! empty( $this->xp_bonus );
+										if ( $this->dcc_debug['ae'] ) { print_r($this->xp_bonus); }
 		foreach( $this->xp_bonus as $stat => $limit ) {
 			if ( $this->stats[ $stat ] < $limit ) {
 				$bonus = false;
 			}
 		}
+										if ( $this->dcc_debug['ae'] ) { echo "bonus: $bonus\n"; }
 		$this->base_xp    += $xp;
 		$this->experience += ( $bonus ) ? round( $xp * 1.1 ) : $xp;
 		$level = $this->calculate_level( $this->experience );
 		if ( $level > $this->level ) {
 			$this->set_level( $level );
+			if ( method_exists( $this, 'reload_spells' ) ) {
+				$this->reload_spells();
+			}
 		}
+										if ( $this->dcc_debug['ae'] ) { echo "{$this->level}:{$this->hit_points}\n"; }
 	}
 
 	protected function determine_hit_points() {
+										if ( $this->dcc_debug['dhp'] ) { echo "name: {$this->name}\n"; }
 		$base = $this->hit_die['size'] + $this->get_constitution_hit_point_adjustment( $this->stats['con'] );
+										if ( $this->dcc_debug['dhp'] ) { echo "level: {$this->level}\nbase: $base\n"; }
 		$this->hit_points = $base * min( $this->hit_die['limit'], $this->level );
+										if ( $this->dcc_debug['dhp'] ) { echo "hp1: {$this->hit_points}\n"; }
 		if ( $this->level > $this->hit_die['limit'] ) {
 			$this->hit_points += ( $this->level - $this->hit_die['limit'] ) * $this->hit_die['step'];
 		}
+										if ( $this->dcc_debug['dhp'] ) { echo "hp2: {$this->hit_points}\n"; }
 		if ( ! ( $this->current_hp === -100 ) ) $this->current_hp = $this->hit_points;
+										if ( $this->dcc_debug['dhp'] ) { echo "curr: {$this->current_hp}\n"; }
 	}
 
 	protected function get_constitution_hit_point_adjustment( $con ) {
 		$bonus = $this->attr_get_constitution_hit_point_adjustment( $con );
 		return min( $bonus, 2 );
-	}
-
-	public function get_hit_points() {
-		return $this->current_hp + apply_filters( 'dnd1e_temporary_hp', 0, $this );
 	}
 
 	protected function get_ac_dex_bonus() {
@@ -175,26 +256,12 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 		return $this->get_armor_class_dexterity_adjustment( $this->stats['dex'] );
 	}
 
-	protected function determine_initiative() {
-		if ( $this->initiative['roll'] > 0 ) {
+	protected function determine_initiative( $force = false ) {
+		if ( ! $force && ( $this->segment > $this->initiative['segment'] ) ) return;
+		if ( $force || ( $this->initiative['roll'] > 0 ) ) {
 			$this->initiative['actual']  = $this->initiative['roll'] + $this->get_missile_to_hit_adjustment( $this->stats['dex'] );
 			$this->initiative['segment'] = 11 - $this->initiative['actual'];
 			$this->segment = $this->initiative['segment'];
-		}
-	}
-
-	public function set_initiative( $roll ) {
-		$roll = intval( $roll );
-		if ( $roll && ( $this->segment < 11 ) ) {
-			$this->initiative['roll'] = $roll;
-			$this->determine_initiative();
-		}
-	}
-
-	public function set_attack_segment( $segment ) {
-		if ( is_numeric( $segment ) ) {
-			$this->segment = intval( $segment );
-			if ( $this->segment === 0 ) $this->initiative['roll'] = 0;
 		}
 	}
 
@@ -203,20 +270,10 @@ abstract class DND_Character_Character implements JsonSerializable, Serializable
 #		$this->add_dexterity_saving_throw_filters();
 	}
 
-	public function set_current_weapon( $new = '' ) {
-		if ( $status = $this->set_character_weapon( $new ) ) {
-			$this->determine_armor_class();
-			$bonus  = apply_filters( 'dnd1e_armor_bonus', $this->armor['bonus'], $this );
-			$this->move['foot'] = min( $this->move['max'], $this->get_armor_base_movement( $this->armor['armor'], $this->move['foot'] ) + $bonus );
-		}
-		return $status;
-	}
-
-	public function get_to_hit_number( $target, $range = -1 ) {
-		if ( ! is_object( $target ) ) { return -1; }
-		$to_hit = $this->weapon_to_hit_number( $this->weapon, $target, $range );
-		$to_hit -= apply_filters( 'dnd1e_object_to_hit_opponent', 0, $this );
-		return $to_hit;
+	protected function determine_movement_speed() {
+		$this->determine_armor_class();
+		$bonus = apply_filters( 'dnd1e_armor_bonus', $this->armor['bonus'], $this );
+		$this->move['foot'] = min( $this->move['max'], $this->get_armor_base_movement( $this->armor['armor'], $this->move['foot'] ) + $bonus );
 	}
 
 	protected function weapon_to_hit_number( $weapon, $target, $range ) {
@@ -279,12 +336,6 @@ if ( $stat ) echo "to hit8: $to_hit\n";
 			}
 		}
 		return $profs;
-	}
-
-	public function get_available_weapon_proficiencies() {
-		$total   = $this->weap_init['initial'] + intval( ( $this->level - 1 ) / $this->weap_init['step'] );
-		$current = $this->get_weapon_proficiencies_total();
-		return $total - $current;
 	}
 
 

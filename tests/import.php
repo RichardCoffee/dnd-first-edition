@@ -1,11 +1,6 @@
 <?php
 
-define( 'DND_FIRST_EDITION_DIR', '/home/oem/work/php/first' );
-define( 'CSV_PATH', '/home/oem/DnD/csv/' );
-define( 'WP_DEBUG', true );
-
-require_once( DND_FIRST_EDITION_DIR . '/functions.php' );
-require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
+require_once( 'setup.php' );
 
 #$test = new DND_Monster_Dragon_Bronze;
 #$test = new DND_Monster_Dragon_Cloud;
@@ -34,13 +29,14 @@ require_once( DND_FIRST_EDITION_DIR . '/command_line/includes.php' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Ragnor.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Rider.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Robb.csv' );
-$test = new DND_Character_Import_Kregen( CSV_PATH . 'Saerwen.csv' );
+#$test = new DND_Character_Import_Kregen( CSV_PATH . 'Saerwen.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Smurf.csv' );    // Illusionist
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Strider.csv' );   // Ranger
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Susan.csv' );    // Cleric/Thief
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tank.csv' );     // Fighter
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Thorodon.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Tifa.csv' );
+$test = new DND_Character_Import_Kregen( CSV_PATH . 'Zao.csv' );
 #$test = new DND_Character_Import_Kregen( CSV_PATH . 'Trindle.csv', [ 'weap_dual' => [ 'Dagger', 'Dagger,Off-Hand' ] ] );
 #$test = new DND_Character_Thief( [ 'level' => 10, 'stats' => [ 'dex' => 14 ] ] );
 

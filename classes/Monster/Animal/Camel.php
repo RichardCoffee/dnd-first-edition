@@ -1,7 +1,7 @@
 <?php
 /* Name: Camel
  * Class: DND_Monster_Animal_Camel
- * Encounter: {"CC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"CW":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TW":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TSC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TWC":{"H":"R","F":"R","S":"R","P":"C","D":"C"}}
+ * Encounter: {"CC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"CW":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TW":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TSC":{"H":"R","F":"R","S":"R","P":"C","D":"C"},"TSW":{"H":"R","F":"R","S":"R","P":"C","D":"C"}}
  */
 
 class DND_Monster_Animal_Camel extends DND_Monster_Monster {

@@ -15,6 +15,7 @@ trait DND_Combat_Gear {
 	}
 
 	protected function load_transient_gear() {
+echo "load gear\n";
 		$stored = dnd1e()->transient( 'gear' );
 		foreach( $stored as $key => $item ) {
 			if ( ! array_key_exists( $key, $this->gear ) ) {
@@ -170,10 +171,15 @@ trait DND_Combat_Gear {
 
 	protected function claim_gear( $key, $owner ) {
 		if ( array_key_exists( $key, $this->gear ) ) {
-			$item = $this->gear[ $key ];
-			unset( $this->gear[ $key ] );
-			$key = $item->set_owner( $owner );
-			$this->gear[ $key ] = $item;
+			$item = clone $this->gear[ $key ];
+			$new  = $item->set_owner( $owner );
+			if ( ! array_key_exists( $new, $this->gear ) ) {
+				$this->gear[ $key ]->turn_off();
+				unset( $this->gear[ $key ] );
+				$this->gear[ $new ] = $item;
+			} else {
+				$this->messages[] = "Duplicate weapon $new found in gear.  Cannot assign to $owner.";
+			}
 		} else {
 			$this->messages[] = "$key not found in gear.";
 		}

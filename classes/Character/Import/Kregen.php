@@ -35,6 +35,7 @@ class DND_Character_Import_Kregen extends DND_Character_Import_CSV {
 
 	protected function check_class_name( $string ) {
 		$class = '';
+#echo "class: $string\n";
 		switch( $string ) {
 			case 'Climb': // shows up on Barbarian spreadsheet
 			case 'Dr':    // shows up on Ranger / RangerThief spreadsheets
@@ -42,6 +43,7 @@ class DND_Character_Import_Kregen extends DND_Character_Import_CSV {
 			case 'Race':
 				break;
 			case 'MU':
+			case 'Magic User':
 			case '"Magic User"':
 				$class = 'MagicUser';
 				break;
@@ -55,9 +57,12 @@ class DND_Character_Import_Kregen extends DND_Character_Import_CSV {
 	}
 
 	protected function determine_experience() {
-		ksort( $this->time_line );
-		$last = array_pop( $this->time_line );
-		$this->character->add_experience( $last[1] );
+#print_r($this->time_line);
+		if ( $this->time_line ) {
+			ksort( $this->time_line );
+			$last = array_pop( $this->time_line );
+			$this->character->add_experience( $last[1] );
+		}
 	}
 
 
@@ -219,17 +224,26 @@ class DND_Character_Import_Kregen extends DND_Character_Import_CSV {
 	protected function track_experience( $line ) {
 		$mul = count( $this->classes );
 		$cnt = count( $line );
+#print_r($line);
 		foreach( $line as $k => $item ) {
+			if ( strpos( $item, '/' ) === false ) continue;
 			$check = intval( $item, 10 );
-			if ( ( $check > 2010 ) && ( $check < 2025 ) ) {
-				$check = strtotime( $item );
-				if ( $check && array_key_exists( $k + 1, $line ) ) {
+			if ( ! $check ) continue;
+			$check = strtotime( $item );
+			if ( $check ) {
+				$date = new DateTime( $item );
+				$year = $date->format('Y');
+#echo "$check $year\n";
+			if ( ( $year > 2010 ) && ( $year < 2025 ) ) {
+				if ( array_key_exists( $k + 1, $line ) ) {
 					$this->time_line["$item"] = array( $line[ $k + 1 ] );
 					if ( $k + 2 < $cnt ) $this->time_line["$item"][] = $line[ $k + 2 ];
 #					if ( ( $mul > 1 ) && ( $k + 3 < $cnt ) ) $this->time_line["$item"][] = $line[ $k + 3 ];
 				}
 			}
+			}
 		}
+#print_r($this->time_line);
 	}
 
 

@@ -21,7 +21,7 @@ trait DND_Monster_Trait_Combat {
 	}
 
 	public function get_key( $under = false ) {
-#		if ( empty( $this->combat_key ) ) $this->set_key( $this->name ); // needed for testing outside combat environment
+		if ( empty( $this->combat_key ) ) $this->set_key( $this->name ); // needed for testing outside combat environment
 		if ( $under ) return str_replace( ' ', '_', $this->combat_key );
 		return $this->combat_key;
 	}
@@ -165,6 +165,8 @@ trait DND_Monster_Trait_Combat {
 		$armor_type = min( max( $target_armor, $target->armor_type, 0 ), 10 );
 		if ( empty( $this->to_hit_row ) ) $this->determine_to_hit_row();
 		$index  = 10 - $target_armor;
+#$name = $target->get_name();
+#echo "mtc_gthn: $name $target_armor $index\n";
 		$to_hit = $this->to_hit_row[ $index ];
 		if ( $this->weapons_armor_type_check( $target ) && array_key_exists( $armor_type, $this->weapon['type'] ) ) {
 			$to_hit -= $this->weapon['type'][ $armor_type ];

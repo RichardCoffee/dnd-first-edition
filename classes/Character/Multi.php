@@ -97,7 +97,10 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		return implode( '/', $this->classes );
 	}
 
-	public function get_level() {
+	public function get_level( $param = '' ) {
+		if ( $param ) {
+			return ( array_key_exists( $param, $this->classes ) ) ? $this->$param->level : intval( $this->level );
+		}
 		$arr = array();
 		foreach( $this->classes as $key => $class ) {
 			$arr[] = $this->$key->get_level();
@@ -121,8 +124,23 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		foreach( $this->classes as $key => $class ) {
 			$this->$key->add_experience( $new );
 		}
+		$this->calculate_manna_points();
 		$this->initialize_character();
 		$this->current_hp = $this->hit_points;
+	}
+
+	public function reset_hit_points() {
+		$cnt = count( $this->classes );
+		$hp  = 0;
+		foreach( $this->classes as $key => $class ) {
+			$hp += $this->$key->hit_points;
+		}
+		$this->hit_points = round( $hp / $cnt );
+		$this->current_hp = $this->hit_points;
+	}
+
+	public function reset_manna_points() {
+		$this->manna = $this->manna_init;
 	}
 
 
@@ -145,6 +163,14 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		if ( $spells ) {
 			foreach( $spells as $key => $list ) {
 				$this->$key->initialize_spell_list( $list );
+			}
+		}
+	}
+
+	protected function reload_spells() {
+		foreach( $this->classes as $key => $class ) {
+			if ( method_exists( $this->$key, 'reload_spells' ) ) {
+				$this->$key->reload_spells();
 			}
 		}
 	}
@@ -197,7 +223,7 @@ abstract class DND_Character_Multi extends DND_Character_Character {
 		if ( $this->manna_init === 0 ) {
 			foreach( $this->classes as $key => $class ) {
 				if ( method_exists( $this->$key, 'calculate_manna_points' ) ) {
-					$this->$key->calculate_manna_points();
+					$this->$key->calculate_manna_points( $key );
 					$this->manna_init += $this->$key->manna_init;
 					$this->manna += $this->$key->manna;
 				}

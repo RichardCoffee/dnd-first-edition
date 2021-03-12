@@ -27,6 +27,7 @@ class DND_Monster_Undead_Undead extends DND_Monster_Monster {
 #	protected $initiative   = 1;
 #	protected $intelligence = 'Animal';
 #	protected $magic_user   = null;
+	protected $morale       = false;
 #	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Undead';
 #	protected $psionic      = 'Nil';
@@ -51,7 +52,7 @@ class DND_Monster_Undead_Undead extends DND_Monster_Monster {
 	public function __construct( $args = array() ) {
 		parent::__construct( $args );
 		if ( empty( $this->turn_as ) ) {
-			$this->turn_as = $this->name;
+			$this->turn_as = $this->race;
 		}
 	}
 

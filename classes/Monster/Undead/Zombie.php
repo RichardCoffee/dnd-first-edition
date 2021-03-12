@@ -30,7 +30,7 @@ class DND_Monster_Undead_Zombie extends DND_Monster_Undead_Undead {
 #	protected $movement     = array( 'foot' => 12 );
 	protected $name         = 'Zombie';
 #	protected $psionic      = 'Nil';
-#	protected $race         = 'Undead';
+	protected $race         = 'Zombie';
 #	protected $reference    = 'Monster Manual page';
 #	protected $resistance   = 'Standard';
 #	protected $saving       = array( 'fight' );
